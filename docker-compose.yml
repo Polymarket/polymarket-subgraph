@@ -1,0 +1,25 @@
+version: "3.7"
+services:
+
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: letmein
+
+  ipfs:
+    image: ipfs/go-ipfs
+
+  ganache:
+    image: trufflesuite/ganache-cli
+    ports:
+      - '8545:8545'
+
+  graph-node:
+    image: graphprotocol/graph-node
+    environment:
+      postgres_host: 'postgres:5432'
+      postgres_user: postgres
+      postgres_pass: letmein
+      postgres_db: postgres
+      ipfs: 'ipfs:5001'
+      ethereum: 'development:http://ganache:8545'

@@ -1,0 +1,27 @@
+{
+  "name": "omen-subgraph",
+  "version": "1.0.0",
+  "description": "Subgraph for Omen",
+  "main": "index.js",
+  "scripts": {
+    "test": "wait-on tcp:8545 && truffle migrate && mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cag/omen-subgraph.git"
+  },
+  "author": "Gnosis (https://gnosis.io)",
+  "license": "LGPL-3.0",
+  "bugs": {
+    "url": "https://github.com/cag/omen-subgraph/issues"
+  },
+  "homepage": "https://github.com/cag/omen-subgraph#readme",
+  "devDependencies": {
+    "@gnosis.pm/conditional-tokens-market-makers": "^1.6.0",
+    "@realitio/realitio-contracts": "^2.1.1",
+    "mocha": "^7.0.1",
+    "realitio-gnosis-proxy": "github:fvictorio/realitio-gnosis-proxy",
+    "truffle": "^5.1.10",
+    "wait-on": "^4.0.0"
+  }
+}

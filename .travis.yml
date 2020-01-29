@@ -1,0 +1,10 @@
+language: node_js
+
+services:
+  - docker
+
+before_script:
+  - docker-compose up -d
+
+after_script:
+  - docker-compose down
