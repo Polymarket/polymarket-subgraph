@@ -16,6 +16,9 @@ services:
 
   graph-node:
     image: graphprotocol/graph-node
+    ports:
+      - '8000:8000'
+      - '8020:8020'
     environment:
       postgres_host: 'postgres:5432'
       postgres_user: postgres

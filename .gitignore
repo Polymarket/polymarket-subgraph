@@ -105,3 +105,8 @@ dist
 
 # Truffle build artifacts
 build/
+
+# Subgraph stuff
+abis/
+subgraph.yaml
+generated/

@@ -1,0 +1,51 @@
+specVersion: 0.0.2
+description: Omen
+repository: https://github.com/cag/omen-subgraph
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: FPMMDeterministicFactory
+    network: {{network}}
+    source:
+      address: '{{FPMMDeterministicFactory.address}}'
+      abi: FPMMDeterministicFactory
+      startBlock: {{FPMMDeterministicFactory.startBlock}}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.3
+      language: wasm/assemblyscript
+      entities:
+        - FixedProductMarketMaker
+      abis:
+        - name: FPMMDeterministicFactory
+          file: ./abis/FPMMDeterministicFactory.json
+      eventHandlers:
+        - event: FixedProductMarketMakerCreation(indexed address,address,address,address,bytes32[],uint256)
+          handler: handleFixedProductMarketMakerCreation
+      file: ./src/FPMMDeterministicFactoryMapping.ts
+templates:
+  - name: FixedProductMarketMaker
+    kind: ethereum/contract
+    network: {{network}}
+    source:
+      abi: FixedProductMarketMaker
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.3
+      language: wasm/assemblyscript
+      entities:
+        - FixedProductMarketMaker
+      abis:
+        - name: FixedProductMarketMaker
+          file: ./abis/FixedProductMarketMaker.json
+      eventHandlers:
+        - event: FPMMFundingAdded(indexed address,uint256[],uint256)
+          handler: handleFundingAdded
+        - event: FPMMFundingRemoved(indexed address,uint256[],uint256)
+          handler: handleFundingRemoved
+        - event: FPMMBuy(indexed address,uint256,indexed uint256,uint256)
+          handler: handleBuy
+        - event: FPMMSell(indexed address,uint256,indexed uint256,uint256)
+          handler: handleSell
+      file: ./src/FixedProductMarketMakerMapping.ts
