@@ -8,6 +8,8 @@ services:
 
   ipfs:
     image: ipfs/go-ipfs
+    ports:
+      - '5001:5001'
 
   ganache:
     image: trufflesuite/ganache-cli

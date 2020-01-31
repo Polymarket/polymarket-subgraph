@@ -5,9 +5,14 @@
   "main": "index.js",
   "scripts": {
     "migrate": "truffle migrate --all --reset",
+    "create-local": "graph create --node http://localhost:8020/ cag/omen-subgraph",
+    "remove-local": "graph remove --node http://localhost:8020/ cag/omen-subgraph",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 cag/omen-subgraph",
     "codegen": "graph codegen",
     "build": "graph build",
-    "test": "wait-on tcp:8545 && npm run migrate && npm run codegen && npm run build && mocha"
+    "bootstrap-test": "wait-on tcp:8020 && npm run create-local",
+    "test-fresh-graph": "wait-on tcp:8545 && npm run migrate && npm run codegen && wait-on tcp:5001 && npm run deploy-local && mocha",
+    "test": "npm run bootstrap-test && npm run test-fresh-graph"
   },
   "repository": {
     "type": "git",
