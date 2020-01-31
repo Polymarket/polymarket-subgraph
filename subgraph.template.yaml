@@ -13,7 +13,7 @@ dataSources:
       startBlock: {{FPMMDeterministicFactory.startBlock}}
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.3
+      apiVersion: 0.0.2
       language: wasm/assemblyscript
       entities:
         - FixedProductMarketMaker
@@ -32,7 +32,7 @@ templates:
       abi: FixedProductMarketMaker
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.3
+      apiVersion: 0.0.2
       language: wasm/assemblyscript
       entities:
         - FixedProductMarketMaker
