@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "migrate": "truffle migrate --all --reset",
-    "create-local": "graph create --node http://localhost:8020/ cag/omen-subgraph",
-    "remove-local": "graph remove --node http://localhost:8020/ cag/omen-subgraph",
-    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 cag/omen-subgraph",
+    "create-local": "graph create --node http://localhost:8020/ cag/omen",
+    "remove-local": "graph remove --node http://localhost:8020/ cag/omen",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 cag/omen",
     "codegen": "graph codegen",
     "build": "graph build",
     "bootstrap-test": "wait-on http-get://localhost:8000 && npm run create-local",
@@ -30,11 +30,16 @@
     "@graphprotocol/graph-cli": "^0.17.1",
     "@graphprotocol/graph-ts": "^0.17.0",
     "@realitio/realitio-contracts": "github:cag/realitio-contracts",
+    "@truffle/contract": "^4.1.7",
+    "axios": "^0.19.2",
+    "delay": "^4.3.0",
     "fs-extra": "^8.1.0",
     "mocha": "^7.0.1",
     "mustache": "^4.0.0",
     "realitio-gnosis-proxy": "github:fvictorio/realitio-gnosis-proxy",
+    "should": "^13.2.3",
     "truffle": "^5.1.10",
-    "wait-on": "^4.0.0"
+    "wait-on": "^4.0.0",
+    "web3": "^1.2.5"
   }
 }
