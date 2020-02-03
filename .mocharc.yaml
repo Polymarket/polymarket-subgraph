@@ -1,2 +1,3 @@
 timeout: 30000
 exit: true
+require: mocha-steps

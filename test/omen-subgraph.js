@@ -103,22 +103,31 @@ describe('Omen subgraph', function() {
     subgraphs.should.be.not.empty();
   });
 
-  it('creates FixedProductMarketMaker entity when factory creates instances', async function() {
-    const [, creator, oracle] = accounts;
+  let creator;
+  let oracle;
+  step('get accounts', async function() {
+    [, creator, oracle] = accounts;
+  });
 
+  let conditionId;
+  step('prepare condition', async function() {
     const questionId = web3.utils.randomHex(32);
     const outcomeSlotCount = 2;
 
     await conditionalTokens.prepareCondition(oracle, questionId, outcomeSlotCount, { from: creator });
-    const conditionId = getConditionId(oracle, questionId, outcomeSlotCount);
+    conditionId = getConditionId(oracle, questionId, outcomeSlotCount);
+  });
 
+  let fpmmAddress;
+  let fpmmCreateTx;
+  const fee = web3.utils.toWei('0.001');
+  step('use factory to create instance', async function() {
     const initialFunds = web3.utils.toWei('1');
     
     await weth.deposit({ value: initialFunds, from: creator });
     await weth.approve(factory.address, initialFunds, { from: creator });
 
     const saltNonce = `0x${'1'.repeat(64)}`;
-    const fee = web3.utils.toWei('0.001');
     const creationArgs = [
       saltNonce,
       conditionalTokens.address,
@@ -129,8 +138,12 @@ describe('Omen subgraph', function() {
       [],
       { from: creator }
     ]
-    const fpmmAddress = await factory.create2FixedProductMarketMaker.call(...creationArgs);
-    const { receipt: { blockHash } } = await factory.create2FixedProductMarketMaker(...creationArgs);
+    fpmmAddress = await factory.create2FixedProductMarketMaker.call(...creationArgs);
+    fpmmCreateTx = await factory.create2FixedProductMarketMaker(...creationArgs);
+  });
+  
+  step('check subgraph for created instance', async function() {
+    const { receipt: { blockHash } } = fpmmCreateTx;
     const { timestamp } = await web3.eth.getBlock(blockHash);
 
     await waitForGraphSync();

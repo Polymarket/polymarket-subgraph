@@ -35,6 +35,7 @@
     "delay": "^4.3.0",
     "fs-extra": "^8.1.0",
     "mocha": "^7.0.1",
+    "mocha-steps": "^1.3.0",
     "mustache": "^4.0.0",
     "realitio-gnosis-proxy": "github:fvictorio/realitio-gnosis-proxy",
     "should": "^13.2.3",
