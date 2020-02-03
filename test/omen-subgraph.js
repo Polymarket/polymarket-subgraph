@@ -30,7 +30,7 @@ async function queryGraph(query) {
 const subgraphName = 'cag/omen';
 
 async function querySubgraph(query) {
-  return (await axios.post(`http://localhost:8000/subgraphs/${subgraphName}`, { query })).data.data;
+  return (await axios.post(`http://localhost:8000/subgraphs/name/${subgraphName}`, { query })).data.data;
 }
 
 async function waitForGraphSync(targetBlockNumber) {
@@ -133,5 +133,13 @@ describe('Omen subgraph', function() {
     await factory.create2FixedProductMarketMaker(...creationArgs);
 
     await waitForGraphSync();
+
+    const { fixedProductMarketMaker } = await querySubgraph(`{
+      fixedProductMarketMaker(id: "${fpmmAddress.toLowerCase()}") {
+        id
+      }
+    }`);
+
+    should.exist(fixedProductMarketMaker);
   })
 });
