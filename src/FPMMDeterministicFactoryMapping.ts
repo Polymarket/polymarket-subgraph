@@ -14,7 +14,7 @@ export function handleFixedProductMarketMakerCreation(event: FixedProductMarketM
   fixedProductMarketMaker.conditionalTokens = event.params.conditionalTokens;
   fixedProductMarketMaker.collateralToken = event.params.collateralToken;
   fixedProductMarketMaker.fee = event.params.fee;
-  fixedProductMarketMaker.volume = BigInt.fromI32(0);
+  fixedProductMarketMaker.collateralVolume = BigInt.fromI32(0);
 
   fixedProductMarketMaker.save();
 

@@ -7,5 +7,5 @@ type FixedProductMarketMaker @entity {
   conditionalTokens: Bytes!
   collateralToken: Bytes!
   fee: BigInt!
-  volume: BigInt!
+  collateralVolume: BigInt!
 }

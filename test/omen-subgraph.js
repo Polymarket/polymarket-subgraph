@@ -121,7 +121,7 @@ describe('Omen subgraph', function() {
   let fpmmAddress;
   let fpmmCreateTx;
   const fee = web3.utils.toWei('0.001');
-  step('use factory to create instance', async function() {
+  step('use factory to create market maker', async function() {
     const initialFunds = web3.utils.toWei('1');
     
     await weth.deposit({ value: initialFunds, from: creator });
@@ -142,7 +142,7 @@ describe('Omen subgraph', function() {
     fpmmCreateTx = await factory.create2FixedProductMarketMaker(...creationArgs);
   });
   
-  step('check subgraph for created instance', async function() {
+  step('check subgraph for created market maker', async function() {
     const { receipt: { blockHash } } = fpmmCreateTx;
     const { timestamp } = await web3.eth.getBlock(blockHash);
 
@@ -155,7 +155,7 @@ describe('Omen subgraph', function() {
         conditionalTokens
         collateralToken
         fee
-        volume
+        collateralVolume
       }
     }`);
 
@@ -166,6 +166,6 @@ describe('Omen subgraph', function() {
     web3.utils.toChecksumAddress(fixedProductMarketMaker.conditionalTokens).should.equal(conditionalTokens.address);
     web3.utils.toChecksumAddress(fixedProductMarketMaker.collateralToken).should.equal(weth.address);
     fixedProductMarketMaker.fee.should.equal(fee);
-    fixedProductMarketMaker.volume.should.equal('0');
+    fixedProductMarketMaker.collateralVolume.should.equal('0');
   });
 });
