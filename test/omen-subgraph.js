@@ -130,19 +130,29 @@ describe('Omen subgraph', function() {
       { from: creator }
     ]
     const fpmmAddress = await factory.create2FixedProductMarketMaker.call(...creationArgs);
-    await factory.create2FixedProductMarketMaker(...creationArgs);
+    const { receipt: { blockHash } } = await factory.create2FixedProductMarketMaker(...creationArgs);
+    const { timestamp } = await web3.eth.getBlock(blockHash);
 
     await waitForGraphSync();
 
     const { fixedProductMarketMaker } = await querySubgraph(`{
       fixedProductMarketMaker(id: "${fpmmAddress.toLowerCase()}") {
         creator
+        creationTimestamp
+        conditionalTokens
         collateralToken
+        fee
+        volume
       }
     }`);
 
     should.exist(fixedProductMarketMaker);
     web3.utils.toChecksumAddress(fixedProductMarketMaker.creator).should.equal(creator);
+    Number(fixedProductMarketMaker.creationTimestamp).should.equal(timestamp);
+
+    web3.utils.toChecksumAddress(fixedProductMarketMaker.conditionalTokens).should.equal(conditionalTokens.address);
     web3.utils.toChecksumAddress(fixedProductMarketMaker.collateralToken).should.equal(weth.address);
+    fixedProductMarketMaker.fee.should.equal(fee);
+    fixedProductMarketMaker.volume.should.equal('0');
   });
 });

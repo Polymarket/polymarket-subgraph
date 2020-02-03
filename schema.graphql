@@ -1,5 +1,11 @@
 type FixedProductMarketMaker @entity {
   id: ID!
+
   creator: Bytes!
+  creationTimestamp: BigInt!
+
+  conditionalTokens: Bytes!
   collateralToken: Bytes!
+  fee: BigInt!
+  volume: BigInt!
 }
