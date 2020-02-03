@@ -137,10 +137,12 @@ describe('Omen subgraph', function() {
     const { fixedProductMarketMaker } = await querySubgraph(`{
       fixedProductMarketMaker(id: "${fpmmAddress.toLowerCase()}") {
         creator
+        collateralToken
       }
     }`);
 
     should.exist(fixedProductMarketMaker);
     web3.utils.toChecksumAddress(fixedProductMarketMaker.creator).should.equal(creator);
+    web3.utils.toChecksumAddress(fixedProductMarketMaker.collateralToken).should.equal(weth.address);
   });
 });

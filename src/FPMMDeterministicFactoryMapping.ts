@@ -6,6 +6,7 @@ export function handleFixedProductMarketMakerCreation(event: FixedProductMarketM
   let address = event.params.fixedProductMarketMaker;
   let fixedProductMarketMaker = new FixedProductMarketMaker(address.toHexString());
   fixedProductMarketMaker.creator = event.params.creator;
+  fixedProductMarketMaker.collateralToken = event.params.collateralToken;
   fixedProductMarketMaker.save();
   FixedProductMarketMakerTemplate.create(address);
 }
