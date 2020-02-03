@@ -22,6 +22,7 @@ function getContract(contractName) {
 const WETH9 = getContract('WETH9');
 const ConditionalTokens = getContract('ConditionalTokens');
 const FPMMDeterministicFactory = getContract('FPMMDeterministicFactory');
+const FixedProductMarketMaker = getContract('FixedProductMarketMaker');
 
 async function queryGraph(query) {
   return (await axios.post('http://localhost:8000/subgraphs', { query })).data.data;
@@ -106,7 +107,7 @@ describe('Omen subgraph', function() {
   let creator;
   let oracle;
   step('get accounts', async function() {
-    [, creator, oracle] = accounts;
+    [, creator, oracle, trader] = accounts;
   });
 
   let conditionId;
@@ -118,7 +119,7 @@ describe('Omen subgraph', function() {
     conditionId = getConditionId(oracle, questionId, outcomeSlotCount);
   });
 
-  let fpmmAddress;
+  let fpmm;
   let fpmmCreateTx;
   const fee = web3.utils.toWei('0.001');
   step('use factory to create market maker', async function() {
@@ -138,8 +139,9 @@ describe('Omen subgraph', function() {
       [],
       { from: creator }
     ]
-    fpmmAddress = await factory.create2FixedProductMarketMaker.call(...creationArgs);
+    const fpmmAddress = await factory.create2FixedProductMarketMaker.call(...creationArgs);
     fpmmCreateTx = await factory.create2FixedProductMarketMaker(...creationArgs);
+    fpmm = await FixedProductMarketMaker.at(fpmmAddress);
   });
   
   step('check subgraph for created market maker', async function() {
@@ -149,7 +151,7 @@ describe('Omen subgraph', function() {
     await waitForGraphSync();
 
     const { fixedProductMarketMaker } = await querySubgraph(`{
-      fixedProductMarketMaker(id: "${fpmmAddress.toLowerCase()}") {
+      fixedProductMarketMaker(id: "${fpmm.address.toLowerCase()}") {
         creator
         creationTimestamp
         conditionalTokens
@@ -167,5 +169,15 @@ describe('Omen subgraph', function() {
     web3.utils.toChecksumAddress(fixedProductMarketMaker.collateralToken).should.equal(weth.address);
     fixedProductMarketMaker.fee.should.equal(fee);
     fixedProductMarketMaker.collateralVolume.should.equal('0');
+  });
+
+  step('have trader trade with market maker', async function() {
+    const investmentAmount = web3.utils.toWei('1');
+    
+    await weth.deposit({ value: investmentAmount, from: trader });
+    await weth.approve(fpmm.address, investmentAmount, { from: trader });
+
+    const buyAmount = await fpmm.calcBuyAmount(investmentAmount, 0);
+    await fpmm.buy(investmentAmount, 0, buyAmount, { from: trader });
   });
 });
