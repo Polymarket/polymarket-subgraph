@@ -1,3 +1,4 @@
 type FixedProductMarketMaker @entity {
   id: ID!
+  creator: Bytes!
 }

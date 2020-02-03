@@ -5,6 +5,7 @@ import { FixedProductMarketMaker as FixedProductMarketMakerTemplate } from '../g
 export function handleFixedProductMarketMakerCreation(event: FixedProductMarketMakerCreation): void {
   let address = event.params.fixedProductMarketMaker;
   let fixedProductMarketMaker = new FixedProductMarketMaker(address.toHexString());
+  fixedProductMarketMaker.creator = event.params.creator;
   fixedProductMarketMaker.save();
   FixedProductMarketMakerTemplate.create(address);
 }
