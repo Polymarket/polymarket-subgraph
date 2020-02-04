@@ -8,4 +8,6 @@ type FixedProductMarketMaker @entity {
   collateralToken: Bytes!
   fee: BigInt!
   collateralVolume: BigInt!
+
+  outcomeTokenAmounts: [BigInt!]!
 }

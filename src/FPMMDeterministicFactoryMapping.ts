@@ -16,6 +16,12 @@ export function handleFixedProductMarketMakerCreation(event: FixedProductMarketM
   fixedProductMarketMaker.fee = event.params.fee;
   fixedProductMarketMaker.collateralVolume = BigInt.fromI32(0);
 
+  let outcomeTokenAmounts = new Array<BigInt>(2);
+  for(let i = 0; i < outcomeTokenAmounts.length; i++) {
+    outcomeTokenAmounts[i] = BigInt.fromI32(0);
+  }
+  fixedProductMarketMaker.outcomeTokenAmounts = outcomeTokenAmounts;
+
   fixedProductMarketMaker.save();
 
   FixedProductMarketMakerTemplate.create(address);

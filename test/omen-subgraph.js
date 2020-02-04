@@ -80,9 +80,11 @@ async function waitForGraphSync(targetBlockNumber) {
 }
 
 describe('Omen subgraph', function() {
-  let accounts
+  let creator;
+  let oracle;
+  let trader;
   before('get accounts', async function() {
-    accounts = await web3.eth.getAccounts();
+    [creator, oracle, trader] = await web3.eth.getAccounts();
   });
 
   let weth;
@@ -104,12 +106,6 @@ describe('Omen subgraph', function() {
     subgraphs.should.be.not.empty();
   });
 
-  let creator;
-  let oracle;
-  step('get accounts', async function() {
-    [, creator, oracle, trader] = accounts;
-  });
-
   let conditionId;
   step('prepare condition', async function() {
     const questionId = web3.utils.randomHex(32);
@@ -122,9 +118,8 @@ describe('Omen subgraph', function() {
   let fpmm;
   let fpmmCreateTx;
   const fee = web3.utils.toWei('0.001');
+  const initialFunds = web3.utils.toWei('1');
   step('use factory to create market maker', async function() {
-    const initialFunds = web3.utils.toWei('1');
-    
     await weth.deposit({ value: initialFunds, from: creator });
     await weth.approve(factory.address, initialFunds, { from: creator });
 
@@ -158,6 +153,7 @@ describe('Omen subgraph', function() {
         collateralToken
         fee
         collateralVolume
+        outcomeTokenAmounts
       }
     }`);
 
@@ -169,6 +165,7 @@ describe('Omen subgraph', function() {
     web3.utils.toChecksumAddress(fixedProductMarketMaker.collateralToken).should.equal(weth.address);
     fixedProductMarketMaker.fee.should.equal(fee);
     fixedProductMarketMaker.collateralVolume.should.equal('0');
+    fixedProductMarketMaker.outcomeTokenAmounts.should.deepEqual([initialFunds, initialFunds]);
   });
 
   const runningCollateralVolume = web3.utils.toBN(0);
