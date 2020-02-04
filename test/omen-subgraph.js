@@ -171,13 +171,43 @@ describe('Omen subgraph', function() {
     fixedProductMarketMaker.collateralVolume.should.equal('0');
   });
 
-  step('have trader trade with market maker', async function() {
-    const investmentAmount = web3.utils.toWei('1');
-    
+  const runningCollateralVolume = web3.utils.toBN(0);
+  const investmentAmount = web3.utils.toWei('1');
+  step('have trader buy from market maker', async function() {
     await weth.deposit({ value: investmentAmount, from: trader });
     await weth.approve(fpmm.address, investmentAmount, { from: trader });
 
     const buyAmount = await fpmm.calcBuyAmount(investmentAmount, 0);
     await fpmm.buy(investmentAmount, 0, buyAmount, { from: trader });
+    runningCollateralVolume.iadd(web3.utils.toBN(investmentAmount));
+
+    await waitForGraphSync();
+
+    const { fixedProductMarketMaker } = await querySubgraph(`{
+      fixedProductMarketMaker(id: "${fpmm.address.toLowerCase()}") {
+        collateralVolume
+      }
+    }`);
+
+    fixedProductMarketMaker.collateralVolume.should.equal(runningCollateralVolume.toString());
+  });
+
+  const returnAmount = web3.utils.toWei('0.5');
+  step('have trader sell to market maker', async function() {
+    await conditionalTokens.setApprovalForAll(fpmm.address, true, { from: trader });
+
+    const sellAmount = await fpmm.calcSellAmount(returnAmount, 0);
+    await fpmm.sell(returnAmount, 0, sellAmount, { from: trader });
+    runningCollateralVolume.iadd(web3.utils.toBN(returnAmount));
+
+    await waitForGraphSync();
+
+    const { fixedProductMarketMaker } = await querySubgraph(`{
+      fixedProductMarketMaker(id: "${fpmm.address.toLowerCase()}") {
+        collateralVolume
+      }
+    }`);
+
+    fixedProductMarketMaker.collateralVolume.should.equal(runningCollateralVolume.toString());
   });
 });
