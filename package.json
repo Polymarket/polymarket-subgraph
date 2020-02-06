@@ -8,7 +8,7 @@
     "create-local": "graph create --node http://localhost:8020/ cag/omen",
     "remove-local": "graph remove --node http://localhost:8020/ cag/omen",
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 cag/omen",
-    "codegen": "graph codegen",
+    "codegen": "truffle exec render-templates.js && graph codegen",
     "build": "graph build",
     "bootstrap-test": "wait-on http-get://localhost:8000 && npm run create-local",
     "test-fresh-graph": "wait-on tcp:8545 && npm run migrate && npm run codegen && wait-on tcp:5001 && npm run deploy-local && npm run test-existing-graph",

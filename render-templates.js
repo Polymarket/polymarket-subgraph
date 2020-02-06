@@ -1,9 +1,10 @@
 const fs = require('fs-extra');
 const mustache = require('mustache');
 
-module.exports = function(deployer, network) {
-  deployer.then(async () => {
-    const templateData = { network };
+module.exports = function(callback) {
+  (async () => {
+    const networkType = await web3.eth.net.getNetworkType();
+    const templateData = { network: networkType === 'private' ? 'development' : networkType };
 
     for(const contractName of [
       'FPMMDeterministicFactory',
@@ -36,5 +37,5 @@ module.exports = function(deployer, network) {
         mustache.render(template, templateData),
       );
     }
-  })
+  })().then(() => callback(), callback);
 };
