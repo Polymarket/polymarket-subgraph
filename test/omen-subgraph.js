@@ -108,10 +108,9 @@ describe('Omen subgraph', function() {
   });
 
   let conditionId;
+  const questionId = web3.utils.randomHex(32);
+  const outcomeSlotCount = 3;
   step('prepare condition', async function() {
-    const questionId = web3.utils.randomHex(32);
-    const outcomeSlotCount = 2;
-
     await conditionalTokens.prepareCondition(oracle, questionId, outcomeSlotCount, { from: creator });
     conditionId = getConditionId(oracle, questionId, outcomeSlotCount);
   });
@@ -150,7 +149,6 @@ describe('Omen subgraph', function() {
       fixedProductMarketMaker(id: "${fpmm.address.toLowerCase()}") {
         creator
         creationTimestamp
-        conditionalTokens
         collateralToken
         fee
         collateralVolume
@@ -162,11 +160,48 @@ describe('Omen subgraph', function() {
     web3.utils.toChecksumAddress(fixedProductMarketMaker.creator).should.equal(creator);
     Number(fixedProductMarketMaker.creationTimestamp).should.equal(timestamp);
 
-    web3.utils.toChecksumAddress(fixedProductMarketMaker.conditionalTokens).should.equal(conditionalTokens.address);
     web3.utils.toChecksumAddress(fixedProductMarketMaker.collateralToken).should.equal(weth.address);
     fixedProductMarketMaker.fee.should.equal(fee);
     fixedProductMarketMaker.collateralVolume.should.equal('0');
-    fixedProductMarketMaker.outcomeTokenAmounts.should.deepEqual([initialFunds, initialFunds]);
+    fixedProductMarketMaker.outcomeTokenAmounts.should.deepEqual(
+      new Array(outcomeSlotCount).fill(initialFunds)
+    );
+  });
+
+  step('should not index market makers on different ConditionalTokens', async function() {
+    const altConditionalTokens = await ConditionalTokens.new({ from: creator });
+    await altConditionalTokens.prepareCondition(oracle, questionId, outcomeSlotCount, { from: creator });
+    await weth.deposit({ value: initialFunds, from: creator });
+    await weth.approve(factory.address, initialFunds, { from: creator });
+
+    const saltNonce = `0x${'2'.repeat(64)}`;
+    const creationArgs = [
+      saltNonce,
+      altConditionalTokens.address,
+      weth.address,
+      [conditionId],
+      fee,
+      initialFunds,
+      [],
+      { from: creator }
+    ]
+    const fpmmAddress = await factory.create2FixedProductMarketMaker.call(...creationArgs);
+    await factory.create2FixedProductMarketMaker(...creationArgs);
+
+    await waitForGraphSync();
+
+    const { fixedProductMarketMaker } = await querySubgraph(`{
+      fixedProductMarketMaker(id: "${fpmmAddress.toLowerCase()}") {
+        creator
+        creationTimestamp
+        collateralToken
+        fee
+        collateralVolume
+        outcomeTokenAmounts
+      }
+    }`);
+
+    should.not.exist(fixedProductMarketMaker);
   });
 
   const runningCollateralVolume = web3.utils.toBN(0);

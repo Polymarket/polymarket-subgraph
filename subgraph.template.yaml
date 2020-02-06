@@ -5,6 +5,26 @@ schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum/contract
+    name: ConditionalTokens
+    network: {{network}}
+    source:
+      address: '{{ConditionalTokens.address}}'
+      abi: ConditionalTokens
+      startBlock: {{ConditionalTokens.startBlock}}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.3
+      language: wasm/assemblyscript
+      entities:
+        - Condition
+      abis:
+        - name: ConditionalTokens
+          file: ./abis/ConditionalTokens.json
+      eventHandlers:
+        - event: ConditionPreparation(indexed bytes32,indexed address,indexed bytes32,uint256)
+          handler: handleConditionPreparation
+      file: ./src/ConditionalTokensMapping.ts
+  - kind: ethereum/contract
     name: FPMMDeterministicFactory
     network: {{network}}
     source:

@@ -1,14 +1,21 @@
+type Condition @entity {
+  id: ID!
+  outcomeSlotCount: BigInt!
+  payouts: [BigDecimal!]
+  fixedProductMarketMakers: [FixedProductMarketMaker!]! @derivedFrom(field: "conditions")
+}
+
 type FixedProductMarketMaker @entity {
   id: ID!
 
   creator: Bytes!
   creationTimestamp: BigInt!
 
-  conditionalTokens: Bytes!
   collateralToken: Bytes!
+  conditions: [Condition!]!
   fee: BigInt!
-  collateralVolume: BigInt!
 
+  collateralVolume: BigInt!
   outcomeTokenAmounts: [BigInt!]!
 
   poolMembers: [FpmmPoolMembership!] @derivedFrom(field: "pool")
