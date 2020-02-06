@@ -1,18 +1,19 @@
 import { BigInt, log } from '@graphprotocol/graph-ts'
 
-import { FixedProductMarketMaker } from "../generated/schema"
+import { FixedProductMarketMaker, Account, FpmmPoolMembership } from "../generated/schema"
 import {
   FPMMFundingAdded,
   FPMMFundingRemoved,
   FPMMBuy,
   FPMMSell,
+  Transfer,
 } from "../generated/templates/FixedProductMarketMaker/FixedProductMarketMaker"
 
 export function handleFundingAdded(event: FPMMFundingAdded): void {
   let fpmmAddress = event.address.toHexString();
   let fpmm = FixedProductMarketMaker.load(fpmmAddress);
   if (fpmm == null) {
-    log.error('cannot buy: FixedProductMarketMaker instance for {} not found', [fpmmAddress]);
+    log.error('cannot add funding: FixedProductMarketMaker instance for {} not found', [fpmmAddress]);
     return;
   }
 
@@ -26,7 +27,23 @@ export function handleFundingAdded(event: FPMMFundingAdded): void {
   fpmm.save();
 }
 
-export function handleFundingRemoved(event: FPMMFundingRemoved): void {}
+export function handleFundingRemoved(event: FPMMFundingRemoved): void {
+  let fpmmAddress = event.address.toHexString();
+  let fpmm = FixedProductMarketMaker.load(fpmmAddress);
+  if (fpmm == null) {
+    log.error('cannot remove funding: FixedProductMarketMaker instance for {} not found', [fpmmAddress]);
+    return;
+  }
+
+  let oldAmounts = fpmm.outcomeTokenAmounts;
+  let amountsRemoved = event.params.amountsRemoved;
+  let newAmounts = new Array<BigInt>(oldAmounts.length);
+  for(let i = 0; i < newAmounts.length; i++) {
+    newAmounts[i] = oldAmounts[i].minus(amountsRemoved[i]);
+  }
+  fpmm.outcomeTokenAmounts = newAmounts;
+  fpmm.save();
+}
 
 export function handleBuy(event: FPMMBuy): void {
   let fpmmAddress = event.address.toHexString();
@@ -50,4 +67,46 @@ export function handleSell(event: FPMMSell): void {
 
   fpmm.collateralVolume = fpmm.collateralVolume.plus(event.params.returnAmount);
   fpmm.save();
+}
+
+export function handlePoolShareTransfer(event: Transfer): void {
+  let fpmmAddress = event.address.toHexString()
+
+  let fromAddress = event.params.from.toHexString();
+  let from = Account.load(fromAddress);
+  if (from == null) {
+    from = new Account(fromAddress);
+    from.save();
+  }
+
+  let fromMembershipId = fpmmAddress.concat(fromAddress);
+  let fromMembership = FpmmPoolMembership.load(fromMembershipId);
+  if (fromMembership == null) {
+    fromMembership = new FpmmPoolMembership(fromMembershipId);
+    fromMembership.pool = fpmmAddress;
+    fromMembership.funder = fromAddress;
+    fromMembership.amount = event.params.value.neg();
+  } else {
+    fromMembership.amount = fromMembership.amount.minus(event.params.value);
+  }
+  fromMembership.save();
+
+  let toAddress = event.params.to.toHexString();
+  let to = Account.load(toAddress);
+  if (to == null) {
+    to = new Account(toAddress);
+    to.save();
+  }
+
+  let toMembershipId = fpmmAddress.concat(toAddress);
+  let toMembership = FpmmPoolMembership.load(toMembershipId);
+  if (toMembership == null) {
+    toMembership = new FpmmPoolMembership(toMembershipId);
+    toMembership.pool = fpmmAddress;
+    toMembership.funder = toAddress;
+    toMembership.amount = event.params.value;
+  } else {
+    toMembership.amount = toMembership.amount.plus(event.params.value);
+  }
+  toMembership.save();
 }

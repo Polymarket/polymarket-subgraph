@@ -10,4 +10,18 @@ type FixedProductMarketMaker @entity {
   collateralVolume: BigInt!
 
   outcomeTokenAmounts: [BigInt!]!
+
+  poolMembers: [FpmmPoolMembership!] @derivedFrom(field: "pool")
+}
+
+type FpmmPoolMembership @entity {
+  id: ID!
+  pool: FixedProductMarketMaker!
+  funder: Account!
+  amount: BigInt!
+}
+
+type Account @entity {
+  id: ID!
+  fpmmPoolMemberships: [FpmmPoolMembership!] @derivedFrom(field: "funder")
 }

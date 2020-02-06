@@ -48,4 +48,7 @@ templates:
           handler: handleBuy
         - event: FPMMSell(indexed address,uint256,indexed uint256,uint256)
           handler: handleSell
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handlePoolShareTransfer
+
       file: ./src/FixedProductMarketMakerMapping.ts

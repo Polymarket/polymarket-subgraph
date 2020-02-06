@@ -83,8 +83,9 @@ describe('Omen subgraph', function() {
   let creator;
   let oracle;
   let trader;
+  let shareholder;
   before('get accounts', async function() {
-    [creator, oracle, trader] = await web3.eth.getAccounts();
+    [creator, oracle, trader, shareholder] = await web3.eth.getAccounts();
   });
 
   let weth;
@@ -207,4 +208,28 @@ describe('Omen subgraph', function() {
 
     fixedProductMarketMaker.collateralVolume.should.equal(runningCollateralVolume.toString());
   });
+
+  step('transfer pool shares', async function() {
+    const shareholderPoolAmount = web3.utils.toWei('0.5');
+    await fpmm.transfer(shareholder, shareholderPoolAmount, { from: creator });
+
+    await waitForGraphSync();
+
+    const creatorMembershipId = `${fpmm.address}${creator}`.toLowerCase();
+    const shareholderMembershipId = `${fpmm.address}${shareholder}`.toLowerCase();
+    const { creatorMembership, shareholderMembership } = await querySubgraph(`{
+      creatorMembership: fpmmPoolMembership(id: "${creatorMembershipId}") {
+        amount
+      }
+      shareholderMembership: fpmmPoolMembership(id: "${shareholderMembershipId}") {
+        amount
+      }
+    }`);
+
+    (await fpmm.balanceOf(shareholder)).toString()
+      .should.equal(shareholderPoolAmount)
+      .and.equal(shareholderMembership.amount);
+    (await fpmm.balanceOf(creator)).toString()
+      .should.equal(creatorMembership.amount);
+  })
 });
