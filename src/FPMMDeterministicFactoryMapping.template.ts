@@ -1,4 +1,4 @@
-import { BigInt } from '@graphprotocol/graph-ts'
+import { BigInt, log } from '@graphprotocol/graph-ts'
 
 import { FixedProductMarketMakerCreation } from '../generated/FPMMDeterministicFactory/FPMMDeterministicFactory'
 import { FixedProductMarketMaker } from '../generated/schema'
@@ -6,7 +6,18 @@ import { FixedProductMarketMaker as FixedProductMarketMakerTemplate } from '../g
 
 export function handleFixedProductMarketMakerCreation(event: FixedProductMarketMakerCreation): void {
   let address = event.params.fixedProductMarketMaker;
-  let fixedProductMarketMaker = new FixedProductMarketMaker(address.toHexString());
+  let addressHexString = address.toHexString();
+  let conditionalTokensAddress = event.params.conditionalTokens.toHexString();
+
+  if (conditionalTokensAddress != '{{ConditionalTokens.addressLowerCase}}') {
+    log.info(
+      'cannot index market maker {}: using conditional tokens {}',
+      [addressHexString, conditionalTokensAddress],
+    );
+    return;
+  }
+
+  let fixedProductMarketMaker = new FixedProductMarketMaker(addressHexString);
 
   fixedProductMarketMaker.creator = event.params.creator;
   fixedProductMarketMaker.creationTimestamp = event.block.timestamp;
