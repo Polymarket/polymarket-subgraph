@@ -17,10 +17,12 @@ export function handleConditionResolution(event: ConditionResolution): void {
     return;
   }
 
-  if (condition.payouts != null) {
+  if (condition.resolutionTimestamp != null || condition.payouts != null) {
     log.error('should not be able to resolve condition {} more than once', [conditionId]);
     return;
   }
+
+  condition.resolutionTimestamp = event.block.timestamp;
 
   let payoutNumerators = event.params.payoutNumerators;
   let payoutDenominator = BigInt.fromI32(0);

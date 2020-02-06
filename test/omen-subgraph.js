@@ -269,15 +269,18 @@ describe('Omen subgraph', function() {
   });
 
   step('resolve condition', async function() {
-    await conditionalTokens.reportPayouts(questionId, [3, 2, 5], { from: oracle });
+    const { receipt: { blockHash } } = await conditionalTokens.reportPayouts(questionId, [3, 2, 5], { from: oracle });
+    const { timestamp } = await web3.eth.getBlock(blockHash);
 
     await waitForGraphSync();
 
     const { condition } = await querySubgraph(`{
       condition(id: "${conditionId}") {
+        resolutionTimestamp
         payouts
       }
     }`);
-    condition.payouts.should.deepEqual(['0.3', '0.2', '0.5'])
+    condition.resolutionTimestamp.should.equal(timestamp.toString());
+    condition.payouts.should.deepEqual(['0.3', '0.2', '0.5']);
   });
 });
