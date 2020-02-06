@@ -266,5 +266,18 @@ describe('Omen subgraph', function() {
       .and.equal(shareholderMembership.amount);
     (await fpmm.balanceOf(creator)).toString()
       .should.equal(creatorMembership.amount);
-  })
+  });
+
+  step('resolve condition', async function() {
+    await conditionalTokens.reportPayouts(questionId, [3, 2, 5], { from: oracle });
+
+    await waitForGraphSync();
+
+    const { condition } = await querySubgraph(`{
+      condition(id: "${conditionId}") {
+        payouts
+      }
+    }`);
+    condition.payouts.should.deepEqual(['0.3', '0.2', '0.5'])
+  });
 });
