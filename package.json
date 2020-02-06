@@ -10,8 +10,8 @@
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 cag/omen",
     "codegen": "truffle exec render-templates.js && graph codegen",
     "build": "graph build",
-    "bootstrap-test": "wait-on http-get://localhost:8000 && npm run create-local",
-    "test-fresh-graph": "wait-on tcp:8545 && npm run migrate && npm run codegen && wait-on tcp:5001 && npm run deploy-local && npm run test-existing-graph",
+    "bootstrap-test": "wait-on tcp:8545 && npm run migrate && wait-on http-get://localhost:8000 && npm run create-local",
+    "test-fresh-graph": "npm run codegen && wait-on tcp:5001 && npm run deploy-local && npm run test-existing-graph",
     "test-existing-graph": "mocha",
     "test": "npm run bootstrap-test && npm run test-fresh-graph"
   },
