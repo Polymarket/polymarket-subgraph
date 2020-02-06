@@ -10,6 +10,8 @@ module.exports = function(callback) {
       'FPMMDeterministicFactory',
       'FixedProductMarketMaker',
       'ConditionalTokens',
+      'Realitio',
+      'RealitioProxy',
     ]) {
       const { abi } = fs.readJsonSync(`build/contracts/${contractName}.json`);
       fs.outputJsonSync(`abis/${contractName}.json`, abi, { spaces: 2 });

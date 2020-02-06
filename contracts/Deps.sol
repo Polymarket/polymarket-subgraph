@@ -7,5 +7,7 @@ import { Arbitrator } from "@realitio/realitio-contracts/truffle/contracts/Arbit
 
 import { ConditionalTokens } from "@gnosis.pm/conditional-tokens-contracts/contracts/ConditionalTokens.sol";
 
+import { RealitioProxy } from "realitio-gnosis-proxy/contracts/RealitioProxy.sol";
+
 import { FPMMDeterministicFactory } from "@gnosis.pm/conditional-tokens-market-makers/contracts/FPMMDeterministicFactory.sol";
 import { FixedProductMarketMaker } from "@gnosis.pm/conditional-tokens-market-makers/contracts/FixedProductMarketMaker.sol";

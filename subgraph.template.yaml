@@ -5,6 +5,26 @@ schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum/contract
+    name: Realitio
+    network: {{network}}
+    source:
+      address: '{{Realitio.address}}'
+      abi: Realitio
+      startBlock: {{Realitio.startBlock}}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.3
+      language: wasm/assemblyscript
+      entities:
+        - Condition
+      abis:
+        - name: Realitio
+          file: ./abis/Realitio.json
+      eventHandlers:
+        - event: LogNewQuestion(indexed bytes32,indexed address,uint256,string,indexed bytes32,address,uint32,uint32,uint256,uint256)
+          handler: handleNewQuestion
+      file: ./src/RealitioMapping.ts
+  - kind: ethereum/contract
     name: ConditionalTokens
     network: {{network}}
     source:
