@@ -1,10 +1,17 @@
-import { BigInt, log, BigDecimal } from '@graphprotocol/graph-ts'
+import { BigInt, BigDecimal, log } from '@graphprotocol/graph-ts'
 
 import { ConditionPreparation, ConditionResolution } from '../generated/ConditionalTokens/ConditionalTokens'
-import { Condition } from '../generated/schema'
+import { Condition, Question } from '../generated/schema'
 
 export function handleConditionPreparation(event: ConditionPreparation): void {
   let condition = new Condition(event.params.conditionId.toHexString());
+  condition.oracle = event.params.oracle;
+  condition.questionId = event.params.questionId;
+
+  if (event.params.oracle.toHexString() == '{{RealitioProxy.addressLowerCase}}') {
+    condition.question = event.params.questionId.toHexString();
+  }
+
   condition.outcomeSlotCount = event.params.outcomeSlotCount;
   condition.save();
 }

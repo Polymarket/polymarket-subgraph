@@ -32,6 +32,7 @@ module.exports = function(callback) {
     for (const templatedFileDesc of [
       ['subgraph', 'yaml'],
       ['src/FPMMDeterministicFactoryMapping', 'ts'],
+      ['src/ConditionalTokensMapping', 'ts'],
     ]) {
       const template = fs.readFileSync(`${templatedFileDesc[0]}.template.${templatedFileDesc[1]}`).toString();
       fs.writeFileSync(

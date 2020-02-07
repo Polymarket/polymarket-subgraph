@@ -16,13 +16,22 @@ dataSources:
       apiVersion: 0.0.3
       language: wasm/assemblyscript
       entities:
-        - Condition
+        - Question
+        - QuestionTemplate
       abis:
         - name: Realitio
           file: ./abis/Realitio.json
       eventHandlers:
+        - event: LogNewTemplate(indexed uint256,indexed address,string)
+          handler: handleNewTemplate
         - event: LogNewQuestion(indexed bytes32,indexed address,uint256,string,indexed bytes32,address,uint32,uint32,uint256,uint256)
           handler: handleNewQuestion
+        - event: LogNewAnswer(bytes32,indexed bytes32,bytes32,indexed address,uint256,uint256,bool)
+          handler: handleNewAnswer
+        - event: LogNotifyOfArbitrationRequest(indexed bytes32,indexed address)
+          handler: handleArbitrationRequest
+        - event: LogFinalize(indexed bytes32,indexed bytes32)
+          handler: handleFinalize
       file: ./src/RealitioMapping.ts
   - kind: ethereum/contract
     name: ConditionalTokens
@@ -37,6 +46,7 @@ dataSources:
       language: wasm/assemblyscript
       entities:
         - Condition
+        - Question
       abis:
         - name: ConditionalTokens
           file: ./abis/ConditionalTokens.json
