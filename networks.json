@@ -1,0 +1,867 @@
+{
+  "ConditionalTokens": {
+    "4": {
+      "events": {
+        "0x17307eab39ab6107e8899845ad3d59bd9653f200f220920489ca2b5937696c31": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "operator",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "bool",
+              "name": "approved",
+              "type": "bool"
+            }
+          ],
+          "name": "ApprovalForAll",
+          "type": "event",
+          "signature": "0x17307eab39ab6107e8899845ad3d59bd9653f200f220920489ca2b5937696c31"
+        },
+        "0xab3760c3bd2bb38b5bcf54dc79802ed67338b4cf29f3054ded67ed24661e4177": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "conditionId",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "oracle",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "questionId",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "outcomeSlotCount",
+              "type": "uint256"
+            }
+          ],
+          "name": "ConditionPreparation",
+          "type": "event",
+          "signature": "0xab3760c3bd2bb38b5bcf54dc79802ed67338b4cf29f3054ded67ed24661e4177"
+        },
+        "0xb44d84d3289691f71497564b85d4233648d9dbae8cbdbb4329f301c3a0185894": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "conditionId",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "oracle",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "questionId",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "outcomeSlotCount",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256[]",
+              "name": "payoutNumerators",
+              "type": "uint256[]"
+            }
+          ],
+          "name": "ConditionResolution",
+          "type": "event",
+          "signature": "0xb44d84d3289691f71497564b85d4233648d9dbae8cbdbb4329f301c3a0185894"
+        },
+        "0x2682012a4a4f1973119f1c9b90745d1bd91fa2bab387344f044cb3586864d18d": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "redeemer",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "contract IERC20",
+              "name": "collateralToken",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "parentCollectionId",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "internalType": "bytes32",
+              "name": "conditionId",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256[]",
+              "name": "indexSets",
+              "type": "uint256[]"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "payout",
+              "type": "uint256"
+            }
+          ],
+          "name": "PayoutRedemption",
+          "type": "event",
+          "signature": "0x2682012a4a4f1973119f1c9b90745d1bd91fa2bab387344f044cb3586864d18d"
+        },
+        "0x2e6bb91f8cbcda0c93623c54d0403a43514fabc40084ec96b6d5379a74786298": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "stakeholder",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "contract IERC20",
+              "name": "collateralToken",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "parentCollectionId",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "conditionId",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256[]",
+              "name": "partition",
+              "type": "uint256[]"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "name": "PositionSplit",
+          "type": "event",
+          "signature": "0x2e6bb91f8cbcda0c93623c54d0403a43514fabc40084ec96b6d5379a74786298"
+        },
+        "0x6f13ca62553fcc2bcd2372180a43949c1e4cebba603901ede2f4e14f36b282ca": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "stakeholder",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "contract IERC20",
+              "name": "collateralToken",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "parentCollectionId",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "conditionId",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256[]",
+              "name": "partition",
+              "type": "uint256[]"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "name": "PositionsMerge",
+          "type": "event",
+          "signature": "0x6f13ca62553fcc2bcd2372180a43949c1e4cebba603901ede2f4e14f36b282ca"
+        },
+        "0x4a39dc06d4c0dbc64b70af90fd698a233a518aa5d07e595d983b8c0526c8f7fb": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "operator",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "from",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "to",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256[]",
+              "name": "ids",
+              "type": "uint256[]"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256[]",
+              "name": "values",
+              "type": "uint256[]"
+            }
+          ],
+          "name": "TransferBatch",
+          "type": "event",
+          "signature": "0x4a39dc06d4c0dbc64b70af90fd698a233a518aa5d07e595d983b8c0526c8f7fb"
+        },
+        "0xc3d58168c5ae7397731d063d5bbf3d657854427343f4c083240f7aacaa2d0f62": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "operator",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "from",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "to",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "id",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "value",
+              "type": "uint256"
+            }
+          ],
+          "name": "TransferSingle",
+          "type": "event",
+          "signature": "0xc3d58168c5ae7397731d063d5bbf3d657854427343f4c083240f7aacaa2d0f62"
+        },
+        "0x6bb7ff708619ba0610cba295a58592e0451dee2622938c8755667688daf3529b": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "string",
+              "name": "value",
+              "type": "string"
+            },
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "id",
+              "type": "uint256"
+            }
+          ],
+          "name": "URI",
+          "type": "event",
+          "signature": "0x6bb7ff708619ba0610cba295a58592e0451dee2622938c8755667688daf3529b"
+        }
+      },
+      "links": {},
+      "address": "0xe6Cdc22F99FD9ffdC03647C7fFF5bB753a4eBB21",
+      "transactionHash": "0xf0dd61bfd1b9613e0ba63f6bfc53ebd9af22f77542bfed31b090fc681bed116b"
+    }
+  },
+  "FPMMDeterministicFactory": {
+    "4": {
+      "events": {
+        "0x3d2b821286d97aa9d35330d87a82f7b548b9737b10e2d1ba59994edfd50e9d2b": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "target",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "clone",
+              "type": "address"
+            }
+          ],
+          "name": "CloneCreated",
+          "type": "event",
+          "signature": "0x3d2b821286d97aa9d35330d87a82f7b548b9737b10e2d1ba59994edfd50e9d2b"
+        },
+        "0xf4be957977a10be6a30d662255828df028f4b18f21d6774140bdc96c2bf300a4": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "buyer",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "investmentAmount",
+              "type": "uint256"
+            },
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "outcomeIndex",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "outcomeTokensBought",
+              "type": "uint256"
+            }
+          ],
+          "name": "FPMMBuy",
+          "type": "event",
+          "signature": "0xf4be957977a10be6a30d662255828df028f4b18f21d6774140bdc96c2bf300a4"
+        },
+        "0xec2dc3e5a3bb9aa0a1deb905d2bd23640d07f107e6ceb484024501aad964a951": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "funder",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256[]",
+              "name": "amountsAdded",
+              "type": "uint256[]"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "sharesMinted",
+              "type": "uint256"
+            }
+          ],
+          "name": "FPMMFundingAdded",
+          "type": "event",
+          "signature": "0xec2dc3e5a3bb9aa0a1deb905d2bd23640d07f107e6ceb484024501aad964a951"
+        },
+        "0x8baabc14b3d9f411b07b5a4c14fc6e12f2bc261be2d89da0840d48243ab056e1": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "funder",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256[]",
+              "name": "amountsRemoved",
+              "type": "uint256[]"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "sharesBurnt",
+              "type": "uint256"
+            }
+          ],
+          "name": "FPMMFundingRemoved",
+          "type": "event",
+          "signature": "0x8baabc14b3d9f411b07b5a4c14fc6e12f2bc261be2d89da0840d48243ab056e1"
+        },
+        "0x728a7aff2d166d753c6a40a36be24a55f33ada4ffc2f81d62f40d0bef007d84e": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "seller",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "returnAmount",
+              "type": "uint256"
+            },
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "outcomeIndex",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "outcomeTokensSold",
+              "type": "uint256"
+            }
+          ],
+          "name": "FPMMSell",
+          "type": "event",
+          "signature": "0x728a7aff2d166d753c6a40a36be24a55f33ada4ffc2f81d62f40d0bef007d84e"
+        },
+        "0x92e0912d3d7f3192cad5c7ae3b47fb97f9c465c1dd12a5c24fd901ddb3905f43": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "creator",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "contract FixedProductMarketMaker",
+              "name": "fixedProductMarketMaker",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "contract ConditionalTokens",
+              "name": "conditionalTokens",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "contract IERC20",
+              "name": "collateralToken",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "bytes32[]",
+              "name": "conditionIds",
+              "type": "bytes32[]"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "fee",
+              "type": "uint256"
+            }
+          ],
+          "name": "FixedProductMarketMakerCreation",
+          "type": "event",
+          "signature": "0x92e0912d3d7f3192cad5c7ae3b47fb97f9c465c1dd12a5c24fd901ddb3905f43"
+        }
+      },
+      "links": {},
+      "address": "0xe7E502789B8f4cDC99e6Cf9d3963E8C76784da51",
+      "transactionHash": "0x65e83b59b56e71f82028628a14f09da2e05e14c7415ce5e67ddeeb8d0fde20c7"
+    }
+  },
+  "Realitio": {
+    "4": {
+      "events": {
+        "0xa7b2d313bc7a062e30b2c3b811aa4c9faf09755a6b4ea3bf42deff920944332f": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "question_id",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "user",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "answer_hash",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "internalType": "bytes32",
+              "name": "answer",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "nonce",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "bond",
+              "type": "uint256"
+            }
+          ],
+          "name": "LogAnswerReveal",
+          "type": "event",
+          "signature": "0xa7b2d313bc7a062e30b2c3b811aa4c9faf09755a6b4ea3bf42deff920944332f"
+        },
+        "0x9c121aff33b50c1a53fef034ebec5f83da2d5a5187048f9c76c397ba27c1a1a6": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "question_id",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "user",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "name": "LogClaim",
+          "type": "event",
+          "signature": "0x9c121aff33b50c1a53fef034ebec5f83da2d5a5187048f9c76c397ba27c1a1a6"
+        },
+        "0x18d760beffe3717270cd90d9d920ec1a48c194e9ad7bba23eb1c92d3eb974f97": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "question_id",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "answer",
+              "type": "bytes32"
+            }
+          ],
+          "name": "LogFinalize",
+          "type": "event",
+          "signature": "0x18d760beffe3717270cd90d9d920ec1a48c194e9ad7bba23eb1c92d3eb974f97"
+        },
+        "0x54d68405b79f2aa4fd4e8db7b67844ad254cf8f208aac476c2894134a9deab66": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "question_id",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "bounty_added",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "bounty",
+              "type": "uint256"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "user",
+              "type": "address"
+            }
+          ],
+          "name": "LogFundAnswerBounty",
+          "type": "event",
+          "signature": "0x54d68405b79f2aa4fd4e8db7b67844ad254cf8f208aac476c2894134a9deab66"
+        },
+        "0xe47ca4ebbbc2990134d1168821f38c5e177f3d5ee564bffeadeaa351905e6221": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "bytes32",
+              "name": "answer",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "question_id",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "internalType": "bytes32",
+              "name": "history_hash",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "user",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "bond",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "ts",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "bool",
+              "name": "is_commitment",
+              "type": "bool"
+            }
+          ],
+          "name": "LogNewAnswer",
+          "type": "event",
+          "signature": "0xe47ca4ebbbc2990134d1168821f38c5e177f3d5ee564bffeadeaa351905e6221"
+        },
+        "0xfe2dac156a3890636ce13f65f4fdf41dcaee11526e4a5374531572d92194796c": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "question_id",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "user",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "template_id",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "string",
+              "name": "question",
+              "type": "string"
+            },
+            {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "content_hash",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "arbitrator",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint32",
+              "name": "timeout",
+              "type": "uint32"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint32",
+              "name": "opening_ts",
+              "type": "uint32"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "nonce",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "created",
+              "type": "uint256"
+            }
+          ],
+          "name": "LogNewQuestion",
+          "type": "event",
+          "signature": "0xfe2dac156a3890636ce13f65f4fdf41dcaee11526e4a5374531572d92194796c"
+        },
+        "0xb87fb721c0a557bb8dff89a86796466931d82ba530a66a239263eb8735ade2e4": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "template_id",
+              "type": "uint256"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "user",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "string",
+              "name": "question_text",
+              "type": "string"
+            }
+          ],
+          "name": "LogNewTemplate",
+          "type": "event",
+          "signature": "0xb87fb721c0a557bb8dff89a86796466931d82ba530a66a239263eb8735ade2e4"
+        },
+        "0x75d7939999bc902187c4aed400872883e445145f1983539166f783fa040b4762": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "question_id",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "user",
+              "type": "address"
+            }
+          ],
+          "name": "LogNotifyOfArbitrationRequest",
+          "type": "event",
+          "signature": "0x75d7939999bc902187c4aed400872883e445145f1983539166f783fa040b4762"
+        },
+        "0xdca703d022171824d3d639b33c1525fd2338120b4cfb89507c0b59596893acda": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "arbitrator",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "name": "LogSetQuestionFee",
+          "type": "event",
+          "signature": "0xdca703d022171824d3d639b33c1525fd2338120b4cfb89507c0b59596893acda"
+        },
+        "0x4ce7033d118120e254016dccf195288400b28fc8936425acd5f17ce2df3ab708": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "user",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "name": "LogWithdraw",
+          "type": "event",
+          "signature": "0x4ce7033d118120e254016dccf195288400b28fc8936425acd5f17ce2df3ab708"
+        }
+      },
+      "links": {},
+      "address": "0x3D00D77ee771405628a4bA4913175EcC095538da",
+      "transactionHash": "0x59200032eea892a10bf5ae9385eb288c062786d4c41a46cd2ee1e15dd2c29f60"
+    }
+  },
+  "RealitioProxy": {
+    "4": {
+      "events": {},
+      "links": {},
+      "address": "0x5A90132C104CA33652Ee71E2E645D5A4d8E5d7D6",
+      "transactionHash": "0xedd148203bbd6a931d2f927a1d1b2836d3cc61740213aef3009bf9cf40e4a7d8"
+    }
+  }
+}
