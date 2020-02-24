@@ -17,13 +17,10 @@ dataSources:
       language: wasm/assemblyscript
       entities:
         - Question
-        - QuestionTemplate
       abis:
         - name: Realitio
           file: ./abis/Realitio.json
       eventHandlers:
-        - event: LogNewTemplate(indexed uint256,indexed address,string)
-          handler: handleNewTemplate
         - event: LogNewQuestion(indexed bytes32,indexed address,uint256,string,indexed bytes32,address,uint32,uint32,uint256,uint256)
           handler: handleNewQuestion
         - event: LogNewAnswer(bytes32,indexed bytes32,bytes32,indexed address,uint256,uint256,bool)

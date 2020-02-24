@@ -2,27 +2,61 @@ import { log } from '@graphprotocol/graph-ts'
 
 import {
   LogNewQuestion,
-  LogNewTemplate,
   LogNewAnswer,
-  LogAnswerReveal,
   LogNotifyOfArbitrationRequest,
   LogFinalize,
 } from '../generated/Realitio/Realitio'
-import { Question, QuestionTemplate } from '../generated/schema'
-
-export function handleNewTemplate(event: LogNewTemplate): void {
-  let template = new QuestionTemplate(event.params.template_id.toHexString());
-  template.template = event.params.question_text;
-  template.save();
-}
+import { Question } from '../generated/schema'
 
 export function handleNewQuestion(event: LogNewQuestion): void {
   let questionId = event.params.question_id.toHexString();
   let question = new Question(questionId);
 
-  question.template = event.params.template_id.toHexString();
-  question.data = event.params.question;
+  if (event.params.template_id.toI32() != 2) {
+    log.info('ignoring question {} with template ID {}', [
+      questionId,
+      event.params.template_id.toString(),
+    ]);
+    return;
+  }
 
+  let data = event.params.question;
+  question.data = data;
+
+  let fields = data.split('\u241f', 4);
+
+  if (fields.length >= 1) {
+    question.title = fields[0];
+    if (fields.length >= 2) {
+      let outcomesData = fields[1];
+      let start = -1;
+      let escaped = false
+      let outcomes = new Array<string>(0);
+      for (let i = 0; i < outcomesData.length; i++) {
+        if (escaped) {
+          escaped = false;
+        } else {
+          if (outcomesData[i] == '"') {
+            if (start == -1) {
+              start = i + 1;
+            } else {
+              outcomes.push(outcomesData.slice(start, i));
+              start = -1;
+            }
+          } else if (outcomesData[i] == '\\') {
+            escaped = true;
+          }
+        }
+      }
+      question.outcomes = outcomes;
+      if (fields.length >= 3) {
+        question.category = fields[2];
+        if (fields.length >= 4) {
+          question.language = fields[3];
+        }
+      }
+    }
+  }
   question.arbitrator = event.params.arbitrator;
   question.openingTimestamp = event.params.opening_ts;
   question.timeout = event.params.timeout;
@@ -36,7 +70,7 @@ export function handleNewAnswer(event: LogNewAnswer): void {
   let questionId = event.params.question_id.toHexString()
   let question = Question.load(questionId);
   if (question == null) {
-    log.error('cannot find question {} to answer', [questionId]);
+    log.info('cannot find question {} to answer', [questionId]);
     return;
   }
 
@@ -54,7 +88,7 @@ export function handleArbitrationRequest(event: LogNotifyOfArbitrationRequest): 
   let questionId = event.params.question_id.toHexString()
   let question = Question.load(questionId);
   if (question == null) {
-    log.error('cannot find question {} to begin arbitration', [questionId]);
+    log.info('cannot find question {} to begin arbitration', [questionId]);
     return;
   }
 
@@ -67,7 +101,7 @@ export function handleFinalize(event: LogFinalize): void {
   let questionId = event.params.question_id.toHexString()
   let question = Question.load(questionId);
   if (question == null) {
-    log.error('cannot find question {} to finalize', [questionId]);
+    log.info('cannot find question {} to finalize', [questionId]);
     return;
   }
 

@@ -20,6 +20,7 @@ function getContract(contractName) {
 }
 
 const WETH9 = getContract('WETH9');
+const Realitio = getContract('Realitio');
 const ConditionalTokens = getContract('ConditionalTokens');
 const FPMMDeterministicFactory = getContract('FPMMDeterministicFactory');
 const FixedProductMarketMaker = getContract('FixedProductMarketMaker');
@@ -84,15 +85,18 @@ describe('Omen subgraph', function() {
   let oracle;
   let trader;
   let shareholder;
+  let arbitrator;
   before('get accounts', async function() {
-    [creator, oracle, trader, shareholder] = await web3.eth.getAccounts();
+    [creator, oracle, trader, shareholder, arbitrator] = await web3.eth.getAccounts();
   });
 
   let weth;
+  let realitio;
   let conditionalTokens;
   let factory;
   before('get deployed contracts', async function() {
     weth = await WETH9.deployed();
+    realitio = await Realitio.deployed();
     conditionalTokens = await ConditionalTokens.deployed();
     factory = await FPMMDeterministicFactory.deployed();
   });
@@ -105,6 +109,28 @@ describe('Omen subgraph', function() {
     }`);
 
     subgraphs.should.be.not.empty();
+  });
+
+  step('ask question', async function() {
+    const nonce = web3.utils.randomHex(32);
+    const { logs } = await realitio.askQuestion(
+      2,
+      [
+        // title
+        'なに!?',
+        // outcomes
+        ' "Something",\r"nothing, not something..." ,\t\n"A \\"thing\\""',
+        // category
+        'Cat\\u732b\\uD834\\uDD1E',
+        // language
+        'en-US',
+      ].join('\u241f'),
+      arbitrator,
+      100,
+      0,
+      nonce,
+      { from: creator }
+    );
   });
 
   let conditionId;
