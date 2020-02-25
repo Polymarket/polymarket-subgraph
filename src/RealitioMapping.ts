@@ -8,6 +8,119 @@ import {
 } from '../generated/Realitio/Realitio'
 import { Question } from '../generated/schema'
 
+enum UnescapeState {
+  Normal,
+  Escaped,
+  ReadingHex1,
+  ReadingHex2,
+  ReadingHex3,
+  ReadingHex4,
+}
+
+function unescape(input: string): string {
+  let output = '';
+  let i = 0;
+  let state = UnescapeState.Normal;
+  let escapedCodeUnitBuffer = 0;
+  while (i < input.length) {
+    let codePoint = input.codePointAt(i);
+
+    if (state == UnescapeState.Normal) {
+      if (codePoint == 0x5c) {
+        // \
+        state = UnescapeState.Escaped
+      } else {
+        output += String.fromCodePoint(codePoint);
+      }
+    } else if (state == UnescapeState.Escaped) {
+      if (codePoint == 0x75) {
+        // %x75 4HEXDIG )  ; uXXXX                U+XXXX
+        state = UnescapeState.ReadingHex1;
+      } else {
+        if (codePoint == 0x62) {
+          // %x62 /          ; b    backspace       U+0008
+          output += '\b';
+        } else if (codePoint == 0x66) {
+          // %x66 /          ; f    form feed       U+000C
+          output += '\f';
+        } else if (codePoint == 0x6e) {
+          // %x6E /          ; n    line feed       U+000A
+          output += '\n';
+        } else if (codePoint == 0x72) {
+          // %x72 /          ; r    carriage return U+000D
+          output += '\r';
+        } else if (codePoint == 0x74) {
+          // %x74 /          ; t    tab             U+0009
+          output += '\t';
+        } else if (
+          codePoint == 0x22 ||
+          codePoint == 0x5c || 
+          codePoint == 0x2f
+        ) {
+          output += String.fromCodePoint(codePoint);
+        } else {
+          let badEscCode = String.fromCodePoint(codePoint);
+          log.warning('got invalid escape code \\{} in position {} while unescaping "{}"', [
+            badEscCode,
+            i.toString(),
+            input,
+          ]);
+          output += '�';
+        }
+        state = UnescapeState.Normal;
+      }
+    } else {
+      // reading hex characters here
+      let nibble = 0;
+      if (codePoint >= 48 && codePoint < 58) {
+        // 0-9
+        nibble = codePoint - 48;
+      } else if (codePoint >= 65 && codePoint < 71) {
+        // A-F
+        nibble = codePoint - 55;
+      } else if (codePoint >= 97 && codePoint < 103) {
+        // a-f
+        nibble = codePoint - 87;
+      } else {
+        nibble = -1;
+      }
+      
+      if (nibble < 0) {
+        log.warning('got invalid hex character {} in position {} while unescaping "{}"', [
+          String.fromCodePoint(codePoint),
+          i.toString(),
+          input,
+        ]);
+        output += '�';
+        state = UnescapeState.Normal;
+      } else {
+        if (state == UnescapeState.ReadingHex1) {
+          escapedCodeUnitBuffer |= nibble << 12;
+          state = UnescapeState.ReadingHex2;
+        } else if (state == UnescapeState.ReadingHex2) {
+          escapedCodeUnitBuffer |= nibble << 8;
+          state = UnescapeState.ReadingHex3;
+        } else if (state == UnescapeState.ReadingHex3) {
+          escapedCodeUnitBuffer |= nibble << 4;
+          state = UnescapeState.ReadingHex4;
+        } else if (state == UnescapeState.ReadingHex4) {
+          output += String.fromCodePoint(escapedCodeUnitBuffer | nibble);
+          escapedCodeUnitBuffer = 0;
+          state = UnescapeState.Normal;
+        }
+      }
+    }
+
+    if (codePoint > 0xffff) {
+      i += 2;
+    } else {
+      i += 1;
+    }
+  }
+
+  return output;
+}
+
 export function handleNewQuestion(event: LogNewQuestion): void {
   let questionId = event.params.question_id.toHexString();
   let question = new Question(questionId);
@@ -26,7 +139,7 @@ export function handleNewQuestion(event: LogNewQuestion): void {
   let fields = data.split('\u241f', 4);
 
   if (fields.length >= 1) {
-    question.title = fields[0];
+    question.title = unescape(fields[0]);
     if (fields.length >= 2) {
       let outcomesData = fields[1];
       let start = -1;
@@ -40,7 +153,7 @@ export function handleNewQuestion(event: LogNewQuestion): void {
             if (start == -1) {
               start = i + 1;
             } else {
-              outcomes.push(outcomesData.slice(start, i));
+              outcomes.push(unescape(outcomesData.slice(start, i)));
               start = -1;
             }
           } else if (outcomesData[i] == '\\') {
@@ -50,9 +163,9 @@ export function handleNewQuestion(event: LogNewQuestion): void {
       }
       question.outcomes = outcomes;
       if (fields.length >= 3) {
-        question.category = fields[2];
+        question.category = unescape(fields[2]);
         if (fields.length >= 4) {
-          question.language = fields[3];
+          question.language = unescape(fields[3]);
         }
       }
     }
