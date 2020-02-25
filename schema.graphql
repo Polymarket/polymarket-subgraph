@@ -1,15 +1,11 @@
-type QuestionTemplate @entity {
-  id: ID!
-  template: String!
-  questions: [Question!]! @derivedFrom(field: "template")
-}
-
 type Question @entity {
   id: ID!
 
-  template: QuestionTemplate!
   data: String!
-  descriptionJson: String
+  title: String
+  outcomes: [String!]
+  category: String
+  language: String
 
   arbitrator: Bytes!
   openingTimestamp: BigInt!
