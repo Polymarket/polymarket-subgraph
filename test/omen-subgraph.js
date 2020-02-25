@@ -122,7 +122,7 @@ describe('Omen subgraph', function() {
       // outcomes
       ' "Something",\r"nothing, not something..." ,\t\n"A \\"thing\\""',
       // category
-      'Cat\\u732b\\ud83c\\uDCA1',
+      'Cat😈\\u732b\\ud83c\\uDCA1',
       // language
       'en-US',
     ].join('\u241f');
@@ -152,7 +152,7 @@ describe('Omen subgraph', function() {
     question.data.should.equal(questionData);
     question.title.should.equal('なに!?');
     question.outcomes.should.eql(['Something', 'nothing, not something...', 'A "thing"'])
-    question.category.should.equal('Cat猫🂡');
+    question.category.should.equal('Cat😈猫🂡');
     question.language.should.equal('en-US');
   });
 
