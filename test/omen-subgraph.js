@@ -9,7 +9,11 @@ const should = require('should')
 const provider = new Web3.providers.HttpProvider("http://localhost:8545");
 const web3 = new Web3(provider);
 
-const { getConditionId } = require('@gnosis.pm/conditional-tokens-contracts/utils/id-helpers')(web3.utils);
+const {
+  getConditionId,
+  getCollectionId,
+  getPositionId,
+} = require('@gnosis.pm/conditional-tokens-contracts/utils/id-helpers')(web3.utils);
 
 function getContract(contractName) {
   const C = TruffleContract(fs.readJsonSync(path.join(
@@ -157,10 +161,15 @@ describe('Omen subgraph', function() {
   });
 
   let conditionId;
+  let positionIds;
   const outcomeSlotCount = 3;
   step('prepare condition', async function() {
     await conditionalTokens.prepareCondition(oracle.address, questionId, outcomeSlotCount, { from: creator });
     conditionId = getConditionId(oracle.address, questionId, outcomeSlotCount);
+    positionIds = Array.from(
+      { length: outcomeSlotCount },
+      (v, i) => getPositionId(weth.address, getCollectionId(conditionId, 1 << i)),
+    );
 
     await waitForGraphSync();
 
@@ -226,8 +235,11 @@ describe('Omen subgraph', function() {
     web3.utils.toChecksumAddress(fixedProductMarketMaker.collateralToken).should.equal(weth.address);
     fixedProductMarketMaker.fee.should.equal(fee);
     fixedProductMarketMaker.collateralVolume.should.equal('0');
-    fixedProductMarketMaker.outcomeTokenAmounts.should.deepEqual(
-      new Array(outcomeSlotCount).fill(initialFunds)
+    fixedProductMarketMaker.outcomeTokenAmounts.should.eql(
+      (await conditionalTokens.balanceOfBatch(
+        new Array(positionIds.length).fill(fpmm.address),
+        positionIds,
+      )).map(v => v.toString())
     );
   });
 
