@@ -53,6 +53,19 @@ export function handleBuy(event: FPMMBuy): void {
     return;
   }
 
+  let oldAmounts = fpmm.outcomeTokenAmounts;
+  let investmentAmount = event.params.investmentAmount;
+  let outcomeIndex = event.params.outcomeIndex.toI32();
+  let newAmounts = new Array<BigInt>(oldAmounts.length);
+  for(let i = 0; i < newAmounts.length; i++) {
+    if (i == outcomeIndex) {
+      newAmounts[i] = oldAmounts[i].plus(investmentAmount).minus(event.params.outcomeTokensBought);
+    } else {
+      newAmounts[i] = oldAmounts[i].plus(investmentAmount);
+    }
+  }
+  fpmm.outcomeTokenAmounts = newAmounts;
+
   fpmm.collateralVolume = fpmm.collateralVolume.plus(event.params.investmentAmount);
   fpmm.save();
 }
@@ -64,6 +77,19 @@ export function handleSell(event: FPMMSell): void {
     log.error('cannot sell: FixedProductMarketMaker instance for {} not found', [fpmmAddress]);
     return;
   }
+
+  let oldAmounts = fpmm.outcomeTokenAmounts;
+  let returnAmount = event.params.returnAmount;
+  let outcomeIndex = event.params.outcomeIndex.toI32();
+  let newAmounts = new Array<BigInt>(oldAmounts.length);
+  for(let i = 0; i < newAmounts.length; i++) {
+    if (i == outcomeIndex) {
+      newAmounts[i] = oldAmounts[i].minus(returnAmount).plus(event.params.outcomeTokensSold);
+    } else {
+      newAmounts[i] = oldAmounts[i].minus(returnAmount);
+    }
+  }
+  fpmm.outcomeTokenAmounts = newAmounts;
 
   fpmm.collateralVolume = fpmm.collateralVolume.plus(event.params.returnAmount);
   fpmm.save();
