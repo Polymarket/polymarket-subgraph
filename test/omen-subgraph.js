@@ -86,6 +86,54 @@ async function waitForGraphSync(targetBlockNumber) {
 }
 
 describe('Omen subgraph', function() {
+  function checkMarketMakerState(collateralVolume) {
+    step('check subgraph market maker data matches chain', async function() {
+      await waitForGraphSync();
+
+      const { fixedProductMarketMaker } = await querySubgraph(`{
+        fixedProductMarketMaker(id: "${fpmm.address.toLowerCase()}") {
+          creator
+          creationTimestamp
+          collateralToken
+          conditions {
+            id
+          }
+          fee
+          collateralVolume
+          outcomeTokenAmounts
+          poolMembers {
+            funder {
+              id
+            }
+            amount
+          }
+        }
+      }`);
+
+      should.exist(fixedProductMarketMaker);
+      web3.utils.toChecksumAddress(fixedProductMarketMaker.creator).should.equal(creator);
+      Number(fixedProductMarketMaker.creationTimestamp).should.equal(fpmmCreationTimestamp);
+      web3.utils.toChecksumAddress(fixedProductMarketMaker.collateralToken).should.equal(weth.address);
+      fixedProductMarketMaker.conditions.should.eql([{ id: conditionId }]);
+      fixedProductMarketMaker.fee.should.equal(fee);
+      fixedProductMarketMaker.collateralVolume.should.equal(collateralVolume);
+      fixedProductMarketMaker.outcomeTokenAmounts.should.eql(
+        (await conditionalTokens.balanceOfBatch(
+          new Array(positionIds.length).fill(fpmm.address),
+          positionIds,
+        )).map(v => v.toString()),
+      );
+
+      for (const { funder, amount } of fixedProductMarketMaker.poolMembers) {
+        if (funder.id === `0x${'0'.repeat(40)}`) {
+          amount.should.equal((await fpmm.totalSupply()).neg().toString());
+        } else {
+          amount.should.equal((await fpmm.balanceOf(funder.id)).toString());
+        }
+      }
+    });
+  }
+
   let creator;
   let trader;
   let shareholder;
@@ -188,7 +236,7 @@ describe('Omen subgraph', function() {
   });
 
   let fpmm;
-  let fpmmCreateTx;
+  let fpmmCreationTimestamp;
   const fee = web3.utils.toWei('0.001');
   const initialFunds = web3.utils.toWei('1');
   step('use factory to create market maker', async function() {
@@ -207,41 +255,12 @@ describe('Omen subgraph', function() {
       { from: creator }
     ]
     const fpmmAddress = await factory.create2FixedProductMarketMaker.call(...creationArgs);
-    fpmmCreateTx = await factory.create2FixedProductMarketMaker(...creationArgs);
+    const { receipt: { blockHash } } = await factory.create2FixedProductMarketMaker(...creationArgs);
+    ({ timestamp: fpmmCreationTimestamp } = await web3.eth.getBlock(blockHash));
     fpmm = await FixedProductMarketMaker.at(fpmmAddress);
   });
-  
-  step('check subgraph for created market maker', async function() {
-    const { receipt: { blockHash } } = fpmmCreateTx;
-    const { timestamp } = await web3.eth.getBlock(blockHash);
 
-    await waitForGraphSync();
-
-    const { fixedProductMarketMaker } = await querySubgraph(`{
-      fixedProductMarketMaker(id: "${fpmm.address.toLowerCase()}") {
-        creator
-        creationTimestamp
-        collateralToken
-        fee
-        collateralVolume
-        outcomeTokenAmounts
-      }
-    }`);
-
-    should.exist(fixedProductMarketMaker);
-    web3.utils.toChecksumAddress(fixedProductMarketMaker.creator).should.equal(creator);
-    Number(fixedProductMarketMaker.creationTimestamp).should.equal(timestamp);
-
-    web3.utils.toChecksumAddress(fixedProductMarketMaker.collateralToken).should.equal(weth.address);
-    fixedProductMarketMaker.fee.should.equal(fee);
-    fixedProductMarketMaker.collateralVolume.should.equal('0');
-    fixedProductMarketMaker.outcomeTokenAmounts.should.eql(
-      (await conditionalTokens.balanceOfBatch(
-        new Array(positionIds.length).fill(fpmm.address),
-        positionIds,
-      )).map(v => v.toString())
-    );
-  });
+  checkMarketMakerState('0');
 
   step('should not index market makers on different ConditionalTokens', async function() {
     const altConditionalTokens = await ConditionalTokens.new({ from: creator });
