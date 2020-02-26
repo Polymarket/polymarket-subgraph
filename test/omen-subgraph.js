@@ -8,6 +8,12 @@ const should = require('should')
 
 const provider = new Web3.providers.HttpProvider("http://localhost:8545");
 const web3 = new Web3(provider);
+const {
+  toBN,
+  toWei,
+  toChecksumAddress,
+  randomHex,
+} = web3.utils;
 
 const {
   getConditionId,
@@ -111,9 +117,9 @@ describe('Omen subgraph', function() {
       }`);
 
       should.exist(fixedProductMarketMaker);
-      web3.utils.toChecksumAddress(fixedProductMarketMaker.creator).should.equal(creator);
+      toChecksumAddress(fixedProductMarketMaker.creator).should.equal(creator);
       Number(fixedProductMarketMaker.creationTimestamp).should.equal(fpmmCreationTimestamp);
-      web3.utils.toChecksumAddress(fixedProductMarketMaker.collateralToken).should.equal(weth.address);
+      toChecksumAddress(fixedProductMarketMaker.collateralToken).should.equal(weth.address);
       fixedProductMarketMaker.conditions.should.eql([{ id: conditionId }]);
       fixedProductMarketMaker.fee.should.equal(fee);
       fixedProductMarketMaker.collateralVolume.should.equal(collateralVolume);
@@ -167,7 +173,7 @@ describe('Omen subgraph', function() {
 
   let questionId;
   step('ask question', async function() {
-    const nonce = web3.utils.randomHex(32);
+    const nonce = randomHex(32);
     const questionData = [
       // title
       'なに!?',
@@ -237,8 +243,8 @@ describe('Omen subgraph', function() {
 
   let fpmm;
   let fpmmCreationTimestamp;
-  const fee = web3.utils.toWei('0.001');
-  const initialFunds = web3.utils.toWei('1');
+  const fee = toWei('0.001');
+  const initialFunds = toWei('1');
   step('use factory to create market maker', async function() {
     await weth.deposit({ value: initialFunds, from: creator });
     await weth.approve(factory.address, initialFunds, { from: creator });
@@ -298,15 +304,15 @@ describe('Omen subgraph', function() {
     should.not.exist(fixedProductMarketMaker);
   });
 
-  const runningCollateralVolume = web3.utils.toBN(0);
-  const investmentAmount = web3.utils.toWei('1');
+  const runningCollateralVolume = toBN(0);
+  const investmentAmount = toWei('1');
   step('have trader buy from market maker', async function() {
     await weth.deposit({ value: investmentAmount, from: trader });
     await weth.approve(fpmm.address, investmentAmount, { from: trader });
 
     const buyAmount = await fpmm.calcBuyAmount(investmentAmount, 0);
     await fpmm.buy(investmentAmount, 0, buyAmount, { from: trader });
-    runningCollateralVolume.iadd(web3.utils.toBN(investmentAmount));
+    runningCollateralVolume.iadd(toBN(investmentAmount));
 
     await waitForGraphSync();
 
@@ -319,13 +325,15 @@ describe('Omen subgraph', function() {
     fixedProductMarketMaker.collateralVolume.should.equal(runningCollateralVolume.toString());
   });
 
-  const returnAmount = web3.utils.toWei('0.5');
+  checkMarketMakerState(investmentAmount);
+
+  const returnAmount = toWei('0.5');
   step('have trader sell to market maker', async function() {
     await conditionalTokens.setApprovalForAll(fpmm.address, true, { from: trader });
 
     const sellAmount = await fpmm.calcSellAmount(returnAmount, 0);
     await fpmm.sell(returnAmount, 0, sellAmount, { from: trader });
-    runningCollateralVolume.iadd(web3.utils.toBN(returnAmount));
+    runningCollateralVolume.iadd(toBN(returnAmount));
 
     await waitForGraphSync();
 
@@ -338,8 +346,10 @@ describe('Omen subgraph', function() {
     fixedProductMarketMaker.collateralVolume.should.equal(runningCollateralVolume.toString());
   });
 
+  checkMarketMakerState(toBN(investmentAmount).add(toBN(returnAmount)).toString());
+
   step('transfer pool shares', async function() {
-    const shareholderPoolAmount = web3.utils.toWei('0.5');
+    const shareholderPoolAmount = toWei('0.5');
     await fpmm.transfer(shareholder, shareholderPoolAmount, { from: creator });
 
     await waitForGraphSync();
@@ -361,6 +371,8 @@ describe('Omen subgraph', function() {
     (await fpmm.balanceOf(creator)).toString()
       .should.equal(creatorMembership.amount);
   });
+
+  checkMarketMakerState(toBN(investmentAmount).add(toBN(returnAmount)).toString());
 
   it.skip('resolve condition', async function() {
     const { receipt: { blockHash } } = await conditionalTokens.reportPayouts(questionId, [3, 2, 5], { from: oracle.address });
