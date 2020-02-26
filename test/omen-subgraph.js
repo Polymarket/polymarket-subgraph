@@ -91,6 +91,24 @@ async function waitForGraphSync(targetBlockNumber) {
   }
 }
 
+async function getTimestampFromReceipt({ blockHash }) {
+  return (await web3.eth.getBlock(blockHash)).timestamp;
+}
+
+function advanceTime(time) {
+  return new Promise((resolve, reject) => {
+    web3.currentProvider.send({
+      jsonrpc: '2.0',
+      method: 'evm_increaseTime',
+      params: [time],
+      id: new Date().getTime(),
+    }, (err, result) => {
+      if (err) { return reject(err) }
+      return resolve(result)
+    });
+  });
+}
+
 describe('Omen subgraph', function() {
   function checkMarketMakerState(collateralVolume) {
     step('check subgraph market maker data matches chain', async function() {
@@ -144,8 +162,15 @@ describe('Omen subgraph', function() {
   let trader;
   let shareholder;
   let arbitrator;
+  let reporter;
   before('get accounts', async function() {
-    [creator, trader, shareholder, arbitrator] = await web3.eth.getAccounts();
+    [
+      creator,
+      trader,
+      shareholder,
+      arbitrator,
+      reporter,
+    ] = await web3.eth.getAccounts();
   });
 
   let weth;
@@ -172,6 +197,8 @@ describe('Omen subgraph', function() {
   });
 
   let questionId;
+  const finalizationTimeout = 100;
+  const answerSubmissionOpeningTimestamp = 0;
   step('ask question', async function() {
     const nonce = randomHex(32);
     const questionData = [
@@ -184,12 +211,12 @@ describe('Omen subgraph', function() {
       // language
       'en-US',
     ].join('\u241f');
-    const { logs } = await realitio.askQuestion(
+    const { receipt, logs } = await realitio.askQuestion(
       2, // <- template ID
       questionData,
       arbitrator,
-      100,
-      0,
+      finalizationTimeout,
+      answerSubmissionOpeningTimestamp,
       nonce,
       { from: creator }
     );
@@ -204,6 +231,18 @@ describe('Omen subgraph', function() {
         outcomes
         category
         language
+
+        arbitrator
+        openingTimestamp
+        timeout
+
+        currentAnswer
+        currentAnswerBond
+        currentAnswerTimestamp
+
+        isPendingArbitration
+
+        conditions { id }
       }
     }`);
 
@@ -212,6 +251,18 @@ describe('Omen subgraph', function() {
     question.outcomes.should.eql(['Something', 'nothing, not something...', 'A "thing"'])
     question.category.should.equal('Cat😈猫🂡');
     question.language.should.equal('en-US');
+
+    question.arbitrator.should.equal(arbitrator.toLowerCase());
+    question.openingTimestamp.should.equal(answerSubmissionOpeningTimestamp.toString());
+    question.timeout.should.equal(finalizationTimeout.toString());
+
+    should.not.exist(question.currentAnswer);
+    should.not.exist(question.currentAnswerBond);
+    should.not.exist(question.currentAnswerTimestamp);
+
+    question.isPendingArbitration.should.be.false();
+
+    question.conditions.should.be.empty();
   });
 
   let conditionId;
@@ -227,7 +278,7 @@ describe('Omen subgraph', function() {
 
     await waitForGraphSync();
 
-    const { condition } = await querySubgraph(`{
+    const { condition, question } = await querySubgraph(`{
       condition(id: "${conditionId}") {
         question {
           title
@@ -235,10 +286,15 @@ describe('Omen subgraph', function() {
         resolutionTimestamp
         payouts
       }
+      question(id: "${questionId}") {
+        conditions { id }
+      }
     }`);
     condition.question.should.eql({ title: 'なに!?' });
     should.not.exist(condition.resolutionTimestamp);
     should.not.exist(condition.payouts);
+
+    question.conditions.should.eql([{ id: conditionId }]);
   });
 
   let fpmm;
@@ -261,8 +317,8 @@ describe('Omen subgraph', function() {
       { from: creator }
     ]
     const fpmmAddress = await factory.create2FixedProductMarketMaker.call(...creationArgs);
-    const { receipt: { blockHash } } = await factory.create2FixedProductMarketMaker(...creationArgs);
-    ({ timestamp: fpmmCreationTimestamp } = await web3.eth.getBlock(blockHash));
+    const { receipt } = await factory.create2FixedProductMarketMaker(...creationArgs);
+    fpmmCreationTimestamp = await getTimestampFromReceipt(receipt);
     fpmm = await FixedProductMarketMaker.at(fpmmAddress);
   });
 
@@ -374,8 +430,41 @@ describe('Omen subgraph', function() {
 
   checkMarketMakerState(toBN(investmentAmount).add(toBN(returnAmount)).toString());
 
-  it.skip('resolve condition', async function() {
-    const { receipt: { blockHash } } = await conditionalTokens.reportPayouts(questionId, [3, 2, 5], { from: oracle.address });
+  step('submit answer', async function() {
+    const answer = `0x${'0'.repeat(63)}1`;
+    const bond = toWei('1');
+    const { receipt } = await realitio.submitAnswer(
+      questionId,
+      answer,
+      0,
+      { from: reporter, value: bond },
+    );
+
+    await waitForGraphSync();
+
+    const { question } = await querySubgraph(`{
+      question(id: "${questionId}") {
+        currentAnswer
+        currentAnswerBond
+        currentAnswerTimestamp
+      }
+    }`);
+
+    question.currentAnswer.should.equal(answer);
+    question.currentAnswerBond.should.equal(bond);
+    question.currentAnswerTimestamp.should.equal(
+      (await getTimestampFromReceipt(receipt)).toString()
+    );
+  });
+
+  step('resolve condition', async function() {
+    await advanceTime(finalizationTimeout);
+
+    const { receipt: { blockHash } } = await oracle.resolveSingleSelectCondition(
+      questionId,
+      3,
+      { from: reporter },
+    );
     const { timestamp } = await web3.eth.getBlock(blockHash);
 
     await waitForGraphSync();
@@ -387,6 +476,6 @@ describe('Omen subgraph', function() {
       }
     }`);
     condition.resolutionTimestamp.should.equal(timestamp.toString());
-    condition.payouts.should.deepEqual(['0.3', '0.2', '0.5']);
+    condition.payouts.should.deepEqual(['0', '1', '0']);
   });
 });
