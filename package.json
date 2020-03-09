@@ -16,7 +16,8 @@
     "bootstrap": "truffle compile --all && tnt iN",
     "test-fresh-graph": "npm run codegen && wait-on tcp:5001 && npm run deploy-local && npm run test-existing-graph",
     "test-existing-graph": "mocha",
-    "test": "npm run bootstrap-test && npm run test-fresh-graph"
+    "test": "npm run bootstrap-test && npm run test-fresh-graph",
+    "publish-graph:rinkeby": "npm run codegen:rinkeby && npm run deploy:rinkeby"
   },
   "repository": {
     "type": "git",
