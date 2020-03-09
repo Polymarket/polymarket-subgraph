@@ -125,6 +125,23 @@ describe('Omen subgraph', function() {
           fee
           collateralVolume
           outcomeTokenAmounts
+          condition {
+            id
+            question {
+              id
+            }
+          }
+          question {
+            id
+          }
+          data
+          title
+          outcomes
+          category
+          language
+          arbitrator
+          openingTimestamp
+          timeout
           poolMembers {
             funder {
               id
@@ -147,6 +164,21 @@ describe('Omen subgraph', function() {
           positionIds,
         )).map(v => v.toString()),
       );
+
+      should.exist(fixedProductMarketMaker.condition);
+      fixedProductMarketMaker.condition.id.should.equal(conditionId);
+      should.exist(fixedProductMarketMaker.question);
+      fixedProductMarketMaker.question.id.should.equal(fixedProductMarketMaker.condition.question.id);
+
+      fixedProductMarketMaker.data.should.equal(questionData);
+      fixedProductMarketMaker.title.should.equal(questionTitle);
+      fixedProductMarketMaker.outcomes.should.eql(questionOutcomes)
+      fixedProductMarketMaker.category.should.equal(questionCategory);
+      fixedProductMarketMaker.language.should.equal(questionLanguage);
+
+      fixedProductMarketMaker.arbitrator.should.equal(arbitrator.toLowerCase());
+      fixedProductMarketMaker.openingTimestamp.should.equal(answerSubmissionOpeningTimestamp.toString());
+      fixedProductMarketMaker.timeout.should.equal(finalizationTimeout.toString());
 
       for (const { funder, amount } of fixedProductMarketMaker.poolMembers) {
         if (funder.id === `0x${'0'.repeat(40)}`) {
@@ -199,18 +231,22 @@ describe('Omen subgraph', function() {
   let questionId;
   const finalizationTimeout = 100;
   const answerSubmissionOpeningTimestamp = 0;
+  const questionData = [
+    // title
+    'なに!?',
+    // outcomes
+    ' "Something",\r"nothing, not something..." ,\t\n"A \\"thing\\""',
+    // category
+    'Cat😈\\u732b\\ud83c\\uDCA1',
+    // language
+    'en-US',
+  ].join('\u241f');
+  const questionTitle = 'なに!?';
+  const questionOutcomes = ['Something', 'nothing, not something...', 'A "thing"']
+  const questionCategory = 'Cat😈猫🂡';
+  const questionLanguage = 'en-US'
   step('ask question', async function() {
     const nonce = randomHex(32);
-    const questionData = [
-      // title
-      'なに!?',
-      // outcomes
-      ' "Something",\r"nothing, not something..." ,\t\n"A \\"thing\\""',
-      // category
-      'Cat😈\\u732b\\ud83c\\uDCA1',
-      // language
-      'en-US',
-    ].join('\u241f');
     const { receipt, logs } = await realitio.askQuestion(
       2, // <- template ID
       questionData,
@@ -247,10 +283,10 @@ describe('Omen subgraph', function() {
     }`);
 
     question.data.should.equal(questionData);
-    question.title.should.equal('なに!?');
-    question.outcomes.should.eql(['Something', 'nothing, not something...', 'A "thing"'])
-    question.category.should.equal('Cat😈猫🂡');
-    question.language.should.equal('en-US');
+    question.title.should.equal(questionTitle);
+    question.outcomes.should.eql(questionOutcomes)
+    question.category.should.equal(questionCategory);
+    question.language.should.equal(questionLanguage);
 
     question.arbitrator.should.equal(arbitrator.toLowerCase());
     question.openingTimestamp.should.equal(answerSubmissionOpeningTimestamp.toString());

@@ -44,6 +44,20 @@ type FixedProductMarketMaker @entity {
   collateralVolume: BigInt!
   outcomeTokenAmounts: [BigInt!]!
 
+  # copy of conditions' content if it is a 1-large array
+  condition: Condition
+  # lifted from condition
+  question: Question
+  # lifted from condition's question
+  data: String
+  title: String
+  outcomes: [String!]
+  category: String
+  language: String
+  arbitrator: Bytes
+  openingTimestamp: BigInt
+  timeout: BigInt
+
   poolMembers: [FpmmPoolMembership!] @derivedFrom(field: "pool")
 }
 

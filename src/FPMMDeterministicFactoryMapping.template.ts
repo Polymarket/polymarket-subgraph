@@ -1,7 +1,7 @@
 import { BigInt, log } from '@graphprotocol/graph-ts'
 
 import { FixedProductMarketMakerCreation } from '../generated/FPMMDeterministicFactory/FPMMDeterministicFactory'
-import { FixedProductMarketMaker, Condition } from '../generated/schema'
+import { FixedProductMarketMaker, Condition, Question } from '../generated/schema'
 import { FixedProductMarketMaker as FixedProductMarketMakerTemplate } from '../generated/templates'
 
 export function handleFixedProductMarketMakerCreation(event: FixedProductMarketMakerCreation): void {
@@ -36,7 +36,6 @@ export function handleFixedProductMarketMakerCreation(event: FixedProductMarketM
       log.error(
         'failed to create market maker {}: condition {} not prepared',
         [addressHexString, conditionIdStr],
-  
       );
       return;
     }
@@ -45,6 +44,34 @@ export function handleFixedProductMarketMakerCreation(event: FixedProductMarketM
     conditionIdStrs[i] = conditionIdStr;
   }
   fixedProductMarketMaker.conditions = conditionIdStrs;
+
+  if(conditionIdStrs.length == 1) {
+    let conditionIdStr = conditionIdStrs[0];
+    fixedProductMarketMaker.condition = conditionIdStr;
+
+    let condition = Condition.load(conditionIdStr);
+    if(condition == null) {
+      log.error(
+        'failed to create market maker {}: condition {} not prepared',
+        [addressHexString, conditionIdStr],
+      );
+      return;
+    }
+
+    let questionIdStr = condition.questionId.toHexString();
+    fixedProductMarketMaker.question = questionIdStr;
+    let question = Question.load(questionIdStr);
+    if(question != null) {
+      fixedProductMarketMaker.data = question.data;
+      fixedProductMarketMaker.title = question.title;
+      fixedProductMarketMaker.outcomes = question.outcomes;
+      fixedProductMarketMaker.category = question.category;
+      fixedProductMarketMaker.language = question.language;
+      fixedProductMarketMaker.arbitrator = question.arbitrator;
+      fixedProductMarketMaker.openingTimestamp = question.openingTimestamp;
+      fixedProductMarketMaker.timeout = question.timeout;
+    }
+  }
 
   fixedProductMarketMaker.collateralVolume = BigInt.fromI32(0);
 
