@@ -49,6 +49,8 @@ type FixedProductMarketMaker @entity {
   collateralVolume: BigInt!
   outcomeTokenAmounts: [BigInt!]!
 
+  indexedOnQuestion: Boolean!
+
   # copy of conditions' content if it is a 1-large array
   condition: Condition
   # lifted from condition

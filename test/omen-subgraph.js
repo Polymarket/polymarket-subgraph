@@ -125,6 +125,7 @@ describe('Omen subgraph', function() {
           fee
           collateralVolume
           outcomeTokenAmounts
+          indexedOnQuestion
           condition {
             id
             question {
@@ -166,6 +167,7 @@ describe('Omen subgraph', function() {
         )).map(v => v.toString()),
       );
 
+      fixedProductMarketMaker.indexedOnQuestion.should.be.true();
       should.exist(fixedProductMarketMaker.condition);
       fixedProductMarketMaker.condition.id.should.equal(conditionId);
       should.exist(fixedProductMarketMaker.question);

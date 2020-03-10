@@ -44,6 +44,7 @@ export function handleFixedProductMarketMakerCreation(event: FixedProductMarketM
     conditionIdStrs[i] = conditionIdStr;
   }
   fixedProductMarketMaker.conditions = conditionIdStrs;
+  fixedProductMarketMaker.indexedOnQuestion = false;
 
   if(conditionIdStrs.length == 1) {
     let conditionIdStr = conditionIdStrs[0];
@@ -82,6 +83,7 @@ export function handleFixedProductMarketMakerCreation(event: FixedProductMarketM
         fpmms.push(addressHexString);
         question.indexedFixedProductMarketMakers = fpmms;
         question.save();
+        fixedProductMarketMaker.indexedOnQuestion = true;
       } else {
         log.warning(
           'cannot continue updating live question (id {}) properties on fpmm {}',
