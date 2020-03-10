@@ -99,5 +99,4 @@ templates:
           handler: handleSell
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handlePoolShareTransfer
-
       file: ./src/FixedProductMarketMakerMapping.ts

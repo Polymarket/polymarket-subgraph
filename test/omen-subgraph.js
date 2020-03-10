@@ -4,7 +4,7 @@ const { default: axios } = require('axios');
 const delay = require('delay');
 const fs = require('fs-extra');
 const path = require('path');
-const should = require('should')
+const should = require('should');
 
 const provider = new Web3.providers.HttpProvider("http://localhost:8545");
 const web3 = new Web3(provider);
