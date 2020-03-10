@@ -134,6 +134,20 @@ export function handleArbitrationRequest(event: LogNotifyOfArbitrationRequest): 
   question.isPendingArbitration = true;
 
   question.save();
+
+  let fpmms = question.indexedFixedProductMarketMakers;
+  for (let i = 0; i < fpmms.length; i++) {
+    let fpmmId = fpmms[i];
+    let fpmm = FixedProductMarketMaker.load(fpmmId);
+    if (fpmm == null) {
+      log.error('indexed fpmm {} not found for question {}', [fpmmId, questionId]);
+      continue;
+    }
+
+    fpmm.isPendingArbitration = true;
+
+    fpmm.save();
+  }
 }
 
 export function handleFinalize(event: LogFinalize): void {
@@ -148,4 +162,19 @@ export function handleFinalize(event: LogFinalize): void {
   question.arbitrationOccurred = true;
 
   question.save();
+
+  let fpmms = question.indexedFixedProductMarketMakers;
+  for (let i = 0; i < fpmms.length; i++) {
+    let fpmmId = fpmms[i];
+    let fpmm = FixedProductMarketMaker.load(fpmmId);
+    if (fpmm == null) {
+      log.error('indexed fpmm {} not found for question {}', [fpmmId, questionId]);
+      continue;
+    }
+
+    fpmm.isPendingArbitration = false;
+    fpmm.arbitrationOccurred = true;
+
+    fpmm.save();
+  }
 }

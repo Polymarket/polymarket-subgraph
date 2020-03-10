@@ -529,13 +529,19 @@ describe('Omen subgraph', function() {
 
     await waitForGraphSync();
 
-    const { condition } = await querySubgraph(`{
+    const { condition, fixedProductMarketMaker } = await querySubgraph(`{
       condition(id: "${conditionId}") {
+        resolutionTimestamp
+        payouts
+      }
+      fixedProductMarketMaker(id: "${fpmm.address.toLowerCase()}") {
         resolutionTimestamp
         payouts
       }
     }`);
     condition.resolutionTimestamp.should.equal(timestamp.toString());
     condition.payouts.should.deepEqual(['0', '1', '0']);
+    fixedProductMarketMaker.resolutionTimestamp.should.equal(timestamp.toString());
+    fixedProductMarketMaker.payouts.should.eql(['0', '1', '0']);
   });
 });

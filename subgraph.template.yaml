@@ -46,7 +46,7 @@ dataSources:
       language: wasm/assemblyscript
       entities:
         - Condition
-        - Question
+        - FixedProductMarketMaker
       abis:
         - name: ConditionalTokens
           file: ./abis/ConditionalTokens.json

@@ -62,7 +62,9 @@ type FixedProductMarketMaker @entity {
   arbitrator: Bytes
   openingTimestamp: BigInt
   timeout: BigInt
-  # pushed from condition's question if this fpmm one of the first
+  # pushed from condition & question if this fpmm one of the first
+  resolutionTimestamp: BigInt
+  payouts: [BigDecimal!]
   currentAnswer: Bytes
   currentAnswerBond: BigInt
   currentAnswerTimestamp: BigInt

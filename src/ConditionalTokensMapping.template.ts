@@ -1,7 +1,7 @@
 import { BigInt, BigDecimal, log } from '@graphprotocol/graph-ts'
 
 import { ConditionPreparation, ConditionResolution } from '../generated/ConditionalTokens/ConditionalTokens'
-import { Condition, Question } from '../generated/schema'
+import { Condition, Question, FixedProductMarketMaker } from '../generated/schema'
 
 export function handleConditionPreparation(event: ConditionPreparation): void {
   let condition = new Condition(event.params.conditionId.toHexString());
@@ -44,4 +44,26 @@ export function handleConditionResolution(event: ConditionResolution): void {
   condition.payouts = payouts;
 
   condition.save();
+
+  let questionId = condition.question
+  let question = Question.load(questionId);
+  if (question == null) {
+    log.info('resolving unlinked condition {}', [conditionId]);
+    return;
+  }
+
+  let fpmms = question.indexedFixedProductMarketMakers;
+  for (let i = 0; i < fpmms.length; i++) {
+    let fpmmId = fpmms[i];
+    let fpmm = FixedProductMarketMaker.load(fpmmId);
+    if (fpmm == null) {
+      log.error('indexed fpmm {} not found for question {} for condition {}', [fpmmId, questionId, conditionId]);
+      continue;
+    }
+
+    fpmm.resolutionTimestamp = event.block.timestamp;
+    fpmm.payouts = payouts;
+
+    fpmm.save();
+  }
 }
