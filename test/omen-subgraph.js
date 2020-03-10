@@ -307,7 +307,7 @@ describe('Omen subgraph', function() {
 
     question.isPendingArbitration.should.be.false();
 
-    question.answerFinalizedTimestamp.should.equal('0');
+    should.not.exist(question.answerFinalizedTimestamp);
 
     question.indexedFixedProductMarketMakers.should.be.empty();
 

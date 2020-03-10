@@ -18,7 +18,7 @@ type Question @entity {
   isPendingArbitration: Boolean!
   arbitrationOccurred: Boolean!
 
-  answerFinalizedTimestamp: BigInt!
+  answerFinalizedTimestamp: BigInt
 
   indexedFixedProductMarketMakers: [FixedProductMarketMaker!]!
 

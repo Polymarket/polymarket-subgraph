@@ -67,8 +67,6 @@ export function handleNewQuestion(event: LogNewQuestion): void {
   question.isPendingArbitration = false;
   question.arbitrationOccurred = false;
 
-  question.answerFinalizedTimestamp = BigInt.fromI32(0);
-
   question.indexedFixedProductMarketMakers = [];
 
   question.save();
@@ -132,6 +130,7 @@ export function handleArbitrationRequest(event: LogNotifyOfArbitrationRequest): 
   }
 
   question.isPendingArbitration = true;
+  question.answerFinalizedTimestamp = null;
 
   question.save();
 
@@ -145,6 +144,7 @@ export function handleArbitrationRequest(event: LogNotifyOfArbitrationRequest): 
     }
 
     fpmm.isPendingArbitration = true;
+    fpmm.answerFinalizedTimestamp = null;
 
     fpmm.save();
   }
