@@ -110,7 +110,7 @@ function advanceTime(time) {
 }
 
 describe('Omen subgraph', function() {
-  function checkMarketMakerState(collateralVolume) {
+  function checkMarketMakerState() {
     step('check subgraph market maker data matches chain', async function() {
       await waitForGraphSync();
 
@@ -133,6 +133,7 @@ describe('Omen subgraph', function() {
           }
           question {
             id
+            indexedFixedProductMarketMakers { id }
           }
           data
           title
@@ -157,7 +158,7 @@ describe('Omen subgraph', function() {
       toChecksumAddress(fixedProductMarketMaker.collateralToken).should.equal(weth.address);
       fixedProductMarketMaker.conditions.should.eql([{ id: conditionId }]);
       fixedProductMarketMaker.fee.should.equal(fee);
-      fixedProductMarketMaker.collateralVolume.should.equal(collateralVolume);
+      fixedProductMarketMaker.collateralVolume.should.equal(runningCollateralVolume.toString());
       fixedProductMarketMaker.outcomeTokenAmounts.should.eql(
         (await conditionalTokens.balanceOfBatch(
           new Array(positionIds.length).fill(fpmm.address),
@@ -169,6 +170,8 @@ describe('Omen subgraph', function() {
       fixedProductMarketMaker.condition.id.should.equal(conditionId);
       should.exist(fixedProductMarketMaker.question);
       fixedProductMarketMaker.question.id.should.equal(fixedProductMarketMaker.condition.question.id);
+      fixedProductMarketMaker.question.indexedFixedProductMarketMakers
+        .should.eql([{ id: fpmm.address.toLowerCase() }]);
 
       fixedProductMarketMaker.data.should.equal(questionData);
       fixedProductMarketMaker.title.should.equal(questionTitle);
@@ -278,6 +281,10 @@ describe('Omen subgraph', function() {
 
         isPendingArbitration
 
+        answerFinalizedTimestamp
+
+        indexedFixedProductMarketMakers { id }
+
         conditions { id }
       }
     }`);
@@ -297,6 +304,10 @@ describe('Omen subgraph', function() {
     should.not.exist(question.currentAnswerTimestamp);
 
     question.isPendingArbitration.should.be.false();
+
+    question.answerFinalizedTimestamp.should.equal('0');
+
+    question.indexedFixedProductMarketMakers.should.be.empty();
 
     question.conditions.should.be.empty();
   });
@@ -358,7 +369,7 @@ describe('Omen subgraph', function() {
     fpmm = await FixedProductMarketMaker.at(fpmmAddress);
   });
 
-  checkMarketMakerState('0');
+  checkMarketMakerState();
 
   step('should not index market makers on different ConditionalTokens', async function() {
     const altConditionalTokens = await ConditionalTokens.new({ from: creator });
@@ -417,7 +428,7 @@ describe('Omen subgraph', function() {
     fixedProductMarketMaker.collateralVolume.should.equal(runningCollateralVolume.toString());
   });
 
-  checkMarketMakerState(investmentAmount);
+  checkMarketMakerState();
 
   const returnAmount = toWei('0.5');
   step('have trader sell to market maker', async function() {
@@ -438,7 +449,7 @@ describe('Omen subgraph', function() {
     fixedProductMarketMaker.collateralVolume.should.equal(runningCollateralVolume.toString());
   });
 
-  checkMarketMakerState(toBN(investmentAmount).add(toBN(returnAmount)).toString());
+  checkMarketMakerState();
 
   step('transfer pool shares', async function() {
     const shareholderPoolAmount = toWei('0.5');
@@ -464,7 +475,7 @@ describe('Omen subgraph', function() {
       .should.equal(creatorMembership.amount);
   });
 
-  checkMarketMakerState(toBN(investmentAmount).add(toBN(returnAmount)).toString());
+  checkMarketMakerState();
 
   step('submit answer', async function() {
     const answer = `0x${'0'.repeat(63)}1`;
@@ -478,19 +489,32 @@ describe('Omen subgraph', function() {
 
     await waitForGraphSync();
 
-    const { question } = await querySubgraph(`{
+    const { question, fixedProductMarketMaker } = await querySubgraph(`{
       question(id: "${questionId}") {
         currentAnswer
         currentAnswerBond
         currentAnswerTimestamp
+        answerFinalizedTimestamp
+      }
+      fixedProductMarketMaker(id: "${fpmm.address.toLowerCase()}") {
+        currentAnswer
+        currentAnswerBond
+        currentAnswerTimestamp
+        answerFinalizedTimestamp
       }
     }`);
 
+    timestamp = await getTimestampFromReceipt(receipt);
+    finalizedTimestamp = timestamp + finalizationTimeout;
+
     question.currentAnswer.should.equal(answer);
     question.currentAnswerBond.should.equal(bond);
-    question.currentAnswerTimestamp.should.equal(
-      (await getTimestampFromReceipt(receipt)).toString()
-    );
+    question.currentAnswerTimestamp.should.equal(timestamp.toString());
+    question.answerFinalizedTimestamp.should.equal(finalizedTimestamp.toString());
+    fixedProductMarketMaker.currentAnswer.should.equal(answer);
+    fixedProductMarketMaker.currentAnswerBond.should.equal(bond);
+    fixedProductMarketMaker.currentAnswerTimestamp.should.equal(timestamp.toString());
+    fixedProductMarketMaker.answerFinalizedTimestamp.should.equal(finalizedTimestamp.toString());
   });
 
   step('resolve condition', async function() {

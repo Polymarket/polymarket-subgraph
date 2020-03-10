@@ -16,6 +16,11 @@ type Question @entity {
   currentAnswerTimestamp: BigInt
 
   isPendingArbitration: Boolean!
+  arbitrationOccurred: Boolean!
+
+  answerFinalizedTimestamp: BigInt!
+
+  indexedFixedProductMarketMakers: [FixedProductMarketMaker!]!
 
   conditions: [Condition!]! @derivedFrom(field: "question")
 }
@@ -57,6 +62,13 @@ type FixedProductMarketMaker @entity {
   arbitrator: Bytes
   openingTimestamp: BigInt
   timeout: BigInt
+  # pushed from condition's question if this fpmm one of the first
+  currentAnswer: Bytes
+  currentAnswerBond: BigInt
+  currentAnswerTimestamp: BigInt
+  isPendingArbitration: Boolean
+  arbitrationOccurred: Boolean
+  answerFinalizedTimestamp: BigInt
 
   poolMembers: [FpmmPoolMembership!] @derivedFrom(field: "pool")
 }

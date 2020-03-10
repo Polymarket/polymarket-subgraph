@@ -70,6 +70,24 @@ export function handleFixedProductMarketMakerCreation(event: FixedProductMarketM
       fixedProductMarketMaker.arbitrator = question.arbitrator;
       fixedProductMarketMaker.openingTimestamp = question.openingTimestamp;
       fixedProductMarketMaker.timeout = question.timeout;
+
+      if(question.indexedFixedProductMarketMakers.length < 100) {
+        fixedProductMarketMaker.currentAnswer = question.currentAnswer;
+        fixedProductMarketMaker.currentAnswerBond = question.currentAnswerBond;
+        fixedProductMarketMaker.currentAnswerTimestamp = question.currentAnswerTimestamp;
+        fixedProductMarketMaker.isPendingArbitration = question.isPendingArbitration;
+        fixedProductMarketMaker.arbitrationOccurred = question.arbitrationOccurred;
+        fixedProductMarketMaker.answerFinalizedTimestamp = question.answerFinalizedTimestamp;
+        let fpmms = question.indexedFixedProductMarketMakers;
+        fpmms.push(addressHexString);
+        question.indexedFixedProductMarketMakers = fpmms;
+        question.save();
+      } else {
+        log.warning(
+          'cannot continue updating live question (id {}) properties on fpmm {}',
+          [questionIdStr, addressHexString],
+        );
+      }
     }
   }
 

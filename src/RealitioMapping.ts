@@ -1,12 +1,13 @@
-import { log } from '@graphprotocol/graph-ts'
+import { log, BigInt, Bytes } from '@graphprotocol/graph-ts'
 
 import {
   LogNewQuestion,
   LogNewAnswer,
   LogNotifyOfArbitrationRequest,
   LogFinalize,
+  LogAnswerReveal,
 } from '../generated/Realitio/Realitio'
-import { Question } from '../generated/schema'
+import { Question, FixedProductMarketMaker } from '../generated/schema'
 
 import { unescape } from './unescape'
 
@@ -64,26 +65,62 @@ export function handleNewQuestion(event: LogNewQuestion): void {
   question.timeout = event.params.timeout;
 
   question.isPendingArbitration = false;
+  question.arbitrationOccurred = false;
+
+  question.answerFinalizedTimestamp = BigInt.fromI32(0);
+
+  question.indexedFixedProductMarketMakers = [];
 
   question.save();
 }
 
-export function handleNewAnswer(event: LogNewAnswer): void {
-  let questionId = event.params.question_id.toHexString()
+function saveNewAnswer(questionId: string, answer: Bytes, bond: BigInt, ts: BigInt): void {
   let question = Question.load(questionId);
   if (question == null) {
     log.info('cannot find question {} to answer', [questionId]);
     return;
   }
 
-  // only record confirmed answers
-  if (!event.params.is_commitment) {
-    question.currentAnswer = event.params.answer;
-    question.currentAnswerBond = event.params.bond;
-    question.currentAnswerTimestamp = event.params.ts;
-  }
+  let answerFinalizedTimestamp = question.arbitrationOccurred ? ts : ts.plus(question.timeout);
+
+  question.currentAnswer = answer;
+  question.currentAnswerBond = bond;
+  question.currentAnswerTimestamp = ts;
+  question.answerFinalizedTimestamp = answerFinalizedTimestamp;
 
   question.save();
+
+  let fpmms = question.indexedFixedProductMarketMakers;
+  for (let i = 0; i < fpmms.length; i++) {
+    let fpmmId = fpmms[i];
+    let fpmm = FixedProductMarketMaker.load(fpmmId);
+    if (fpmm == null) {
+      log.error('indexed fpmm {} not found for question {}', [fpmmId, questionId]);
+      continue;
+    }
+
+    fpmm.currentAnswer = answer;
+    fpmm.currentAnswerBond = bond;
+    fpmm.currentAnswerTimestamp = ts;
+    fpmm.answerFinalizedTimestamp = answerFinalizedTimestamp;
+
+    fpmm.save();
+  }
+}
+
+export function handleNewAnswer(event: LogNewAnswer): void {
+  if (event.params.is_commitment) {
+    // only record confirmed answers
+    return;
+  }
+
+  let questionId = event.params.question_id.toHexString();
+  saveNewAnswer(questionId, event.params.answer, event.params.bond, event.params.ts);
+}
+
+export function handleAnswerReveal(event: LogAnswerReveal): void {
+  let questionId = event.params.question_id.toHexString();
+  saveNewAnswer(questionId, event.params.answer, event.params.bond, event.block.timestamp);
 }
 
 export function handleArbitrationRequest(event: LogNotifyOfArbitrationRequest): void {
@@ -108,6 +145,7 @@ export function handleFinalize(event: LogFinalize): void {
   }
 
   question.isPendingArbitration = false;
+  question.arbitrationOccurred = true;
 
   question.save();
 }

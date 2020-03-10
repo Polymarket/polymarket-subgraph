@@ -17,6 +17,7 @@ dataSources:
       language: wasm/assemblyscript
       entities:
         - Question
+        - FixedProductMarketMaker
       abis:
         - name: Realitio
           file: ./abis/Realitio.json
@@ -25,6 +26,8 @@ dataSources:
           handler: handleNewQuestion
         - event: LogNewAnswer(bytes32,indexed bytes32,bytes32,indexed address,uint256,uint256,bool)
           handler: handleNewAnswer
+        - event: LogAnswerReveal(indexed bytes32,indexed address,indexed bytes32,bytes32,uint256,uint256)
+          handler: handleAnswerReveal
         - event: LogNotifyOfArbitrationRequest(indexed bytes32,indexed address)
           handler: handleArbitrationRequest
         - event: LogFinalize(indexed bytes32,indexed bytes32)
@@ -66,6 +69,7 @@ dataSources:
       language: wasm/assemblyscript
       entities:
         - FixedProductMarketMaker
+        - Question
       abis:
         - name: FPMMDeterministicFactory
           file: ./abis/FPMMDeterministicFactory.json
