@@ -5,10 +5,10 @@
   "main": "index.js",
   "scripts": {
     "migrate": "truffle migrate --all --reset",
-    "create-local": "graph create --node http://localhost:8020/ cag/omen",
-    "remove-local": "graph remove --node http://localhost:8020/ cag/omen",
-    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 cag/omen",
-    "deploy:rinkeby": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ cag/omen-rinkeby",
+    "create-local": "graph create --node http://localhost:8020/ gnosis/omen",
+    "remove-local": "graph remove --node http://localhost:8020/ gnosis/omen",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 gnosis/omen",
+    "deploy:rinkeby": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ gnosis/omen-rinkeby",
     "codegen": "truffle exec render-templates.js && graph codegen",
     "codegen:rinkeby": "truffle exec --network=rinkeby render-templates.js && graph codegen",
     "build": "graph build",
@@ -21,14 +21,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cag/omen-subgraph.git"
+    "url": "git+https://github.com/gnosis/omen-subgraph.git"
   },
   "author": "Gnosis (https://gnosis.io)",
   "license": "LGPL-3.0",
   "bugs": {
-    "url": "https://github.com/cag/omen-subgraph/issues"
+    "url": "https://github.com/gnosis/omen-subgraph/issues"
   },
-  "homepage": "https://github.com/cag/omen-subgraph#readme",
+  "homepage": "https://github.com/gnosis/omen-subgraph#readme",
   "devDependencies": {
     "@gnosis.pm/conditional-tokens-contracts": "^1.0.1",
     "@gnosis.pm/conditional-tokens-market-makers": "^1.6.0",
