@@ -54,19 +54,20 @@ export function handleBuy(event: FPMMBuy): void {
   }
 
   let oldAmounts = fpmm.outcomeTokenAmounts;
-  let investmentAmount = event.params.investmentAmount;
+  let investmentAmountMinusFees = event.params.investmentAmount.minus(event.params.feeAmount);
   let outcomeIndex = event.params.outcomeIndex.toI32();
+
   let newAmounts = new Array<BigInt>(oldAmounts.length);
   for(let i = 0; i < newAmounts.length; i++) {
     if (i == outcomeIndex) {
-      newAmounts[i] = oldAmounts[i].plus(investmentAmount).minus(event.params.outcomeTokensBought);
+      newAmounts[i] = oldAmounts[i].plus(investmentAmountMinusFees).minus(event.params.outcomeTokensBought);
     } else {
-      newAmounts[i] = oldAmounts[i].plus(investmentAmount);
+      newAmounts[i] = oldAmounts[i].plus(investmentAmountMinusFees);
     }
   }
   fpmm.outcomeTokenAmounts = newAmounts;
 
-  fpmm.collateralVolume = fpmm.collateralVolume.plus(event.params.investmentAmount);
+  fpmm.collateralVolume = fpmm.collateralVolume.plus(investmentAmountMinusFees);
   fpmm.save();
 }
 
@@ -79,19 +80,19 @@ export function handleSell(event: FPMMSell): void {
   }
 
   let oldAmounts = fpmm.outcomeTokenAmounts;
-  let returnAmount = event.params.returnAmount;
+  let returnAmountPlusFees = event.params.returnAmount.plus(event.params.feeAmount);
   let outcomeIndex = event.params.outcomeIndex.toI32();
   let newAmounts = new Array<BigInt>(oldAmounts.length);
   for(let i = 0; i < newAmounts.length; i++) {
     if (i == outcomeIndex) {
-      newAmounts[i] = oldAmounts[i].minus(returnAmount).plus(event.params.outcomeTokensSold);
+      newAmounts[i] = oldAmounts[i].minus(returnAmountPlusFees).plus(event.params.outcomeTokensSold);
     } else {
-      newAmounts[i] = oldAmounts[i].minus(returnAmount);
+      newAmounts[i] = oldAmounts[i].minus(returnAmountPlusFees);
     }
   }
   fpmm.outcomeTokenAmounts = newAmounts;
 
-  fpmm.collateralVolume = fpmm.collateralVolume.plus(event.params.returnAmount);
+  fpmm.collateralVolume = fpmm.collateralVolume.plus(returnAmountPlusFees);
   fpmm.save();
 }
 

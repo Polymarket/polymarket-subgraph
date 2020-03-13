@@ -95,11 +95,11 @@ templates:
       eventHandlers:
         - event: FPMMFundingAdded(indexed address,uint256[],uint256)
           handler: handleFundingAdded
-        - event: FPMMFundingRemoved(indexed address,uint256[],uint256)
+        - event: FPMMFundingRemoved(indexed address,uint256[],uint256,uint256)
           handler: handleFundingRemoved
-        - event: FPMMBuy(indexed address,uint256,indexed uint256,uint256)
+        - event: FPMMBuy(indexed address,uint256,uint256,indexed uint256,uint256)
           handler: handleBuy
-        - event: FPMMSell(indexed address,uint256,indexed uint256,uint256)
+        - event: FPMMSell(indexed address,uint256,uint256,indexed uint256,uint256)
           handler: handleSell
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handlePoolShareTransfer

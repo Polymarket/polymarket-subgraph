@@ -417,7 +417,9 @@ describe('Omen subgraph', function() {
 
     const buyAmount = await fpmm.calcBuyAmount(investmentAmount, 0);
     await fpmm.buy(investmentAmount, 0, buyAmount, { from: trader });
-    runningCollateralVolume.iadd(toBN(investmentAmount));
+    runningCollateralVolume.iadd(toBN(investmentAmount)).isub(
+      toBN(investmentAmount).mul(toBN(fee)).div(toBN(toWei('1')))
+    );
 
     await waitForGraphSync();
 
@@ -438,7 +440,9 @@ describe('Omen subgraph', function() {
 
     const sellAmount = await fpmm.calcSellAmount(returnAmount, 0);
     await fpmm.sell(returnAmount, 0, sellAmount, { from: trader });
-    runningCollateralVolume.iadd(toBN(returnAmount));
+    runningCollateralVolume.iadd(toBN(returnAmount)).iadd(
+      toBN(returnAmount).mul(toBN(fee)).div(toBN(toWei('1')).sub(toBN(fee)))
+    );
 
     await waitForGraphSync();
 
