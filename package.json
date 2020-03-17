@@ -9,15 +9,18 @@
     "remove-local": "graph remove --node http://localhost:8020/ gnosis/omen",
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 gnosis/omen",
     "deploy:rinkeby": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ gnosis/omen-rinkeby",
+    "deploy:mainnet": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ gnosis/omen",
     "codegen": "truffle exec render-templates.js && graph codegen",
     "codegen:rinkeby": "tnt iN && truffle exec --network=rinkeby render-templates.js && graph codegen",
+    "codegen:mainnet": "tnt iN && truffle exec --network=mainnet render-templates.js && graph codegen",
     "build": "graph build",
     "bootstrap-test": "wait-on tcp:8545 && npm run migrate && wait-on http-get://localhost:8000 && npm run create-local",
     "bootstrap": "truffle compile --all && tnt iN",
     "test-fresh-graph": "npm run codegen && wait-on tcp:5001 && npm run deploy-local && npm run test-existing-graph",
     "test-existing-graph": "mocha",
     "test": "npm run bootstrap-test && npm run test-fresh-graph",
-    "publish-graph:rinkeby": "npm run codegen:rinkeby && npm run deploy:rinkeby"
+    "publish-graph:rinkeby": "npm run codegen:rinkeby && npm run deploy:rinkeby",
+    "publish-graph:mainnet": "npm run codegen:mainnet && npm run deploy:mainnet"
   },
   "repository": {
     "type": "git",

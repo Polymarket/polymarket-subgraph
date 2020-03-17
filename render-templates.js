@@ -4,7 +4,12 @@ const mustache = require('mustache');
 module.exports = function(callback) {
   (async () => {
     const networkType = await web3.eth.net.getNetworkType();
-    const templateData = { network: networkType === 'private' ? 'development' : networkType };
+    const templateData = {
+      network: {
+        main: 'mainnet',
+        private: 'development',
+      }[networkType] || networkType
+    };
 
     for(const contractName of [
       'FPMMDeterministicFactory',
