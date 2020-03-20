@@ -136,6 +136,7 @@ describe('Omen subgraph', function() {
             id
             indexedFixedProductMarketMakers { id }
           }
+          templateId
           data
           title
           outcomes
@@ -175,6 +176,7 @@ describe('Omen subgraph', function() {
       fixedProductMarketMaker.question.indexedFixedProductMarketMakers
         .should.eql([{ id: fpmm.address.toLowerCase() }]);
 
+      fixedProductMarketMaker.templateId.should.equal('2');
       fixedProductMarketMaker.data.should.equal(questionData);
       fixedProductMarketMaker.title.should.equal(questionTitle);
       fixedProductMarketMaker.outcomes.should.eql(questionOutcomes)
@@ -267,6 +269,7 @@ describe('Omen subgraph', function() {
 
     const { question } = await querySubgraph(`{
       question(id: "${questionId}") {
+        templateId
         data
         title
         outcomes
@@ -291,6 +294,7 @@ describe('Omen subgraph', function() {
       }
     }`);
 
+    question.templateId.should.equal('2');
     question.data.should.equal(questionData);
     question.title.should.equal(questionTitle);
     question.outcomes.should.eql(questionOutcomes)

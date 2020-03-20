@@ -1,6 +1,7 @@
 type Question @entity {
   id: ID!
 
+  templateId: BigInt!
   data: String!
   title: String
   outcomes: [String!]
@@ -56,6 +57,7 @@ type FixedProductMarketMaker @entity {
   # lifted from condition
   question: Question
   # lifted from condition's question
+  templateId: BigInt
   data: String
   title: String
   outcomes: [String!]

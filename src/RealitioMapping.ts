@@ -14,14 +14,15 @@ import { unescape } from './unescape'
 export function handleNewQuestion(event: LogNewQuestion): void {
   let questionId = event.params.question_id.toHexString();
   let question = new Question(questionId);
-
-  if (event.params.template_id.toI32() != 2) {
+  let templateId = event.params.template_id
+  if (templateId.toI32() != 2) {
     log.info('ignoring question {} with template ID {}', [
       questionId,
-      event.params.template_id.toString(),
+      templateId.toString(),
     ]);
     return;
   }
+  question.templateId = templateId;
 
   let data = event.params.question;
   question.data = data;

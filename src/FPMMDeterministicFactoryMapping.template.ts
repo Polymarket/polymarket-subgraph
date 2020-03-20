@@ -63,6 +63,7 @@ export function handleFixedProductMarketMakerCreation(event: FixedProductMarketM
     fixedProductMarketMaker.question = questionIdStr;
     let question = Question.load(questionIdStr);
     if(question != null) {
+      fixedProductMarketMaker.templateId = question.templateId;
       fixedProductMarketMaker.data = question.data;
       fixedProductMarketMaker.title = question.title;
       fixedProductMarketMaker.outcomes = question.outcomes;
