@@ -31,12 +31,12 @@
   },
   "RealitioProxy": {
     "1": {
-      "address": "0x7B46FEcfBA4eB9D14970bc248dA15a3Fb4457A27",
-      "transactionHash": "0x822497a50df6198d42a385010c991767ee06aa913da58dcf13299fed330cf4bc"
+      "address": "0x0e414d014A77971f4EAA22AB58E6d84D16Ea838E",
+      "transactionHash": "0x8737379f9eb9e8e98aa77b74f46b40122770c96b7e87d85d37d18414166e5d49"
     },
     "4": {
-      "address": "0x5A90132C104CA33652Ee71E2E645D5A4d8E5d7D6",
-      "transactionHash": "0xedd148203bbd6a931d2f927a1d1b2836d3cc61740213aef3009bf9cf40e4a7d8"
+      "address": "0x576B76eebE6B5411c0ef310E65De9Bff8A60130F",
+      "transactionHash": "0x2adf9ab9541091ff2ea1035247fb4b5fa49c847018f4ce96c53657cbb0c13a67"
     }
   }
 }
