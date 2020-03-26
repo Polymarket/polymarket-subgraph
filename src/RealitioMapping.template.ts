@@ -15,52 +15,75 @@ export function handleNewQuestion(event: LogNewQuestion): void {
   let questionId = event.params.question_id.toHexString();
   let question = new Question(questionId);
   let templateId = event.params.template_id
-  if (templateId.toI32() != 2) {
+  let templateIdI32 = templateId.toI32();
+  if (templateIdI32 == 2) {
+    question.templateId = templateId;
+
+    let data = event.params.question;
+    question.data = data;
+  
+    let fields = data.split('\u241f', 4);
+  
+    if (fields.length >= 1) {
+      question.title = unescape(fields[0]);
+      if (fields.length >= 2) {
+        let outcomesData = fields[1];
+        let start = -1;
+        let escaped = false
+        let outcomes = new Array<string>(0);
+        for (let i = 0; i < outcomesData.length; i++) {
+          if (escaped) {
+            escaped = false;
+          } else {
+            if (outcomesData[i] == '"') {
+              if (start == -1) {
+                start = i + 1;
+              } else {
+                outcomes.push(unescape(outcomesData.slice(start, i)));
+                start = -1;
+              }
+            } else if (outcomesData[i] == '\\') {
+              escaped = true;
+            }
+          }
+        }
+        question.outcomes = outcomes;
+        if (fields.length >= 3) {
+          question.category = unescape(fields[2]);
+          if (fields.length >= 4) {
+            question.language = unescape(fields[3]);
+          }
+        }
+      }
+    }
+  } else if (
+    templateIdI32 == 0 ||
+    templateIdI32 == {{nuancedBinaryTemplateId}}
+  ) {
+    question.templateId = templateId;
+
+    let data = event.params.question;
+    question.data = data;
+  
+    let fields = data.split('\u241f', 4);
+  
+    if (fields.length >= 1) {
+      question.title = unescape(fields[0]);
+      if (fields.length >= 2) {
+        question.category = unescape(fields[1]);
+        if (fields.length >= 3) {
+          question.language = unescape(fields[2]);
+        }
+      }
+    }
+  } else {
     log.info('ignoring question {} with template ID {}', [
       questionId,
       templateId.toString(),
     ]);
     return;
   }
-  question.templateId = templateId;
 
-  let data = event.params.question;
-  question.data = data;
-
-  let fields = data.split('\u241f', 4);
-
-  if (fields.length >= 1) {
-    question.title = unescape(fields[0]);
-    if (fields.length >= 2) {
-      let outcomesData = fields[1];
-      let start = -1;
-      let escaped = false
-      let outcomes = new Array<string>(0);
-      for (let i = 0; i < outcomesData.length; i++) {
-        if (escaped) {
-          escaped = false;
-        } else {
-          if (outcomesData[i] == '"') {
-            if (start == -1) {
-              start = i + 1;
-            } else {
-              outcomes.push(unescape(outcomesData.slice(start, i)));
-              start = -1;
-            }
-          } else if (outcomesData[i] == '\\') {
-            escaped = true;
-          }
-        }
-      }
-      question.outcomes = outcomes;
-      if (fields.length >= 3) {
-        question.category = unescape(fields[2]);
-        if (fields.length >= 4) {
-          question.language = unescape(fields[3]);
-        }
-      }
-    }
-  }
   question.arbitrator = event.params.arbitrator;
   question.openingTimestamp = event.params.opening_ts;
   question.timeout = event.params.timeout;
