@@ -3,5 +3,6 @@ module.exports = function(deployer) {
     artifacts.require('RealitioProxy'),
     artifacts.require('ConditionalTokens').address,
     artifacts.require('Realitio').address,
+    5,
   );
 };

@@ -530,8 +530,10 @@ describe('Omen subgraph', function() {
   step('resolve condition', async function() {
     await advanceTime(finalizationTimeout);
 
-    const { receipt: { blockHash } } = await oracle.resolveSingleSelectCondition(
+    const { receipt: { blockHash } } = await oracle.resolve(
       questionId,
+      2,
+      questionData,
       3,
       { from: reporter },
     );

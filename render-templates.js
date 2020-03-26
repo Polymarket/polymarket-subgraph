@@ -8,7 +8,11 @@ module.exports = function(callback) {
       network: {
         main: 'mainnet',
         private: 'development',
-      }[networkType] || networkType
+      }[networkType] || networkType,
+      nuancedBinaryTemplateId: {
+        main: 6,
+        rinkeby: 5,
+      }[networkType] || 5,
     };
 
     for(const contractName of [
