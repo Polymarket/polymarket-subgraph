@@ -3,6 +3,7 @@ import { BigInt, log } from '@graphprotocol/graph-ts'
 import { FixedProductMarketMakerCreation } from '../generated/FPMMDeterministicFactory/FPMMDeterministicFactory'
 import { FixedProductMarketMaker, Condition, Question } from '../generated/schema'
 import { FixedProductMarketMaker as FixedProductMarketMakerTemplate } from '../generated/templates'
+import { nthRoot } from './nth-root';
 
 export function handleFixedProductMarketMakerCreation(event: FixedProductMarketMakerCreation): void {
   let address = event.params.fixedProductMarketMaker;
@@ -97,10 +98,13 @@ export function handleFixedProductMarketMakerCreation(event: FixedProductMarketM
   fixedProductMarketMaker.collateralVolume = BigInt.fromI32(0);
 
   let outcomeTokenAmounts = new Array<BigInt>(outcomeTokenCount);
+  let amountsProduct = BigInt.fromI32(1);
   for(let i = 0; i < outcomeTokenAmounts.length; i++) {
     outcomeTokenAmounts[i] = BigInt.fromI32(0);
+    amountsProduct = amountsProduct.times(outcomeTokenAmounts[i]);
   }
   fixedProductMarketMaker.outcomeTokenAmounts = outcomeTokenAmounts;
+  fixedProductMarketMaker.liquidityParameter = nthRoot(amountsProduct, outcomeTokenAmounts.length);
 
   fixedProductMarketMaker.save();
 

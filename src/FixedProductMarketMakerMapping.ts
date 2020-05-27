@@ -8,6 +8,7 @@ import {
   FPMMSell,
   Transfer,
 } from "../generated/templates/FixedProductMarketMaker/FixedProductMarketMaker"
+import { nthRoot } from './nth-root';
 
 export function handleFundingAdded(event: FPMMFundingAdded): void {
   let fpmmAddress = event.address.toHexString();
@@ -20,10 +21,13 @@ export function handleFundingAdded(event: FPMMFundingAdded): void {
   let oldAmounts = fpmm.outcomeTokenAmounts;
   let amountsAdded = event.params.amountsAdded;
   let newAmounts = new Array<BigInt>(oldAmounts.length);
+  let amountsProduct = BigInt.fromI32(1);
   for(let i = 0; i < newAmounts.length; i++) {
     newAmounts[i] = oldAmounts[i].plus(amountsAdded[i]);
+    amountsProduct = amountsProduct.times(newAmounts[i]);
   }
   fpmm.outcomeTokenAmounts = newAmounts;
+  fpmm.liquidityParameter = nthRoot(amountsProduct, newAmounts.length);
   fpmm.save();
 }
 
@@ -38,10 +42,13 @@ export function handleFundingRemoved(event: FPMMFundingRemoved): void {
   let oldAmounts = fpmm.outcomeTokenAmounts;
   let amountsRemoved = event.params.amountsRemoved;
   let newAmounts = new Array<BigInt>(oldAmounts.length);
+  let amountsProduct = BigInt.fromI32(1);
   for(let i = 0; i < newAmounts.length; i++) {
     newAmounts[i] = oldAmounts[i].minus(amountsRemoved[i]);
+    amountsProduct = amountsProduct.times(newAmounts[i]);
   }
   fpmm.outcomeTokenAmounts = newAmounts;
+  fpmm.liquidityParameter = nthRoot(amountsProduct, newAmounts.length);
   fpmm.save();
 }
 
@@ -58,14 +65,17 @@ export function handleBuy(event: FPMMBuy): void {
   let outcomeIndex = event.params.outcomeIndex.toI32();
 
   let newAmounts = new Array<BigInt>(oldAmounts.length);
+  let amountsProduct = BigInt.fromI32(1);
   for(let i = 0; i < newAmounts.length; i++) {
     if (i == outcomeIndex) {
       newAmounts[i] = oldAmounts[i].plus(investmentAmountMinusFees).minus(event.params.outcomeTokensBought);
     } else {
       newAmounts[i] = oldAmounts[i].plus(investmentAmountMinusFees);
     }
+    amountsProduct = amountsProduct.times(newAmounts[i]);
   }
   fpmm.outcomeTokenAmounts = newAmounts;
+  fpmm.liquidityParameter = nthRoot(amountsProduct, newAmounts.length);
 
   fpmm.collateralVolume = fpmm.collateralVolume.plus(investmentAmountMinusFees);
   fpmm.save();
@@ -83,14 +93,17 @@ export function handleSell(event: FPMMSell): void {
   let returnAmountPlusFees = event.params.returnAmount.plus(event.params.feeAmount);
   let outcomeIndex = event.params.outcomeIndex.toI32();
   let newAmounts = new Array<BigInt>(oldAmounts.length);
+  let amountsProduct = BigInt.fromI32(1);
   for(let i = 0; i < newAmounts.length; i++) {
     if (i == outcomeIndex) {
       newAmounts[i] = oldAmounts[i].minus(returnAmountPlusFees).plus(event.params.outcomeTokensSold);
     } else {
       newAmounts[i] = oldAmounts[i].minus(returnAmountPlusFees);
     }
+    amountsProduct = amountsProduct.times(newAmounts[i]);
   }
   fpmm.outcomeTokenAmounts = newAmounts;
+  fpmm.liquidityParameter = nthRoot(amountsProduct, newAmounts.length);
 
   fpmm.collateralVolume = fpmm.collateralVolume.plus(returnAmountPlusFees);
   fpmm.save();

@@ -109,6 +109,21 @@ function advanceTime(time) {
   });
 }
 
+function nthRoot(x, n) {
+  if (n <= 0) {
+    throw new Error(`invalid n ${n} passed to nthRoot`);
+  }
+
+  let root = x;
+  let deltaRoot;
+  do {
+    deltaRoot = x.div(root.pow(toBN(n - 1))).sub(root).divn(n);
+    root = root.add(deltaRoot);
+  } while (deltaRoot.ltn(0))
+
+  return root;
+}
+
 describe('Omen subgraph', function() {
   function checkMarketMakerState() {
     step('check subgraph market maker data matches chain', async function() {
@@ -125,6 +140,7 @@ describe('Omen subgraph', function() {
           fee
           collateralVolume
           outcomeTokenAmounts
+          liquidityParameter
           indexedOnQuestion
           condition {
             id
@@ -161,11 +177,18 @@ describe('Omen subgraph', function() {
       fixedProductMarketMaker.conditions.should.eql([{ id: conditionId }]);
       fixedProductMarketMaker.fee.should.equal(fee);
       fixedProductMarketMaker.collateralVolume.should.equal(runningCollateralVolume.toString());
+      const chainOutcomeTokenAmounts = await conditionalTokens.balanceOfBatch(
+        new Array(positionIds.length).fill(fpmm.address),
+        positionIds,
+      );
       fixedProductMarketMaker.outcomeTokenAmounts.should.eql(
-        (await conditionalTokens.balanceOfBatch(
-          new Array(positionIds.length).fill(fpmm.address),
-          positionIds,
-        )).map(v => v.toString()),
+        chainOutcomeTokenAmounts.map(v => v.toString()),
+      );
+      fixedProductMarketMaker.liquidityParameter.should.equal(
+        nthRoot(
+          chainOutcomeTokenAmounts.reduce((acc, amount) => acc.mul(amount), toBN(1)),
+          positionIds.length,
+        ).toString(),
       );
 
       fixedProductMarketMaker.indexedOnQuestion.should.be.true();
@@ -407,6 +430,7 @@ describe('Omen subgraph', function() {
         fee
         collateralVolume
         outcomeTokenAmounts
+        liquidityParameter
       }
     }`);
 

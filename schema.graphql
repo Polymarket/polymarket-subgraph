@@ -49,6 +49,7 @@ type FixedProductMarketMaker @entity {
 
   collateralVolume: BigInt!
   outcomeTokenAmounts: [BigInt!]!
+  liquidityParameter: BigInt!
 
   indexedOnQuestion: Boolean!
 
