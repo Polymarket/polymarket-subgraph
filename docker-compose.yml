@@ -7,7 +7,7 @@ services:
       POSTGRES_PASSWORD: letmein
 
   ipfs:
-    image: ipfs/go-ipfs
+    image: ipfs/go-ipfs:v0.4.23
     ports:
       - '5001:5001'
 
