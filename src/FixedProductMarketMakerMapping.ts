@@ -9,6 +9,7 @@ import {
   Transfer,
 } from "../generated/templates/FixedProductMarketMaker/FixedProductMarketMaker"
 import { nthRoot } from './nth-root';
+import { timestampToDay, joinDayAndVolume } from './day-volume-utils';
 
 export function handleFundingAdded(event: FPMMFundingAdded): void {
   let fpmmAddress = event.address.toHexString();
@@ -77,7 +78,17 @@ export function handleBuy(event: FPMMBuy): void {
   fpmm.outcomeTokenAmounts = newAmounts;
   fpmm.liquidityParameter = nthRoot(amountsProduct, newAmounts.length);
 
+  let currentDay = timestampToDay(event.block.timestamp);
+
+  if (fpmm.lastActiveDay.notEqual(currentDay)) {
+    fpmm.lastActiveDay = currentDay;
+    fpmm.collateralVolumeBeforeLastActiveDay = fpmm.collateralVolume;
+  }
+
   fpmm.collateralVolume = fpmm.collateralVolume.plus(investmentAmountMinusFees);
+  fpmm.runningDailyVolume = fpmm.collateralVolume.minus(fpmm.collateralVolume);
+  fpmm.lastActiveDayAndRunningDailyVolume = joinDayAndVolume(currentDay, fpmm.runningDailyVolume);
+
   fpmm.save();
 }
 
@@ -105,7 +116,17 @@ export function handleSell(event: FPMMSell): void {
   fpmm.outcomeTokenAmounts = newAmounts;
   fpmm.liquidityParameter = nthRoot(amountsProduct, newAmounts.length);
 
+  let currentDay = timestampToDay(event.block.timestamp);
+
+  if (fpmm.lastActiveDay.notEqual(currentDay)) {
+    fpmm.lastActiveDay = currentDay;
+    fpmm.collateralVolumeBeforeLastActiveDay = fpmm.collateralVolume;
+  }
+
   fpmm.collateralVolume = fpmm.collateralVolume.plus(returnAmountPlusFees);
+  fpmm.runningDailyVolume = fpmm.collateralVolume.minus(fpmm.collateralVolume);
+  fpmm.lastActiveDayAndRunningDailyVolume = joinDayAndVolume(currentDay, fpmm.runningDailyVolume);
+
   fpmm.save();
 }
 

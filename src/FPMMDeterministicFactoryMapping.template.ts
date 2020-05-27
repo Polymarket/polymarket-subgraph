@@ -4,6 +4,9 @@ import { FixedProductMarketMakerCreation } from '../generated/FPMMDeterministicF
 import { FixedProductMarketMaker, Condition, Question } from '../generated/schema'
 import { FixedProductMarketMaker as FixedProductMarketMakerTemplate } from '../generated/templates'
 import { nthRoot } from './nth-root';
+import { timestampToDay, joinDayAndVolume } from './day-volume-utils';
+
+let zeroAsBigInt = BigInt.fromI32(0);
 
 export function handleFixedProductMarketMakerCreation(event: FixedProductMarketMakerCreation): void {
   let address = event.params.fixedProductMarketMaker;
@@ -95,12 +98,18 @@ export function handleFixedProductMarketMakerCreation(event: FixedProductMarketM
     }
   }
 
-  fixedProductMarketMaker.collateralVolume = BigInt.fromI32(0);
+  fixedProductMarketMaker.collateralVolume = zeroAsBigInt;
+
+  let currentDay = timestampToDay(event.block.timestamp);
+  fixedProductMarketMaker.lastActiveDay = currentDay;
+  fixedProductMarketMaker.runningDailyVolume = zeroAsBigInt;
+  fixedProductMarketMaker.lastActiveDayAndRunningDailyVolume = joinDayAndVolume(currentDay, zeroAsBigInt);
+  fixedProductMarketMaker.collateralVolumeBeforeLastActiveDay = zeroAsBigInt;
 
   let outcomeTokenAmounts = new Array<BigInt>(outcomeTokenCount);
   let amountsProduct = BigInt.fromI32(1);
   for(let i = 0; i < outcomeTokenAmounts.length; i++) {
-    outcomeTokenAmounts[i] = BigInt.fromI32(0);
+    outcomeTokenAmounts[i] = zeroAsBigInt;
     amountsProduct = amountsProduct.times(outcomeTokenAmounts[i]);
   }
   fixedProductMarketMaker.outcomeTokenAmounts = outcomeTokenAmounts;
