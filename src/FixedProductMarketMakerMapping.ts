@@ -86,7 +86,7 @@ export function handleBuy(event: FPMMBuy): void {
   }
 
   fpmm.collateralVolume = fpmm.collateralVolume.plus(investmentAmountMinusFees);
-  fpmm.runningDailyVolume = fpmm.collateralVolume.minus(fpmm.collateralVolume);
+  fpmm.runningDailyVolume = fpmm.collateralVolume.minus(fpmm.collateralVolumeBeforeLastActiveDay);
   fpmm.lastActiveDayAndRunningDailyVolume = joinDayAndVolume(currentDay, fpmm.runningDailyVolume);
 
   fpmm.save();
@@ -124,7 +124,7 @@ export function handleSell(event: FPMMSell): void {
   }
 
   fpmm.collateralVolume = fpmm.collateralVolume.plus(returnAmountPlusFees);
-  fpmm.runningDailyVolume = fpmm.collateralVolume.minus(fpmm.collateralVolume);
+  fpmm.runningDailyVolume = fpmm.collateralVolume.minus(fpmm.collateralVolumeBeforeLastActiveDay);
   fpmm.lastActiveDayAndRunningDailyVolume = joinDayAndVolume(currentDay, fpmm.runningDailyVolume);
 
   fpmm.save();
