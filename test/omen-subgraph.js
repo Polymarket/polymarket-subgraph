@@ -140,6 +140,7 @@ describe('Omen subgraph', function() {
           fee
           collateralVolume
           outcomeTokenAmounts
+          outcomeSlotCount
           liquidityParameter
           indexedOnQuestion
           condition {
@@ -184,6 +185,7 @@ describe('Omen subgraph', function() {
       fixedProductMarketMaker.outcomeTokenAmounts.should.eql(
         chainOutcomeTokenAmounts.map(v => v.toString()),
       );
+      fixedProductMarketMaker.outcomeSlotCount.should.equal(outcomeSlotCount);
       fixedProductMarketMaker.liquidityParameter.should.equal(
         nthRoot(
           chainOutcomeTokenAmounts.reduce((acc, amount) => acc.mul(amount), toBN(1)),
@@ -356,9 +358,11 @@ describe('Omen subgraph', function() {
 
     const { condition, question } = await querySubgraph(`{
       condition(id: "${conditionId}") {
+        oracle
         question {
           title
         }
+        outcomeSlotCount
         resolutionTimestamp
         payouts
       }
@@ -366,7 +370,9 @@ describe('Omen subgraph', function() {
         conditions { id }
       }
     }`);
+    condition.oracle.should.equal(oracle.address.toLowerCase());
     condition.question.should.eql({ title: 'なに!?' });
+    condition.outcomeSlotCount.should.equal(outcomeSlotCount);
     should.not.exist(condition.resolutionTimestamp);
     should.not.exist(condition.payouts);
 
