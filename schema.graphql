@@ -31,7 +31,7 @@ type Condition @entity {
   oracle: Bytes!
   questionId: Bytes!
   question: Question
-  outcomeSlotCount: BigInt!
+  outcomeSlotCount: Int!
   resolutionTimestamp: BigInt
   payouts: [BigDecimal!]
   fixedProductMarketMakers: [FixedProductMarketMaker!]! @derivedFrom(field: "conditions")
@@ -49,6 +49,7 @@ type FixedProductMarketMaker @entity {
 
   collateralVolume: BigInt!
   outcomeTokenAmounts: [BigInt!]!
+  outcomeSlotCount: Int
   liquidityParameter: BigInt!
 
   lastActiveDay: BigInt!

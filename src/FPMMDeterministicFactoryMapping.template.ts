@@ -44,10 +44,11 @@ export function handleFixedProductMarketMakerCreation(event: FixedProductMarketM
       return;
     }
 
-    outcomeTokenCount *= condition.outcomeSlotCount.toI32();
+    outcomeTokenCount *= condition.outcomeSlotCount;
     conditionIdStrs[i] = conditionIdStr;
   }
   fixedProductMarketMaker.conditions = conditionIdStrs;
+  fixedProductMarketMaker.outcomeSlotCount = outcomeTokenCount;
   fixedProductMarketMaker.indexedOnQuestion = false;
 
   if(conditionIdStrs.length == 1) {

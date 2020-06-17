@@ -12,7 +12,7 @@ export function handleConditionPreparation(event: ConditionPreparation): void {
     condition.question = event.params.questionId.toHexString();
   }
 
-  condition.outcomeSlotCount = event.params.outcomeSlotCount;
+  condition.outcomeSlotCount = event.params.outcomeSlotCount.toI32();
   condition.save();
 }
 
