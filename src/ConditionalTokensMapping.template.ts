@@ -1,7 +1,7 @@
 import { BigInt, BigDecimal, log } from '@graphprotocol/graph-ts'
 
 import { ConditionPreparation, ConditionResolution } from '../generated/ConditionalTokens/ConditionalTokens'
-import { Condition, Question, FixedProductMarketMaker } from '../generated/schema'
+import { Condition, Question, FixedProductMarketMaker, Category } from '../generated/schema'
 
 export function handleConditionPreparation(event: ConditionPreparation): void {
   let condition = new Condition(event.params.conditionId.toHexString());
@@ -9,7 +9,18 @@ export function handleConditionPreparation(event: ConditionPreparation): void {
   condition.questionId = event.params.questionId;
 
   if (event.params.oracle.toHexString() == '{{RealitioProxy.addressLowerCase}}') {
-    condition.question = event.params.questionId.toHexString();
+    let questionId = event.params.questionId.toHexString()
+    condition.question = questionId;
+    let question = Question.load(questionId);
+    if (question != null) {
+      if (question.category != null) {
+        let category = Category.load(question.category);
+        if (category != null) {
+          category.numOpenConditions++;
+          category.save();
+        }
+      }
+    }
   }
 
   condition.outcomeSlotCount = event.params.outcomeSlotCount.toI32();
@@ -22,6 +33,19 @@ export function handleConditionResolution(event: ConditionResolution): void {
   if (condition == null) {
     log.error('could not find condition {} to resolve', [conditionId]);
     return;
+  }
+
+  if (condition.question != null) {
+    let question = Question.load(condition.question);
+    if (question != null) {
+      if (question.category != null) {
+        let category = Category.load(question.category);
+        if (category != null) {
+          category.numOpenConditions--;
+          category.save();
+        }
+      }
+    }
   }
 
   if (condition.resolutionTimestamp != null || condition.payouts != null) {
