@@ -7,7 +7,7 @@ import {
   LogFinalize,
   LogAnswerReveal,
 } from '../generated/Realitio/Realitio'
-import { Question, FixedProductMarketMaker } from '../generated/schema'
+import { Question, FixedProductMarketMaker, Category } from '../generated/schema'
 
 import { unescape } from './unescape'
 
@@ -49,7 +49,15 @@ export function handleNewQuestion(event: LogNewQuestion): void {
         }
         question.outcomes = outcomes;
         if (fields.length >= 3) {
-          question.category = unescape(fields[2]);
+          let categoryId = unescape(fields[2])
+          question.category = categoryId;
+          let category = Category.load(categoryId);
+          if (category == null) {
+            category = new Category(categoryId);
+            category.numOpenConditions = 0;
+            category.save();
+          }
+
           if (fields.length >= 4) {
             question.language = unescape(fields[3]);
           }

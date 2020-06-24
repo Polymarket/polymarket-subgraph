@@ -26,6 +26,11 @@ type Question @entity {
   conditions: [Condition!]! @derivedFrom(field: "question")
 }
 
+type Category @entity {
+  id: ID!
+  numOpenConditions: Int!
+}
+
 type Condition @entity {
   id: ID!
   oracle: Bytes!
