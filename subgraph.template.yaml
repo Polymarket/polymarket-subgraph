@@ -62,7 +62,7 @@ dataSources:
     source:
       address: '{{DXTokenRegistry.address}}'
       abi: DXTokenRegistry
-      startBlock: '{{DXTokenRegistry.startBlock}}'
+      startBlock: {{DXTokenRegistry.startBlock}}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.3
@@ -71,12 +71,12 @@ dataSources:
         - TokenRegistry
       abis:
         - name: DXTokenRegistry
-        - file: ./abis/DXTokenRegistry.json
+          file: ./abis/DXTokenRegistry.json
       eventHandlers:
-        - event: AddToken(uint256, address)
-        - handler: handleAddToken
-        - event: RemoveToken(uint256, address)
-        - handler: handleRemoveToken
+        - event: AddToken(uint256,address)
+          handler: handleAddToken
+        - event: RemoveToken(uint256,address)
+          handler: handleRemoveToken
       file: ./src/DXTokenRegistryMapping.ts
   - kind: ethereum/contract
     name: FPMMDeterministicFactory

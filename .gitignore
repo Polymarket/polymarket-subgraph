@@ -105,6 +105,7 @@ dist
 
 # Truffle build artifacts
 build/
+!build/contracts/DXTokenRegistry.json
 
 # Subgraph stuff
 abis/

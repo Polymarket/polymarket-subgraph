@@ -11,5 +11,3 @@ import { RealitioProxy } from "realitio-gnosis-proxy/contracts/RealitioProxy.sol
 
 import { FPMMDeterministicFactory } from "@gnosis.pm/conditional-tokens-market-makers/contracts/FPMMDeterministicFactory.sol";
 import { FixedProductMarketMaker } from "@gnosis.pm/conditional-tokens-market-makers/contracts/FixedProductMarketMaker.sol";
-
-import { DXTokenRegistry } from "dxdao-token-registry/contracts/dxTokenRegistry.sol";
