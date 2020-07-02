@@ -57,6 +57,28 @@ dataSources:
           handler: handleConditionResolution
       file: ./src/ConditionalTokensMapping.ts
   - kind: ethereum/contract
+    name: DXTokenRegistry
+    network: {{network}}
+    source:
+      address: '{{DXTokenRegistry.address}}'
+      abi: DXTokenRegistry
+      startBlock: '{{DXTokenRegistry.startBlock}}'
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.3
+      language: wasm/assemblyscript
+      entities:
+        - TokenRegistry
+      abis:
+        - name: DXTokenRegistry
+        - file: ./abis/DXTokenRegistry.json
+      eventHandlers:
+        - event: AddToken(uint256, address)
+        - handler: handleAddToken
+        - event: RemoveToken(uint256, address)
+        - handler: handleRemoveToken
+      file: ./src/DXTokenRegistryMapping.ts
+  - kind: ethereum/contract
     name: FPMMDeterministicFactory
     network: {{network}}
     source:

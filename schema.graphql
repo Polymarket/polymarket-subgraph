@@ -102,3 +102,8 @@ type Account @entity {
   id: ID!
   fpmmPoolMemberships: [FpmmPoolMembership!] @derivedFrom(field: "funder")
 }
+
+type TokenRegistry @entity {
+  id: ID!
+  markets: [String!]
+}
