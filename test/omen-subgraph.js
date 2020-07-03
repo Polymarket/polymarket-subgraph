@@ -40,7 +40,7 @@ async function queryGraph(query) {
   return (await axios.post('http://localhost:8000/subgraphs', { query })).data.data;
 }
 
-const subgraphName = 'gnosis/omen';
+const subgraphName = 'protofire/omen';
 
 async function querySubgraph(query) {
   return (await axios.post(`http://localhost:8000/subgraphs/name/${subgraphName}`, { query })).data.data;

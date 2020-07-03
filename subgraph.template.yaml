@@ -1,6 +1,6 @@
 specVersion: 0.0.2
 description: Omen
-repository: https://github.com/gnosis/omen-subgraph
+repository: https://github.com/protofire/omen-subgraph
 schema:
   file: ./schema.graphql
 dataSources:
