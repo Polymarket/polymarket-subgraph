@@ -104,8 +104,9 @@ dist
 .tern-port
 
 # Truffle build artifacts
-build/
-!build/contracts/DXTokenRegistry.json
+build/contracts/*
+!/build/contracts/DX*.json
+
 
 # Subgraph stuff
 abis/
