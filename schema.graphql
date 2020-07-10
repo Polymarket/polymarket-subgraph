@@ -109,5 +109,5 @@ type Account @entity {
 
 type TokenRegistry @entity {
   id: ID!
-  markets: [String!]
+  markets: [ID!]!
 }
