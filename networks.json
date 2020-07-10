@@ -38,5 +38,15 @@
       "address": "0x576B76eebE6B5411c0ef310E65De9Bff8A60130F",
       "transactionHash": "0x2adf9ab9541091ff2ea1035247fb4b5fa49c847018f4ce96c53657cbb0c13a67"
     }
+  },
+  "DXTokenRegistry": {
+    "1": {
+      "address": "0x93db90445b76329e9ed96ecd74e76d8fbf2590d8",
+      "transactionHash": "0x0f52969b416df1e4f8df09a0fecb36e0e43568a2bb75a579d40840d903702ad1"
+    },
+    "4": {
+      "address": "0x03165df66d9448e45c2f5137486af3e7e752a352",
+      "transactionHash": "0xc10916833e037e887b9e0fa636e92110758f4f059b281e21a31c3737ab420bbe"
+    }
   }
 }

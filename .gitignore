@@ -103,8 +103,11 @@ dist
 # TernJS port file
 .tern-port
 
-# Truffle build artifacts
+# Truffle and Graph build artifacts
 build/
+
+# Exception for dxDAO contract build artifacts
+!/build/contracts/DX*.json
 
 # Subgraph stuff
 abis/
