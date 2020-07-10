@@ -2,13 +2,14 @@ import { AddToken, RemoveToken } from '../generated/DXTokenRegistry/DXTokenRegis
 import { TokenRegistry } from '../generated/schema'
 
 export function handleAddToken(event: AddToken): void {
-  const id = event.params.listId.toHex()
+  const id = event.params.listId
 
-  if(id == '4') {
-    let tcr = TokenRegistry.load(id)
+  if(id.toI32() == 4) {
+    let idHex = id.toHex()
+    let tcr = TokenRegistry.load(idHex)
 
     if(tcr != null) {
-      tcr = new TokenRegistry(id)
+      tcr = new TokenRegistry(idHex)
       tcr.markets = []
     }
 
@@ -18,10 +19,11 @@ export function handleAddToken(event: AddToken): void {
 }
 
 export function handleRemoveToken(event: RemoveToken): void {
-  const id = event.params.listId.toHex()
+  const id = event.params.listId
 
-  if(id == '4') {
-    let tcr = TokenRegistry.load(id)
+  if(id.toI32() == 4) {
+    let idHex = id.toHex()
+    let tcr = TokenRegistry.load(idHex)
 
     if(tcr != null) {
       tcr.markets = tcr.markets.filter(token => token != event.params.token.toHex())
