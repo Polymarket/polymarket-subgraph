@@ -53,13 +53,17 @@ type FixedProductMarketMaker @entity {
   fee: BigInt!
 
   collateralVolume: BigInt!
+  scaledCollateralVolume: BigDecimal!
   outcomeTokenAmounts: [BigInt!]!
   outcomeSlotCount: Int
   liquidityParameter: BigInt!
 
   lastActiveDay: BigInt!
   runningDailyVolume: BigInt!
+  scaledRunningDailyVolume: BigDecimal!
   lastActiveDayAndRunningDailyVolume: BigInt!
+  lastActiveDayAndScaledRunningDailyVolume: BigDecimal!
+
   collateralVolumeBeforeLastActiveDay: BigInt!
 
   indexedOnQuestion: Boolean!

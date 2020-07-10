@@ -21,7 +21,8 @@ module.exports = function(callback) {
       'ConditionalTokens',
       'Realitio',
       'RealitioProxy',
-      'DXTokenRegistry'
+      'ERC20Detailed',
+      'DXTokenRegistry',
     ]) {
       const { abi } = fs.readJsonSync(`build/contracts/${contractName}.json`);
       fs.outputJsonSync(`abis/${contractName}.json`, abi, { spaces: 2 });

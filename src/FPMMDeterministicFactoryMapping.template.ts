@@ -5,6 +5,7 @@ import { FixedProductMarketMaker, Condition, Question } from '../generated/schem
 import { FixedProductMarketMaker as FixedProductMarketMakerTemplate } from '../generated/templates'
 import { nthRoot } from './nth-root';
 import { timestampToDay, joinDayAndVolume } from './day-volume-utils';
+import { updateScaledVolumes } from './fpmm-utils';
 
 let zeroAsBigInt = BigInt.fromI32(0);
 
@@ -115,6 +116,8 @@ export function handleFixedProductMarketMakerCreation(event: FixedProductMarketM
   }
   fixedProductMarketMaker.outcomeTokenAmounts = outcomeTokenAmounts;
   fixedProductMarketMaker.liquidityParameter = nthRoot(amountsProduct, outcomeTokenAmounts.length);
+
+  updateScaledVolumes(fixedProductMarketMaker, currentDay);
 
   fixedProductMarketMaker.save();
 
