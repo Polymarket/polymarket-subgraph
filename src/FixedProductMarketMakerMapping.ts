@@ -10,6 +10,7 @@ import {
 } from "../generated/templates/FixedProductMarketMaker/FixedProductMarketMaker"
 import { nthRoot } from './nth-root';
 import { timestampToDay, joinDayAndVolume } from './day-volume-utils';
+import { updateScaledVolumes } from './fpmm-utils';
 
 export function handleFundingAdded(event: FPMMFundingAdded): void {
   let fpmmAddress = event.address.toHexString();
@@ -89,6 +90,8 @@ export function handleBuy(event: FPMMBuy): void {
   fpmm.runningDailyVolume = fpmm.collateralVolume.minus(fpmm.collateralVolumeBeforeLastActiveDay);
   fpmm.lastActiveDayAndRunningDailyVolume = joinDayAndVolume(currentDay, fpmm.runningDailyVolume);
 
+  updateScaledVolumes(fpmm as FixedProductMarketMaker, currentDay);
+
   fpmm.save();
 }
 
@@ -126,6 +129,8 @@ export function handleSell(event: FPMMSell): void {
   fpmm.collateralVolume = fpmm.collateralVolume.plus(returnAmountPlusFees);
   fpmm.runningDailyVolume = fpmm.collateralVolume.minus(fpmm.collateralVolumeBeforeLastActiveDay);
   fpmm.lastActiveDayAndRunningDailyVolume = joinDayAndVolume(currentDay, fpmm.runningDailyVolume);
+
+  updateScaledVolumes(fpmm as FixedProductMarketMaker, currentDay);
 
   fpmm.save();
 }

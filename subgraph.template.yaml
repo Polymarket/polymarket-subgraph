@@ -73,6 +73,8 @@ dataSources:
       abis:
         - name: FPMMDeterministicFactory
           file: ./abis/FPMMDeterministicFactory.json
+        - name: ERC20Detailed
+          file: ./abis/ERC20Detailed.json
       eventHandlers:
         - event: FixedProductMarketMakerCreation(indexed address,address,address,address,bytes32[],uint256)
           handler: handleFixedProductMarketMakerCreation
@@ -92,6 +94,8 @@ templates:
       abis:
         - name: FixedProductMarketMaker
           file: ./abis/FixedProductMarketMaker.json
+        - name: ERC20Detailed
+          file: ./abis/ERC20Detailed.json
       eventHandlers:
         - event: FPMMFundingAdded(indexed address,uint256[],uint256)
           handler: handleFundingAdded
@@ -104,3 +108,17 @@ templates:
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handlePoolShareTransfer
       file: ./src/FixedProductMarketMakerMapping.ts
+  - name: ERC20Detailed
+    kind: ethereum/contract
+    network: {{network}}
+    source:
+      abi: ERC20Detailed
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.3
+      language: wasm/assemblyscript
+      entities: []
+      abis:
+        - name: ERC20Detailed
+          file: ./abis/ERC20Detailed.json
+      file: ./src/empty.ts

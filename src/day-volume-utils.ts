@@ -1,4 +1,4 @@
-import { BigInt, Bytes } from '@graphprotocol/graph-ts'
+import { BigInt, Bytes, BigDecimal } from '@graphprotocol/graph-ts'
 
 export function timestampToDay(timestamp: BigInt): BigInt {
   return timestamp.div(BigInt.fromI32(86400))
@@ -11,4 +11,8 @@ let twoPow256 = BigInt.fromUnsignedBytes(twoPow256Bytes);
 
 export function joinDayAndVolume(day: BigInt, volume: BigInt): BigInt {
   return day.times(twoPow256).plus(volume);
+}
+
+export function joinDayAndScaledVolume(day: BigInt, scaledVolume: BigDecimal): BigDecimal {
+  return day.times(twoPow256).toBigDecimal().plus(scaledVolume);
 }
