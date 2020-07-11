@@ -1,6 +1,11 @@
 import { BigInt, log } from '@graphprotocol/graph-ts'
 
-import { FixedProductMarketMaker, Account, FpmmPoolMembership } from "../generated/schema"
+import {
+  FixedProductMarketMaker,
+  Account,
+  FpmmPoolMembership,
+  FpmmParticipation,
+} from "../generated/schema"
 import {
   FPMMFundingAdded,
   FPMMFundingRemoved,
@@ -11,6 +16,27 @@ import {
 import { nthRoot } from './nth-root';
 import { timestampToDay, joinDayAndVolume } from './day-volume-utils';
 import { updateScaledVolumes } from './fpmm-utils';
+
+function requireAccount(accountAddress: string): void {
+  let account = Account.load(accountAddress);
+  if (account == null) {
+    account = new Account(accountAddress);
+    account.save();
+  }
+}
+
+function recordParticipation(fpmmAddress: string, participantAddress: string): void {
+  requireAccount(participantAddress);
+
+  let fpmmParticipationId = fpmmAddress.concat(participantAddress);
+  let fpmmParticipation = FpmmParticipation.load(fpmmParticipationId);
+  if (fpmmParticipation == null) {
+    fpmmParticipation = new FpmmParticipation(fpmmParticipationId);
+    fpmmParticipation.fpmm = fpmmAddress;
+    fpmmParticipation.participant = participantAddress;
+    fpmmParticipation.save();
+  }
+}
 
 export function handleFundingAdded(event: FPMMFundingAdded): void {
   let fpmmAddress = event.address.toHexString();
@@ -93,6 +119,8 @@ export function handleBuy(event: FPMMBuy): void {
   updateScaledVolumes(fpmm as FixedProductMarketMaker, currentDay);
 
   fpmm.save();
+
+  recordParticipation(fpmmAddress, event.params.buyer.toHexString());
 }
 
 export function handleSell(event: FPMMSell): void {
@@ -133,17 +161,15 @@ export function handleSell(event: FPMMSell): void {
   updateScaledVolumes(fpmm as FixedProductMarketMaker, currentDay);
 
   fpmm.save();
+
+  recordParticipation(fpmmAddress, event.params.seller.toHexString());
 }
 
 export function handlePoolShareTransfer(event: Transfer): void {
   let fpmmAddress = event.address.toHexString()
 
   let fromAddress = event.params.from.toHexString();
-  let from = Account.load(fromAddress);
-  if (from == null) {
-    from = new Account(fromAddress);
-    from.save();
-  }
+  requireAccount(fromAddress);
 
   let fromMembershipId = fpmmAddress.concat(fromAddress);
   let fromMembership = FpmmPoolMembership.load(fromMembershipId);
@@ -158,11 +184,7 @@ export function handlePoolShareTransfer(event: Transfer): void {
   fromMembership.save();
 
   let toAddress = event.params.to.toHexString();
-  let to = Account.load(toAddress);
-  if (to == null) {
-    to = new Account(toAddress);
-    to.save();
-  }
+  requireAccount(toAddress);
 
   let toMembershipId = fpmmAddress.concat(toAddress);
   let toMembership = FpmmPoolMembership.load(toMembershipId);

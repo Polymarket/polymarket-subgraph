@@ -93,6 +93,7 @@ type FixedProductMarketMaker @entity {
   answerFinalizedTimestamp: BigInt
 
   poolMembers: [FpmmPoolMembership!] @derivedFrom(field: "pool")
+  participants: [FpmmParticipation!] @derivedFrom(field: "fpmm")
 }
 
 type FpmmPoolMembership @entity {
@@ -102,9 +103,16 @@ type FpmmPoolMembership @entity {
   amount: BigInt!
 }
 
+type FpmmParticipation @entity {
+  id: ID!
+  fpmm: FixedProductMarketMaker!
+  participant: Account!
+}
+
 type Account @entity {
   id: ID!
   fpmmPoolMemberships: [FpmmPoolMembership!] @derivedFrom(field: "funder")
+  fpmmParticipations: [FpmmParticipation!] @derivedFrom(field: "participant")
 }
 
 type TokenRegistry @entity {
