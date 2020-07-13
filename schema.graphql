@@ -122,3 +122,11 @@ type TokenRegistry @entity {
   id: ID!
   markets: [ID!]!
 }
+
+type Global @entity {
+  # ID is empty string, this is a singleton
+  id: ID!
+  numConditions: Int!
+  numOpenConditions: Int!
+  numClosedConditions: Int!
+}
