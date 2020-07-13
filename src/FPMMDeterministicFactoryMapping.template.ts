@@ -1,11 +1,11 @@
-import { BigInt, log } from '@graphprotocol/graph-ts'
+import { BigInt, log, Address } from '@graphprotocol/graph-ts'
 
 import { FixedProductMarketMakerCreation } from '../generated/FPMMDeterministicFactory/FPMMDeterministicFactory'
 import { FixedProductMarketMaker, Condition, Question } from '../generated/schema'
 import { FixedProductMarketMaker as FixedProductMarketMakerTemplate } from '../generated/templates'
 import { nthRoot } from './nth-root';
 import { timestampToDay, joinDayAndVolume } from './day-volume-utils';
-import { updateScaledVolumes } from './fpmm-utils';
+import { updateScaledVolumes, getCollateralScale, updateLiquidityFields } from './fpmm-utils';
 
 let zeroAsBigInt = BigInt.fromI32(0);
 
@@ -115,9 +115,11 @@ export function handleFixedProductMarketMakerCreation(event: FixedProductMarketM
     amountsProduct = amountsProduct.times(outcomeTokenAmounts[i]);
   }
   fixedProductMarketMaker.outcomeTokenAmounts = outcomeTokenAmounts;
-  fixedProductMarketMaker.liquidityParameter = nthRoot(amountsProduct, outcomeTokenAmounts.length);
+  let liquidityParameter = nthRoot(amountsProduct, outcomeTokenAmounts.length);
+  let collateralScale = getCollateralScale(fixedProductMarketMaker.collateralToken as Address);
+  updateLiquidityFields(fixedProductMarketMaker, liquidityParameter, collateralScale);
 
-  updateScaledVolumes(fixedProductMarketMaker, currentDay);
+  updateScaledVolumes(fixedProductMarketMaker, collateralScale, currentDay);
 
   fixedProductMarketMaker.save();
 

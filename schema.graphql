@@ -57,6 +57,7 @@ type FixedProductMarketMaker @entity {
   outcomeTokenAmounts: [BigInt!]!
   outcomeSlotCount: Int
   liquidityParameter: BigInt!
+  scaledLiquidityParameter: BigDecimal!
 
   lastActiveDay: BigInt!
   runningDailyVolume: BigInt!
