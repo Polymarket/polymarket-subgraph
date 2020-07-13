@@ -125,7 +125,7 @@ function nthRoot(x, n) {
 }
 
 describe('Omen subgraph', function() {
-  function checkMarketMakerState() {
+  function checkMarketMakerState(hasTraded) {
     step('check subgraph market maker data matches chain', async function() {
       await waitForGraphSync();
 
@@ -167,6 +167,11 @@ describe('Omen subgraph', function() {
               id
             }
             amount
+          }
+          participants {
+            participant {
+              id
+            }
           }
         }
       }`);
@@ -218,6 +223,14 @@ describe('Omen subgraph', function() {
         } else {
           amount.should.equal((await fpmm.balanceOf(funder.id)).toString());
         }
+      }
+
+      if (hasTraded) {
+        fixedProductMarketMaker.participants.should.eql([
+          { participant: { id: trader.toLowerCase() } },
+        ]);
+      } else {
+        fixedProductMarketMaker.participants.should.eql([]);
       }
     });
   }
@@ -404,7 +417,7 @@ describe('Omen subgraph', function() {
     fpmm = await FixedProductMarketMaker.at(fpmmAddress);
   });
 
-  checkMarketMakerState();
+  checkMarketMakerState(false);
 
   step('should not index market makers on different ConditionalTokens', async function() {
     const altConditionalTokens = await ConditionalTokens.new({ from: creator });
@@ -466,7 +479,7 @@ describe('Omen subgraph', function() {
     fixedProductMarketMaker.collateralVolume.should.equal(runningCollateralVolume.toString());
   });
 
-  checkMarketMakerState();
+  checkMarketMakerState(true);
 
   const returnAmount = toWei('0.5');
   step('have trader sell to market maker', async function() {
@@ -489,7 +502,7 @@ describe('Omen subgraph', function() {
     fixedProductMarketMaker.collateralVolume.should.equal(runningCollateralVolume.toString());
   });
 
-  checkMarketMakerState();
+  checkMarketMakerState(true);
 
   step('transfer pool shares', async function() {
     const shareholderPoolAmount = toWei('0.5');
@@ -515,7 +528,7 @@ describe('Omen subgraph', function() {
       .should.equal(creatorMembership.amount);
   });
 
-  checkMarketMakerState();
+  checkMarketMakerState(true);
 
   step('submit answer', async function() {
     const answer = `0x${'0'.repeat(63)}1`;
