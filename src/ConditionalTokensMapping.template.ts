@@ -16,6 +16,7 @@ export function handleConditionPreparation(event: ConditionPreparation): void {
       if (question.category != null) {
         let category = Category.load(question.category);
         if (category != null) {
+          category.numConditions++;
           category.numOpenConditions++;
           category.save();
         }
@@ -42,6 +43,7 @@ export function handleConditionResolution(event: ConditionResolution): void {
         let category = Category.load(question.category);
         if (category != null) {
           category.numOpenConditions--;
+          category.numClosedConditions++;
           category.save();
         }
       }

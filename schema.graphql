@@ -28,7 +28,9 @@ type Question @entity {
 
 type Category @entity {
   id: ID!
+  numConditions: Int!
   numOpenConditions: Int!
+  numClosedConditions: Int!
 }
 
 type Condition @entity {

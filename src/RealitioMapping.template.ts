@@ -54,7 +54,9 @@ export function handleNewQuestion(event: LogNewQuestion): void {
           let category = Category.load(categoryId);
           if (category == null) {
             category = new Category(categoryId);
+            category.numConditions = 0;
             category.numOpenConditions = 0;
+            category.numClosedConditions = 0;
             category.save();
           }
 
