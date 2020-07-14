@@ -117,9 +117,10 @@ export function handleFixedProductMarketMakerCreation(event: FixedProductMarketM
   fixedProductMarketMaker.outcomeTokenAmounts = outcomeTokenAmounts;
   let liquidityParameter = nthRoot(amountsProduct, outcomeTokenAmounts.length);
   let collateralScale = getCollateralScale(fixedProductMarketMaker.collateralToken as Address);
-  updateLiquidityFields(fixedProductMarketMaker, liquidityParameter, collateralScale);
+  let collateralScaleDec = collateralScale.toBigDecimal();
+  updateLiquidityFields(fixedProductMarketMaker, liquidityParameter, collateralScaleDec);
 
-  updateScaledVolumes(fixedProductMarketMaker, collateralScale, currentDay);
+  updateScaledVolumes(fixedProductMarketMaker, collateralScale, collateralScaleDec, currentDay);
 
   fixedProductMarketMaker.save();
 

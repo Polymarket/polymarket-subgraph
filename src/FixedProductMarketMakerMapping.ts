@@ -57,7 +57,7 @@ export function handleFundingAdded(event: FPMMFundingAdded): void {
   fpmm.outcomeTokenAmounts = newAmounts;
   let liquidityParameter = nthRoot(amountsProduct, newAmounts.length);
   let collateralScale = getCollateralScale(fpmm.collateralToken as Address);
-  updateLiquidityFields(fpmm as FixedProductMarketMaker, liquidityParameter, collateralScale);
+  updateLiquidityFields(fpmm as FixedProductMarketMaker, liquidityParameter, collateralScale.toBigDecimal());
   fpmm.save();
 }
 
@@ -80,7 +80,7 @@ export function handleFundingRemoved(event: FPMMFundingRemoved): void {
   fpmm.outcomeTokenAmounts = newAmounts;
   let liquidityParameter = nthRoot(amountsProduct, newAmounts.length);
   let collateralScale = getCollateralScale(fpmm.collateralToken as Address);
-  updateLiquidityFields(fpmm as FixedProductMarketMaker, liquidityParameter, collateralScale);
+  updateLiquidityFields(fpmm as FixedProductMarketMaker, liquidityParameter, collateralScale.toBigDecimal());
   fpmm.save();
 }
 
@@ -109,7 +109,8 @@ export function handleBuy(event: FPMMBuy): void {
   fpmm.outcomeTokenAmounts = newAmounts;
   let liquidityParameter = nthRoot(amountsProduct, newAmounts.length);
   let collateralScale = getCollateralScale(fpmm.collateralToken as Address);
-  updateLiquidityFields(fpmm as FixedProductMarketMaker, liquidityParameter, collateralScale);
+  let collateralScaleDec = collateralScale.toBigDecimal();
+  updateLiquidityFields(fpmm as FixedProductMarketMaker, liquidityParameter, collateralScaleDec);
 
   let currentDay = timestampToDay(event.block.timestamp);
 
@@ -122,7 +123,7 @@ export function handleBuy(event: FPMMBuy): void {
   fpmm.runningDailyVolume = fpmm.collateralVolume.minus(fpmm.collateralVolumeBeforeLastActiveDay);
   fpmm.lastActiveDayAndRunningDailyVolume = joinDayAndVolume(currentDay, fpmm.runningDailyVolume);
 
-  updateScaledVolumes(fpmm as FixedProductMarketMaker, collateralScale, currentDay);
+  updateScaledVolumes(fpmm as FixedProductMarketMaker, collateralScale, collateralScaleDec, currentDay);
 
   fpmm.save();
 
@@ -153,7 +154,8 @@ export function handleSell(event: FPMMSell): void {
   fpmm.outcomeTokenAmounts = newAmounts;
   let liquidityParameter = nthRoot(amountsProduct, newAmounts.length);
   let collateralScale = getCollateralScale(fpmm.collateralToken as Address);
-  updateLiquidityFields(fpmm as FixedProductMarketMaker, liquidityParameter, collateralScale);
+  let collateralScaleDec = collateralScale.toBigDecimal();
+  updateLiquidityFields(fpmm as FixedProductMarketMaker, liquidityParameter, collateralScaleDec);
 
   let currentDay = timestampToDay(event.block.timestamp);
 
@@ -166,7 +168,7 @@ export function handleSell(event: FPMMSell): void {
   fpmm.runningDailyVolume = fpmm.collateralVolume.minus(fpmm.collateralVolumeBeforeLastActiveDay);
   fpmm.lastActiveDayAndRunningDailyVolume = joinDayAndVolume(currentDay, fpmm.runningDailyVolume);
 
-  updateScaledVolumes(fpmm as FixedProductMarketMaker, collateralScale, currentDay);
+  updateScaledVolumes(fpmm as FixedProductMarketMaker, collateralScale, collateralScaleDec, currentDay);
 
   fpmm.save();
 

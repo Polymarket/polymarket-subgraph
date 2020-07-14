@@ -65,7 +65,7 @@ type FixedProductMarketMaker @entity {
   runningDailyVolume: BigInt!
   scaledRunningDailyVolume: BigDecimal!
   lastActiveDayAndRunningDailyVolume: BigInt!
-  lastActiveDayAndScaledRunningDailyVolume: BigDecimal!
+  lastActiveDayAndScaledRunningDailyVolume: BigInt!
 
   collateralVolumeBeforeLastActiveDay: BigInt!
 
