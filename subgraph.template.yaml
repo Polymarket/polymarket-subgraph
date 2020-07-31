@@ -5,35 +5,6 @@ schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum/contract
-    name: Realitio
-    network: {{network}}
-    source:
-      address: '{{Realitio.address}}'
-      abi: Realitio
-      startBlock: {{Realitio.startBlock}}
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.3
-      language: wasm/assemblyscript
-      entities:
-        - Question
-        - FixedProductMarketMaker
-      abis:
-        - name: Realitio
-          file: ./abis/Realitio.json
-      eventHandlers:
-        - event: LogNewQuestion(indexed bytes32,indexed address,uint256,string,indexed bytes32,address,uint32,uint32,uint256,uint256)
-          handler: handleNewQuestion
-        - event: LogNewAnswer(bytes32,indexed bytes32,bytes32,indexed address,uint256,uint256,bool)
-          handler: handleNewAnswer
-        - event: LogAnswerReveal(indexed bytes32,indexed address,indexed bytes32,bytes32,uint256,uint256)
-          handler: handleAnswerReveal
-        - event: LogNotifyOfArbitrationRequest(indexed bytes32,indexed address)
-          handler: handleArbitrationRequest
-        - event: LogFinalize(indexed bytes32,indexed bytes32)
-          handler: handleFinalize
-      file: ./src/RealitioMapping.ts
-  - kind: ethereum/contract
     name: ConditionalTokens
     network: {{network}}
     source:
