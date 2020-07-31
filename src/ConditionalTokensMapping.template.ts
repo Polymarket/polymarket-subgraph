@@ -9,21 +9,21 @@ export function handleConditionPreparation(event: ConditionPreparation): void {
   condition.oracle = event.params.oracle;
   condition.questionId = event.params.questionId;
 
-  if (event.params.oracle.toHexString() == '{{RealitioProxy.addressLowerCase}}') {
-    let questionId = event.params.questionId.toHexString()
-    condition.question = questionId;
-    let question = Question.load(questionId);
-    if (question != null) {
-      if (question.category != null) {
-        let category = Category.load(question.category);
-        if (category != null) {
-          category.numConditions++;
-          category.numOpenConditions++;
-          category.save();
-        }
-      }
-    }
-  }
+  // if (event.params.oracle.toHexString() == '{{RealitioProxy.addressLowerCase}}') {
+  //   let questionId = event.params.questionId.toHexString()
+  //   condition.question = questionId;
+  //   let question = Question.load(questionId);
+  //   if (question != null) {
+  //     if (question.category != null) {
+  //       let category = Category.load(question.category);
+  //       if (category != null) {
+  //         category.numConditions++;
+  //         category.numOpenConditions++;
+  //         category.save();
+  //       }
+  //     }
+  //   }
+  // }
 
   let global = requireGlobal();
   global.numConditions++;
