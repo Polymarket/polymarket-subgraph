@@ -28,12 +28,12 @@ dataSources:
           handler: handleConditionResolution
       file: ./src/ConditionalTokensMapping.ts
   - kind: ethereum/contract
-    name: FPMMDeterministicFactory
+    name: FixedProductMarketMakerFactory
     network: {{network}}
     source:
-      address: '{{FPMMDeterministicFactory.address}}'
-      abi: FPMMDeterministicFactory
-      startBlock: {{FPMMDeterministicFactory.startBlock}}
+      address: '0x4b4fb012298aceA6D5149be3f02cc252A88b755b'
+      abi: FixedProductMarketMakerFactory
+      startBlock: 9969340
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.3
@@ -42,14 +42,14 @@ dataSources:
         - FixedProductMarketMaker
         - Question
       abis:
-        - name: FPMMDeterministicFactory
-          file: ./abis/FPMMDeterministicFactory.json
+        - name: FixedProductMarketMakerFactory
+          file: ./abis/FixedProductMarketMakerFactory.json
         - name: ERC20Detailed
           file: ./abis/ERC20Detailed.json
       eventHandlers:
-        - event: FixedProductMarketMakerCreation(indexed address,address,address,address,bytes32[],uint256)
+        - event: FixedProductMarketMakerCreation(indexed address,address,indexed address,indexed address,bytes32[],uint256)
           handler: handleFixedProductMarketMakerCreation
-      file: ./src/FPMMDeterministicFactoryMapping.ts
+      file: ./src/FixedProductMarketMakerFactoryMapping.ts
 templates:
   - name: FixedProductMarketMaker
     kind: ethereum/contract

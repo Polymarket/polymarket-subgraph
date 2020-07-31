@@ -9,10 +9,11 @@
       "transactionHash": "0xf0dd61bfd1b9613e0ba63f6bfc53ebd9af22f77542bfed31b090fc681bed116b"
     }
   },
-  "FPMMDeterministicFactory": {
+  "FixedProductMarketMakerFactory": {
     "1": {
-      "address": "0x89023DEb1d9a9a62fF3A5ca8F23Be8d87A576220",
-      "transactionHash": "0x3dcf6344be196cb8a3bf20d4680ee911bc1f200cc997c2c1c0c1c0ef3c9bc7f2"
+      "address": "0x4b4fb012298aceA6D5149be3f02cc252A88b755b",
+      "transactionHash": "0xc21edc19c4f4249f047cec4cb13052e4ce39446766f723b9a94b3748a433e9b6",
+      "startBlock": 9969340
     },
     "4": {
       "address": "0x0fB4340432e56c014fa96286de17222822a9281b",

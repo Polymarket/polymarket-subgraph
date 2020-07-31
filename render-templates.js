@@ -16,13 +16,10 @@ module.exports = function(callback) {
     };
 
     for(const contractName of [
-      'FPMMDeterministicFactory',
+      'FixedProductMarketMakerFactory',
       'FixedProductMarketMaker',
       'ConditionalTokens',
-      'Realitio',
-      'RealitioProxy',
       'ERC20Detailed',
-      'DXTokenRegistry',
     ]) {
       const { abi } = fs.readJsonSync(`build/contracts/${contractName}.json`);
       fs.outputJsonSync(`abis/${contractName}.json`, abi, { spaces: 2 });
@@ -42,9 +39,8 @@ module.exports = function(callback) {
 
     for (const templatedFileDesc of [
       ['subgraph', 'yaml'],
-      ['src/FPMMDeterministicFactoryMapping', 'ts'],
+      ['src/FixedProductMarketMakerFactoryMapping', 'ts'],
       ['src/ConditionalTokensMapping', 'ts'],
-      ['src/RealitioMapping', 'ts'],
     ]) {
       const template = fs.readFileSync(`${templatedFileDesc[0]}.template.${templatedFileDesc[1]}`).toString();
       fs.writeFileSync(
