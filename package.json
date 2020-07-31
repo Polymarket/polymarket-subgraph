@@ -1,15 +1,15 @@
 {
-  "name": "omen-subgraph",
+  "name": "polymarket-subgraph",
   "version": "1.0.0",
-  "description": "Subgraph for Omen",
+  "description": "Subgraph for Polymarket",
   "main": "index.js",
   "scripts": {
     "migrate": "truffle migrate --all --reset",
-    "create-local": "graph create --node http://localhost:8020/ protofire/omen",
-    "remove-local": "graph remove --node http://localhost:8020/ protofire/omen",
-    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 protofire/omen",
-    "deploy:rinkeby": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ protofire/omen-rinkeby",
-    "deploy:mainnet": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ protofire/omen",
+    "create-local": "graph create --node http://localhost:8020/ tomafrench/polymarket",
+    "remove-local": "graph remove --node http://localhost:8020/ tomafrench/polymarket",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 tomafrench/polymarket",
+    "deploy:rinkeby": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ tomafrench/polymarket-rinkeby",
+    "deploy:mainnet": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ tomafrench/polymarket",
     "codegen": "truffle exec render-templates.js && graph codegen",
     "codegen:rinkeby": "tnt iN && truffle exec --network=rinkeby render-templates.js && graph codegen",
     "codegen:mainnet": "tnt iN && truffle exec --network=mainnet render-templates.js && graph codegen",
@@ -24,14 +24,23 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/protofire/omen-subgraph.git"
+    "url": "git+https://github.com/tomafrench/polymarket-subgraph.git"
   },
-  "author": "Gnosis (https://gnosis.io)",
+  "contributors": [
+    {
+      "name": "Tom French",
+      "url": "https://github.com/tomafrench"
+    },
+    {
+      "name": "Gnosis",
+      "url": "https://gnosis.io"
+    }
+  ],
   "license": "LGPL-3.0",
   "bugs": {
-    "url": "https://github.com/protofire/omen-subgraph/issues"
+    "url": "https://github.com/tomafrench/polymarket-subgraph/issues"
   },
-  "homepage": "https://github.com/protofire/omen-subgraph#readme",
+  "homepage": "https://github.com/tomafrench/polymarket-subgraph#readme",
   "devDependencies": {
     "@gnosis.pm/conditional-tokens-contracts": "^1.0.1",
     "@gnosis.pm/conditional-tokens-market-makers": "^1.8.1",
