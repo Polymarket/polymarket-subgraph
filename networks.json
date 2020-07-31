@@ -18,35 +18,5 @@
       "address": "0x0fB4340432e56c014fa96286de17222822a9281b",
       "transactionHash": "0xf7b283543fe32ccf311b932091b433a5685ca34e2f81210f8f543a18e6b80881"
     }
-  },
-  "Realitio": {
-    "1": {
-      "address": "0x325a2e0F3CCA2ddbaeBB4DfC38Df8D19ca165b47",
-      "transactionHash": "0xdc0c21a41e03121c3d3aee7fd9f28a27390020b989294698bf377e89f4536b54"
-    },
-    "4": {
-      "address": "0x3D00D77ee771405628a4bA4913175EcC095538da",
-      "transactionHash": "0x59200032eea892a10bf5ae9385eb288c062786d4c41a46cd2ee1e15dd2c29f60"
-    }
-  },
-  "RealitioProxy": {
-    "1": {
-      "address": "0x0e414d014A77971f4EAA22AB58E6d84D16Ea838E",
-      "transactionHash": "0x8737379f9eb9e8e98aa77b74f46b40122770c96b7e87d85d37d18414166e5d49"
-    },
-    "4": {
-      "address": "0x576B76eebE6B5411c0ef310E65De9Bff8A60130F",
-      "transactionHash": "0x2adf9ab9541091ff2ea1035247fb4b5fa49c847018f4ce96c53657cbb0c13a67"
-    }
-  },
-  "DXTokenRegistry": {
-    "1": {
-      "address": "0x93db90445b76329e9ed96ecd74e76d8fbf2590d8",
-      "transactionHash": "0x0f52969b416df1e4f8df09a0fecb36e0e43568a2bb75a579d40840d903702ad1"
-    },
-    "4": {
-      "address": "0x03165df66d9448e45c2f5137486af3e7e752a352",
-      "transactionHash": "0xc10916833e037e887b9e0fa636e92110758f4f059b281e21a31c3737ab420bbe"
-    }
   }
 }
