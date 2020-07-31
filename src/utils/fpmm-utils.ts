@@ -34,6 +34,8 @@ export function updateVolumes (
   updateScaledVolumes(fpmm as FixedProductMarketMaker, collateralScale, collateralScaleDec, currentDay);  
 }
 
+// We export updatedScaledVolumes so that it can be used in the FPMMDeterministicFactoryMapping to initialise the values
+// On any further updates we allow use updateVolumes which will automatically call this.
 export function updateScaledVolumes(
   fpmm: FixedProductMarketMaker,
   collateralScale: BigInt,
