@@ -13,9 +13,8 @@ import {
   FPMMSell,
   Transfer,
 } from "../generated/templates/FixedProductMarketMaker/FixedProductMarketMaker"
-import { nthRoot } from './nth-root';
-import { timestampToDay, joinDayAndVolume } from './day-volume-utils';
-import { updateScaledVolumes, updateLiquidityFields, getCollateralScale } from './fpmm-utils';
+import { nthRoot } from './utils/nth-root';
+import { updateVolumes, updateLiquidityFields, getCollateralScale } from './utils/fpmm-utils';
 
 function requireAccount(accountAddress: string): void {
   let account = Account.load(accountAddress);
@@ -112,19 +111,8 @@ export function handleBuy(event: FPMMBuy): void {
   let collateralScaleDec = collateralScale.toBigDecimal();
   updateLiquidityFields(fpmm as FixedProductMarketMaker, liquidityParameter, collateralScaleDec);
 
-  let currentDay = timestampToDay(event.block.timestamp);
-
-  if (fpmm.lastActiveDay.notEqual(currentDay)) {
-    fpmm.lastActiveDay = currentDay;
-    fpmm.collateralVolumeBeforeLastActiveDay = fpmm.collateralVolume;
-  }
-
-  fpmm.collateralVolume = fpmm.collateralVolume.plus(investmentAmountMinusFees);
-  fpmm.runningDailyVolume = fpmm.collateralVolume.minus(fpmm.collateralVolumeBeforeLastActiveDay);
-  fpmm.lastActiveDayAndRunningDailyVolume = joinDayAndVolume(currentDay, fpmm.runningDailyVolume);
-
-  updateScaledVolumes(fpmm as FixedProductMarketMaker, collateralScale, collateralScaleDec, currentDay);
-
+  updateVolumes(fpmm as FixedProductMarketMaker, event.block.timestamp, investmentAmountMinusFees, collateralScale, collateralScaleDec);
+  
   fpmm.save();
 
   recordParticipation(fpmmAddress, event.params.buyer.toHexString());
@@ -157,18 +145,7 @@ export function handleSell(event: FPMMSell): void {
   let collateralScaleDec = collateralScale.toBigDecimal();
   updateLiquidityFields(fpmm as FixedProductMarketMaker, liquidityParameter, collateralScaleDec);
 
-  let currentDay = timestampToDay(event.block.timestamp);
-
-  if (fpmm.lastActiveDay.notEqual(currentDay)) {
-    fpmm.lastActiveDay = currentDay;
-    fpmm.collateralVolumeBeforeLastActiveDay = fpmm.collateralVolume;
-  }
-
-  fpmm.collateralVolume = fpmm.collateralVolume.plus(returnAmountPlusFees);
-  fpmm.runningDailyVolume = fpmm.collateralVolume.minus(fpmm.collateralVolumeBeforeLastActiveDay);
-  fpmm.lastActiveDayAndRunningDailyVolume = joinDayAndVolume(currentDay, fpmm.runningDailyVolume);
-
-  updateScaledVolumes(fpmm as FixedProductMarketMaker, collateralScale, collateralScaleDec, currentDay);
+  updateVolumes(fpmm as FixedProductMarketMaker, event.block.timestamp, returnAmountPlusFees, collateralScale, collateralScaleDec);
 
   fpmm.save();
 

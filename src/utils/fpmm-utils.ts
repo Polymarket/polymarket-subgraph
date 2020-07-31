@@ -1,7 +1,7 @@
 import { BigInt, Address, BigDecimal } from '@graphprotocol/graph-ts'
 import { FixedProductMarketMaker } from "../generated/schema";
 import { ERC20Detailed } from "../generated/templates/ERC20Detailed/ERC20Detailed"
-import { joinDayAndScaledVolume } from './day-volume-utils';
+import { timestampToDay, joinDayAndVolume, joinDayAndScaledVolume } from './day-volume-utils';
 
 export function getCollateralScale(collateralTokenAddress: Address): BigInt {
   let collateralToken = ERC20Detailed.bind(collateralTokenAddress);
@@ -10,6 +10,28 @@ export function getCollateralScale(collateralTokenAddress: Address): BigInt {
   return result.reverted ?
     BigInt.fromI32(1) :
     BigInt.fromI32(10).pow(<u8>result.value);
+}
+
+export function updateVolumes (
+  fpmm: FixedProductMarketMaker,
+  timestamp: BigInt,
+  tradeSize: BigInt,
+  collateralScale: BigInt,
+  collateralScaleDec: BigDecimal
+): void {
+  
+  let currentDay = timestampToDay(timestamp);
+
+  if (fpmm.lastActiveDay.notEqual(currentDay)) {
+    fpmm.lastActiveDay = currentDay;
+    fpmm.collateralVolumeBeforeLastActiveDay = fpmm.collateralVolume;
+  }
+
+  fpmm.collateralVolume = fpmm.collateralVolume.plus(tradeSize);
+  fpmm.runningDailyVolume = fpmm.collateralVolume.minus(fpmm.collateralVolumeBeforeLastActiveDay);
+  fpmm.lastActiveDayAndRunningDailyVolume = joinDayAndVolume(currentDay, fpmm.runningDailyVolume);
+
+  updateScaledVolumes(fpmm as FixedProductMarketMaker, collateralScale, collateralScaleDec, currentDay);  
 }
 
 export function updateScaledVolumes(

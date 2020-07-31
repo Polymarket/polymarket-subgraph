@@ -2,7 +2,7 @@ import { BigInt, BigDecimal, log } from '@graphprotocol/graph-ts'
 
 import { ConditionPreparation, ConditionResolution } from '../generated/ConditionalTokens/ConditionalTokens'
 import { Condition, Question, FixedProductMarketMaker, Category } from '../generated/schema'
-import { requireGlobal } from './global-utils';
+import { requireGlobal } from './utils/global-utils';
 
 export function handleConditionPreparation(event: ConditionPreparation): void {
   let condition = new Condition(event.params.conditionId.toHexString());
