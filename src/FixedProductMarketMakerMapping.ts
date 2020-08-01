@@ -57,6 +57,8 @@ export function handleFundingAdded(event: FPMMFundingAdded): void {
   let liquidityParameter = nthRoot(amountsProduct, newAmounts.length);
   let collateralScale = getCollateralScale(fpmm.collateralToken as Address);
   updateLiquidityFields(fpmm as FixedProductMarketMaker, liquidityParameter, collateralScale.toBigDecimal());
+
+  fpmm.totalSupply = fpmm.totalSupply.plus(event.params.sharesMinted);
   fpmm.save();
 }
 
@@ -80,6 +82,8 @@ export function handleFundingRemoved(event: FPMMFundingRemoved): void {
   let liquidityParameter = nthRoot(amountsProduct, newAmounts.length);
   let collateralScale = getCollateralScale(fpmm.collateralToken as Address);
   updateLiquidityFields(fpmm as FixedProductMarketMaker, liquidityParameter, collateralScale.toBigDecimal());
+  
+  fpmm.totalSupply = fpmm.totalSupply - event.params.sharesBurnt
   fpmm.save();
 }
 

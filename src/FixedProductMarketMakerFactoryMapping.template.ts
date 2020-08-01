@@ -100,6 +100,8 @@ export function handleFixedProductMarketMakerCreation(event: FixedProductMarketM
     }
   }
 
+  fixedProductMarketMaker.totalSupply = zeroAsBigInt;
+
   fixedProductMarketMaker.collateralVolume = zeroAsBigInt;
 
   let outcomeTokenAmounts = new Array<BigInt>(outcomeTokenCount);

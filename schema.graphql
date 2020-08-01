@@ -71,6 +71,7 @@ type FixedProductMarketMaker @entity {
 
   indexedOnQuestion: Boolean!
 
+  totalSupply: BigInt!
   # copy of conditions' content if it is a 1-large array
   condition: Condition
   # lifted from condition
