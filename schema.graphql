@@ -100,6 +100,20 @@ type FixedProductMarketMaker @entity {
   participants: [FpmmParticipation!] @derivedFrom(field: "fpmm")
 }
 
+type FPMMFundingAddition @entity {
+  id: ID!
+  fpmm: FixedProductMarketMaker!
+  funder: Account!
+  sharesMinted: BigInt!
+}
+
+type FPMMFundingRemoval @entity {
+  id: ID!
+  fpmm: FixedProductMarketMaker!
+  funder: Account!
+  sharesBurnt: BigInt!
+}
+
 type FpmmPoolMembership @entity {
   id: ID!
   pool: FixedProductMarketMaker!

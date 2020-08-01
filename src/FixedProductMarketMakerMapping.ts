@@ -5,6 +5,8 @@ import {
   Account,
   FpmmPoolMembership,
   FpmmParticipation,
+  FPMMFundingAddition,
+  FPMMFundingRemoval
 } from "../generated/schema"
 import {
   FPMMFundingAdded,
@@ -60,6 +62,12 @@ export function handleFundingAdded(event: FPMMFundingAdded): void {
 
   fpmm.totalSupply = fpmm.totalSupply.plus(event.params.sharesMinted);
   fpmm.save();
+
+  let fpmmFundingAdded = new FPMMFundingAddition(event.transaction.hash.toHexString());
+  fpmmFundingAdded.fpmm = fpmmAddress;
+  fpmmFundingAdded.funder = event.transaction.from.toHexString();
+  fpmmFundingAdded.sharesMinted = event.params.sharesMinted;
+  fpmmFundingAdded.save();
 }
 
 export function handleFundingRemoved(event: FPMMFundingRemoved): void {
@@ -79,12 +87,19 @@ export function handleFundingRemoved(event: FPMMFundingRemoved): void {
     amountsProduct = amountsProduct.times(newAmounts[i]);
   }
   fpmm.outcomeTokenAmounts = newAmounts;
+  
   let liquidityParameter = nthRoot(amountsProduct, newAmounts.length);
   let collateralScale = getCollateralScale(fpmm.collateralToken as Address);
   updateLiquidityFields(fpmm as FixedProductMarketMaker, liquidityParameter, collateralScale.toBigDecimal());
   
-  fpmm.totalSupply = fpmm.totalSupply - event.params.sharesBurnt
+  fpmm.totalSupply = fpmm.totalSupply.minus(event.params.sharesBurnt);
   fpmm.save();
+
+  let fpmmFundingRemoved = new FPMMFundingRemoval(event.transaction.hash.toHexString());
+  fpmmFundingRemoved.fpmm = fpmmAddress;
+  fpmmFundingRemoved.funder = event.transaction.from.toHexString();
+  fpmmFundingRemoved.sharesBurnt = event.params.sharesBurnt;
+  fpmmFundingRemoved.save();
 }
 
 export function handleBuy(event: FPMMBuy): void {
