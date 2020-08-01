@@ -92,16 +92,18 @@ export function handleBuy(event: FPMMBuy): void {
   }
 
   let oldAmounts = fpmm.outcomeTokenAmounts;
-  let investmentAmountMinusFees = event.params.investmentAmount.minus(event.params.feeAmount);
+  // let investmentAmountMinusFees = event.params.investmentAmount.minus(event.params.feeAmount);
+  let investmentAmount = event.params.investmentAmount
+
   let outcomeIndex = event.params.outcomeIndex.toI32();
 
   let newAmounts = new Array<BigInt>(oldAmounts.length);
   let amountsProduct = BigInt.fromI32(1);
   for(let i = 0; i < newAmounts.length; i++) {
     if (i == outcomeIndex) {
-      newAmounts[i] = oldAmounts[i].plus(investmentAmountMinusFees).minus(event.params.outcomeTokensBought);
+      newAmounts[i] = oldAmounts[i].plus(investmentAmount).minus(event.params.outcomeTokensBought);
     } else {
-      newAmounts[i] = oldAmounts[i].plus(investmentAmountMinusFees);
+      newAmounts[i] = oldAmounts[i].plus(investmentAmount);
     }
     amountsProduct = amountsProduct.times(newAmounts[i]);
   }
@@ -111,7 +113,7 @@ export function handleBuy(event: FPMMBuy): void {
   let collateralScaleDec = collateralScale.toBigDecimal();
   updateLiquidityFields(fpmm as FixedProductMarketMaker, liquidityParameter, collateralScaleDec);
 
-  updateVolumes(fpmm as FixedProductMarketMaker, event.block.timestamp, investmentAmountMinusFees, collateralScale, collateralScaleDec);
+  updateVolumes(fpmm as FixedProductMarketMaker, event.block.timestamp, investmentAmount, collateralScale, collateralScaleDec);
   
   fpmm.save();
 
@@ -127,15 +129,17 @@ export function handleSell(event: FPMMSell): void {
   }
 
   let oldAmounts = fpmm.outcomeTokenAmounts;
-  let returnAmountPlusFees = event.params.returnAmount.plus(event.params.feeAmount);
+  // let returnAmountPlusFees = event.params.returnAmount.plus(event.params.feeAmount);
+  let returnAmount = event.params.returnAmount;
+
   let outcomeIndex = event.params.outcomeIndex.toI32();
   let newAmounts = new Array<BigInt>(oldAmounts.length);
   let amountsProduct = BigInt.fromI32(1);
   for(let i = 0; i < newAmounts.length; i++) {
     if (i == outcomeIndex) {
-      newAmounts[i] = oldAmounts[i].minus(returnAmountPlusFees).plus(event.params.outcomeTokensSold);
+      newAmounts[i] = oldAmounts[i].minus(returnAmount).plus(event.params.outcomeTokensSold);
     } else {
-      newAmounts[i] = oldAmounts[i].minus(returnAmountPlusFees);
+      newAmounts[i] = oldAmounts[i].minus(returnAmount);
     }
     amountsProduct = amountsProduct.times(newAmounts[i]);
   }
@@ -145,7 +149,7 @@ export function handleSell(event: FPMMSell): void {
   let collateralScaleDec = collateralScale.toBigDecimal();
   updateLiquidityFields(fpmm as FixedProductMarketMaker, liquidityParameter, collateralScaleDec);
 
-  updateVolumes(fpmm as FixedProductMarketMaker, event.block.timestamp, returnAmountPlusFees, collateralScale, collateralScaleDec);
+  updateVolumes(fpmm as FixedProductMarketMaker, event.block.timestamp, returnAmount, collateralScale, collateralScaleDec);
 
   fpmm.save();
 
