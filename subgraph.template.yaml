@@ -40,7 +40,6 @@ dataSources:
       language: wasm/assemblyscript
       entities:
         - FixedProductMarketMaker
-        - Question
       abis:
         - name: FixedProductMarketMakerFactory
           file: ./abis/FixedProductMarketMakerFactory.json

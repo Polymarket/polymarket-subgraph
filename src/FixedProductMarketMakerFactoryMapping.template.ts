@@ -1,7 +1,7 @@
 import { BigInt, log, Address } from '@graphprotocol/graph-ts'
 
 import { FixedProductMarketMakerCreation } from '../generated/FixedProductMarketMakerFactory/FixedProductMarketMakerFactory'
-import { FixedProductMarketMaker, Condition, Question } from '../generated/schema'
+import { FixedProductMarketMaker, Condition } from '../generated/schema'
 import { FixedProductMarketMaker as FixedProductMarketMakerTemplate } from '../generated/templates'
 import { nthRoot } from './utils/nth-root';
 import { timestampToDay, joinDayAndVolume } from './utils/day-volume-utils';
@@ -50,58 +50,9 @@ export function handleFixedProductMarketMakerCreation(event: FixedProductMarketM
   }
   fixedProductMarketMaker.conditions = conditionIdStrs;
   fixedProductMarketMaker.outcomeSlotCount = outcomeTokenCount;
-  fixedProductMarketMaker.indexedOnQuestion = false;
 
-  if(conditionIdStrs.length == 1) {
-    let conditionIdStr = conditionIdStrs[0];
-    fixedProductMarketMaker.condition = conditionIdStr;
-
-    let condition = Condition.load(conditionIdStr);
-    if(condition == null) {
-      log.error(
-        'failed to create market maker {}: condition {} not prepared',
-        [addressHexString, conditionIdStr],
-      );
-      return;
-    }
-
-    let questionIdStr = condition.questionId.toHexString();
-    fixedProductMarketMaker.question = questionIdStr;
-    let question = Question.load(questionIdStr);
-    if(question != null) {
-      fixedProductMarketMaker.templateId = question.templateId;
-      fixedProductMarketMaker.data = question.data;
-      fixedProductMarketMaker.title = question.title;
-      fixedProductMarketMaker.outcomes = question.outcomes;
-      fixedProductMarketMaker.category = question.category;
-      fixedProductMarketMaker.language = question.language;
-      fixedProductMarketMaker.arbitrator = question.arbitrator;
-      fixedProductMarketMaker.openingTimestamp = question.openingTimestamp;
-      fixedProductMarketMaker.timeout = question.timeout;
-
-      if(question.indexedFixedProductMarketMakers.length < 100) {
-        fixedProductMarketMaker.currentAnswer = question.currentAnswer;
-        fixedProductMarketMaker.currentAnswerBond = question.currentAnswerBond;
-        fixedProductMarketMaker.currentAnswerTimestamp = question.currentAnswerTimestamp;
-        fixedProductMarketMaker.isPendingArbitration = question.isPendingArbitration;
-        fixedProductMarketMaker.arbitrationOccurred = question.arbitrationOccurred;
-        fixedProductMarketMaker.answerFinalizedTimestamp = question.answerFinalizedTimestamp;
-        let fpmms = question.indexedFixedProductMarketMakers;
-        fpmms.push(addressHexString);
-        question.indexedFixedProductMarketMakers = fpmms;
-        question.save();
-        fixedProductMarketMaker.indexedOnQuestion = true;
-      } else {
-        log.warning(
-          'cannot continue updating live question (id {}) properties on fpmm {}',
-          [questionIdStr, addressHexString],
-        );
-      }
-    }
-  }
-
+  // Initialise FPMM state
   fixedProductMarketMaker.totalSupply = zeroAsBigInt;
-
   fixedProductMarketMaker.collateralVolume = zeroAsBigInt;
 
   let outcomeTokenAmounts = new Array<BigInt>(outcomeTokenCount);

@@ -142,26 +142,9 @@ describe('Omen subgraph', function() {
           outcomeTokenAmounts
           outcomeSlotCount
           liquidityParameter
-          indexedOnQuestion
           condition {
             id
-            question {
-              id
-            }
           }
-          question {
-            id
-            indexedFixedProductMarketMakers { id }
-          }
-          templateId
-          data
-          title
-          outcomes
-          category
-          language
-          arbitrator
-          openingTimestamp
-          timeout
           poolMembers {
             funder {
               id
@@ -198,24 +181,17 @@ describe('Omen subgraph', function() {
         ).toString(),
       );
 
-      fixedProductMarketMaker.indexedOnQuestion.should.be.true();
       should.exist(fixedProductMarketMaker.condition);
       fixedProductMarketMaker.condition.id.should.equal(conditionId);
       should.exist(fixedProductMarketMaker.question);
-      fixedProductMarketMaker.question.id.should.equal(fixedProductMarketMaker.condition.question.id);
-      fixedProductMarketMaker.question.indexedFixedProductMarketMakers
-        .should.eql([{ id: fpmm.address.toLowerCase() }]);
+      // fixedProductMarketMaker.question.id.should.equal(fixedProductMarketMaker.condition.question.id);
+      // fixedProductMarketMaker.question.indexedFixedProductMarketMakers
+      //   .should.eql([{ id: fpmm.address.toLowerCase() }]);
 
       fixedProductMarketMaker.templateId.should.equal('2');
-      fixedProductMarketMaker.data.should.equal(questionData);
-      fixedProductMarketMaker.title.should.equal(questionTitle);
-      fixedProductMarketMaker.outcomes.should.eql(questionOutcomes)
-      fixedProductMarketMaker.category.should.equal(questionCategory);
-      fixedProductMarketMaker.language.should.equal(questionLanguage);
 
-      fixedProductMarketMaker.arbitrator.should.equal(arbitrator.toLowerCase());
-      fixedProductMarketMaker.openingTimestamp.should.equal(answerSubmissionOpeningTimestamp.toString());
-      fixedProductMarketMaker.timeout.should.equal(finalizationTimeout.toString());
+      // fixedProductMarketMaker.openingTimestamp.should.equal(answerSubmissionOpeningTimestamp.toString());
+      // fixedProductMarketMaker.timeout.should.equal(finalizationTimeout.toString());
 
       for (const { funder, amount } of fixedProductMarketMaker.poolMembers) {
         if (funder.id === `0x${'0'.repeat(40)}`) {

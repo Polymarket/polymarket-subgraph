@@ -1,43 +1,7 @@
-type Question @entity {
-  id: ID!
-
-  templateId: BigInt!
-  data: String!
-  title: String
-  outcomes: [String!]
-  category: String
-  language: String
-
-  arbitrator: Bytes!
-  openingTimestamp: BigInt!
-  timeout: BigInt!
-
-  currentAnswer: Bytes
-  currentAnswerBond: BigInt
-  currentAnswerTimestamp: BigInt
-
-  isPendingArbitration: Boolean!
-  arbitrationOccurred: Boolean!
-
-  answerFinalizedTimestamp: BigInt
-
-  indexedFixedProductMarketMakers: [FixedProductMarketMaker!]!
-
-  conditions: [Condition!]! @derivedFrom(field: "question")
-}
-
-type Category @entity {
-  id: ID!
-  numConditions: Int!
-  numOpenConditions: Int!
-  numClosedConditions: Int!
-}
-
 type Condition @entity {
   id: ID!
   oracle: Bytes!
   questionId: Bytes!
-  question: Question
   outcomeSlotCount: Int!
   resolutionTimestamp: BigInt
   payouts: [BigDecimal!]
@@ -72,42 +36,19 @@ type FixedProductMarketMaker @entity {
   indexedOnQuestion: Boolean!
 
   totalSupply: BigInt!
-  # copy of conditions' content if it is a 1-large array
-  condition: Condition
-  # lifted from condition
-  question: Question
-  # lifted from condition's question
-  templateId: BigInt
-  data: String
-  title: String
-  outcomes: [String!]
-  category: String
-  language: String
-  arbitrator: Bytes
-  openingTimestamp: BigInt
-  timeout: BigInt
-  # pushed from condition & question if this fpmm one of the first
-  resolutionTimestamp: BigInt
-  payouts: [BigDecimal!]
-  currentAnswer: Bytes
-  currentAnswerBond: BigInt
-  currentAnswerTimestamp: BigInt
-  isPendingArbitration: Boolean
-  arbitrationOccurred: Boolean
-  answerFinalizedTimestamp: BigInt
 
   poolMembers: [FpmmPoolMembership!] @derivedFrom(field: "pool")
   participants: [FpmmParticipation!] @derivedFrom(field: "fpmm")
 }
 
-type FPMMFundingAddition @entity {
+type FpmmFundingAddition @entity {
   id: ID!
   fpmm: FixedProductMarketMaker!
   funder: Account!
   sharesMinted: BigInt!
 }
 
-type FPMMFundingRemoval @entity {
+type FpmmFundingRemoval @entity {
   id: ID!
   fpmm: FixedProductMarketMaker!
   funder: Account!

@@ -5,8 +5,8 @@ import {
   Account,
   FpmmPoolMembership,
   FpmmParticipation,
-  FPMMFundingAddition,
-  FPMMFundingRemoval
+  FpmmFundingAddition,
+  FpmmFundingRemoval
 } from "../generated/schema"
 import {
   FPMMFundingAdded,
@@ -63,7 +63,7 @@ export function handleFundingAdded(event: FPMMFundingAdded): void {
   fpmm.totalSupply = fpmm.totalSupply.plus(event.params.sharesMinted);
   fpmm.save();
 
-  let fpmmFundingAdded = new FPMMFundingAddition(event.transaction.hash.toHexString());
+  let fpmmFundingAdded = new FpmmFundingAddition(event.transaction.hash.toHexString());
   fpmmFundingAdded.fpmm = fpmmAddress;
   fpmmFundingAdded.funder = event.transaction.from.toHexString();
   fpmmFundingAdded.sharesMinted = event.params.sharesMinted;
@@ -95,7 +95,7 @@ export function handleFundingRemoved(event: FPMMFundingRemoved): void {
   fpmm.totalSupply = fpmm.totalSupply.minus(event.params.sharesBurnt);
   fpmm.save();
 
-  let fpmmFundingRemoved = new FPMMFundingRemoval(event.transaction.hash.toHexString());
+  let fpmmFundingRemoved = new FpmmFundingRemoval(event.transaction.hash.toHexString());
   fpmmFundingRemoved.fpmm = fpmmAddress;
   fpmmFundingRemoved.funder = event.transaction.from.toHexString();
   fpmmFundingRemoved.sharesBurnt = event.params.sharesBurnt;
