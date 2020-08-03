@@ -74,11 +74,6 @@ type Account @entity {
   fpmmParticipations: [FpmmParticipation!] @derivedFrom(field: "participant")
 }
 
-type TokenRegistry @entity {
-  id: ID!
-  markets: [ID!]!
-}
-
 type Global @entity {
   # ID is empty string, this is a singleton
   id: ID!
