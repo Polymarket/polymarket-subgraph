@@ -28,5 +28,4 @@ subgraph.yaml
 generated/
 
 # built templates
-src/ConditionalTokensMapping.ts
 src/FixedProductMarketMakerFactoryMapping.ts
