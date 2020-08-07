@@ -15,7 +15,7 @@ export function handlePositionSplit(event: PositionSplit): void {
   split.save();
 }
 
-export function handlePayoutMerge(event: PositionsMerge): void {
+export function handlePositionsMerge(event: PositionsMerge): void {
   let merge = new Merge(event.transaction.hash.toHexString());
   merge.stakeholder = event.params.stakeholder.toHexString();
   merge.collateralToken = event.params.collateralToken;
