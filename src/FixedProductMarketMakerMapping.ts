@@ -7,8 +7,7 @@ import {
   FpmmParticipation,
   FpmmFundingAddition,
   FpmmFundingRemoval,
-  FpmmBuy,
-  FpmmSell,
+  Transaction
 } from "../generated/schema"
 import {
   FPMMFundingAdded,
@@ -29,26 +28,28 @@ function requireAccount(accountAddress: string): void {
 }
 
 function recordBuy(event: FPMMBuy): void {
-  let buy = new FpmmBuy(event.transaction.hash.toHexString());
+  let buy = new Transaction(event.transaction.hash.toHexString());
+  buy.type = "Buy";
   buy.timestamp = event.block.timestamp;
-  buy.fpmm = event.address.toHexString();
-  buy.buyer = event.params.buyer.toHexString();
-  buy.investmentAmount = event.params.investmentAmount;
+  buy.market = event.address.toHexString();
+  buy.user = event.params.buyer.toHexString();
+  buy.tradeAmount = event.params.investmentAmount;
   buy.feeAmount = event.params.feeAmount;
   buy.outcomeIndex = event.params.outcomeIndex;
-  buy.outcomeTokensBought = event.params.outcomeTokensBought;
+  buy.outcomeTokensAmount = event.params.outcomeTokensBought;
   buy.save();
 }
 
 function recordSell(event: FPMMSell): void {
-  let sell = new FpmmSell(event.transaction.hash.toHexString());
+  let sell = new Transaction(event.transaction.hash.toHexString());
+  sell.type = "Sell";
   sell.timestamp = event.block.timestamp;
-  sell.fpmm = event.address.toHexString();
-  sell.seller = event.params.seller.toHexString();
-  sell.returnAmount = event.params.returnAmount;
+  sell.market = event.address.toHexString();
+  sell.user = event.params.seller.toHexString();
+  sell.tradeAmount = event.params.returnAmount;
   sell.feeAmount = event.params.feeAmount;
   sell.outcomeIndex = event.params.outcomeIndex;
-  sell.outcomeTokensSold = event.params.outcomeTokensSold;
+  sell.outcomeTokensAmount = event.params.outcomeTokensSold;
   sell.save();
 }
 

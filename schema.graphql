@@ -106,26 +106,16 @@ type FpmmFundingRemoval @entity {
   sharesBurnt: BigInt!
 }
 
-type FpmmBuy @entity {
+type Transaction @entity {
   id: ID!
+  type: String!
   timestamp: BigInt!
-  fpmm: FixedProductMarketMaker!
-  buyer: Account!
-  investmentAmount: BigInt!
+  market: FixedProductMarketMaker!
+  user: Account!
+  tradeAmount: BigInt!
   feeAmount: BigInt!
   outcomeIndex: BigInt!
-  outcomeTokensBought: BigInt!
-}
-
-type FpmmSell @entity {
-  id: ID!
-  timestamp: BigInt!
-  fpmm: FixedProductMarketMaker!
-  seller: Account!
-  returnAmount: BigInt!
-  feeAmount: BigInt!
-  outcomeIndex: BigInt!
-  outcomeTokensSold: BigInt!
+  outcomeTokensAmount: BigInt!
 }
 
 type FpmmPoolMembership @entity {
