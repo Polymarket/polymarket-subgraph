@@ -5,11 +5,11 @@
   "main": "index.js",
   "scripts": {
     "migrate": "truffle migrate --all --reset",
-    "create-local": "graph create --node http://localhost:8020/ tomafrench/polymarket",
-    "remove-local": "graph remove --node http://localhost:8020/ tomafrench/polymarket",
-    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 tomafrench/polymarket",
-    "deploy:rinkeby": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ tomafrench/polymarket-rinkeby",
-    "deploy:mainnet": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ tomafrench/polymarket",
+    "create-local": "graph create --node http://localhost:8020/ TokenUnion/polymarket",
+    "remove-local": "graph remove --node http://localhost:8020/ TokenUnion/polymarket",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 TokenUnion/polymarket",
+    "deploy:rinkeby": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ TokenUnion/polymarket-rinkeby",
+    "deploy:mainnet": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ TokenUnion/polymarket",
     "codegen": "truffle exec render-templates.js && graph codegen",
     "codegen:rinkeby": "tnt iN && truffle exec --network=rinkeby render-templates.js && graph codegen",
     "codegen:mainnet": "tnt iN && truffle exec --network=mainnet render-templates.js && graph codegen",
@@ -24,7 +24,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tomafrench/polymarket-subgraph.git"
+    "url": "git+https://github.com/TokenUnion/polymarket-subgraph.git"
   },
   "contributors": [
     {
@@ -38,9 +38,9 @@
   ],
   "license": "LGPL-3.0",
   "bugs": {
-    "url": "https://github.com/tomafrench/polymarket-subgraph/issues"
+    "url": "https://github.com/TokenUnion/polymarket-subgraph/issues"
   },
-  "homepage": "https://github.com/tomafrench/polymarket-subgraph#readme",
+  "homepage": "https://github.com/TokenUnion/polymarket-subgraph#readme",
   "devDependencies": {
     "@gnosis.pm/conditional-tokens-contracts": "^1.0.1",
     "@gnosis.pm/conditional-tokens-market-makers": "^1.8.1",
