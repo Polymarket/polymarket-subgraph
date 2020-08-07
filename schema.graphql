@@ -1,3 +1,21 @@
+# Generic
+
+type Global @entity {
+  # ID is empty string, this is a singleton
+  id: ID!
+  numConditions: Int!
+  numOpenConditions: Int!
+  numClosedConditions: Int!
+}
+
+type Account @entity {
+  id: ID!
+  fpmmPoolMemberships: [FpmmPoolMembership!] @derivedFrom(field: "funder")
+  fpmmParticipations: [FpmmParticipation!] @derivedFrom(field: "participant")
+}
+
+# Conditional Tokens
+
 type Condition @entity {
   id: ID!
   oracle: Bytes!
@@ -5,8 +23,41 @@ type Condition @entity {
   outcomeSlotCount: Int!
   resolutionTimestamp: BigInt
   payouts: [BigDecimal!]
-  fixedProductMarketMakers: [FixedProductMarketMaker!]! @derivedFrom(field: "conditions")
+  fixedProductMarketMakers: [FixedProductMarketMaker!]!
+    @derivedFrom(field: "conditions")
 }
+
+type Split @entity {
+  id: ID!
+  stakeholder: Account!
+  collateralToken: Bytes!
+  parentCollectionId: Bytes!
+  condition: Condition!
+  partition: [BigInt!]!
+  amount: BigInt!
+}
+
+type Merge @entity {
+  id: ID!
+  stakeholder: Account!
+  collateralToken: Bytes!
+  parentCollectionId: Bytes!
+  condition: Condition!
+  partition: [BigInt!]!
+  amount: BigInt!
+}
+
+type Redemption @entity {
+  id: ID!
+  redeemer: Account!
+  collateralToken: Bytes!
+  parentCollectionId: Bytes!
+  condition: Condition!
+  indexSets: [BigInt!]!
+  payout: BigInt!
+}
+
+# Market Makers
 
 type FixedProductMarketMaker @entity {
   id: ID!
@@ -55,6 +106,26 @@ type FpmmFundingRemoval @entity {
   sharesBurnt: BigInt!
 }
 
+type FpmmBuy @entity {
+  id: ID!
+  fpmm: FixedProductMarketMaker!
+  buyer: Account!
+  investmentAmount: BigInt!
+  feeAmount: BigInt!
+  outcomeIndex: BigInt!
+  outcomeTokensBought: BigInt!
+}
+
+type FpmmSell @entity {
+  id: ID!
+  fpmm: FixedProductMarketMaker!
+  seller: Account!
+  returnAmount: BigInt!
+  feeAmount: BigInt!
+  outcomeIndex: BigInt!
+  outcomeTokensSold: BigInt!
+}
+
 type FpmmPoolMembership @entity {
   id: ID!
   pool: FixedProductMarketMaker!
@@ -66,18 +137,4 @@ type FpmmParticipation @entity {
   id: ID!
   fpmm: FixedProductMarketMaker!
   participant: Account!
-}
-
-type Account @entity {
-  id: ID!
-  fpmmPoolMemberships: [FpmmPoolMembership!] @derivedFrom(field: "funder")
-  fpmmParticipations: [FpmmParticipation!] @derivedFrom(field: "participant")
-}
-
-type Global @entity {
-  # ID is empty string, this is a singleton
-  id: ID!
-  numConditions: Int!
-  numOpenConditions: Int!
-  numClosedConditions: Int!
 }

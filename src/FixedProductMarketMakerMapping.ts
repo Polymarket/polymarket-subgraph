@@ -6,7 +6,9 @@ import {
   FpmmPoolMembership,
   FpmmParticipation,
   FpmmFundingAddition,
-  FpmmFundingRemoval
+  FpmmFundingRemoval,
+  FpmmBuy,
+  FpmmSell,
 } from "../generated/schema"
 import {
   FPMMFundingAdded,
@@ -24,6 +26,28 @@ function requireAccount(accountAddress: string): void {
     account = new Account(accountAddress);
     account.save();
   }
+}
+
+function recordBuy(event: FPMMBuy) {
+  let buy = new FpmmBuy(event.transaction.hash.toHexString());
+  buy.fpmm = event.address.toHexString();
+  buy.buyer = event.params.buyer.toHexString();
+  buy.investmentAmount = event.params.investmentAmount;
+  buy.feeAmount = event.params.feeAmount;
+  buy.outcomeIndex = event.params.outcomeIndex;
+  buy.outcomeTokensBought = event.params.outcomeTokensBought;
+  buy.save();
+}
+
+function recordSell(event: FPMMSell) {
+  let sell = new FpmmSell(event.transaction.hash.toHexString());
+  sell.fpmm = event.address.toHexString();
+  sell.seller = event.params.seller.toHexString();
+  sell.returnAmount = event.params.returnAmount;
+  sell.feeAmount = event.params.feeAmount;
+  sell.outcomeIndex = event.params.outcomeIndex;
+  sell.outcomeTokensSold = event.params.outcomeTokensSold;
+  sell.save();
 }
 
 function recordParticipation(fpmmAddress: string, participantAddress: string): void {
@@ -137,6 +161,7 @@ export function handleBuy(event: FPMMBuy): void {
   fpmm.save();
 
   recordParticipation(fpmmAddress, event.params.buyer.toHexString());
+  recordBuy(event)
 }
 
 export function handleSell(event: FPMMSell): void {
@@ -173,6 +198,7 @@ export function handleSell(event: FPMMSell): void {
   fpmm.save();
 
   recordParticipation(fpmmAddress, event.params.seller.toHexString());
+  recordSell(event);
 }
 
 export function handlePoolShareTransfer(event: Transfer): void {

@@ -1,8 +1,41 @@
 import { BigInt, BigDecimal, log } from '@graphprotocol/graph-ts'
 
-import { ConditionPreparation, ConditionResolution } from '../generated/ConditionalTokens/ConditionalTokens'
-import { Condition } from '../generated/schema'
+import { ConditionPreparation, ConditionResolution, PositionSplit, PositionsMerge, PayoutRedemption } from '../generated/ConditionalTokens/ConditionalTokens'
+import { Condition, Redemption, Merge, Split } from '../generated/schema'
 import { requireGlobal } from './utils/global-utils';
+
+export function handlePositionSplit(event: PositionSplit) {
+  let split = new Split(event.transaction.hash.toHexString());
+  split.stakeholder = event.params.stakeholder.toHexString();
+  split.collateralToken = event.params.collateralToken;
+  split.parentCollectionId = event.params.parentCollectionId;
+  split.condition = event.params.conditionId.toHexString();
+  split.partition = event.params.partition;
+  split.amount = event.params.amount;
+  split.save();
+}
+
+export function handlePayoutMerge(event: PositionsMerge) {
+  let merge = new Merge(event.transaction.hash.toHexString());
+  merge.stakeholder = event.params.stakeholder.toHexString();
+  merge.collateralToken = event.params.collateralToken;
+  merge.parentCollectionId = event.params.parentCollectionId;
+  merge.condition = event.params.conditionId.toHexString();
+  merge.partition = event.params.partition;
+  merge.amount = event.params.amount;
+  merge.save();
+}
+
+export function handlePayoutRedemption(event: PayoutRedemption) {
+  let redemption = new Redemption(event.transaction.hash.toHexString());
+  redemption.redeemer = event.params.redeemer.toHexString();
+  redemption.collateralToken = event.params.collateralToken;
+  redemption.parentCollectionId = event.params.parentCollectionId;
+  redemption.condition = event.params.conditionId.toHexString();
+  redemption.indexSets = event.params.indexSets;
+  redemption.payout = event.params.payout;
+  redemption.save();
+}
 
 export function handleConditionPreparation(event: ConditionPreparation): void {
   let condition = new Condition(event.params.conditionId.toHexString());
