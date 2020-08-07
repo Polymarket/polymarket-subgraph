@@ -84,8 +84,6 @@ type FixedProductMarketMaker @entity {
 
   collateralVolumeBeforeLastActiveDay: BigInt!
 
-  indexedOnQuestion: Boolean!
-
   totalSupply: BigInt!
 
   poolMembers: [FpmmPoolMembership!] @derivedFrom(field: "pool")
