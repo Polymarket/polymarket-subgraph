@@ -4,7 +4,7 @@ import { ConditionPreparation, ConditionResolution, PositionSplit, PositionsMerg
 import { Condition, Redemption, Merge, Split } from '../generated/schema'
 import { requireGlobal } from './utils/global-utils';
 
-export function handlePositionSplit(event: PositionSplit) {
+export function handlePositionSplit(event: PositionSplit): void {
   let split = new Split(event.transaction.hash.toHexString());
   split.stakeholder = event.params.stakeholder.toHexString();
   split.collateralToken = event.params.collateralToken;
@@ -15,7 +15,7 @@ export function handlePositionSplit(event: PositionSplit) {
   split.save();
 }
 
-export function handlePayoutMerge(event: PositionsMerge) {
+export function handlePayoutMerge(event: PositionsMerge): void {
   let merge = new Merge(event.transaction.hash.toHexString());
   merge.stakeholder = event.params.stakeholder.toHexString();
   merge.collateralToken = event.params.collateralToken;
@@ -26,7 +26,7 @@ export function handlePayoutMerge(event: PositionsMerge) {
   merge.save();
 }
 
-export function handlePayoutRedemption(event: PayoutRedemption) {
+export function handlePayoutRedemption(event: PayoutRedemption): void {
   let redemption = new Redemption(event.transaction.hash.toHexString());
   redemption.redeemer = event.params.redeemer.toHexString();
   redemption.collateralToken = event.params.collateralToken;

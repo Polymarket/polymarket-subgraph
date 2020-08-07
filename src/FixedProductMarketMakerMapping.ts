@@ -28,7 +28,7 @@ function requireAccount(accountAddress: string): void {
   }
 }
 
-function recordBuy(event: FPMMBuy) {
+function recordBuy(event: FPMMBuy): void {
   let buy = new FpmmBuy(event.transaction.hash.toHexString());
   buy.fpmm = event.address.toHexString();
   buy.buyer = event.params.buyer.toHexString();
@@ -39,7 +39,7 @@ function recordBuy(event: FPMMBuy) {
   buy.save();
 }
 
-function recordSell(event: FPMMSell) {
+function recordSell(event: FPMMSell): void {
   let sell = new FpmmSell(event.transaction.hash.toHexString());
   sell.fpmm = event.address.toHexString();
   sell.seller = event.params.seller.toHexString();
