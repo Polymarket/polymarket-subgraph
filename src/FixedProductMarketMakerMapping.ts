@@ -30,6 +30,7 @@ function requireAccount(accountAddress: string): void {
 
 function recordBuy(event: FPMMBuy): void {
   let buy = new FpmmBuy(event.transaction.hash.toHexString());
+  buy.timestamp = event.block.timestamp;
   buy.fpmm = event.address.toHexString();
   buy.buyer = event.params.buyer.toHexString();
   buy.investmentAmount = event.params.investmentAmount;
@@ -41,6 +42,7 @@ function recordBuy(event: FPMMBuy): void {
 
 function recordSell(event: FPMMSell): void {
   let sell = new FpmmSell(event.transaction.hash.toHexString());
+  sell.timestamp = event.block.timestamp;
   sell.fpmm = event.address.toHexString();
   sell.seller = event.params.seller.toHexString();
   sell.returnAmount = event.params.returnAmount;
@@ -88,6 +90,7 @@ export function handleFundingAdded(event: FPMMFundingAdded): void {
   fpmm.save();
 
   let fpmmFundingAdded = new FpmmFundingAddition(event.transaction.hash.toHexString());
+  fpmmFundingAdded.timestamp = event.block.timestamp;
   fpmmFundingAdded.fpmm = fpmmAddress;
   fpmmFundingAdded.funder = event.transaction.from.toHexString();
   fpmmFundingAdded.sharesMinted = event.params.sharesMinted;
@@ -120,6 +123,7 @@ export function handleFundingRemoved(event: FPMMFundingRemoved): void {
   fpmm.save();
 
   let fpmmFundingRemoved = new FpmmFundingRemoval(event.transaction.hash.toHexString());
+  fpmmFundingRemoved.timestamp = event.block.timestamp;
   fpmmFundingRemoved.fpmm = fpmmAddress;
   fpmmFundingRemoved.funder = event.transaction.from.toHexString();
   fpmmFundingRemoved.sharesBurnt = event.params.sharesBurnt;

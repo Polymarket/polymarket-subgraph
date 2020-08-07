@@ -92,6 +92,7 @@ type FixedProductMarketMaker @entity {
 
 type FpmmFundingAddition @entity {
   id: ID!
+  timestamp: BigInt!
   fpmm: FixedProductMarketMaker!
   funder: Account!
   sharesMinted: BigInt!
@@ -99,6 +100,7 @@ type FpmmFundingAddition @entity {
 
 type FpmmFundingRemoval @entity {
   id: ID!
+  timestamp: BigInt!
   fpmm: FixedProductMarketMaker!
   funder: Account!
   sharesBurnt: BigInt!
@@ -106,6 +108,7 @@ type FpmmFundingRemoval @entity {
 
 type FpmmBuy @entity {
   id: ID!
+  timestamp: BigInt!
   fpmm: FixedProductMarketMaker!
   buyer: Account!
   investmentAmount: BigInt!
@@ -116,6 +119,7 @@ type FpmmBuy @entity {
 
 type FpmmSell @entity {
   id: ID!
+  timestamp: BigInt!
   fpmm: FixedProductMarketMaker!
   seller: Account!
   returnAmount: BigInt!
