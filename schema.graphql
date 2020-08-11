@@ -71,6 +71,8 @@ type FixedProductMarketMaker @entity {
 
   collateralVolume: BigInt!
   scaledCollateralVolume: BigDecimal!
+  feeVolume: BigInt!
+  scaledFeeVolume: BigDecimal!
   outcomeTokenAmounts: [BigInt!]!
   outcomeSlotCount: Int
   liquidityParameter: BigInt!

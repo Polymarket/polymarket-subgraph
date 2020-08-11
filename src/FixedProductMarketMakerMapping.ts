@@ -17,7 +17,7 @@ import {
   Transfer,
 } from "../generated/templates/FixedProductMarketMaker/FixedProductMarketMaker"
 import { nthRoot } from './utils/nth-root';
-import { updateVolumes, updateLiquidityFields, getCollateralScale } from './utils/fpmm-utils';
+import { updateVolumes, updateLiquidityFields, getCollateralScale, updateFeeFields } from './utils/fpmm-utils';
 
 function requireAccount(accountAddress: string): void {
   let account = Account.load(accountAddress);
@@ -162,7 +162,7 @@ export function handleBuy(event: FPMMBuy): void {
   updateLiquidityFields(fpmm as FixedProductMarketMaker, liquidityParameter, collateralScaleDec);
 
   updateVolumes(fpmm as FixedProductMarketMaker, event.block.timestamp, investmentAmount, collateralScale, collateralScaleDec);
-  
+  updateFeeFields(fpmm as FixedProductMarketMaker, event.params.feeAmount, collateralScaleDec)
   fpmm.save();
 
   recordParticipation(fpmmAddress, event.params.buyer.toHexString());
@@ -199,6 +199,7 @@ export function handleSell(event: FPMMSell): void {
   updateLiquidityFields(fpmm as FixedProductMarketMaker, liquidityParameter, collateralScaleDec);
 
   updateVolumes(fpmm as FixedProductMarketMaker, event.block.timestamp, returnAmount, collateralScale, collateralScaleDec);
+  updateFeeFields(fpmm as FixedProductMarketMaker, event.params.feeAmount, collateralScaleDec)
 
   fpmm.save();
 

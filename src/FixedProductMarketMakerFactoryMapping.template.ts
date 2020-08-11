@@ -1,4 +1,4 @@
-import { BigInt, log, Address } from '@graphprotocol/graph-ts'
+import { BigInt, log, Address, BigDecimal } from '@graphprotocol/graph-ts'
 
 import { FixedProductMarketMakerCreation } from '../generated/FixedProductMarketMakerFactory/FixedProductMarketMakerFactory'
 import { FixedProductMarketMaker, Condition } from '../generated/schema'
@@ -54,6 +54,8 @@ export function handleFixedProductMarketMakerCreation(event: FixedProductMarketM
   // Initialise FPMM state
   fixedProductMarketMaker.totalSupply = zeroAsBigInt;
   fixedProductMarketMaker.collateralVolume = zeroAsBigInt;
+  fixedProductMarketMaker.feeVolume = zeroAsBigInt;
+
 
   let outcomeTokenAmounts = new Array<BigInt>(outcomeTokenCount);
   let amountsProduct = BigInt.fromI32(1);
@@ -74,6 +76,7 @@ export function handleFixedProductMarketMakerCreation(event: FixedProductMarketM
   fixedProductMarketMaker.collateralVolumeBeforeLastActiveDay = zeroAsBigInt;
 
   updateScaledVolumes(fixedProductMarketMaker, collateralScale, collateralScaleDec, currentDay);
+  fixedProductMarketMaker.scaledFeeVolume = new BigDecimal(zeroAsBigInt);
 
   fixedProductMarketMaker.save();
 
