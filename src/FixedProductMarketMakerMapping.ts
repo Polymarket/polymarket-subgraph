@@ -53,6 +53,26 @@ function recordSell(event: FPMMSell): void {
   sell.save();
 }
 
+function recordFundingAddition(event: FPMMFundingAdded): void {
+  let fpmmFundingAdded = new FpmmFundingAddition(event.transaction.hash.toHexString());
+  fpmmFundingAdded.timestamp = event.block.timestamp;
+  fpmmFundingAdded.fpmm = event.address.toHexString();
+  fpmmFundingAdded.funder = event.transaction.from.toHexString();
+  fpmmFundingAdded.sharesMinted = event.params.sharesMinted;
+  fpmmFundingAdded.save();
+}
+
+function recordFundingRemoval(event: FPMMFundingRemoved): void {
+  let fpmmFundingRemoved = new FpmmFundingRemoval(event.transaction.hash.toHexString());
+  fpmmFundingRemoved.timestamp = event.block.timestamp;
+  fpmmFundingRemoved.fpmm = event.address.toHexString();
+  fpmmFundingRemoved.funder = event.transaction.from.toHexString();
+  fpmmFundingRemoved.sharesBurnt = event.params.sharesBurnt;
+  fpmmFundingRemoved.save();
+}
+
+
+
 function recordParticipation(fpmmAddress: string, participantAddress: string): void {
   requireAccount(participantAddress);
 
@@ -89,13 +109,7 @@ export function handleFundingAdded(event: FPMMFundingAdded): void {
 
   fpmm.totalSupply = fpmm.totalSupply.plus(event.params.sharesMinted);
   fpmm.save();
-
-  let fpmmFundingAdded = new FpmmFundingAddition(event.transaction.hash.toHexString());
-  fpmmFundingAdded.timestamp = event.block.timestamp;
-  fpmmFundingAdded.fpmm = fpmmAddress;
-  fpmmFundingAdded.funder = event.transaction.from.toHexString();
-  fpmmFundingAdded.sharesMinted = event.params.sharesMinted;
-  fpmmFundingAdded.save();
+  recordFundingAddition(event)
 }
 
 export function handleFundingRemoved(event: FPMMFundingRemoved): void {
@@ -122,13 +136,7 @@ export function handleFundingRemoved(event: FPMMFundingRemoved): void {
   
   fpmm.totalSupply = fpmm.totalSupply.minus(event.params.sharesBurnt);
   fpmm.save();
-
-  let fpmmFundingRemoved = new FpmmFundingRemoval(event.transaction.hash.toHexString());
-  fpmmFundingRemoved.timestamp = event.block.timestamp;
-  fpmmFundingRemoved.fpmm = fpmmAddress;
-  fpmmFundingRemoved.funder = event.transaction.from.toHexString();
-  fpmmFundingRemoved.sharesBurnt = event.params.sharesBurnt;
-  fpmmFundingRemoved.save();
+  recordFundingRemoval(event)
 }
 
 export function handleBuy(event: FPMMBuy): void {
