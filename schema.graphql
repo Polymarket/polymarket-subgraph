@@ -10,7 +10,9 @@ type Global @entity {
 
 type Account @entity {
   id: ID!
+  # Which markets has user provided liquidity to
   fpmmPoolMemberships: [FpmmPoolMembership!] @derivedFrom(field: "funder")
+  # Which markets has user bought shares in
   fpmmParticipations: [FpmmParticipation!] @derivedFrom(field: "participant")
   transactions: [Transaction!] @derivedFrom(field: "user")
   redemptions: [Redemption!] @derivedFrom(field: "redeemer")
@@ -127,6 +129,8 @@ type FpmmPoolMembership @entity {
   pool: FixedProductMarketMaker!
   funder: Account!
   amount: BigInt!
+  fundingAdditions: [FpmmFundingAddition!] @derivedFrom(field: "funder")
+  fundingRemovals: [FpmmFundingRemoval!] @derivedFrom(field: "funder")
 }
 
 type FpmmParticipation @entity {
