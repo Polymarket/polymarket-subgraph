@@ -12,6 +12,8 @@ type Account @entity {
   id: ID!
   fpmmPoolMemberships: [FpmmPoolMembership!] @derivedFrom(field: "funder")
   fpmmParticipations: [FpmmParticipation!] @derivedFrom(field: "participant")
+  transactions: [Transaction!] @derivedFrom(field: "user")
+  redemptions: [Redemption!] @derivedFrom(field: "redeemer")
 }
 
 # Conditional Tokens
