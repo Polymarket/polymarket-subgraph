@@ -129,8 +129,6 @@ type FpmmPoolMembership @entity {
   pool: FixedProductMarketMaker!
   funder: Account!
   amount: BigInt!
-  fundingAdditions: [FpmmFundingAddition!] @derivedFrom(field: "funder")
-  fundingRemovals: [FpmmFundingRemoval!] @derivedFrom(field: "funder")
 }
 
 type FpmmParticipation @entity {
