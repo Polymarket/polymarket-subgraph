@@ -1,4 +1,4 @@
-import { BigInt, log, Address } from '@graphprotocol/graph-ts'
+import { BigInt, log, Address, EthereumEvent } from '@graphprotocol/graph-ts'
 
 import {
   FixedProductMarketMaker,
@@ -7,7 +7,8 @@ import {
   FpmmParticipation,
   FpmmFundingAddition,
   FpmmFundingRemoval,
-  Transaction
+  MarketPosition,
+  Transaction,
 } from "../generated/schema"
 import {
   FPMMFundingAdded,
@@ -25,6 +26,30 @@ function requireAccount(accountAddress: string): void {
     account = new Account(accountAddress);
     account.save();
   }
+}
+
+function updateMarketPosition(event: EthereumEvent): void {
+  let transaction = Transaction.load(event.transaction.hash.toHexString());
+  if (transaction == null) {
+    log.error(
+      'Could not find a transaction with hash: {}',
+      [event.transaction.hash.toString()],
+    );
+  }
+  
+  let positionId = transaction.user + transaction.market + transaction.outcomeIndex.toString()
+  let position = MarketPosition.load(positionId);
+  if (position == null) {
+    position = new MarketPosition(positionId);
+    position.market = transaction.market;
+    position.user = transaction.user;
+    position.outcomeIndex = transaction.outcomeIndex;
+    position.totalQuantity = BigInt.fromI32(0);
+    position.totalValue = BigInt.fromI32(0);
+  }
+  position.totalQuantity = transaction.type == "Buy" ? position.totalValue.plus(transaction.outcomeTokensAmount) : position.totalValue.minus(transaction.outcomeTokensAmount);
+  position.totalValue = transaction.type == "Buy" ? position.totalValue.plus(transaction.tradeAmount) : position.totalValue.minus(transaction.tradeAmount);
+  position.save()
 }
 
 function recordBuy(event: FPMMBuy): void {
@@ -70,8 +95,6 @@ function recordFundingRemoval(event: FPMMFundingRemoved): void {
   fpmmFundingRemoved.sharesBurnt = event.params.sharesBurnt;
   fpmmFundingRemoved.save();
 }
-
-
 
 function recordParticipation(fpmmAddress: string, participantAddress: string): void {
   requireAccount(participantAddress);
@@ -174,7 +197,8 @@ export function handleBuy(event: FPMMBuy): void {
   fpmm.save();
 
   recordParticipation(fpmmAddress, event.params.buyer.toHexString());
-  recordBuy(event)
+  recordBuy(event);
+  updateMarketPosition(event);
 }
 
 export function handleSell(event: FPMMSell): void {
@@ -213,6 +237,7 @@ export function handleSell(event: FPMMSell): void {
 
   recordParticipation(fpmmAddress, event.params.seller.toHexString());
   recordSell(event);
+  updateMarketPosition(event);
 }
 
 export function handlePoolShareTransfer(event: Transfer): void {

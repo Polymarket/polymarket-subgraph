@@ -14,6 +14,7 @@ type Account @entity {
   fpmmPoolMemberships: [FpmmPoolMembership!] @derivedFrom(field: "funder")
   # Which markets has user bought shares in
   fpmmParticipations: [FpmmParticipation!] @derivedFrom(field: "participant")
+  marketPositions: [MarketPosition!] @derivedFrom(field: "user")
   transactions: [Transaction!] @derivedFrom(field: "user")
   redemptions: [Redemption!] @derivedFrom(field: "redeemer")
 }
@@ -94,6 +95,15 @@ type FixedProductMarketMaker @entity {
 
   poolMembers: [FpmmPoolMembership!] @derivedFrom(field: "pool")
   participants: [FpmmParticipation!] @derivedFrom(field: "fpmm")
+}
+
+type MarketPosition @entity {
+  id: ID!
+  market: FixedProductMarketMaker!
+  user: Account!
+  outcomeIndex: BigInt!
+  totalQuantity: BigInt!
+  totalValue: BigInt!
 }
 
 type FpmmFundingAddition @entity {
