@@ -10,6 +10,7 @@
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 TokenUnion/polymarket",
     "deploy:rinkeby": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ TokenUnion/polymarket-rinkeby",
     "deploy:mainnet": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ TokenUnion/polymarket",
+    "deploy:mainnet:test": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ tomafrench/polymarket",
     "codegen": "truffle exec render-templates.js && graph codegen",
     "codegen:rinkeby": "tnt iN && truffle exec --network=rinkeby render-templates.js && graph codegen",
     "codegen:mainnet": "tnt iN && truffle exec --network=mainnet render-templates.js && graph codegen",
