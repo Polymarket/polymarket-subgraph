@@ -4,6 +4,7 @@
   "description": "Subgraph for Polymarket",
   "main": "index.js",
   "scripts": {
+    "auth": "graph auth https://api.thegraph.com/deploy/",
     "migrate": "truffle migrate --all --reset",
     "create-local": "graph create --node http://localhost:8020/ TokenUnion/polymarket",
     "remove-local": "graph remove --node http://localhost:8020/ TokenUnion/polymarket",
