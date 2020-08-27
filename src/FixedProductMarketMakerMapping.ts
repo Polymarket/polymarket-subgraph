@@ -47,7 +47,7 @@ function updateMarketPosition(event: EthereumEvent): void {
     position.totalQuantity = BigInt.fromI32(0);
     position.totalValue = BigInt.fromI32(0);
   }
-  position.totalQuantity = transaction.type == "Buy" ? position.totalValue.plus(transaction.outcomeTokensAmount) : position.totalValue.minus(transaction.outcomeTokensAmount);
+  position.totalQuantity = transaction.type == "Buy" ? position.totalQuantity.plus(transaction.outcomeTokensAmount) : position.totalQuantity.minus(transaction.outcomeTokensAmount);
   position.totalValue = transaction.type == "Buy" ? position.totalValue.plus(transaction.tradeAmount) : position.totalValue.minus(transaction.tradeAmount);
   position.save()
 }
