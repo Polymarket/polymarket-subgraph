@@ -28,6 +28,24 @@ function requireAccount(accountAddress: string): void {
   }
 }
 
+/*
+ * Returns the user's position for the given market and outcome
+ * If no such position exists then a null position is generated
+ */
+function getMarketPosition(user: string, market: string, outcomeIndex: BigInt): MarketPosition {
+  let positionId = user + market + outcomeIndex.toString()
+  let position = MarketPosition.load(positionId);
+    if (position == null) {
+      position = new MarketPosition(positionId);
+      position.market = market;
+      position.user = user;
+      position.outcomeIndex = outcomeIndex;
+      position.totalQuantity = BigInt.fromI32(0);
+      position.totalValue = BigInt.fromI32(0);
+    }
+  return position
+}
+
 function updateMarketPosition(event: EthereumEvent): void {
   let transaction = Transaction.load(event.transaction.hash.toHexString());
   if (transaction == null) {
@@ -37,16 +55,7 @@ function updateMarketPosition(event: EthereumEvent): void {
     );
   }
   
-  let positionId = transaction.user + transaction.market + transaction.outcomeIndex.toString()
-  let position = MarketPosition.load(positionId);
-  if (position == null) {
-    position = new MarketPosition(positionId);
-    position.market = transaction.market;
-    position.user = transaction.user;
-    position.outcomeIndex = transaction.outcomeIndex;
-    position.totalQuantity = BigInt.fromI32(0);
-    position.totalValue = BigInt.fromI32(0);
-  }
+  let position = getMarketPosition(transaction.user, transaction.market, transaction.outcomeIndex)
   position.totalQuantity = transaction.type == "Buy" ? position.totalQuantity.plus(transaction.outcomeTokensAmount) : position.totalQuantity.minus(transaction.outcomeTokensAmount);
   position.totalValue = transaction.type == "Buy" ? position.totalValue.plus(transaction.tradeAmount) : position.totalValue.minus(transaction.tradeAmount);
   position.save()
