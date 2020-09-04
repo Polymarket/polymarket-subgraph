@@ -73,6 +73,20 @@ export function handlePayoutRedemption(event: PayoutRedemption): void {
   redemption.indexSets = event.params.indexSets;
   redemption.payout = event.params.payout;
   redemption.save();
+  
+  let condition = Condition.load(redemption.condition);
+  if(condition == null) {
+    log.error(
+      'Failed to update market positions: condition {} not prepared',
+      [redemption.condition],
+    );
+    return;
+  }
+  
+  for (let i = 0; i < condition.fixedProductMarketMakers.length; i++) {
+    let marketMaker = FixedProductMarketMaker.load(condition.fixedProductMarketMakers[i]);
+    updateMarketPositionsFromRedemption(marketMaker, event);
+  }
 }
 
 export function handleConditionPreparation(event: ConditionPreparation): void {

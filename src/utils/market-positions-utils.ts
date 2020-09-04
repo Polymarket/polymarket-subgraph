@@ -1,6 +1,6 @@
 import { BigInt, EthereumEvent, log } from '@graphprotocol/graph-ts'
-import { FixedProductMarketMaker, MarketPosition, Transaction } from "../../generated/schema";
-import { PositionsMerge, PositionSplit } from "../../generated/ConditionalTokens/ConditionalTokens";
+import { FixedProductMarketMaker, MarketPosition, Transaction, Condition } from "../../generated/schema";
+import { PositionsMerge, PositionSplit, PayoutRedemption } from "../../generated/ConditionalTokens/ConditionalTokens";
 import { FPMMFundingAdded, FPMMFundingRemoved } from '../../generated/templates/FixedProductMarketMaker/FixedProductMarketMaker';
 
 
@@ -80,6 +80,33 @@ export function updateMarketPositionsFromMerge(marketMaker: FixedProductMarketMa
     // TODO: weight for the prices in the market maker.
     let mergeValue = event.params.amount.div(BigInt.fromI32(totalSlots))
     position.totalValue = position.totalValue.minus(mergeValue);
+    position.save();
+  }
+}
+
+/*
+ * Updates a user's market position after redeeming a position
+ *
+ * WARNING: This is only valid for markets which have a single condition
+ * It assumes that the number of outcome slots on the market maker is equal to that on the condition
+ */
+export function updateMarketPositionsFromRedemption(marketMaker: FixedProductMarketMaker, event: PayoutRedemption) {
+  let userAddress = event.transaction.from.toHexString();
+  let redeemedSlots = event.params.indexSets;
+  let condition = Condition.load(event.params.conditionId.toHexString());
+  
+  for (let i = 0; i < redeemedSlots.length; i++) { 
+    let redeemedSlot = redeemedSlots[i]
+    let position = getMarketPosition(userAddress, marketMaker.id, redeemedSlot);
+
+    // Redeeming a position is an all or nothing operation so use full balance for calculations
+    let redemptionValue = position.totalQuantity
+      .times(condition.payoutNumerators[redeemedSlot.toI32()])
+      .div(condition.payoutDenominator)
+
+    // position gets zero'd out
+    position.totalQuantity = BigInt.fromI32(0);
+    position.totalValue = position.totalValue.minus(redemptionValue);
     position.save();
   }
 }
