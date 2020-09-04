@@ -3,7 +3,7 @@ import { BigInt, BigDecimal, log } from '@graphprotocol/graph-ts'
 import { ConditionPreparation, ConditionResolution, PositionSplit, PositionsMerge, PayoutRedemption } from '../generated/ConditionalTokens/ConditionalTokens'
 import { Condition, Redemption, Merge, Split, FixedProductMarketMaker } from '../generated/schema'
 import { requireGlobal } from './utils/global-utils';
-import { updateMarketPositionsFromMerge } from './utils/market-positions-utils';
+import { updateMarketPositionsFromMerge, updateMarketPositionsFromRedemption, updateMarketPositionsFromSplit } from './utils/market-positions-utils';
 import { partitionCheck } from './utils/conditional-utils';
 
 export function handlePositionSplit(event: PositionSplit): void {
@@ -27,10 +27,10 @@ export function handlePositionSplit(event: PositionSplit): void {
   
   // If the user has split from collateral then we want to update their market position accordingly
   if (partitionCheck(split.partition, condition.outcomeSlotCount)) {
-    log.info('Merging a full position', []);
+    log.info('Splitting from collateral', []);
     for (let i = 0; i < condition.fixedProductMarketMakers.length; i++) {
       let marketMaker = FixedProductMarketMaker.load(condition.fixedProductMarketMakers[i]);
-      updateMarketPositionsFromMerge(marketMaker, event);
+      updateMarketPositionsFromSplit(marketMaker, event);
     }
   }
 }
