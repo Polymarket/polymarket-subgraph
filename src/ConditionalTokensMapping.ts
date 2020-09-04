@@ -15,6 +15,24 @@ export function handlePositionSplit(event: PositionSplit): void {
   split.partition = event.params.partition;
   split.amount = event.params.amount;
   split.save();
+
+  let condition = Condition.load(split.condition);
+  if(condition == null) {
+    log.error(
+      'Failed to update market positions: condition {} not prepared',
+      [split.condition],
+    );
+    return;
+  }
+  
+  // If the user has split from collateral then we want to update their market position accordingly
+  if (partitionCheck(split.partition, condition.outcomeSlotCount)) {
+    log.info('Merging a full position', []);
+    for (let i = 0; i < condition.fixedProductMarketMakers.length; i++) {
+      let marketMaker = FixedProductMarketMaker.load(condition.fixedProductMarketMakers[i]);
+      updateMarketPositionsFromMerge(marketMaker, event);
+    }
+  }
 }
 
 export function handlePositionsMerge(event: PositionsMerge): void {
