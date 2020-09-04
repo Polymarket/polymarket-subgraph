@@ -104,7 +104,10 @@ type MarketPosition @entity {
   market: FixedProductMarketMaker!
   user: Account!
   outcomeIndex: BigInt!
+  # number of outcome shares that the user owns.
   totalQuantity: BigInt!
+  # total value paid by the user to enter this position.
+  # if negative then the user has cashed out at a profit.
   totalValue: BigInt!
 }
 
