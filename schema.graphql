@@ -81,6 +81,7 @@ type FixedProductMarketMaker @entity {
   feeVolume: BigInt!
   scaledFeeVolume: BigDecimal!
   outcomeTokenAmounts: [BigInt!]!
+  outcomeTokenPrices: [BigDecimal!]!
   outcomeSlotCount: Int
   liquidityParameter: BigInt!
   scaledLiquidityParameter: BigDecimal!

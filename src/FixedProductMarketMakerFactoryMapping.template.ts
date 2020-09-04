@@ -5,7 +5,7 @@ import { FixedProductMarketMaker, Condition } from '../generated/schema'
 import { FixedProductMarketMaker as FixedProductMarketMakerTemplate } from '../generated/templates'
 import { nthRoot } from './utils/nth-root';
 import { timestampToDay, joinDayAndVolume } from './utils/day-volume-utils';
-import { updateScaledVolumes, getCollateralScale, updateLiquidityFields } from './utils/fpmm-utils';
+import { updateScaledVolumes, getCollateralScale, updateLiquidityFields, calculatePrices } from './utils/fpmm-utils';
 
 let zeroAsBigInt = BigInt.fromI32(0);
 
@@ -64,6 +64,7 @@ export function handleFixedProductMarketMakerCreation(event: FixedProductMarketM
     amountsProduct = amountsProduct.times(outcomeTokenAmounts[i]);
   }
   fixedProductMarketMaker.outcomeTokenAmounts = outcomeTokenAmounts;
+  fixedProductMarketMaker.outcomeTokenPrices = calculatePrices(outcomeTokenAmounts);
   let liquidityParameter = nthRoot(amountsProduct, outcomeTokenAmounts.length);
   let collateralScale = getCollateralScale(fixedProductMarketMaker.collateralToken as Address);
   let collateralScaleDec = collateralScale.toBigDecimal();

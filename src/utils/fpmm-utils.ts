@@ -12,6 +12,36 @@ export function getCollateralScale(collateralTokenAddress: Address): BigInt {
     BigInt.fromI32(10).pow(<u8>result.value);
 }
 
+/**
+ * Computes the price of each outcome token given their holdings. Returns an array of numbers in the range [0, 1]
+ * Credits to: https://github.com/protofire/gnosis-conditional-exchange
+ */
+export function calculatePrices(outcomeTokenAmounts: BigInt[]): BigDecimal[] {
+  let outcomePrices = new Array<BigDecimal>(outcomeTokenAmounts.length);
+
+  let totalTokensBalance = BigInt.fromI32(0);
+  let product = BigInt.fromI32(1);
+  for(let i = 0; i < outcomeTokenAmounts.length; i++) {
+    totalTokensBalance = totalTokensBalance.plus(outcomeTokenAmounts[i]);
+    product = product.times(outcomeTokenAmounts[i]);
+  }
+
+  // If there are no tokens in the market maker then return a zero price for everything
+  if (totalTokensBalance.equals(BigInt.fromI32(0))) {
+    return outcomePrices
+  }
+
+  let denominator = BigInt.fromI32(0);
+  for(let i = 0; i < outcomeTokenAmounts.length; i++) {
+    denominator = denominator.plus(product.div(outcomeTokenAmounts[i]));
+  }
+
+  for(let i = 0; i < outcomeTokenAmounts.length; i++) {
+    outcomePrices[i] = product.divDecimal(outcomeTokenAmounts[i].toBigDecimal()).div(denominator.toBigDecimal());
+  }
+  return outcomePrices
+}
+
 export function updateVolumes (
   fpmm: FixedProductMarketMaker,
   timestamp: BigInt,

@@ -17,7 +17,7 @@ import {
   Transfer,
 } from "../generated/templates/FixedProductMarketMaker/FixedProductMarketMaker"
 import { nthRoot } from './utils/nth-root';
-import { updateVolumes, updateLiquidityFields, getCollateralScale, updateFeeFields } from './utils/fpmm-utils';
+import { updateVolumes, updateLiquidityFields, getCollateralScale, updateFeeFields, calculatePrices } from './utils/fpmm-utils';
 import { updateMarketPositionFromTrade } from './utils/market-positions-utils';
 
 function requireAccount(accountAddress: string): void {
@@ -163,6 +163,7 @@ export function handleBuy(event: FPMMBuy): void {
     amountsProduct = amountsProduct.times(newAmounts[i]);
   }
   fpmm.outcomeTokenAmounts = newAmounts;
+  fpmm.outcomeTokenPrices = calculatePrices(newAmounts);
   let liquidityParameter = nthRoot(amountsProduct, newAmounts.length);
   let collateralScale = getCollateralScale(fpmm.collateralToken as Address);
   let collateralScaleDec = collateralScale.toBigDecimal();
@@ -201,6 +202,7 @@ export function handleSell(event: FPMMSell): void {
     amountsProduct = amountsProduct.times(newAmounts[i]);
   }
   fpmm.outcomeTokenAmounts = newAmounts;
+  fpmm.outcomeTokenPrices = calculatePrices(newAmounts);
   let liquidityParameter = nthRoot(amountsProduct, newAmounts.length);
   let collateralScale = getCollateralScale(fpmm.collateralToken as Address);
   let collateralScaleDec = collateralScale.toBigDecimal();
