@@ -19,6 +19,7 @@ import {
 } from "../generated/templates/FixedProductMarketMaker/FixedProductMarketMaker"
 import { nthRoot } from './utils/nth-root';
 import { updateVolumes, updateLiquidityFields, getCollateralScale, updateFeeFields } from './utils/fpmm-utils';
+import { getMarketPosition } from './utils/market-positions-utils';
 
 function requireAccount(accountAddress: string): void {
   let account = Account.load(accountAddress);
@@ -26,24 +27,6 @@ function requireAccount(accountAddress: string): void {
     account = new Account(accountAddress);
     account.save();
   }
-}
-
-/*
- * Returns the user's position for the given market and outcome
- * If no such position exists then a null position is generated
- */
-function getMarketPosition(user: string, market: string, outcomeIndex: BigInt): MarketPosition {
-  let positionId = user + market + outcomeIndex.toString()
-  let position = MarketPosition.load(positionId);
-    if (position == null) {
-      position = new MarketPosition(positionId);
-      position.market = market;
-      position.user = user;
-      position.outcomeIndex = outcomeIndex;
-      position.totalQuantity = BigInt.fromI32(0);
-      position.totalValue = BigInt.fromI32(0);
-    }
-  return position
 }
 
 function updateMarketPosition(event: EthereumEvent): void {
