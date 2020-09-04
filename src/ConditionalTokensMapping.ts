@@ -3,7 +3,7 @@ import { BigInt, BigDecimal, log } from '@graphprotocol/graph-ts'
 import { ConditionPreparation, ConditionResolution, PositionSplit, PositionsMerge, PayoutRedemption } from '../generated/ConditionalTokens/ConditionalTokens'
 import { Condition, Redemption, Merge, Split, FixedProductMarketMaker } from '../generated/schema'
 import { requireGlobal } from './utils/global-utils';
-import { mergePositions } from './utils/market-positions-utils';
+import { updateMarketPositionsFromMerge } from './utils/market-positions-utils';
 
 export function handlePositionSplit(event: PositionSplit): void {
   let split = new Split(event.transaction.hash.toHexString());
@@ -46,7 +46,7 @@ export function handlePositionsMerge(event: PositionsMerge): void {
     log.info('Merging a full position', []);
     for (let i = 0; i < condition.fixedProductMarketMakers.length; i++) {
       let marketMaker = FixedProductMarketMaker.load(condition.fixedProductMarketMakers[i]);
-      mergePositions(marketMaker, event);
+      updateMarketPositionsFromMerge(marketMaker, event);
     }
   }
 }
