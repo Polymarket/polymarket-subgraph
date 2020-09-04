@@ -120,6 +120,8 @@ export function handleConditionResolution(event: ConditionResolution): void {
     payouts[i] = payoutNumerators[i].divDecimal(payoutDenominatorDec);
   }
   condition.payouts = payouts;
+  condition.payoutNumerators = payoutNumerators
+  condition.payoutDenominator = payoutDenominator
 
   condition.save();
 }

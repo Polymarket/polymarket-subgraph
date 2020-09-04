@@ -28,6 +28,8 @@ type Condition @entity {
   outcomeSlotCount: Int!
   resolutionTimestamp: BigInt
   payouts: [BigDecimal!]
+  payoutNumerators: [BigInt!]
+  payoutDenominator: BigInt!
   fixedProductMarketMakers: [FixedProductMarketMaker!]!
     @derivedFrom(field: "conditions")
 }
