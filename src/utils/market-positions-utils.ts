@@ -32,8 +32,12 @@ export function updateMarketPositionFromTrade(event: EthereumEvent): void {
   }
   
   let position = getMarketPosition(transaction.user, transaction.market, transaction.outcomeIndex)
-  position.totalQuantity = transaction.type == "Buy" ? position.totalQuantity.plus(transaction.outcomeTokensAmount) : position.totalQuantity.minus(transaction.outcomeTokensAmount);
-  position.totalValue = transaction.type == "Buy" ? position.totalValue.plus(transaction.tradeAmount) : position.totalValue.minus(transaction.tradeAmount);
+  position.totalQuantity = transaction.type == "Buy"
+    ? position.totalQuantity.plus(transaction.outcomeTokensAmount)
+    : position.totalQuantity.minus(transaction.outcomeTokensAmount);
+  position.totalValue = transaction.type == "Buy"
+    ? position.totalValue.plus(transaction.tradeAmount)
+    : position.totalValue.minus(transaction.tradeAmount);
   position.save()
 }
 
