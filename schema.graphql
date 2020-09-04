@@ -29,7 +29,7 @@ type Condition @entity {
   resolutionTimestamp: BigInt
   payouts: [BigDecimal!]
   payoutNumerators: [BigInt!]
-  payoutDenominator: BigInt!
+  payoutDenominator: BigInt
   fixedProductMarketMakers: [FixedProductMarketMaker!]!
     @derivedFrom(field: "conditions")
 }
