@@ -29,8 +29,7 @@ export function handlePositionSplit(event: PositionSplit): void {
   if (partitionCheck(split.partition, condition.outcomeSlotCount)) {
     log.info('Splitting from collateral', []);
     for (let i = 0; i < condition.fixedProductMarketMakers.length; i++) {
-      let marketMaker = FixedProductMarketMaker.load(condition.fixedProductMarketMakers[i]);
-      updateMarketPositionsFromSplit(marketMaker, event);
+      updateMarketPositionsFromSplit(condition.fixedProductMarketMakers[i], event);
     }
   }
 }
@@ -58,8 +57,7 @@ export function handlePositionsMerge(event: PositionsMerge): void {
   if (partitionCheck(merge.partition, condition.outcomeSlotCount)) {
     log.info('Merging a full position', []);
     for (let i = 0; i < condition.fixedProductMarketMakers.length; i++) {
-      let marketMaker = FixedProductMarketMaker.load(condition.fixedProductMarketMakers[i]);
-      updateMarketPositionsFromMerge(marketMaker, event);
+      updateMarketPositionsFromMerge(condition.fixedProductMarketMakers[i], event);
     }
   }
 }
@@ -84,8 +82,7 @@ export function handlePayoutRedemption(event: PayoutRedemption): void {
   }
   
   for (let i = 0; i < condition.fixedProductMarketMakers.length; i++) {
-    let marketMaker = FixedProductMarketMaker.load(condition.fixedProductMarketMakers[i]);
-    updateMarketPositionsFromRedemption(marketMaker, event);
+    updateMarketPositionsFromRedemption(condition.fixedProductMarketMakers[i], event);
   }
 }
 

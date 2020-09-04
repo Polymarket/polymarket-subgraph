@@ -47,11 +47,12 @@ export function updateMarketPositionFromTrade(event: EthereumEvent): void {
  * WARNING: This is only valid for markets which have a single condition
  * It assumes that the number of outcome slots on the market maker is equal to that on the condition
  */
-export function updateMarketPositionsFromSplit(marketMaker: FixedProductMarketMaker, event: PositionSplit) {
+export function updateMarketPositionsFromSplit(marketMakerAddress: string, event: PositionSplit) {
   let userAddress = event.transaction.from.toHexString();
+  let marketMaker = FixedProductMarketMaker.load(marketMakerAddress);
   let totalSlots = marketMaker.outcomeSlotCount
   for (let outcomeIndex = 0; outcomeIndex < totalSlots; outcomeIndex++) {
-    let position = getMarketPosition(userAddress, marketMaker.id, BigInt.fromI32(outcomeIndex));
+    let position = getMarketPosition(userAddress, marketMakerAddress, BigInt.fromI32(outcomeIndex));
     // Event emits the amount of collateral to be split as `amount`
     position.totalQuantity = position.totalQuantity.plus(event.params.amount);
 
@@ -68,11 +69,12 @@ export function updateMarketPositionsFromSplit(marketMaker: FixedProductMarketMa
  * WARNING: This is only valid for markets which have a single condition
  * It assumes that the number of outcome slots on the market maker is equal to that on the condition
  */
-export function updateMarketPositionsFromMerge(marketMaker: FixedProductMarketMaker, event: PositionsMerge) {
+export function updateMarketPositionsFromMerge(marketMakerAddress: string, event: PositionsMerge) {
   let userAddress = event.transaction.from.toHexString();
+  let marketMaker = FixedProductMarketMaker.load(marketMakerAddress);
   let totalSlots = marketMaker.outcomeSlotCount
   for (let outcomeIndex = 0; outcomeIndex < totalSlots; outcomeIndex++) {
-    let position = getMarketPosition(userAddress, marketMaker.id, BigInt.fromI32(outcomeIndex));
+    let position = getMarketPosition(userAddress, marketMakerAddress, BigInt.fromI32(outcomeIndex));
     // Event emits the amount of collateral to be split as `amount`
     position.totalQuantity = position.totalQuantity.minus(event.params.amount);
 
@@ -90,14 +92,14 @@ export function updateMarketPositionsFromMerge(marketMaker: FixedProductMarketMa
  * WARNING: This is only valid for markets which have a single condition
  * It assumes that the number of outcome slots on the market maker is equal to that on the condition
  */
-export function updateMarketPositionsFromRedemption(marketMaker: FixedProductMarketMaker, event: PayoutRedemption) {
+export function updateMarketPositionsFromRedemption(marketMakerAddress: string, event: PayoutRedemption) {
   let userAddress = event.transaction.from.toHexString();
   let redeemedSlots = event.params.indexSets;
   let condition = Condition.load(event.params.conditionId.toHexString());
   
   for (let i = 0; i < redeemedSlots.length; i++) { 
     let redeemedSlot = redeemedSlots[i]
-    let position = getMarketPosition(userAddress, marketMaker.id, redeemedSlot);
+    let position = getMarketPosition(userAddress, marketMakerAddress, redeemedSlot);
 
     // Redeeming a position is an all or nothing operation so use full balance for calculations
     let redemptionValue = position.totalQuantity
