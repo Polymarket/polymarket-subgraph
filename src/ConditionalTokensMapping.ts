@@ -4,6 +4,7 @@ import { ConditionPreparation, ConditionResolution, PositionSplit, PositionsMerg
 import { Condition, Redemption, Merge, Split, FixedProductMarketMaker } from '../generated/schema'
 import { requireGlobal } from './utils/global-utils';
 import { updateMarketPositionsFromMerge } from './utils/market-positions-utils';
+import { partitionCheck } from './utils/conditional-utils';
 
 export function handlePositionSplit(event: PositionSplit): void {
   let split = new Split(event.transaction.hash.toHexString());
@@ -26,7 +27,6 @@ export function handlePositionsMerge(event: PositionsMerge): void {
   merge.amount = event.params.amount;
   merge.save();
 
-  // If the user has merged a full set of outcome tokens then we want to update their market position accordingly
   let condition = Condition.load(merge.condition);
   if(condition == null) {
     log.error(
@@ -35,14 +35,9 @@ export function handlePositionsMerge(event: PositionsMerge): void {
     );
     return;
   }
-  // Checks whether the partition corresponds to a full set
-  // see: https://github.com/gnosis/conditional-tokens-contracts/blob/master/contracts/ConditionalTokens.sol
-  let freeIndexSet = (1 << condition.outcomeSlotCount) - 1;
-  for (let i = 0; i < event.params.partition.length; i++) {
-    let indexSet = event.params.partition[i];
-    freeIndexSet ^= indexSet.toI32();
-  }
-  if (freeIndexSet == 0) {
+  
+  // If the user has merged a full set of outcome tokens then we want to update their market position accordingly
+  if (partitionCheck(merge.partition, condition.outcomeSlotCount)) {
     log.info('Merging a full position', []);
     for (let i = 0; i < condition.fixedProductMarketMakers.length; i++) {
       let marketMaker = FixedProductMarketMaker.load(condition.fixedProductMarketMakers[i]);
