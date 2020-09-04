@@ -96,15 +96,27 @@ export function updateMarketPositionsFromRedemption(marketMakerAddress: string, 
   let userAddress = event.transaction.from.toHexString();
   let redeemedSlots = event.params.indexSets;
   let condition = Condition.load(event.params.conditionId.toHexString());
-  
+
+  let payoutNumerators = condition.payoutNumerators as BigInt[];
+  let payoutDenominator = condition.payoutDenominator as BigInt;
+
+  if (payoutNumerators == null || payoutDenominator == null) {
+    log.error(
+      'Failed to update market positions: condition {} has not resolved',
+      [condition.id],
+    );
+    return;
+  }
+
   for (let i = 0; i < redeemedSlots.length; i++) { 
     let redeemedSlot = redeemedSlots[i]
     let position = getMarketPosition(userAddress, marketMakerAddress, redeemedSlot);
 
     // Redeeming a position is an all or nothing operation so use full balance for calculations
+    let numerator = payoutNumerators[redeemedSlot.toI32()]
     let redemptionValue = position.totalQuantity
-      .times(condition.payoutNumerators[redeemedSlot.toI32()])
-      .div(condition.payoutDenominator)
+      .times(numerator)
+      .div(payoutDenominator)
 
     // position gets zero'd out
     position.totalQuantity = BigInt.fromI32(0);

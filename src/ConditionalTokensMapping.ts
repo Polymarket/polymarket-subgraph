@@ -1,7 +1,7 @@
 import { BigInt, BigDecimal, log } from '@graphprotocol/graph-ts'
 
 import { ConditionPreparation, ConditionResolution, PositionSplit, PositionsMerge, PayoutRedemption } from '../generated/ConditionalTokens/ConditionalTokens'
-import { Condition, Redemption, Merge, Split, FixedProductMarketMaker } from '../generated/schema'
+import { Condition, Redemption, Merge, Split } from '../generated/schema'
 import { requireGlobal } from './utils/global-utils';
 import { updateMarketPositionsFromMerge, updateMarketPositionsFromRedemption, updateMarketPositionsFromSplit } from './utils/market-positions-utils';
 import { partitionCheck } from './utils/conditional-utils';
@@ -26,10 +26,11 @@ export function handlePositionSplit(event: PositionSplit): void {
   }
   
   // If the user has split from collateral then we want to update their market position accordingly
-  if (partitionCheck(split.partition, condition.outcomeSlotCount)) {
+  let marketMakers = condition.fixedProductMarketMakers
+  if (marketMakers != null && partitionCheck(split.partition, condition.outcomeSlotCount)) {
     log.info('Splitting from collateral', []);
-    for (let i = 0; i < condition.fixedProductMarketMakers.length; i++) {
-      updateMarketPositionsFromSplit(condition.fixedProductMarketMakers[i], event);
+    for (let i = 0; i < marketMakers.length; i++) {
+      updateMarketPositionsFromSplit(marketMakers[i], event);
     }
   }
 }
@@ -54,10 +55,11 @@ export function handlePositionsMerge(event: PositionsMerge): void {
   }
   
   // If the user has merged a full set of outcome tokens then we want to update their market position accordingly
-  if (partitionCheck(merge.partition, condition.outcomeSlotCount)) {
+  let marketMakers = condition.fixedProductMarketMakers
+  if (marketMakers != null && partitionCheck(merge.partition, condition.outcomeSlotCount)) {
     log.info('Merging a full position', []);
-    for (let i = 0; i < condition.fixedProductMarketMakers.length; i++) {
-      updateMarketPositionsFromMerge(condition.fixedProductMarketMakers[i], event);
+    for (let i = 0; i < marketMakers.length; i++) {
+      updateMarketPositionsFromMerge(marketMakers[i], event);
     }
   }
 }
@@ -80,9 +82,12 @@ export function handlePayoutRedemption(event: PayoutRedemption): void {
     );
     return;
   }
-  
-  for (let i = 0; i < condition.fixedProductMarketMakers.length; i++) {
-    updateMarketPositionsFromRedemption(condition.fixedProductMarketMakers[i], event);
+
+  let marketMakers = condition.fixedProductMarketMakers
+  if (marketMakers != null) {
+    for (let i = 0; i < marketMakers.length; i++) {
+      updateMarketPositionsFromRedemption(marketMakers[i], event);
+    }
   }
 }
 
