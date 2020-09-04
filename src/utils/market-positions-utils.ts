@@ -47,7 +47,7 @@ export function updateMarketPositionFromTrade(event: EthereumEvent): void {
  * WARNING: This is only valid for markets which have a single condition
  * It assumes that the number of outcome slots on the market maker is equal to that on the condition
  */
-export function updateMarketPositionsFromSplit(marketMakerAddress: string, event: PositionSplit) {
+export function updateMarketPositionsFromSplit(marketMakerAddress: string, event: PositionSplit): void {
   let userAddress = event.transaction.from.toHexString();
   let marketMaker = FixedProductMarketMaker.load(marketMakerAddress);
   let totalSlots = marketMaker.outcomeSlotCount
@@ -69,7 +69,7 @@ export function updateMarketPositionsFromSplit(marketMakerAddress: string, event
  * WARNING: This is only valid for markets which have a single condition
  * It assumes that the number of outcome slots on the market maker is equal to that on the condition
  */
-export function updateMarketPositionsFromMerge(marketMakerAddress: string, event: PositionsMerge) {
+export function updateMarketPositionsFromMerge(marketMakerAddress: string, event: PositionsMerge): void {
   let userAddress = event.transaction.from.toHexString();
   let marketMaker = FixedProductMarketMaker.load(marketMakerAddress);
   let totalSlots = marketMaker.outcomeSlotCount
@@ -92,7 +92,7 @@ export function updateMarketPositionsFromMerge(marketMakerAddress: string, event
  * WARNING: This is only valid for markets which have a single condition
  * It assumes that the number of outcome slots on the market maker is equal to that on the condition
  */
-export function updateMarketPositionsFromRedemption(marketMakerAddress: string, event: PayoutRedemption) {
+export function updateMarketPositionsFromRedemption(marketMakerAddress: string, event: PayoutRedemption): void {
   let userAddress = event.transaction.from.toHexString();
   let redeemedSlots = event.params.indexSets;
   let condition = Condition.load(event.params.conditionId.toHexString());
