@@ -19,6 +19,7 @@ import {
 import { nthRoot } from './utils/nth-root';
 import { updateVolumes, updateLiquidityFields, getCollateralScale, updateFeeFields, calculatePrices } from './utils/fpmm-utils';
 import { updateMarketPositionFromTrade } from './utils/market-positions-utils';
+import { bigOne } from './utils/constants';
 
 function requireAccount(accountAddress: string): void {
   let account = Account.load(accountAddress);
@@ -96,7 +97,7 @@ export function handleFundingAdded(event: FPMMFundingAdded): void {
   let oldAmounts = fpmm.outcomeTokenAmounts;
   let amountsAdded = event.params.amountsAdded;
   let newAmounts = new Array<BigInt>(oldAmounts.length);
-  let amountsProduct = BigInt.fromI32(1);
+  let amountsProduct = bigOne;
   for(let i = 0; i < newAmounts.length; i++) {
     newAmounts[i] = oldAmounts[i].plus(amountsAdded[i]);
     amountsProduct = amountsProduct.times(newAmounts[i]);
@@ -122,7 +123,7 @@ export function handleFundingRemoved(event: FPMMFundingRemoved): void {
   let oldAmounts = fpmm.outcomeTokenAmounts;
   let amountsRemoved = event.params.amountsRemoved;
   let newAmounts = new Array<BigInt>(oldAmounts.length);
-  let amountsProduct = BigInt.fromI32(1);
+  let amountsProduct = bigOne;
   for(let i = 0; i < newAmounts.length; i++) {
     newAmounts[i] = oldAmounts[i].minus(amountsRemoved[i]);
     amountsProduct = amountsProduct.times(newAmounts[i]);
@@ -153,7 +154,7 @@ export function handleBuy(event: FPMMBuy): void {
   let outcomeIndex = event.params.outcomeIndex.toI32();
 
   let newAmounts = new Array<BigInt>(oldAmounts.length);
-  let amountsProduct = BigInt.fromI32(1);
+  let amountsProduct = bigOne;
   for(let i = 0; i < newAmounts.length; i++) {
     if (i == outcomeIndex) {
       newAmounts[i] = oldAmounts[i].plus(investmentAmount).minus(event.params.outcomeTokensBought);
@@ -192,7 +193,7 @@ export function handleSell(event: FPMMSell): void {
 
   let outcomeIndex = event.params.outcomeIndex.toI32();
   let newAmounts = new Array<BigInt>(oldAmounts.length);
-  let amountsProduct = BigInt.fromI32(1);
+  let amountsProduct = bigOne;
   for(let i = 0; i < newAmounts.length; i++) {
     if (i == outcomeIndex) {
       newAmounts[i] = oldAmounts[i].minus(returnAmount).plus(event.params.outcomeTokensSold);

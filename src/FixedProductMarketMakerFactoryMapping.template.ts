@@ -6,8 +6,7 @@ import { FixedProductMarketMaker as FixedProductMarketMakerTemplate } from '../g
 import { nthRoot } from './utils/nth-root';
 import { timestampToDay, joinDayAndVolume } from './utils/day-volume-utils';
 import { updateScaledVolumes, getCollateralScale, updateLiquidityFields, calculatePrices } from './utils/fpmm-utils';
-
-let zeroAsBigInt = BigInt.fromI32(0);
+import { bigZero, bigOne } from './utils/constants';
 
 export function handleFixedProductMarketMakerCreation(event: FixedProductMarketMakerCreation): void {
   let address = event.params.fixedProductMarketMaker;
@@ -52,15 +51,15 @@ export function handleFixedProductMarketMakerCreation(event: FixedProductMarketM
   fixedProductMarketMaker.outcomeSlotCount = outcomeTokenCount;
 
   // Initialise FPMM state
-  fixedProductMarketMaker.totalSupply = zeroAsBigInt;
-  fixedProductMarketMaker.collateralVolume = zeroAsBigInt;
-  fixedProductMarketMaker.feeVolume = zeroAsBigInt;
+  fixedProductMarketMaker.totalSupply = bigZero;
+  fixedProductMarketMaker.collateralVolume = bigZero;
+  fixedProductMarketMaker.feeVolume = bigZero;
 
 
   let outcomeTokenAmounts = new Array<BigInt>(outcomeTokenCount);
-  let amountsProduct = BigInt.fromI32(1);
+  let amountsProduct = bigOne;
   for(let i = 0; i < outcomeTokenAmounts.length; i++) {
-    outcomeTokenAmounts[i] = zeroAsBigInt;
+    outcomeTokenAmounts[i] = bigZero;
     amountsProduct = amountsProduct.times(outcomeTokenAmounts[i]);
   }
   fixedProductMarketMaker.outcomeTokenAmounts = outcomeTokenAmounts;
@@ -72,12 +71,12 @@ export function handleFixedProductMarketMakerCreation(event: FixedProductMarketM
 
   let currentDay = timestampToDay(event.block.timestamp);
   fixedProductMarketMaker.lastActiveDay = currentDay;
-  fixedProductMarketMaker.runningDailyVolume = zeroAsBigInt;
-  fixedProductMarketMaker.lastActiveDayAndRunningDailyVolume = joinDayAndVolume(currentDay, zeroAsBigInt);
-  fixedProductMarketMaker.collateralVolumeBeforeLastActiveDay = zeroAsBigInt;
+  fixedProductMarketMaker.runningDailyVolume = bigZero;
+  fixedProductMarketMaker.lastActiveDayAndRunningDailyVolume = joinDayAndVolume(currentDay, bigZero);
+  fixedProductMarketMaker.collateralVolumeBeforeLastActiveDay = bigZero;
 
   updateScaledVolumes(fixedProductMarketMaker, collateralScale, collateralScaleDec, currentDay);
-  fixedProductMarketMaker.scaledFeeVolume = new BigDecimal(zeroAsBigInt);
+  fixedProductMarketMaker.scaledFeeVolume = new BigDecimal(bigZero);
 
   fixedProductMarketMaker.save();
 

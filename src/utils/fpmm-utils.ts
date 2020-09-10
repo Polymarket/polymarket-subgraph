@@ -2,14 +2,13 @@ import { BigInt, Address, BigDecimal } from '@graphprotocol/graph-ts'
 import { FixedProductMarketMaker } from "../../generated/schema";
 import { ERC20Detailed } from "../../generated/templates/ERC20Detailed/ERC20Detailed"
 import { timestampToDay, joinDayAndVolume, joinDayAndScaledVolume } from './day-volume-utils';
+import { bigOne, bigZero } from './constants';
 
 export function getCollateralScale(collateralTokenAddress: Address): BigInt {
   let collateralToken = ERC20Detailed.bind(collateralTokenAddress);
   let result = collateralToken.try_decimals();
 
-  return result.reverted ?
-    BigInt.fromI32(1) :
-    BigInt.fromI32(10).pow(<u8>result.value);
+  return result.reverted ? bigOne : BigInt.fromI32(10).pow(<u8>result.value);
 }
 
 /**
@@ -19,19 +18,19 @@ export function getCollateralScale(collateralTokenAddress: Address): BigInt {
 export function calculatePrices(outcomeTokenAmounts: BigInt[]): BigDecimal[] {
   let outcomePrices = new Array<BigDecimal>(outcomeTokenAmounts.length);
 
-  let totalTokensBalance = BigInt.fromI32(0);
-  let product = BigInt.fromI32(1);
+  let totalTokensBalance = bigZero;
+  let product = bigOne;
   for(let i = 0; i < outcomeTokenAmounts.length; i++) {
     totalTokensBalance = totalTokensBalance.plus(outcomeTokenAmounts[i]);
     product = product.times(outcomeTokenAmounts[i]);
   }
 
   // If there are no tokens in the market maker then return a zero price for everything
-  if (totalTokensBalance.equals(BigInt.fromI32(0))) {
+  if (totalTokensBalance.equals(bigZero)) {
     return outcomePrices
   }
 
-  let denominator = BigInt.fromI32(0);
+  let denominator = bigZero;
   for(let i = 0; i < outcomeTokenAmounts.length; i++) {
     denominator = denominator.plus(product.div(outcomeTokenAmounts[i]));
   }

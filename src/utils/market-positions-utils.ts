@@ -2,6 +2,7 @@ import { BigInt, EthereumEvent, log } from '@graphprotocol/graph-ts'
 import { FixedProductMarketMaker, MarketPosition, Transaction, Condition } from "../../generated/schema";
 import { PositionsMerge, PositionSplit, PayoutRedemption } from "../../generated/ConditionalTokens/ConditionalTokens";
 import { FPMMFundingAdded, FPMMFundingRemoved } from '../../generated/templates/FixedProductMarketMaker/FixedProductMarketMaker';
+import { bigZero } from './constants';
 
 
 /*
@@ -16,12 +17,12 @@ export function getMarketPosition(user: string, market: string, outcomeIndex: Bi
     position.market = market;
     position.user = user;
     position.outcomeIndex = outcomeIndex;
-    position.quantityBought = BigInt.fromI32(0);
-    position.quantitySold = BigInt.fromI32(0);
-    position.netQuantity = BigInt.fromI32(0);
-    position.valueBought = BigInt.fromI32(0);
-    position.valueSold = BigInt.fromI32(0);
-    position.netValue = BigInt.fromI32(0);
+    position.quantityBought = bigZero;
+    position.quantitySold = bigZero;
+    position.netQuantity = bigZero;
+    position.valueBought = bigZero;
+    position.valueSold = bigZero;
+    position.netValue = bigZero;
   }
   return position as MarketPosition
 }
@@ -149,7 +150,7 @@ export function updateMarketPositionFromLiquidityAdded(event: FPMMFundingAdded):
   let totalRefundedValue = addedFunds.minus(event.params.sharesMinted)
   
   // Calculate the full number of outcome tokens which are refunded to the funder address
-  let totalRefundedOutcomeTokens = BigInt.fromI32(0);
+  let totalRefundedOutcomeTokens = bigZero;
   for (let outcomeIndex = 0; outcomeIndex < amountsAdded.length; outcomeIndex++) {
     let refundedAmount = addedFunds.minus(amountsAdded[outcomeIndex]);
     totalRefundedOutcomeTokens = totalRefundedOutcomeTokens.plus(refundedAmount);

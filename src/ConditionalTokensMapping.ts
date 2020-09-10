@@ -5,6 +5,7 @@ import { Condition, Redemption, Merge, Split } from '../generated/schema'
 import { requireGlobal } from './utils/global-utils';
 import { updateMarketPositionsFromMerge, updateMarketPositionsFromRedemption, updateMarketPositionsFromSplit } from './utils/market-positions-utils';
 import { partitionCheck } from './utils/conditional-utils';
+import { bigZero } from './utils/constants';
 
 export function handlePositionSplit(event: PositionSplit): void {
   let split = new Split(event.transaction.hash.toHexString());
@@ -127,7 +128,7 @@ export function handleConditionResolution(event: ConditionResolution): void {
   condition.resolutionTimestamp = event.block.timestamp;
 
   let payoutNumerators = event.params.payoutNumerators;
-  let payoutDenominator = BigInt.fromI32(0);
+  let payoutDenominator = bigZero;
   for (let i = 0; i < payoutNumerators.length; i++) {
     payoutDenominator = payoutDenominator.plus(payoutNumerators[i]);
   }
