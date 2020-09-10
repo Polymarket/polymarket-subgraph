@@ -60,6 +60,7 @@ function recordFundingAddition(event: FPMMFundingAdded): void {
   fpmmFundingAdded.timestamp = event.block.timestamp;
   fpmmFundingAdded.fpmm = event.address.toHexString();
   fpmmFundingAdded.funder = event.transaction.from.toHexString();
+  fpmmFundingAdded.amountsAdded = event.params.amountsAdded;
   fpmmFundingAdded.sharesMinted = event.params.sharesMinted;
   fpmmFundingAdded.save();
 }
@@ -69,6 +70,7 @@ function recordFundingRemoval(event: FPMMFundingRemoved): void {
   fpmmFundingRemoved.timestamp = event.block.timestamp;
   fpmmFundingRemoved.fpmm = event.address.toHexString();
   fpmmFundingRemoved.funder = event.transaction.from.toHexString();
+  fpmmFundingRemoved.amountsRemoved = event.params.amountsRemoved;
   fpmmFundingRemoved.sharesBurnt = event.params.sharesBurnt;
   fpmmFundingRemoved.save();
 }

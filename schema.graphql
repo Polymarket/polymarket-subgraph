@@ -121,6 +121,7 @@ type FpmmFundingAddition @entity {
   timestamp: BigInt!
   fpmm: FixedProductMarketMaker!
   funder: Account!
+  amountsAdded: [BigInt!]!
   sharesMinted: BigInt!
 }
 
@@ -129,6 +130,7 @@ type FpmmFundingRemoval @entity {
   timestamp: BigInt!
   fpmm: FixedProductMarketMaker!
   funder: Account!
+  amountsRemoved: [BigInt!]!
   sharesBurnt: BigInt!
 }
 
