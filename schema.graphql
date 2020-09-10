@@ -105,11 +105,15 @@ type MarketPosition @entity {
   market: FixedProductMarketMaker!
   user: Account!
   outcomeIndex: BigInt!
-  # number of outcome shares that the user owns.
-  totalQuantity: BigInt!
+  # number of outcome shares that the user has bought and sold.
+  quantityBought: BigInt!
+  quantitySold: BigInt!
+  netQuantity: BigInt!
   # total value paid by the user to enter this position.
-  # if negative then the user has cashed out at a profit.
-  totalValue: BigInt!
+  # if valueSold > valueBought then the user has cashed out at a profit.
+  valueBought: BigInt!
+  valueSold: BigInt!
+  netValue: BigInt!
 }
 
 type FpmmFundingAddition @entity {

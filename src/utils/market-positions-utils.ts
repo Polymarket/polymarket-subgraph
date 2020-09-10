@@ -16,10 +16,20 @@ export function getMarketPosition(user: string, market: string, outcomeIndex: Bi
     position.market = market;
     position.user = user;
     position.outcomeIndex = outcomeIndex;
-    position.totalQuantity = BigInt.fromI32(0);
-    position.totalValue = BigInt.fromI32(0);
+    position.quantityBought = BigInt.fromI32(0);
+    position.quantitySold = BigInt.fromI32(0);
+    position.netQuantity = BigInt.fromI32(0);
+    position.valueBought = BigInt.fromI32(0);
+    position.valueSold = BigInt.fromI32(0);
+    position.netValue = BigInt.fromI32(0);
   }
   return position as MarketPosition
+}
+
+function updateNetPositionAndSave(position: MarketPosition): void {
+  position.netQuantity = position.quantityBought.minus(position.quantitySold)
+  position.netValue = position.valueBought.minus(position.valueSold)
+  position.save()
 }
 
 export function updateMarketPositionFromTrade(event: EthereumEvent): void {
@@ -32,13 +42,16 @@ export function updateMarketPositionFromTrade(event: EthereumEvent): void {
   }
   
   let position = getMarketPosition(transaction.user, transaction.market, transaction.outcomeIndex)
-  position.totalQuantity = transaction.type == "Buy"
-    ? position.totalQuantity.plus(transaction.outcomeTokensAmount)
-    : position.totalQuantity.minus(transaction.outcomeTokensAmount);
-  position.totalValue = transaction.type == "Buy"
-    ? position.totalValue.plus(transaction.tradeAmount)
-    : position.totalValue.minus(transaction.tradeAmount);
-  position.save()
+  
+  if (transaction.type == "Buy") {
+    position.quantityBought = position.quantityBought.plus(transaction.outcomeTokensAmount);
+    position.valueBought = position.valueBought.plus(transaction.tradeAmount);
+  } else {
+    position.quantitySold = position.quantitySold.plus(transaction.outcomeTokensAmount);
+    position.valueSold = position.valueSold.plus(transaction.tradeAmount);
+  }
+
+  updateNetPositionAndSave(position)
 }
 
 /*
@@ -54,12 +67,13 @@ export function updateMarketPositionsFromSplit(marketMakerAddress: string, event
   for (let outcomeIndex = 0; outcomeIndex < totalSlots; outcomeIndex++) {
     let position = getMarketPosition(userAddress, marketMakerAddress, BigInt.fromI32(outcomeIndex));
     // Event emits the amount of collateral to be split as `amount`
-    position.totalQuantity = position.totalQuantity.plus(event.params.amount);
+    position.quantityBought = position.quantityBought.plus(event.params.amount);
 
     // The user is essentially buys all tokens at an equal price 
     let mergeValue = event.params.amount.div(BigInt.fromI32(totalSlots))
-    position.totalValue = position.totalValue.plus(mergeValue);
-    position.save();
+    position.valueBought = position.valueBought.plus(mergeValue);
+    
+    updateNetPositionAndSave(position)
   }
 }
 
@@ -76,13 +90,14 @@ export function updateMarketPositionsFromMerge(marketMakerAddress: string, event
   for (let outcomeIndex = 0; outcomeIndex < totalSlots; outcomeIndex++) {
     let position = getMarketPosition(userAddress, marketMakerAddress, BigInt.fromI32(outcomeIndex));
     // Event emits the amount of collateral to be split as `amount`
-    position.totalQuantity = position.totalQuantity.minus(event.params.amount);
+    position.quantitySold = position.quantitySold.plus(event.params.amount);
 
     // We treat it as the user selling tokens for equal values
     // TODO: weight for the prices in the market maker.
     let mergeValue = event.params.amount.div(BigInt.fromI32(totalSlots))
-    position.totalValue = position.totalValue.minus(mergeValue);
-    position.save();
+    position.valueSold = position.valueSold.plus(mergeValue);
+    
+    updateNetPositionAndSave(position)
   }
 }
 
@@ -114,14 +129,15 @@ export function updateMarketPositionsFromRedemption(marketMakerAddress: string, 
 
     // Redeeming a position is an all or nothing operation so use full balance for calculations
     let numerator = payoutNumerators[redeemedSlot.toI32()]
-    let redemptionValue = position.totalQuantity
+    let redemptionValue = position.netQuantity
       .times(numerator)
       .div(payoutDenominator)
 
     // position gets zero'd out
-    position.totalQuantity = BigInt.fromI32(0);
-    position.totalValue = position.totalValue.minus(redemptionValue);
-    position.save();
+    position.quantitySold = position.quantitySold.plus(position.netQuantity);
+    position.valueSold = position.valueSold.plus(redemptionValue);
+
+    updateNetPositionAndSave(position)
   }
 }
 
@@ -146,12 +162,13 @@ export function updateMarketPositionFromLiquidityAdded(event: FPMMFundingAdded):
     // Event emits the number of outcome tokens added to the market maker
     // Subtract this from the amount of collateral added to get the amount refunded to funder
     let refundedAmount: BigInt = addedFunds.minus(amountsAdded[outcomeIndex]);
-    position.totalQuantity = position.totalQuantity.plus(refundedAmount);
+    position.quantityBought = position.quantityBought.plus(refundedAmount);
 
     // We weight the value of the refund by the fraction of all outcome tokens it makes up
     let refundValue = totalRefundedValue.times(refundedAmount).div(totalRefundedOutcomeTokens)
-    position.totalValue = position.totalValue.plus(refundValue);
-    position.save();
+    position.valueBought = position.valueBought.plus(refundValue);
+
+    updateNetPositionAndSave(position)
   }
 }
 
@@ -169,8 +186,9 @@ export function updateMarketPositionFromLiquidityRemoved(event: FPMMFundingRemov
   // This means we must update the funder's market position for each outcome.
   for (let outcomeIndex = 0; outcomeIndex < amountsRemoved.length; outcomeIndex++) {
     let position = getMarketPosition(funder, fpmmAddress, BigInt.fromI32(outcomeIndex))
-    position.totalQuantity = position.totalQuantity.plus(amountsRemoved[outcomeIndex])
-    position.totalValue = position.totalValue.plus(pricePaidForTokens)
-    position.save()
+    position.quantityBought = position.quantityBought.plus(amountsRemoved[outcomeIndex])
+    position.valueBought = position.valueBought.plus(pricePaidForTokens)
+
+    updateNetPositionAndSave(position)
   }
 }
