@@ -90,7 +90,7 @@ export function updateMarketPositionsFromMerge(marketMakerAddress: string, event
   let totalSlots = marketMaker.outcomeSlotCount
   for (let outcomeIndex = 0; outcomeIndex < totalSlots; outcomeIndex++) {
     let position = getMarketPosition(userAddress, marketMakerAddress, BigInt.fromI32(outcomeIndex));
-    // Event emits the amount of collateral to be split as `amount`
+    // Event emits the amount of outcome tokens to be merged as `amount`
     position.quantitySold = position.quantitySold.plus(event.params.amount);
 
     // We treat it as the user selling tokens for equal values
