@@ -177,11 +177,14 @@ export function updateMarketPositionFromLiquidityRemoved(event: FPMMFundingRemov
   let fpmmAddress = event.address.toHexString();
   let funder = event.transaction.from.toHexString();
   let amountsRemoved = event.params.amountsRemoved;
-  let collateralRemoved = event.params.collateralRemovedFromFeePool;
+
+  // We value each share at 1 USDC
+  // so number of shares burnt is equal to price paid for all outcome tokens
+  let sharesBurnt = event.params.sharesBurnt;
 
   // Outcome tokens are removed in proportion to their balances in the market maker
   // Therefore the withdrawal of each outcome token should have the same value. 
-  let pricePaidForTokens = collateralRemoved.div(BigInt.fromI32(amountsRemoved.length))
+  let pricePaidForTokens = sharesBurnt.div(BigInt.fromI32(amountsRemoved.length))
 
   // The funder is sent all of the outcome tokens for which they were providing liquidity
   // This means we must update the funder's market position for each outcome.
