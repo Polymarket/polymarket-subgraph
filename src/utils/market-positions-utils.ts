@@ -30,6 +30,19 @@ export function getMarketPosition(user: string, market: string, outcomeIndex: Bi
 function updateNetPositionAndSave(position: MarketPosition): void {
   position.netQuantity = position.quantityBought.minus(position.quantitySold)
   position.netValue = position.valueBought.minus(position.valueSold)
+
+  // A user has somehow sold more tokens then they have received
+  // This means that we're tracking balances incorrectly.
+  //
+  // Note: this can also be tripped by someone manually transferring tokens
+  //       to another address in order to sell them.
+  if (position.netQuantity.lt(bigZero)) {
+    log.error(
+      'Invalid position: user {} has negative netQuantity on outcome {} on market {}',
+      [position.user, position.outcomeIndex.toString(), position.market]
+    );
+  }
+
   position.save()
 }
 
