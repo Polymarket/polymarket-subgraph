@@ -18,7 +18,7 @@ import {
 } from "../generated/templates/FixedProductMarketMaker/FixedProductMarketMaker"
 import { nthRoot } from './utils/nth-root';
 import { updateVolumes, updateLiquidityFields, getCollateralScale, updateFeeFields, calculatePrices } from './utils/fpmm-utils';
-import { updateMarketPositionFromTrade } from './utils/market-positions-utils';
+import { updateMarketPositionFromLiquidityAdded, updateMarketPositionFromLiquidityRemoved, updateMarketPositionFromTrade } from './utils/market-positions-utils';
 import { bigOne } from './utils/constants';
 
 function requireAccount(accountAddress: string): void {
@@ -127,6 +127,7 @@ export function handleFundingAdded(event: FPMMFundingAdded): void {
   fpmm.totalSupply = fpmm.totalSupply.plus(event.params.sharesMinted);
   fpmm.save();
   recordFundingAddition(event)
+  updateMarketPositionFromLiquidityAdded(event)
 }
 
 export function handleFundingRemoved(event: FPMMFundingRemoved): void {
@@ -154,6 +155,7 @@ export function handleFundingRemoved(event: FPMMFundingRemoved): void {
   fpmm.totalSupply = fpmm.totalSupply.minus(event.params.sharesBurnt);
   fpmm.save();
   recordFundingRemoval(event)
+  updateMarketPositionFromLiquidityRemoved(event)
 }
 
 export function handleBuy(event: FPMMBuy): void {
