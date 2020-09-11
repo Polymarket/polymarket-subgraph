@@ -131,6 +131,7 @@ type FpmmFundingRemoval @entity {
   fpmm: FixedProductMarketMaker!
   funder: Account!
   amountsRemoved: [BigInt!]!
+  collateralRemoved: BigInt!
   sharesBurnt: BigInt!
 }
 

@@ -71,6 +71,7 @@ function recordFundingRemoval(event: FPMMFundingRemoved): void {
   fpmmFundingRemoved.fpmm = event.address.toHexString();
   fpmmFundingRemoved.funder = event.transaction.from.toHexString();
   fpmmFundingRemoved.amountsRemoved = event.params.amountsRemoved;
+  fpmmFundingRemoved.collateralRemoved = event.params.collateralRemovedFromFeePool;
   fpmmFundingRemoved.sharesBurnt = event.params.sharesBurnt;
   fpmmFundingRemoved.save();
 }
