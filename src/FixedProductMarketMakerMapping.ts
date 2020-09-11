@@ -60,11 +60,14 @@ function recordFundingAddition(event: FPMMFundingAdded): void {
   fpmmFundingAdded.timestamp = event.block.timestamp;
   fpmmFundingAdded.fpmm = event.address.toHexString();
   fpmmFundingAdded.funder = event.transaction.from.toHexString();
-  
   let amountsAdded = event.params.amountsAdded;
   fpmmFundingAdded.amountsAdded = amountsAdded;
 
-  let addedFunds = event.transaction.input.values[0]; // Amount of collateral added to the market maker
+  // The amounts of outcome token are limited by the cheapest outcome.
+  // This will have the full balance added to the market maker
+  // therefore this is the amount of collateral that the user has split.
+  let addedFunds = amountsAdded.slice().sort((a,b)=> a.minus(b).toI32()).pop()
+
   let amountsRefunded = new Array<BigInt>(amountsAdded.length);
   for (let outcomeIndex = 0; outcomeIndex < amountsAdded.length; outcomeIndex++) {
     // Event emits the number of outcome tokens added to the market maker

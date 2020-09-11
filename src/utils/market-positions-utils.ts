@@ -158,10 +158,15 @@ export function updateMarketPositionsFromRedemption(marketMakerAddress: string, 
 export function updateMarketPositionFromLiquidityAdded(event: FPMMFundingAdded): void {
   let fpmmAddress = event.address.toHexString();
   let funder = event.transaction.from.toHexString();
-  let addedFunds = event.transaction.input.values[0]; // Amount of collateral added to the market maker
   let amountsAdded = event.params.amountsAdded;
-  let totalRefundedValue = addedFunds.minus(event.params.sharesMinted)
   
+  // The amounts of outcome token are limited by the cheapest outcome.
+  // This will have the full balance added to the market maker
+  // therefore this is the amount of collateral that the user has split.
+  let addedFunds = amountsAdded.slice().sort((a,b)=> a.minus(b).toI32()).pop()
+
+  let totalRefundedValue = addedFunds.minus(event.params.sharesMinted)
+
   // Calculate the full number of outcome tokens which are refunded to the funder address
   let totalRefundedOutcomeTokens = bigZero;
   for (let outcomeIndex = 0; outcomeIndex < amountsAdded.length; outcomeIndex++) {
