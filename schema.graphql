@@ -122,6 +122,7 @@ type FpmmFundingAddition @entity {
   fpmm: FixedProductMarketMaker!
   funder: Account!
   amountsAdded: [BigInt!]!
+  amountsRefunded: [BigInt!]!
   sharesMinted: BigInt!
 }
 

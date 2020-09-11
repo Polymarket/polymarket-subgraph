@@ -60,7 +60,18 @@ function recordFundingAddition(event: FPMMFundingAdded): void {
   fpmmFundingAdded.timestamp = event.block.timestamp;
   fpmmFundingAdded.fpmm = event.address.toHexString();
   fpmmFundingAdded.funder = event.transaction.from.toHexString();
-  fpmmFundingAdded.amountsAdded = event.params.amountsAdded;
+  
+  let amountsAdded = event.params.amountsAdded;
+  fpmmFundingAdded.amountsAdded = amountsAdded;
+
+  let addedFunds = event.transaction.input.values[0]; // Amount of collateral added to the market maker
+  let amountsRefunded = new Array<BigInt>(amountsAdded.length);
+  for (let outcomeIndex = 0; outcomeIndex < amountsAdded.length; outcomeIndex++) {
+    // Event emits the number of outcome tokens added to the market maker
+    // Subtract this from the amount of collateral added to get the amount refunded to funder
+    amountsRefunded[outcomeIndex] = addedFunds.minus(amountsAdded[outcomeIndex])
+  }
+  fpmmFundingAdded.amountsRefunded = amountsRefunded;
   fpmmFundingAdded.sharesMinted = event.params.sharesMinted;
   fpmmFundingAdded.save();
 }
