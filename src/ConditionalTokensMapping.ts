@@ -29,9 +29,9 @@ export function handlePositionSplit(event: PositionSplit): void {
   // If the user has split from collateral then we want to update their market position accordingly
   if (partitionCheck(split.partition, condition.outcomeSlotCount)) {
     log.info('Splitting from collateral', []);
-    let marketMakers: string[] = condition.fixedProductMarketMakers
+    let marketMakers = condition.fixedProductMarketMakers
     for (let i = 0; i < marketMakers.length; i++) {
-      updateMarketPositionsFromSplit((marketMakers as string[])[i], event);
+      updateMarketPositionsFromSplit(marketMakers[i], event);
     }
   }
 }
@@ -58,9 +58,9 @@ export function handlePositionsMerge(event: PositionsMerge): void {
   // If the user has merged a full set of outcome tokens then we want to update their market position accordingly
   if (partitionCheck(merge.partition, condition.outcomeSlotCount)) {
     log.info('Merging a full position', []);
-    let marketMakers: string[] = condition.fixedProductMarketMakers;
+    let marketMakers = condition.fixedProductMarketMakers;
     for (let i = 0; i < marketMakers.length; i++) {
-      updateMarketPositionsFromMerge((marketMakers as string[])[i], event);
+      updateMarketPositionsFromMerge(marketMakers[i], event);
     }
   }
 }
@@ -84,9 +84,9 @@ export function handlePayoutRedemption(event: PayoutRedemption): void {
     return;
   }
 
-  let marketMakers: string[] = condition.fixedProductMarketMakers;
+  let marketMakers = condition.fixedProductMarketMakers;
   for (let i = 0; i < marketMakers.length; i++) {
-    updateMarketPositionsFromRedemption((marketMakers as string[])[i], event);
+    updateMarketPositionsFromRedemption(marketMakers[i], event);
   }
 }
 
