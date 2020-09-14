@@ -184,7 +184,9 @@ export function updateMarketPositionFromLiquidityAdded(event: FPMMFundingAdded):
     position.quantityBought = position.quantityBought.plus(refundedAmount);
 
     // We weight the value of the refund by the fraction of all outcome tokens it makes up
-    let refundValue = totalRefundedValue.times(refundedAmount).div(totalRefundedOutcomeTokens)
+    let refundValue = totalRefundedOutcomeTokens.gt(bigZero)
+      ? totalRefundedValue.times(refundedAmount).div(totalRefundedOutcomeTokens)
+      : bigZero;
     position.valueBought = position.valueBought.plus(refundValue);
 
     updateNetPositionAndSave(position)
