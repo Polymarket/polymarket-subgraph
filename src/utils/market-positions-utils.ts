@@ -75,7 +75,7 @@ export function updateMarketPositionFromTrade(event: EthereumEvent): void {
  * It assumes that the number of outcome slots on the market maker is equal to that on the condition
  */
 export function updateMarketPositionsFromSplit(marketMakerAddress: string, event: PositionSplit): void {
-  let userAddress = event.transaction.from.toHexString();
+  let userAddress = event.params.stakeholder.toHexString();
   let marketMaker = FixedProductMarketMaker.load(marketMakerAddress);
   let totalSlots = marketMaker.outcomeSlotCount
   for (let outcomeIndex = 0; outcomeIndex < totalSlots; outcomeIndex++) {
@@ -98,7 +98,7 @@ export function updateMarketPositionsFromSplit(marketMakerAddress: string, event
  * It assumes that the number of outcome slots on the market maker is equal to that on the condition
  */
 export function updateMarketPositionsFromMerge(marketMakerAddress: string, event: PositionsMerge): void {
-  let userAddress = event.transaction.from.toHexString();
+  let userAddress = event.params.stakeholder.toHexString();
   let marketMaker = FixedProductMarketMaker.load(marketMakerAddress);
   let totalSlots = marketMaker.outcomeSlotCount
   for (let outcomeIndex = 0; outcomeIndex < totalSlots; outcomeIndex++) {
@@ -122,7 +122,7 @@ export function updateMarketPositionsFromMerge(marketMakerAddress: string, event
  * It assumes that the number of outcome slots on the market maker is equal to that on the condition
  */
 export function updateMarketPositionsFromRedemption(marketMakerAddress: string, event: PayoutRedemption): void {
-  let userAddress = event.transaction.from.toHexString();
+  let userAddress = event.params.redeemer.toHexString();
   let condition = Condition.load(event.params.conditionId.toHexString());
 
   let payoutNumerators = condition.payoutNumerators as BigInt[];
