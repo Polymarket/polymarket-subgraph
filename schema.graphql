@@ -30,8 +30,7 @@ type Condition @entity {
   payouts: [BigDecimal!]
   payoutNumerators: [BigInt!]
   payoutDenominator: BigInt
-  fixedProductMarketMakers: [FixedProductMarketMaker!]
-    @derivedFrom(field: "conditions")
+  fixedProductMarketMakers: [FixedProductMarketMaker!]!
 }
 
 type Split @entity {
@@ -73,7 +72,7 @@ type FixedProductMarketMaker @entity {
   creationTimestamp: BigInt!
 
   collateralToken: Bytes!
-  conditions: [Condition!]!
+  conditions: [Condition!] @derivedFrom(field: "fixedProductMarketMakers")
   fee: BigInt!
 
   collateralVolume: BigInt!

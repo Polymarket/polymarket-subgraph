@@ -27,9 +27,9 @@ export function handlePositionSplit(event: PositionSplit): void {
   }
   
   // If the user has split from collateral then we want to update their market position accordingly
-  let marketMakers: string[] | null = condition.fixedProductMarketMakers
-  if (marketMakers != null && partitionCheck(split.partition, condition.outcomeSlotCount)) {
+  if (partitionCheck(split.partition, condition.outcomeSlotCount)) {
     log.info('Splitting from collateral', []);
+    let marketMakers: string[] = condition.fixedProductMarketMakers
     for (let i = 0; i < marketMakers.length; i++) {
       updateMarketPositionsFromSplit((marketMakers as string[])[i], event);
     }
@@ -56,9 +56,9 @@ export function handlePositionsMerge(event: PositionsMerge): void {
   }
   
   // If the user has merged a full set of outcome tokens then we want to update their market position accordingly
-  let marketMakers: string[] | null = condition.fixedProductMarketMakers;
-  if (marketMakers != null && partitionCheck(merge.partition, condition.outcomeSlotCount)) {
+  if (partitionCheck(merge.partition, condition.outcomeSlotCount)) {
     log.info('Merging a full position', []);
+    let marketMakers: string[] = condition.fixedProductMarketMakers;
     for (let i = 0; i < marketMakers.length; i++) {
       updateMarketPositionsFromMerge((marketMakers as string[])[i], event);
     }
@@ -84,12 +84,9 @@ export function handlePayoutRedemption(event: PayoutRedemption): void {
     return;
   }
 
-  let marketMakers: string[] | null = condition.fixedProductMarketMakers;
-  if (marketMakers != null) {
-    log.info('Redeeming a position', []);
-    for (let i = 0; i < marketMakers.length; i++) {
-      updateMarketPositionsFromRedemption((marketMakers as string[])[i], event);
-    }
+  let marketMakers: string[] = condition.fixedProductMarketMakers;
+  for (let i = 0; i < marketMakers.length; i++) {
+    updateMarketPositionsFromRedemption((marketMakers as string[])[i], event);
   }
 }
 
@@ -97,6 +94,7 @@ export function handleConditionPreparation(event: ConditionPreparation): void {
   let condition = new Condition(event.params.conditionId.toHexString());
   condition.oracle = event.params.oracle;
   condition.questionId = event.params.questionId;
+  condition.fixedProductMarketMakers = [];
 
   let global = requireGlobal();
   global.numConditions++;

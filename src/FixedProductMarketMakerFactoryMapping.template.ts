@@ -31,7 +31,6 @@ export function handleFixedProductMarketMakerCreation(event: FixedProductMarketM
 
   let conditionIds = event.params.conditionIds;
   let outcomeTokenCount = 1;
-  let conditionIdStrs = new Array<string>(conditionIds.length);
   for(let i = 0; i < conditionIds.length; i++) {
     let conditionIdStr = conditionIds[i].toHexString();
 
@@ -45,9 +44,9 @@ export function handleFixedProductMarketMakerCreation(event: FixedProductMarketM
     }
 
     outcomeTokenCount *= condition.outcomeSlotCount;
-    conditionIdStrs[i] = conditionIdStr;
+    condition.fixedProductMarketMakers = condition.fixedProductMarketMakers.concat([addressHexString])
+    condition.save()
   }
-  fixedProductMarketMaker.conditions = conditionIdStrs;
   fixedProductMarketMaker.outcomeSlotCount = outcomeTokenCount;
 
   // Initialise FPMM state
