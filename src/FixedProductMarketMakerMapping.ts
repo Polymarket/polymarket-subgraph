@@ -19,7 +19,7 @@ import {
 import { nthRoot } from './utils/nth-root';
 import { updateVolumes, updateLiquidityFields, getCollateralScale, updateFeeFields, calculatePrices } from './utils/fpmm-utils';
 import { updateMarketPositionFromLiquidityAdded, updateMarketPositionFromLiquidityRemoved, updateMarketPositionFromTrade } from './utils/market-positions-utils';
-import { bigOne } from './utils/constants';
+import { bigOne, bigZero } from './utils/constants';
 
 function requireAccount(accountAddress: string): void {
   let account = Account.load(accountAddress);
@@ -238,36 +238,31 @@ export function handleSell(event: FPMMSell): void {
   updateMarketPositionFromTrade(event);
 }
 
+function loadPoolMembership(fpmmAddress: string, userAddress: string): FpmmPoolMembership {
+  let poolMembershipId = fpmmAddress.concat(userAddress);
+  let poolMembership = FpmmPoolMembership.load(poolMembershipId);
+  if (poolMembership == null) {
+    poolMembership = new FpmmPoolMembership(poolMembershipId);
+    poolMembership.pool = fpmmAddress;
+    poolMembership.funder = userAddress;
+    poolMembership.amount = bigZero;
+  }
+  return poolMembership as FpmmPoolMembership
+}
+
 export function handlePoolShareTransfer(event: Transfer): void {
   let fpmmAddress = event.address.toHexString()
-
   let fromAddress = event.params.from.toHexString();
-  requireAccount(fromAddress);
-
-  let fromMembershipId = fpmmAddress.concat(fromAddress);
-  let fromMembership = FpmmPoolMembership.load(fromMembershipId);
-  if (fromMembership == null) {
-    fromMembership = new FpmmPoolMembership(fromMembershipId);
-    fromMembership.pool = fpmmAddress;
-    fromMembership.funder = fromAddress;
-    fromMembership.amount = event.params.value.neg();
-  } else {
-    fromMembership.amount = fromMembership.amount.minus(event.params.value);
-  }
-  fromMembership.save();
-
   let toAddress = event.params.to.toHexString();
+
+  requireAccount(fromAddress);
   requireAccount(toAddress);
 
-  let toMembershipId = fpmmAddress.concat(toAddress);
-  let toMembership = FpmmPoolMembership.load(toMembershipId);
-  if (toMembership == null) {
-    toMembership = new FpmmPoolMembership(toMembershipId);
-    toMembership.pool = fpmmAddress;
-    toMembership.funder = toAddress;
-    toMembership.amount = event.params.value;
-  } else {
-    toMembership.amount = toMembership.amount.plus(event.params.value);
-  }
+  let fromMembership = loadPoolMembership(fpmmAddress, fromAddress);
+  fromMembership.amount = fromMembership.amount.minus(event.params.value);
+  fromMembership.save();
+
+  let toMembership = loadPoolMembership(fpmmAddress, fromAddress);
+  toMembership.amount = toMembership.amount.plus(event.params.value);
   toMembership.save();
 }
