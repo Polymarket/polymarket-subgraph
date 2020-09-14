@@ -123,7 +123,6 @@ export function updateMarketPositionsFromMerge(marketMakerAddress: string, event
  */
 export function updateMarketPositionsFromRedemption(marketMakerAddress: string, event: PayoutRedemption): void {
   let userAddress = event.transaction.from.toHexString();
-  let redeemedSlots = event.params.indexSets;
   let condition = Condition.load(event.params.conditionId.toHexString());
 
   let payoutNumerators = condition.payoutNumerators as BigInt[];
@@ -137,12 +136,20 @@ export function updateMarketPositionsFromRedemption(marketMakerAddress: string, 
     return;
   }
 
-  for (let i = 0; i < redeemedSlots.length; i++) { 
-    let redeemedSlot = redeemedSlots[i]
-    let position = getMarketPosition(userAddress, marketMakerAddress, redeemedSlot);
+  let indexSets = event.params.indexSets;
+  for (let i = 0; i < indexSets.length; i++) {
+    // Each element of indexSets is the decimal representation of the binary slot of the given outcome
+    // i.e. For a condition with 4 outcomes, ["1", "2", "4"] represents the first 3 slots as 0b0111
+    // We can get the relevant slot by shifting a bit until we hit the correct index, e.g. 4 = 1 << 3 
+    let outcomeIndex = 0
+    while ((1 << outcomeIndex) < indexSets[i].toI32()) {
+      outcomeIndex += 1
+    }
+      
+    let position = getMarketPosition(userAddress, marketMakerAddress, BigInt.fromI32(outcomeIndex));
 
     // Redeeming a position is an all or nothing operation so use full balance for calculations
-    let numerator = payoutNumerators[redeemedSlot.toI32()]
+    let numerator = payoutNumerators[outcomeIndex]
     let redemptionValue = position.netQuantity
       .times(numerator)
       .div(payoutDenominator)
