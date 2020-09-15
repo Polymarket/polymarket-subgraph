@@ -10,8 +10,13 @@ type Global @entity {
 
 type Account @entity {
   id: ID!
+  # Which markets has user provided liquidity to
   fpmmPoolMemberships: [FpmmPoolMembership!] @derivedFrom(field: "funder")
+  # Which markets has user bought shares in
   fpmmParticipations: [FpmmParticipation!] @derivedFrom(field: "participant")
+  marketPositions: [MarketPosition!] @derivedFrom(field: "user")
+  transactions: [Transaction!] @derivedFrom(field: "user")
+  redemptions: [Redemption!] @derivedFrom(field: "redeemer")
 }
 
 # Conditional Tokens
@@ -23,8 +28,9 @@ type Condition @entity {
   outcomeSlotCount: Int!
   resolutionTimestamp: BigInt
   payouts: [BigDecimal!]
+  payoutNumerators: [BigInt!]
+  payoutDenominator: BigInt
   fixedProductMarketMakers: [FixedProductMarketMaker!]!
-    @derivedFrom(field: "conditions")
 }
 
 type Split @entity {
@@ -66,12 +72,15 @@ type FixedProductMarketMaker @entity {
   creationTimestamp: BigInt!
 
   collateralToken: Bytes!
-  conditions: [Condition!]!
+  conditions: [Condition!] @derivedFrom(field: "fixedProductMarketMakers")
   fee: BigInt!
 
   collateralVolume: BigInt!
   scaledCollateralVolume: BigDecimal!
+  feeVolume: BigInt!
+  scaledFeeVolume: BigDecimal!
   outcomeTokenAmounts: [BigInt!]!
+  outcomeTokenPrices: [BigDecimal!]!
   outcomeSlotCount: Int
   liquidityParameter: BigInt!
   scaledLiquidityParameter: BigDecimal!
@@ -90,11 +99,29 @@ type FixedProductMarketMaker @entity {
   participants: [FpmmParticipation!] @derivedFrom(field: "fpmm")
 }
 
+type MarketPosition @entity {
+  id: ID!
+  market: FixedProductMarketMaker!
+  user: Account!
+  outcomeIndex: BigInt!
+  # number of outcome shares that the user has bought and sold.
+  quantityBought: BigInt!
+  quantitySold: BigInt!
+  netQuantity: BigInt!
+  # total value paid by the user to enter this position.
+  # if valueSold > valueBought then the user has cashed out at a profit.
+  valueBought: BigInt!
+  valueSold: BigInt!
+  netValue: BigInt!
+}
+
 type FpmmFundingAddition @entity {
   id: ID!
   timestamp: BigInt!
   fpmm: FixedProductMarketMaker!
   funder: Account!
+  amountsAdded: [BigInt!]!
+  amountsRefunded: [BigInt!]!
   sharesMinted: BigInt!
 }
 
@@ -103,29 +130,21 @@ type FpmmFundingRemoval @entity {
   timestamp: BigInt!
   fpmm: FixedProductMarketMaker!
   funder: Account!
+  amountsRemoved: [BigInt!]!
+  collateralRemoved: BigInt!
   sharesBurnt: BigInt!
 }
 
-type FpmmBuy @entity {
+type Transaction @entity {
   id: ID!
+  type: String!
   timestamp: BigInt!
-  fpmm: FixedProductMarketMaker!
-  buyer: Account!
-  investmentAmount: BigInt!
+  market: FixedProductMarketMaker!
+  user: Account!
+  tradeAmount: BigInt!
   feeAmount: BigInt!
   outcomeIndex: BigInt!
-  outcomeTokensBought: BigInt!
-}
-
-type FpmmSell @entity {
-  id: ID!
-  timestamp: BigInt!
-  fpmm: FixedProductMarketMaker!
-  seller: Account!
-  returnAmount: BigInt!
-  feeAmount: BigInt!
-  outcomeIndex: BigInt!
-  outcomeTokensSold: BigInt!
+  outcomeTokensAmount: BigInt!
 }
 
 type FpmmPoolMembership @entity {
