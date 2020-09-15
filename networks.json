@@ -12,6 +12,11 @@
       "address": "0x1FE248Fb6f21d11C559ab02D6b946248Ceb11a23",
       "transactionHash": "0xe870bf95719f79dee6d09ed10f0de55fcf45e9bc473632d4e5a28e43cdf75353",
       "startBlock": 20394756
+    },
+    "137": {
+      "address": "0x4D97DCd97eC945f40cF65F87097ACe5EA0476045",
+      "transactionHash": "0xf822536aff16fdb8df59bc9c0b5854c5bec4b9a76484ea9d6944908ced563389",
+      "startBlock": 4023686
     }
   },
   "FixedProductMarketMakerFactory": {
@@ -28,6 +33,11 @@
       "address": "0x1c48c4757C2d2Ad7B8b9873DBEc51626Aee5d88f",
       "transactionHash": "0x4d692ec53cf0919cd95e1cd6f8f766b9030c35599f3459fd030bb53334074d96",
       "startBlock": 20394756
+    },
+    "137": {
+      "address": "0x8B9805A2f595B6705e74F7310829f2d299D21522",
+      "transactionHash": "0x1af1b88e36bb0289f6e037e00d01b26bed997ce7a0406ebafce07dcf766ce7c6",
+      "startBlock": 4023693
     }
   }
 }

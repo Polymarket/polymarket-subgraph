@@ -22,6 +22,14 @@ const networks = Object.assign(...[
     port: 8545,
     network_id: '*',
   },
+  matic: {
+    network_id: '137',
+    gasPrice: `${2e9}`,
+    provider: () => new HDWalletProvider(
+      seed,
+      'https://rpc-mainnet.matic.network',
+    ),
+    },
 });
 
 module.exports = { networks };

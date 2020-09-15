@@ -7,7 +7,7 @@ module.exports = function(callback) {
     const templateData = {
       network: {
         main: 'mainnet',
-        private: 'development',
+        private: 'matic',
       }[networkType] || networkType,
       nuancedBinaryTemplateId: {
         main: 6,
