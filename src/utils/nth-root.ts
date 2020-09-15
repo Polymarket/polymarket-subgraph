@@ -1,4 +1,5 @@
 import { log, BigInt } from '@graphprotocol/graph-ts'
+import { bigZero, bigOne } from './constants';
 
 // Adapted from https://en.wikipedia.org/wiki/Nth_root_algorithm
 export function nthRoot(x: BigInt, n: i32): BigInt {
@@ -8,10 +9,9 @@ export function nthRoot(x: BigInt, n: i32): BigInt {
     ])
   }
   
-  let zeroAsBigInt = BigInt.fromI32(0);
 
-  if (x.equals(zeroAsBigInt)) {
-    return zeroAsBigInt;
+  if (x.equals(bigZero)) {
+    return bigZero;
   }
 
   let nAsBigInt = BigInt.fromI32(n);
@@ -19,13 +19,13 @@ export function nthRoot(x: BigInt, n: i32): BigInt {
   let root = x;
   let deltaRoot: BigInt;
   do {
-    let rootPowNLess1 = BigInt.fromI32(1);
+    let rootPowNLess1 = bigOne;
     for (let i = 0; i < n - 1; i++) {
       rootPowNLess1 = rootPowNLess1.times(root);
     }
     deltaRoot = x.div(rootPowNLess1).minus(root).div(nAsBigInt);
     root = root.plus(deltaRoot);
-  } while (deltaRoot.lt(zeroAsBigInt))
+  } while (deltaRoot.lt(bigZero))
 
   return root;
 }

@@ -1,4 +1,4 @@
-import { BigInt, log, Address, EthereumEvent } from '@graphprotocol/graph-ts'
+import { BigInt, log, Address } from '@graphprotocol/graph-ts'
 
 import {
   FixedProductMarketMaker,
@@ -7,7 +7,6 @@ import {
   FpmmParticipation,
   FpmmFundingAddition,
   FpmmFundingRemoval,
-  MarketPosition,
   Transaction,
 } from "../generated/schema"
 import {
@@ -18,96 +17,15 @@ import {
   Transfer,
 } from "../generated/templates/FixedProductMarketMaker/FixedProductMarketMaker"
 import { nthRoot } from './utils/nth-root';
-import { updateVolumes, updateLiquidityFields, getCollateralScale, updateFeeFields } from './utils/fpmm-utils';
+import { updateVolumes, updateLiquidityFields, getCollateralScale, updateFeeFields, calculatePrices } from './utils/fpmm-utils';
+import { updateMarketPositionFromLiquidityAdded, updateMarketPositionFromLiquidityRemoved, updateMarketPositionFromTrade } from './utils/market-positions-utils';
+import { bigOne, bigZero } from './utils/constants';
 
 function requireAccount(accountAddress: string): void {
   let account = Account.load(accountAddress);
   if (account == null) {
     account = new Account(accountAddress);
     account.save();
-  }
-}
-
-/*
- * Returns the user's position for the given market and outcome
- * If no such position exists then a null position is generated
- */
-function getMarketPosition(user: string, market: string, outcomeIndex: BigInt): MarketPosition {
-  let positionId = user + market + outcomeIndex.toString()
-  let position = MarketPosition.load(positionId);
-    if (position == null) {
-      position = new MarketPosition(positionId);
-      position.market = market;
-      position.user = user;
-      position.outcomeIndex = outcomeIndex;
-      position.totalQuantity = BigInt.fromI32(0);
-      position.totalValue = BigInt.fromI32(0);
-    }
-  return position
-}
-
-function updateMarketPosition(event: EthereumEvent): void {
-  let transaction = Transaction.load(event.transaction.hash.toHexString());
-  if (transaction == null) {
-    log.error(
-      'Could not find a transaction with hash: {}',
-      [event.transaction.hash.toString()],
-    );
-  }
-  
-  let position = getMarketPosition(transaction.user, transaction.market, transaction.outcomeIndex)
-  position.totalQuantity = transaction.type == "Buy" ? position.totalQuantity.plus(transaction.outcomeTokensAmount) : position.totalQuantity.minus(transaction.outcomeTokensAmount);
-  position.totalValue = transaction.type == "Buy" ? position.totalValue.plus(transaction.tradeAmount) : position.totalValue.minus(transaction.tradeAmount);
-  position.save()
-}
-
-function updateMarketPositionFromLiquidityAdded(event: FPMMFundingAdded): void {
-  let fpmmAddress = event.address.toHexString();
-  let funder = event.transaction.from.toHexString();
-  let addedFunds = event.transaction.input.values[0]; // Amount of collateral added to the market maker
-  let amountsAdded = event.params.amountsAdded;
-  let totalRefundedValue = addedFunds.minus(event.params.sharesMinted)
-  
-  // Calculate the full number of outcome tokens which are refunded to the funder address
-  let totalRefundedOutcomeTokens = BigInt.fromI32(0);
-  for (let outcomeIndex = 0; outcomeIndex < amountsAdded.length; outcomeIndex++) {
-    let refundedAmount = addedFunds.minus(amountsAdded[outcomeIndex]);
-    totalRefundedOutcomeTokens = totalRefundedOutcomeTokens.plus(refundedAmount);
-  }
-
-  // Funder is refunded with any excess outcome tokens which can't go into the market maker.
-  // This means we must update the funder's market position for each outcome.
-  for (let outcomeIndex = 0; outcomeIndex < amountsAdded.length; outcomeIndex++) {
-    let position = getMarketPosition(funder, fpmmAddress, BigInt.fromI32(outcomeIndex));
-    // Event emits the number of outcome tokens added to the market maker
-    // Subtract this from the amount of collateral added to get the amount refunded to funder
-    let refundedAmount: BigInt = addedFunds.minus(amountsAdded[outcomeIndex]);
-    position.totalQuantity = position.totalQuantity.plus(refundedAmount);
-
-    // We weight the value of the refund by the fraction of all outcome tokens it makes up
-    let refundValue = totalRefundedValue.times(refundedAmount).div(totalRefundedOutcomeTokens)
-    position.totalValue = position.totalValue.plus(refundValue);
-    position.save();
-  }
-}
-
-function updateMarketPositionFromLiquidityRemoved(event: FPMMFundingRemoved): void {
-  let fpmmAddress = event.address.toHexString();
-  let funder = event.transaction.from.toHexString();
-  let amountsRemoved = event.params.amountsRemoved;
-  let collateralRemoved = event.params.collateralRemovedFromFeePool;
-
-  // Outcome tokens are removed in proportion to their balances in the market maker
-  // Therefore the withdrawal of each outcome token should have the same value. 
-  let pricePaidForTokens = collateralRemoved.div(BigInt.fromI32(amountsRemoved.length))
-
-  // The funder is sent all of the outcome tokens for which they were providing liquidity
-  // This means we must update the funder's market position for each outcome.
-  for (let outcomeIndex = 0; outcomeIndex < amountsRemoved.length; outcomeIndex++) {
-    let position = getMarketPosition(funder, fpmmAddress, BigInt.fromI32(outcomeIndex))
-    position.totalQuantity = position.totalQuantity.plus(amountsRemoved[outcomeIndex])
-    position.totalValue = position.totalValue.plus(pricePaidForTokens)
-    position.save()
   }
 }
 
@@ -142,6 +60,21 @@ function recordFundingAddition(event: FPMMFundingAdded): void {
   fpmmFundingAdded.timestamp = event.block.timestamp;
   fpmmFundingAdded.fpmm = event.address.toHexString();
   fpmmFundingAdded.funder = event.transaction.from.toHexString();
+  let amountsAdded = event.params.amountsAdded;
+  fpmmFundingAdded.amountsAdded = amountsAdded;
+
+  // The amounts of outcome token are limited by the cheapest outcome.
+  // This will have the full balance added to the market maker
+  // therefore this is the amount of collateral that the user has split.
+  let addedFunds = amountsAdded.slice().sort((a,b)=> a.minus(b).toI32()).pop()
+
+  let amountsRefunded = new Array<BigInt>(amountsAdded.length);
+  for (let outcomeIndex = 0; outcomeIndex < amountsAdded.length; outcomeIndex++) {
+    // Event emits the number of outcome tokens added to the market maker
+    // Subtract this from the amount of collateral added to get the amount refunded to funder
+    amountsRefunded[outcomeIndex] = addedFunds.minus(amountsAdded[outcomeIndex])
+  }
+  fpmmFundingAdded.amountsRefunded = amountsRefunded;
   fpmmFundingAdded.sharesMinted = event.params.sharesMinted;
   fpmmFundingAdded.save();
 }
@@ -151,6 +84,8 @@ function recordFundingRemoval(event: FPMMFundingRemoved): void {
   fpmmFundingRemoved.timestamp = event.block.timestamp;
   fpmmFundingRemoved.fpmm = event.address.toHexString();
   fpmmFundingRemoved.funder = event.transaction.from.toHexString();
+  fpmmFundingRemoved.amountsRemoved = event.params.amountsRemoved;
+  fpmmFundingRemoved.collateralRemoved = event.params.collateralRemovedFromFeePool;
   fpmmFundingRemoved.sharesBurnt = event.params.sharesBurnt;
   fpmmFundingRemoved.save();
 }
@@ -179,7 +114,7 @@ export function handleFundingAdded(event: FPMMFundingAdded): void {
   let oldAmounts = fpmm.outcomeTokenAmounts;
   let amountsAdded = event.params.amountsAdded;
   let newAmounts = new Array<BigInt>(oldAmounts.length);
-  let amountsProduct = BigInt.fromI32(1);
+  let amountsProduct = bigOne;
   for(let i = 0; i < newAmounts.length; i++) {
     newAmounts[i] = oldAmounts[i].plus(amountsAdded[i]);
     amountsProduct = amountsProduct.times(newAmounts[i]);
@@ -192,6 +127,7 @@ export function handleFundingAdded(event: FPMMFundingAdded): void {
   fpmm.totalSupply = fpmm.totalSupply.plus(event.params.sharesMinted);
   fpmm.save();
   recordFundingAddition(event)
+  updateMarketPositionFromLiquidityAdded(event)
 }
 
 export function handleFundingRemoved(event: FPMMFundingRemoved): void {
@@ -205,7 +141,7 @@ export function handleFundingRemoved(event: FPMMFundingRemoved): void {
   let oldAmounts = fpmm.outcomeTokenAmounts;
   let amountsRemoved = event.params.amountsRemoved;
   let newAmounts = new Array<BigInt>(oldAmounts.length);
-  let amountsProduct = BigInt.fromI32(1);
+  let amountsProduct = bigOne;
   for(let i = 0; i < newAmounts.length; i++) {
     newAmounts[i] = oldAmounts[i].minus(amountsRemoved[i]);
     amountsProduct = amountsProduct.times(newAmounts[i]);
@@ -219,6 +155,7 @@ export function handleFundingRemoved(event: FPMMFundingRemoved): void {
   fpmm.totalSupply = fpmm.totalSupply.minus(event.params.sharesBurnt);
   fpmm.save();
   recordFundingRemoval(event)
+  updateMarketPositionFromLiquidityRemoved(event)
 }
 
 export function handleBuy(event: FPMMBuy): void {
@@ -236,7 +173,7 @@ export function handleBuy(event: FPMMBuy): void {
   let outcomeIndex = event.params.outcomeIndex.toI32();
 
   let newAmounts = new Array<BigInt>(oldAmounts.length);
-  let amountsProduct = BigInt.fromI32(1);
+  let amountsProduct = bigOne;
   for(let i = 0; i < newAmounts.length; i++) {
     if (i == outcomeIndex) {
       newAmounts[i] = oldAmounts[i].plus(investmentAmount).minus(event.params.outcomeTokensBought);
@@ -246,6 +183,7 @@ export function handleBuy(event: FPMMBuy): void {
     amountsProduct = amountsProduct.times(newAmounts[i]);
   }
   fpmm.outcomeTokenAmounts = newAmounts;
+  fpmm.outcomeTokenPrices = calculatePrices(newAmounts);
   let liquidityParameter = nthRoot(amountsProduct, newAmounts.length);
   let collateralScale = getCollateralScale(fpmm.collateralToken as Address);
   let collateralScaleDec = collateralScale.toBigDecimal();
@@ -257,7 +195,7 @@ export function handleBuy(event: FPMMBuy): void {
 
   recordParticipation(fpmmAddress, event.params.buyer.toHexString());
   recordBuy(event);
-  updateMarketPosition(event);
+  updateMarketPositionFromTrade(event);
 }
 
 export function handleSell(event: FPMMSell): void {
@@ -274,7 +212,7 @@ export function handleSell(event: FPMMSell): void {
 
   let outcomeIndex = event.params.outcomeIndex.toI32();
   let newAmounts = new Array<BigInt>(oldAmounts.length);
-  let amountsProduct = BigInt.fromI32(1);
+  let amountsProduct = bigOne;
   for(let i = 0; i < newAmounts.length; i++) {
     if (i == outcomeIndex) {
       newAmounts[i] = oldAmounts[i].minus(returnAmount).plus(event.params.outcomeTokensSold);
@@ -284,6 +222,7 @@ export function handleSell(event: FPMMSell): void {
     amountsProduct = amountsProduct.times(newAmounts[i]);
   }
   fpmm.outcomeTokenAmounts = newAmounts;
+  fpmm.outcomeTokenPrices = calculatePrices(newAmounts);
   let liquidityParameter = nthRoot(amountsProduct, newAmounts.length);
   let collateralScale = getCollateralScale(fpmm.collateralToken as Address);
   let collateralScaleDec = collateralScale.toBigDecimal();
@@ -296,39 +235,34 @@ export function handleSell(event: FPMMSell): void {
 
   recordParticipation(fpmmAddress, event.params.seller.toHexString());
   recordSell(event);
-  updateMarketPosition(event);
+  updateMarketPositionFromTrade(event);
+}
+
+function loadPoolMembership(fpmmAddress: string, userAddress: string): FpmmPoolMembership {
+  let poolMembershipId = fpmmAddress.concat(userAddress);
+  let poolMembership = FpmmPoolMembership.load(poolMembershipId);
+  if (poolMembership == null) {
+    poolMembership = new FpmmPoolMembership(poolMembershipId);
+    poolMembership.pool = fpmmAddress;
+    poolMembership.funder = userAddress;
+    poolMembership.amount = bigZero;
+  }
+  return poolMembership as FpmmPoolMembership
 }
 
 export function handlePoolShareTransfer(event: Transfer): void {
   let fpmmAddress = event.address.toHexString()
-
   let fromAddress = event.params.from.toHexString();
-  requireAccount(fromAddress);
-
-  let fromMembershipId = fpmmAddress.concat(fromAddress);
-  let fromMembership = FpmmPoolMembership.load(fromMembershipId);
-  if (fromMembership == null) {
-    fromMembership = new FpmmPoolMembership(fromMembershipId);
-    fromMembership.pool = fpmmAddress;
-    fromMembership.funder = fromAddress;
-    fromMembership.amount = event.params.value.neg();
-  } else {
-    fromMembership.amount = fromMembership.amount.minus(event.params.value);
-  }
-  fromMembership.save();
-
   let toAddress = event.params.to.toHexString();
+
+  requireAccount(fromAddress);
   requireAccount(toAddress);
 
-  let toMembershipId = fpmmAddress.concat(toAddress);
-  let toMembership = FpmmPoolMembership.load(toMembershipId);
-  if (toMembership == null) {
-    toMembership = new FpmmPoolMembership(toMembershipId);
-    toMembership.pool = fpmmAddress;
-    toMembership.funder = toAddress;
-    toMembership.amount = event.params.value;
-  } else {
-    toMembership.amount = toMembership.amount.plus(event.params.value);
-  }
+  let fromMembership = loadPoolMembership(fpmmAddress, fromAddress);
+  fromMembership.amount = fromMembership.amount.minus(event.params.value);
+  fromMembership.save();
+
+  let toMembership = loadPoolMembership(fpmmAddress, fromAddress);
+  toMembership.amount = toMembership.amount.plus(event.params.value);
   toMembership.save();
 }
