@@ -29,6 +29,14 @@ const networks = Object.assign(...[
       seed,
       'https://rpc-mainnet.matic.network',
     ),
+  },
+  mumbai: {
+    network_id: '80001',
+    gasPrice: `${2e9}`,
+    provider: () => new HDWalletProvider(
+      seed,
+      'https://rpc-mumbai.matic.today',
+    ),
     },
 });
 
