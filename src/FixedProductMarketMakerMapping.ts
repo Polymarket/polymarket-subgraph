@@ -153,6 +153,10 @@ export function handleFundingRemoved(event: FPMMFundingRemoved): void {
   updateLiquidityFields(fpmm as FixedProductMarketMaker, liquidityParameter, collateralScale.toBigDecimal());
   
   fpmm.totalSupply = fpmm.totalSupply.minus(event.params.sharesBurnt);
+  if (fpmm.totalSupply.equals(bigZero)) {
+    // All liquidity has been removed and so prices need to be zeroed out.
+    fpmm.outcomeTokenPrices = calculatePrices(newAmounts);
+  }
   fpmm.save();
   recordFundingRemoval(event)
   updateMarketPositionFromLiquidityRemoved(event)
