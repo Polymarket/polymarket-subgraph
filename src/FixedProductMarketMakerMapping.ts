@@ -211,7 +211,6 @@ export function handleSell(event: FPMMSell): void {
 
   let oldAmounts = fpmm.outcomeTokenAmounts;
   let returnAmountPlusFees = event.params.returnAmount.plus(event.params.feeAmount);
-  let returnAmount = event.params.returnAmount;
 
   let outcomeIndex = event.params.outcomeIndex.toI32();
   let newAmounts = new Array<BigInt>(oldAmounts.length);
