@@ -125,6 +125,12 @@ export function handleFundingAdded(event: FPMMFundingAdded): void {
   updateLiquidityFields(fpmm as FixedProductMarketMaker, liquidityParameter, collateralScale.toBigDecimal());
 
   fpmm.totalSupply = fpmm.totalSupply.plus(event.params.sharesMinted);
+  if (fpmm.totalSupply.equals(event.params.sharesMinted)) {
+    // The market maker previously had zero liquidity
+    // We then need to update with the initial prices.
+    fpmm.outcomeTokenPrices = calculatePrices(newAmounts);
+  }
+
   fpmm.save();
   recordFundingAddition(event)
   updateMarketPositionFromLiquidityAdded(event)
