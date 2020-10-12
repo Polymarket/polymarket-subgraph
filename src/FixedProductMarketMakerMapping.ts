@@ -8,14 +8,14 @@ import {
   FpmmFundingAddition,
   FpmmFundingRemoval,
   Transaction,
-} from "../generated/schema"
+} from "./types/schema"
 import {
   FPMMFundingAdded,
   FPMMFundingRemoved,
   FPMMBuy,
   FPMMSell,
   Transfer,
-} from "../generated/templates/FixedProductMarketMaker/FixedProductMarketMaker"
+} from "./types/templates/FixedProductMarketMaker/FixedProductMarketMaker"
 import { nthRoot } from './utils/nth-root';
 import { updateVolumes, updateLiquidityFields, getCollateralScale, updateFeeFields, calculatePrices } from './utils/fpmm-utils';
 import { updateMarketPositionFromLiquidityAdded, updateMarketPositionFromLiquidityRemoved, updateMarketPositionFromTrade } from './utils/market-positions-utils';
@@ -125,6 +125,12 @@ export function handleFundingAdded(event: FPMMFundingAdded): void {
   updateLiquidityFields(fpmm as FixedProductMarketMaker, liquidityParameter, collateralScale.toBigDecimal());
 
   fpmm.totalSupply = fpmm.totalSupply.plus(event.params.sharesMinted);
+  if (fpmm.totalSupply.equals(event.params.sharesMinted)) {
+    // The market maker previously had zero liquidity
+    // We then need to update with the initial prices.
+    fpmm.outcomeTokenPrices = calculatePrices(newAmounts);
+  }
+
   fpmm.save();
   recordFundingAddition(event)
   updateMarketPositionFromLiquidityAdded(event)
@@ -211,7 +217,6 @@ export function handleSell(event: FPMMSell): void {
 
   let oldAmounts = fpmm.outcomeTokenAmounts;
   let returnAmountPlusFees = event.params.returnAmount.plus(event.params.feeAmount);
-  let returnAmount = event.params.returnAmount;
 
   let outcomeIndex = event.params.outcomeIndex.toI32();
   let newAmounts = new Array<BigInt>(oldAmounts.length);

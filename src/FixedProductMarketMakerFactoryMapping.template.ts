@@ -1,8 +1,8 @@
 import { BigInt, log, Address, BigDecimal } from '@graphprotocol/graph-ts'
 
-import { FixedProductMarketMakerCreation } from '../generated/FixedProductMarketMakerFactory/FixedProductMarketMakerFactory'
-import { FixedProductMarketMaker, Condition } from '../generated/schema'
-import { FixedProductMarketMaker as FixedProductMarketMakerTemplate } from '../generated/templates'
+import { FixedProductMarketMakerCreation } from './types/FixedProductMarketMakerFactory/FixedProductMarketMakerFactory'
+import { FixedProductMarketMaker, Condition } from './types/schema'
+import { FixedProductMarketMaker as FixedProductMarketMakerTemplate } from './types/templates'
 import { nthRoot } from './utils/nth-root';
 import { timestampToDay, joinDayAndVolume } from './utils/day-volume-utils';
 import { updateScaledVolumes, getCollateralScale, updateLiquidityFields, calculatePrices } from './utils/fpmm-utils';
@@ -13,7 +13,7 @@ export function handleFixedProductMarketMakerCreation(event: FixedProductMarketM
   let addressHexString = address.toHexString();
   let conditionalTokensAddress = event.params.conditionalTokens.toHexString();
 
-  if (conditionalTokensAddress != '{{ConditionalTokens.addressLowerCase}}') {
+  if (conditionalTokensAddress != '{{lowercase contracts.ConditionalTokens.address}}') {
     log.info(
       'cannot index market maker {}: using conditional tokens {}',
       [addressHexString, conditionalTokensAddress],
