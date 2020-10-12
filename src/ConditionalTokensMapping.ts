@@ -1,9 +1,19 @@
-import { BigInt, BigDecimal, log } from '@graphprotocol/graph-ts'
+import { BigDecimal, log } from '@graphprotocol/graph-ts';
 
-import { ConditionPreparation, ConditionResolution, PositionSplit, PositionsMerge, PayoutRedemption } from './types/ConditionalTokens/ConditionalTokens'
-import { Condition, Redemption, Merge, Split } from './types/schema'
+import {
+  ConditionPreparation,
+  ConditionResolution,
+  PositionSplit,
+  PositionsMerge,
+  PayoutRedemption,
+} from './types/ConditionalTokens/ConditionalTokens';
+import { Condition, Redemption, Merge, Split } from './types/schema';
 import { requireGlobal } from './utils/global-utils';
-import { updateMarketPositionsFromMerge, updateMarketPositionsFromRedemption, updateMarketPositionsFromSplit } from './utils/market-positions-utils';
+import {
+  updateMarketPositionsFromMerge,
+  updateMarketPositionsFromRedemption,
+  updateMarketPositionsFromSplit,
+} from './utils/market-positions-utils';
 import { partitionCheck } from './utils/conditional-utils';
 import { bigZero } from './utils/constants';
 
@@ -18,19 +28,18 @@ export function handlePositionSplit(event: PositionSplit): void {
   split.save();
 
   let condition = Condition.load(split.condition);
-  if(condition == null) {
-    log.error(
-      'Failed to update market positions: condition {} not prepared',
-      [split.condition],
-    );
+  if (condition == null) {
+    log.error('Failed to update market positions: condition {} not prepared', [
+      split.condition,
+    ]);
     return;
   }
-  
+
   // If the user has split from collateral then we want to update their market position accordingly
   if (partitionCheck(split.partition, condition.outcomeSlotCount)) {
     log.info('Splitting from collateral', []);
-    let marketMakers = condition.fixedProductMarketMakers
-    for (let i = 0; i < marketMakers.length; i++) {
+    let marketMakers = condition.fixedProductMarketMakers;
+    for (let i = 0; i < marketMakers.length; i += 1) {
       updateMarketPositionsFromSplit(marketMakers[i], event);
     }
   }
@@ -47,19 +56,18 @@ export function handlePositionsMerge(event: PositionsMerge): void {
   merge.save();
 
   let condition = Condition.load(merge.condition);
-  if(condition == null) {
-    log.error(
-      'Failed to update market positions: condition {} not prepared',
-      [merge.condition],
-    );
+  if (condition == null) {
+    log.error('Failed to update market positions: condition {} not prepared', [
+      merge.condition,
+    ]);
     return;
   }
-  
+
   // If the user has merged a full set of outcome tokens then we want to update their market position accordingly
   if (partitionCheck(merge.partition, condition.outcomeSlotCount)) {
     log.info('Merging a full position', []);
     let marketMakers = condition.fixedProductMarketMakers;
-    for (let i = 0; i < marketMakers.length; i++) {
+    for (let i = 0; i < marketMakers.length; i += 1) {
       updateMarketPositionsFromMerge(marketMakers[i], event);
     }
   }
@@ -74,18 +82,17 @@ export function handlePayoutRedemption(event: PayoutRedemption): void {
   redemption.indexSets = event.params.indexSets;
   redemption.payout = event.params.payout;
   redemption.save();
-  
+
   let condition = Condition.load(redemption.condition);
-  if(condition == null) {
-    log.error(
-      'Failed to update market positions: condition {} not prepared',
-      [redemption.condition],
-    );
+  if (condition == null) {
+    log.error('Failed to update market positions: condition {} not prepared', [
+      redemption.condition,
+    ]);
     return;
   }
 
   let marketMakers = condition.fixedProductMarketMakers;
-  for (let i = 0; i < marketMakers.length; i++) {
+  for (let i = 0; i < marketMakers.length; i += 1) {
     updateMarketPositionsFromRedemption(marketMakers[i], event);
   }
 }
@@ -97,8 +104,8 @@ export function handleConditionPreparation(event: ConditionPreparation): void {
   condition.fixedProductMarketMakers = [];
 
   let global = requireGlobal();
-  global.numConditions++;
-  global.numOpenConditions++;
+  global.numConditions += 1;
+  global.numOpenConditions += 1;
   global.save();
 
   condition.outcomeSlotCount = event.params.outcomeSlotCount.toI32();
@@ -106,7 +113,7 @@ export function handleConditionPreparation(event: ConditionPreparation): void {
 }
 
 export function handleConditionResolution(event: ConditionResolution): void {
-  let conditionId = event.params.conditionId.toHexString()
+  let conditionId = event.params.conditionId.toHexString();
   let condition = Condition.load(conditionId);
   if (condition == null) {
     log.error('could not find condition {} to resolve', [conditionId]);
@@ -114,12 +121,14 @@ export function handleConditionResolution(event: ConditionResolution): void {
   }
 
   let global = requireGlobal();
-  global.numOpenConditions--;
-  global.numClosedConditions++;
+  global.numOpenConditions -= 1;
+  global.numClosedConditions += 1;
   global.save();
 
   if (condition.resolutionTimestamp != null || condition.payouts != null) {
-    log.error('should not be able to resolve condition {} more than once', [conditionId]);
+    log.error('should not be able to resolve condition {} more than once', [
+      conditionId,
+    ]);
     return;
   }
 
@@ -127,17 +136,17 @@ export function handleConditionResolution(event: ConditionResolution): void {
 
   let payoutNumerators = event.params.payoutNumerators;
   let payoutDenominator = bigZero;
-  for (let i = 0; i < payoutNumerators.length; i++) {
+  for (let i = 0; i < payoutNumerators.length; i += 1) {
     payoutDenominator = payoutDenominator.plus(payoutNumerators[i]);
   }
   let payoutDenominatorDec = payoutDenominator.toBigDecimal();
   let payouts = new Array<BigDecimal>(payoutNumerators.length);
-  for (let i = 0; i < payouts.length; i++) {
+  for (let i = 0; i < payouts.length; i += 1) {
     payouts[i] = payoutNumerators[i].divDecimal(payoutDenominatorDec);
   }
   condition.payouts = payouts;
-  condition.payoutNumerators = payoutNumerators
-  condition.payoutDenominator = payoutDenominator
+  condition.payoutNumerators = payoutNumerators;
+  condition.payoutDenominator = payoutDenominator;
 
   condition.save();
 }

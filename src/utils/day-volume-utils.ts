@@ -1,7 +1,7 @@
-import { BigInt, Bytes, BigDecimal } from '@graphprotocol/graph-ts'
+import { BigInt, Bytes } from '@graphprotocol/graph-ts';
 
 export function timestampToDay(timestamp: BigInt): BigInt {
-  return timestamp.div(BigInt.fromI32(86400))
+  return timestamp.div(BigInt.fromI32(86400));
 }
 
 let twoPow256Bytes = new Uint8Array(33) as Bytes;
@@ -14,8 +14,13 @@ export function joinDayAndVolume(day: BigInt, volume: BigInt): BigInt {
   return day.times(twoPow256).plus(volume);
 }
 
-export function joinDayAndScaledVolume(day: BigInt, volume: BigInt, collateralScale: BigInt): BigInt {
-  return day.times(twoPow256).times(scaledVolumeGranularity).plus(
-    volume.times(scaledVolumeGranularity).div(collateralScale)
-  );
+export function joinDayAndScaledVolume(
+  day: BigInt,
+  volume: BigInt,
+  collateralScale: BigInt,
+): BigInt {
+  return day
+    .times(twoPow256)
+    .times(scaledVolumeGranularity)
+    .plus(volume.times(scaledVolumeGranularity).div(collateralScale));
 }
