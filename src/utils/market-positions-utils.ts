@@ -1,7 +1,7 @@
 import { BigInt, EthereumEvent, log } from '@graphprotocol/graph-ts'
-import { FixedProductMarketMaker, MarketPosition, Transaction, Condition } from "../../generated/schema";
-import { PositionsMerge, PositionSplit, PayoutRedemption } from "../../generated/ConditionalTokens/ConditionalTokens";
-import { FPMMFundingAdded, FPMMFundingRemoved } from '../../generated/templates/FixedProductMarketMaker/FixedProductMarketMaker';
+import { FixedProductMarketMaker, MarketPosition, Transaction, Condition } from "../types/schema";
+import { PositionsMerge, PositionSplit, PayoutRedemption } from "../types/ConditionalTokens/ConditionalTokens";
+import { FPMMFundingAdded, FPMMFundingRemoved } from '../types/templates/FixedProductMarketMaker/FixedProductMarketMaker';
 import { bigZero } from './constants';
 
 

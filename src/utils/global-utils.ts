@@ -1,4 +1,4 @@
-import { Global } from "../../generated/schema";
+import { Global } from "../types/schema";
 
 export function requireGlobal(): Global {
   let global = Global.load('');

@@ -127,8 +127,7 @@ type MarketPosition @entity {
   quantityBought: BigInt!
   quantitySold: BigInt!
   netQuantity: BigInt!
-  "total value paid by the user to enter this position
-  if valueSold > valueBought then the user has cashed out at a profit."
+  "total value paid by the user to enter this position"
   valueBought: BigInt!
   valueSold: BigInt!
   netValue: BigInt!
