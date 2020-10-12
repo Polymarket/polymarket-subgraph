@@ -4,8 +4,6 @@ import Handlebars = require('handlebars');
 import fs = require('fs-extra');
 import path = require('path');
 
-import typy = require('typy');
-
 Handlebars.registerHelper('lowercase', function (str) {
   if(str && typeof str === "string") {
     return str.toLowerCase();
@@ -36,8 +34,9 @@ function getNetworkNameForSubgraph(): string | null {
   );
 
   const networkName = process.env.NETWORK_NAME || getNetworkNameForSubgraph();
-  const network = typy.t(networks, networkName || '').safeObject;
-  if (typy.t(network).isFalsy) {
+  const network = { ...networks[networkName || ''], networkName };
+
+  if (!network.networkName) {
     throw new Error(
       'Please set either a "NETWORK_NAME" or a "SUBGRAPH" environment variable',
     );

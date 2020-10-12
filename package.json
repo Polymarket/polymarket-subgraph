@@ -20,7 +20,6 @@
     "publish-graph:mainnet:test": "yarn prepare:mainnet && yarn deploy:mainnet:test",
     "publish-graph:matic": "yarn prepare:matic && yarn deploy:matic",
     "publish-graph:mumbai": "yarn prepare:mumbai && yarn deploy:mumbai"
-
   },
   "repository": {
     "type": "git",
@@ -49,7 +48,6 @@
     "fs-extra": "^8.1.0",
     "handlebars": "^4.7.6",
     "ts-node": "^9.0.0",
-    "typescript": "^4.0.3",
-    "typy": "^3.3.0"
+    "typescript": "^4.0.3"
   }
 }
