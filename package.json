@@ -10,8 +10,12 @@
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 TokenUnion/polymarket",
     "deploy:mainnet": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ TokenUnion/polymarket",
     "deploy:mainnet:test": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ tomafrench/polymarket",
+    "deploy:matic": "graph deploy --node http://ec2-18-237-41-195.us-west-2.compute.amazonaws.com:8020 --ipfs http://ec2-18-237-238-174.us-west-2.compute.amazonaws.com:5001 TokenUnion/polymarket",
+    "deploy:mumbai": "graph deploy --node https://mumbai-graph.matic.today --ipfs http://ec2-18-237-238-174.us-west-2.compute.amazonaws.com:5001 TokenUnion/polymarket",
     "codegen": "graph codegen --debug --output-dir src/types/",
     "prepare:mainnet": "NETWORK_NAME=mainnet ts-node ./templatify.ts && yarn codegen",
+    "prepare:matic": "NETWORK_NAME=matic ts-node ./templatify.ts && yarn codegen",
+    "prepare:mumbai": "NETWORK_NAME=mumbai ts-node ./templatify.ts && yarn codegen",
     "publish-graph:mainnet": "yarn codegen:mainnet && yarn deploy:mainnet"
   },
   "repository": {

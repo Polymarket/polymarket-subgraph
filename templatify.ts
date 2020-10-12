@@ -20,6 +20,10 @@ function getNetworkNameForSubgraph(): string | null {
       return 'mainnet';
     case 'TokenUnion/polymarket':
       return 'mainnet';
+    case 'TokenUnion/polymarket-matic':
+      return 'matic';
+    case 'TokenUnion/polymarket-mumbai':
+      return 'mumbai';
     default:
       return null;
   }
