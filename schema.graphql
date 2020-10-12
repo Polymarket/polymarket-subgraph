@@ -10,9 +10,9 @@ type Global @entity {
 
 type Account @entity {
   id: ID!
-  # Which markets has user provided liquidity to
+  "markets in which user has provided liquidity"
   fpmmPoolMemberships: [FpmmPoolMembership!] @derivedFrom(field: "funder")
-  # Which markets has user bought shares in
+  "markets in which user has bought shares"
   fpmmParticipations: [FpmmParticipation!] @derivedFrom(field: "participant")
   marketPositions: [MarketPosition!] @derivedFrom(field: "user")
   transactions: [Transaction!] @derivedFrom(field: "user")
@@ -23,18 +23,22 @@ type Account @entity {
 
 type Condition @entity {
   id: ID!
+  "Address which can resolve this condition"
   oracle: Bytes!
   questionId: Bytes!
   outcomeSlotCount: Int!
   resolutionTimestamp: BigInt
+  "Fraction of collateral assigned to each outcome"
   payouts: [BigDecimal!]
   payoutNumerators: [BigInt!]
   payoutDenominator: BigInt
+  "Market makers which are trading on this condition"
   fixedProductMarketMakers: [FixedProductMarketMaker!]!
 }
 
 type Split @entity {
   id: ID!
+  "Address which is performing this split"
   stakeholder: Account!
   collateralToken: Bytes!
   parentCollectionId: Bytes!
@@ -45,6 +49,7 @@ type Split @entity {
 
 type Merge @entity {
   id: ID!
+  "Address which is performing this merge"
   stakeholder: Account!
   collateralToken: Bytes!
   parentCollectionId: Bytes!
@@ -55,10 +60,12 @@ type Merge @entity {
 
 type Redemption @entity {
   id: ID!
+  "Address which is redeeming these outcomes"
   redeemer: Account!
   collateralToken: Bytes!
   parentCollectionId: Bytes!
   condition: Condition!
+  "Outcomes which are being redeemed"
   indexSets: [BigInt!]!
   payout: BigInt!
 }
@@ -68,23 +75,34 @@ type Redemption @entity {
 type FixedProductMarketMaker @entity {
   id: ID!
 
+  "Address which deployed this market"
   creator: Bytes!
+  "Time at which this market was deployed"
   creationTimestamp: BigInt!
 
   collateralToken: Bytes!
   conditions: [Condition!] @derivedFrom(field: "fixedProductMarketMakers")
+  "Percentage fee of trades taken by market maker. A 2% fee is represented as 2*10^16"
   fee: BigInt!
 
   collateralVolume: BigInt!
+  "Volume scaled by the number of decimals of collateralToken"
   scaledCollateralVolume: BigDecimal!
   feeVolume: BigInt!
+  "fees scaled by the number of decimals of collateralToken"
   scaledFeeVolume: BigDecimal!
-  outcomeTokenAmounts: [BigInt!]!
-  outcomeTokenPrices: [BigDecimal!]!
-  outcomeSlotCount: Int
+
   liquidityParameter: BigInt!
   scaledLiquidityParameter: BigDecimal!
 
+  "Balances of each outcome token held by the market maker"
+  outcomeTokenAmounts: [BigInt!]!
+  "Prices at which market maker values each outcome token"
+  outcomeTokenPrices: [BigDecimal!]!
+  "Number of outcomes which this market maker is trading"
+  outcomeSlotCount: Int
+
+  "Timestamp of last day during which someone made a trade"
   lastActiveDay: BigInt!
   runningDailyVolume: BigInt!
   scaledRunningDailyVolume: BigDecimal!
@@ -93,6 +111,7 @@ type FixedProductMarketMaker @entity {
 
   collateralVolumeBeforeLastActiveDay: BigInt!
 
+  "Number of shares for tokens in the market maker's reserves"
   totalSupply: BigInt!
 
   poolMembers: [FpmmPoolMembership!] @derivedFrom(field: "pool")
@@ -104,12 +123,11 @@ type MarketPosition @entity {
   market: FixedProductMarketMaker!
   user: Account!
   outcomeIndex: BigInt!
-  # number of outcome shares that the user has bought and sold.
+  "number of outcome shares that the user has bought and sold"
   quantityBought: BigInt!
   quantitySold: BigInt!
   netQuantity: BigInt!
-  # total value paid by the user to enter this position.
-  # if valueSold > valueBought then the user has cashed out at a profit.
+  "total value paid by the user to enter this position"
   valueBought: BigInt!
   valueSold: BigInt!
   netValue: BigInt!
