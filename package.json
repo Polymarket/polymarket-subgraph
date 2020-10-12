@@ -16,7 +16,11 @@
     "prepare:mainnet": "NETWORK_NAME=mainnet ts-node ./templatify.ts && yarn codegen",
     "prepare:matic": "NETWORK_NAME=matic ts-node ./templatify.ts && yarn codegen",
     "prepare:mumbai": "NETWORK_NAME=mumbai ts-node ./templatify.ts && yarn codegen",
-    "publish-graph:mainnet": "yarn codegen:mainnet && yarn deploy:mainnet"
+    "publish-graph:mainnet": "yarn codegen:mainnet && yarn deploy:mainnet",
+    "publish-graph:mainnet:test": "yarn codegen:mainnet && yarn deploy:mainnet:test",
+    "publish-graph:matic": "yarn codegen:matic && yarn deploy:matic",
+    "publish-graph:mumbai": "yarn codegen:mumbai && yarn deploy:mumbai"
+
   },
   "repository": {
     "type": "git",
