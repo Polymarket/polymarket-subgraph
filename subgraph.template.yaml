@@ -6,11 +6,11 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: ConditionalTokens
-    network: {{network}}
+    network: {{networkName}}
     source:
-      address: '{{ConditionalTokens.address}}'
+      address: '{{contracts.ConditionalTokens.address}}'
       abi: ConditionalTokens
-      startBlock: {{ConditionalTokens.startBlock}}
+      startBlock: {{contracts.ConditionalTokens.startBlock}}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.3
@@ -35,11 +35,11 @@ dataSources:
       file: ./src/ConditionalTokensMapping.ts
   - kind: ethereum/contract
     name: FixedProductMarketMakerFactory
-    network: {{network}}
+    network: {{networkName}}
     source:
-      address: '{{FixedProductMarketMakerFactory.address}}'
+      address: '{{contracts.FixedProductMarketMakerFactory.address}}'
       abi: FixedProductMarketMakerFactory
-      startBlock: {{FixedProductMarketMakerFactory.startBlock}}
+      startBlock: {{contracts.FixedProductMarketMakerFactory.startBlock}}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.3
@@ -58,7 +58,7 @@ dataSources:
 templates:
   - name: FixedProductMarketMaker
     kind: ethereum/contract
-    network: {{network}}
+    network: {{networkName}}
     source:
       abi: FixedProductMarketMaker
     mapping:
@@ -86,7 +86,7 @@ templates:
       file: ./src/FixedProductMarketMakerMapping.ts
   - name: ERC20Detailed
     kind: ethereum/contract
-    network: {{network}}
+    network: {{networkName}}
     source:
       abi: ERC20Detailed
     mapping:

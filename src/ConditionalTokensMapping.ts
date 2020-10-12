@@ -1,7 +1,7 @@
 import { BigInt, BigDecimal, log } from '@graphprotocol/graph-ts'
 
-import { ConditionPreparation, ConditionResolution, PositionSplit, PositionsMerge, PayoutRedemption } from '../generated/ConditionalTokens/ConditionalTokens'
-import { Condition, Redemption, Merge, Split } from '../generated/schema'
+import { ConditionPreparation, ConditionResolution, PositionSplit, PositionsMerge, PayoutRedemption } from './types/ConditionalTokens/ConditionalTokens'
+import { Condition, Redemption, Merge, Split } from './types/schema'
 import { requireGlobal } from './utils/global-utils';
 import { updateMarketPositionsFromMerge, updateMarketPositionsFromRedemption, updateMarketPositionsFromSplit } from './utils/market-positions-utils';
 import { partitionCheck } from './utils/conditional-utils';

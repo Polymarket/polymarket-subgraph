@@ -5,26 +5,14 @@
   "main": "index.js",
   "scripts": {
     "auth": "graph auth https://api.thegraph.com/deploy/",
-    "migrate": "truffle migrate --all --reset",
     "create-local": "graph create --node http://localhost:8020/ TokenUnion/polymarket",
     "remove-local": "graph remove --node http://localhost:8020/ TokenUnion/polymarket",
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 TokenUnion/polymarket",
-    "deploy:rinkeby": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ TokenUnion/polymarket-rinkeby",
-    "deploy:kovan": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ TokenUnion/polymarket-kovan",
     "deploy:mainnet": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ TokenUnion/polymarket",
     "deploy:mainnet:test": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ tomafrench/polymarket",
-    "codegen": "truffle exec render-templates.js && graph codegen",
-    "codegen:rinkeby": "tnt iN && truffle exec --network=rinkeby render-templates.js && graph codegen",
-    "codegen:mainnet": "tnt iN && truffle exec --network=mainnet render-templates.js && graph codegen",
-    "codegen:kovan": "tnt iN && truffle exec --network=kovan render-templates.js && graph codegen",
-    "build": "graph build",
-    "bootstrap-test": "wait-on tcp:8545 && npm run migrate && wait-on http-get://localhost:8000 && npm run create-local",
-    "bootstrap": "truffle compile --all && tnt iN",
-    "test-fresh-graph": "npm run codegen && wait-on tcp:5001 && npm run deploy-local && npm run test-existing-graph",
-    "test-existing-graph": "mocha",
-    "test": "npm run bootstrap-test && npm run test-fresh-graph",
-    "publish-graph:rinkeby": "npm run codegen:rinkeby && npm run deploy:rinkeby",
-    "publish-graph:mainnet": "npm run codegen:mainnet && npm run deploy:mainnet"
+    "codegen": "graph codegen --debug --output-dir src/types/",
+    "prepare:mainnet": "NETWORK_NAME=mainnet ts-node ./templatify.ts && yarn codegen",
+    "publish-graph:mainnet": "yarn codegen:mainnet && yarn deploy:mainnet"
   },
   "repository": {
     "type": "git",
@@ -48,20 +36,12 @@
   "devDependencies": {
     "@gnosis.pm/conditional-tokens-contracts": "^1.0.1",
     "@gnosis.pm/conditional-tokens-market-makers": "^1.8.1",
-    "@gnosis.pm/truffle-nice-tools": "^1.3.1",
     "@graphprotocol/graph-cli": "^0.17.1",
     "@graphprotocol/graph-ts": "^0.17.0",
-    "@truffle/contract": "^4.1.13",
-    "@truffle/hdwallet-provider": "^1.0.33",
-    "axios": "^0.19.2",
-    "delay": "^4.3.0",
     "fs-extra": "^8.1.0",
-    "mocha": "^7.1.1",
-    "mocha-steps": "^1.3.0",
-    "mustache": "^4.0.1",
-    "should": "^13.2.3",
-    "truffle": "^5.1.18",
-    "wait-on": "^4.0.1",
-    "web3": "^1.2.6"
+    "handlebars": "^4.7.6",
+    "ts-node": "^9.0.0",
+    "typescript": "^4.0.3",
+    "typy": "^3.3.0"
   }
 }

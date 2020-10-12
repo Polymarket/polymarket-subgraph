@@ -1,0 +1,10 @@
+mainnet:
+  contracts:
+    ConditionalTokens:
+      address: "0xC59b0e4De5F1248C1140964E0fF287B192407E0C"
+      transactionHash: "0x7e10ef2a2116a46153d52ad50d6428fa9f4b19c36c803ba2f707cd70b7434348"
+      startBlock: 8623608
+    FixedProductMarketMakerFactory:
+      address: "0x4b4fb012298aceA6D5149be3f02cc252A88b755b"
+      transactionHash: "0xc21edc19c4f4249f047cec4cb13052e4ce39446766f723b9a94b3748a433e9b6"
+      startBlock: 9969340

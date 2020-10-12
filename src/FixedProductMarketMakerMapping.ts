@@ -8,14 +8,14 @@ import {
   FpmmFundingAddition,
   FpmmFundingRemoval,
   Transaction,
-} from "../generated/schema"
+} from "./types/schema"
 import {
   FPMMFundingAdded,
   FPMMFundingRemoved,
   FPMMBuy,
   FPMMSell,
   Transfer,
-} from "../generated/templates/FixedProductMarketMaker/FixedProductMarketMaker"
+} from "./types/templates/FixedProductMarketMaker/FixedProductMarketMaker"
 import { nthRoot } from './utils/nth-root';
 import { updateVolumes, updateLiquidityFields, getCollateralScale, updateFeeFields, calculatePrices } from './utils/fpmm-utils';
 import { updateMarketPositionFromLiquidityAdded, updateMarketPositionFromLiquidityRemoved, updateMarketPositionFromTrade } from './utils/market-positions-utils';
