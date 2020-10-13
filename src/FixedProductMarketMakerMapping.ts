@@ -71,7 +71,7 @@ function recordFundingAddition(event: FPMMFundingAdded): void {
   );
   fpmmFundingAdded.timestamp = event.block.timestamp;
   fpmmFundingAdded.fpmm = event.address.toHexString();
-  fpmmFundingAdded.funder = event.transaction.from.toHexString();
+  fpmmFundingAdded.funder = event.params.funder.toHexString();
   let amountsAdded = event.params.amountsAdded;
   fpmmFundingAdded.amountsAdded = amountsAdded;
 
@@ -106,7 +106,7 @@ function recordFundingRemoval(event: FPMMFundingRemoved): void {
   );
   fpmmFundingRemoved.timestamp = event.block.timestamp;
   fpmmFundingRemoved.fpmm = event.address.toHexString();
-  fpmmFundingRemoved.funder = event.transaction.from.toHexString();
+  fpmmFundingRemoved.funder = event.params.funder.toHexString();
   fpmmFundingRemoved.amountsRemoved = event.params.amountsRemoved;
   fpmmFundingRemoved.collateralRemoved =
     event.params.collateralRemovedFromFeePool;

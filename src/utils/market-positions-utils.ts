@@ -218,7 +218,7 @@ export function updateMarketPositionFromLiquidityAdded(
   event: FPMMFundingAdded,
 ): void {
   let fpmmAddress = event.address.toHexString();
-  let funder = event.transaction.from.toHexString();
+  let funder = event.params.funder.toHexString();
   let amountsAdded = event.params.amountsAdded;
 
   // The amounts of outcome token are limited by the cheapest outcome.
@@ -275,7 +275,7 @@ export function updateMarketPositionFromLiquidityRemoved(
   event: FPMMFundingRemoved,
 ): void {
   let fpmmAddress = event.address.toHexString();
-  let funder = event.transaction.from.toHexString();
+  let funder = event.params.funder.toHexString();
   let amountsRemoved = event.params.amountsRemoved;
 
   // We value each share at 1 USDC
