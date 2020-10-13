@@ -1,30 +1,33 @@
 mainnet:
+  networkName: mainnet
   contracts:
     ConditionalTokens:
-      address: "0xC59b0e4De5F1248C1140964E0fF287B192407E0C"
-      transactionHash: "0x7e10ef2a2116a46153d52ad50d6428fa9f4b19c36c803ba2f707cd70b7434348"
+      address: '0xC59b0e4De5F1248C1140964E0fF287B192407E0C'
+      transactionHash: '0x7e10ef2a2116a46153d52ad50d6428fa9f4b19c36c803ba2f707cd70b7434348'
       startBlock: 8623608
     FixedProductMarketMakerFactory:
-      address: "0x4b4fb012298aceA6D5149be3f02cc252A88b755b"
-      transactionHash: "0xc21edc19c4f4249f047cec4cb13052e4ce39446766f723b9a94b3748a433e9b6"
+      address: '0x4b4fb012298aceA6D5149be3f02cc252A88b755b'
+      transactionHash: '0xc21edc19c4f4249f047cec4cb13052e4ce39446766f723b9a94b3748a433e9b6'
       startBlock: 9969340
 matic:
+  networkName: matic
   contracts:
     ConditionalTokens:
-      address: "0x4D97DCd97eC945f40cF65F87097ACe5EA0476045"
-      transactionHash: "0xf822536aff16fdb8df59bc9c0b5854c5bec4b9a76484ea9d6944908ced563389"
+      address: '0x4D97DCd97eC945f40cF65F87097ACe5EA0476045'
+      transactionHash: '0xf822536aff16fdb8df59bc9c0b5854c5bec4b9a76484ea9d6944908ced563389'
       startBlock: 4023686
     FixedProductMarketMakerFactory:
-      address: "0x8B9805A2f595B6705e74F7310829f2d299D21522"
-      transactionHash: "0x1af1b88e36bb0289f6e037e00d01b26bed997ce7a0406ebafce07dcf766ce7c6"
+      address: '0x8B9805A2f595B6705e74F7310829f2d299D21522'
+      transactionHash: '0x1af1b88e36bb0289f6e037e00d01b26bed997ce7a0406ebafce07dcf766ce7c6'
       startBlock: 4023693
 mumbai:
+  networkName: matic
   contracts:
     ConditionalTokens:
-      address: "0x7D8610E9567d2a6C9FBf66a5A13E9Ba8bb120d43"
-      transactionHash: "0xb3ce795972a85754f8803d6b43408fc71f472733766236072a270b04ffbb937b"
+      address: '0x7D8610E9567d2a6C9FBf66a5A13E9Ba8bb120d43'
+      transactionHash: '0xb3ce795972a85754f8803d6b43408fc71f472733766236072a270b04ffbb937b'
       startBlock: 3456411
     FixedProductMarketMakerFactory:
-      address: "0x5a80a64c8ae0551b09c3df377b60953872c5aa7f"
-      transactionHash: "0x994ccfecb4d13de47ff3775c9b63752e4c78ad8f66ea9cc272a3f623b9f10ec1"
+      address: '0x5a80a64c8ae0551b09c3df377b60953872c5aa7f'
+      transactionHash: '0x994ccfecb4d13de47ff3775c9b63752e4c78ad8f66ea9cc272a3f623b9f10ec1'
       startBlock: 3456423

@@ -5,7 +5,7 @@ import fs = require('fs-extra');
 import path = require('path');
 
 Handlebars.registerHelper('lowercase', function (str) {
-  if(str && typeof str === "string") {
+  if (str && typeof str === 'string') {
     return str.toLowerCase();
   }
   return '';
@@ -34,7 +34,7 @@ function getNetworkNameForSubgraph(): string | null {
   );
 
   const networkName = process.env.NETWORK_NAME || getNetworkNameForSubgraph();
-  const network = { ...networks[networkName || ''], networkName };
+  const network = networks[networkName || ''];
 
   if (!network.networkName) {
     throw new Error(
@@ -46,7 +46,9 @@ function getNetworkNameForSubgraph(): string | null {
     ['subgraph', 'yaml'],
     ['src/FixedProductMarketMakerFactoryMapping', 'ts'],
   ]) {
-    const template = fs.readFileSync(`${templatedFileDesc[0]}.template.${templatedFileDesc[1]}`).toString();
+    const template = fs
+      .readFileSync(`${templatedFileDesc[0]}.template.${templatedFileDesc[1]}`)
+      .toString();
     fs.writeFileSync(
       `${templatedFileDesc[0]}.${templatedFileDesc[1]}`,
       Handlebars.compile(template)(network),
@@ -54,5 +56,4 @@ function getNetworkNameForSubgraph(): string | null {
   }
 
   console.log('🎉 subgraph successfully generated\n');
-
 })();
