@@ -229,8 +229,6 @@ export function updateMarketPositionFromLiquidityAdded(
     .sort((a, b) => BigInt.compare(a, b))
     .pop() as BigInt;
 
-  let totalRefundedValue = addedFunds.minus(event.params.sharesMinted);
-
   // Calculate the full number of outcome tokens which are refunded to the funder address
   let totalRefundedOutcomeTokens = bigZero;
   for (
@@ -243,6 +241,10 @@ export function updateMarketPositionFromLiquidityAdded(
       refundedAmount,
     );
   }
+
+  let outcomeTokenPrices = (FixedProductMarketMaker.load(
+    fpmmAddress,
+  ) as FixedProductMarketMaker).outcomeTokenPrices;
 
   // Funder is refunded with any excess outcome tokens which can't go into the market maker.
   // This means we must update the funder's market position for each outcome.
@@ -264,12 +266,10 @@ export function updateMarketPositionFromLiquidityAdded(
 
       position.quantityBought = position.quantityBought.plus(refundedAmount);
 
-      // We weight the value of the refund by the fraction of all outcome tokens it makes up
-      let refundValue = totalRefundedOutcomeTokens.gt(bigZero)
-        ? totalRefundedValue
-            .times(refundedAmount)
-            .div(totalRefundedOutcomeTokens)
-        : bigZero;
+      let refundValue = refundedAmount
+        .toBigDecimal()
+        .times(outcomeTokenPrices[outcomeIndex])
+        .truncate(0).digits;
       position.valueBought = position.valueBought.plus(refundValue);
 
       updateNetPositionAndSave(position);
