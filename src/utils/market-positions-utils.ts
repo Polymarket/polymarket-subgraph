@@ -251,23 +251,29 @@ export function updateMarketPositionFromLiquidityAdded(
     outcomeIndex < amountsAdded.length;
     outcomeIndex += 1
   ) {
-    let position = getMarketPosition(
-      funder,
-      fpmmAddress,
-      BigInt.fromI32(outcomeIndex),
-    );
     // Event emits the number of outcome tokens added to the market maker
     // Subtract this from the amount of collateral added to get the amount refunded to funder
     let refundedAmount: BigInt = addedFunds.minus(amountsAdded[outcomeIndex]);
-    position.quantityBought = position.quantityBought.plus(refundedAmount);
+    if (refundedAmount.gt(bigZero)) {
+      // Only update positions which have changed
+      let position = getMarketPosition(
+        funder,
+        fpmmAddress,
+        BigInt.fromI32(outcomeIndex),
+      );
 
-    // We weight the value of the refund by the fraction of all outcome tokens it makes up
-    let refundValue = totalRefundedOutcomeTokens.gt(bigZero)
-      ? totalRefundedValue.times(refundedAmount).div(totalRefundedOutcomeTokens)
-      : bigZero;
-    position.valueBought = position.valueBought.plus(refundValue);
+      position.quantityBought = position.quantityBought.plus(refundedAmount);
 
-    updateNetPositionAndSave(position);
+      // We weight the value of the refund by the fraction of all outcome tokens it makes up
+      let refundValue = totalRefundedOutcomeTokens.gt(bigZero)
+        ? totalRefundedValue
+            .times(refundedAmount)
+            .div(totalRefundedOutcomeTokens)
+        : bigZero;
+      position.valueBought = position.valueBought.plus(refundValue);
+
+      updateNetPositionAndSave(position);
+    }
   }
 }
 
