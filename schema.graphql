@@ -17,6 +17,13 @@ type Account @entity {
   redemptions: [Redemption!] @derivedFrom(field: "redeemer")
 }
 
+type Collateral @entity {
+  id: ID!
+  name: String!
+  symbol: String!
+  decimals: Int!
+}
+
 # Conditional Tokens
 
 type Condition @entity {
@@ -38,7 +45,7 @@ type Split @entity {
   id: ID!
   "Address which is performing this split"
   stakeholder: Account!
-  collateralToken: Bytes!
+  collateralToken: Collateral!
   parentCollectionId: Bytes!
   condition: Condition!
   partition: [BigInt!]!
@@ -49,7 +56,7 @@ type Merge @entity {
   id: ID!
   "Address which is performing this merge"
   stakeholder: Account!
-  collateralToken: Bytes!
+  collateralToken: Collateral!
   parentCollectionId: Bytes!
   condition: Condition!
   partition: [BigInt!]!
@@ -60,7 +67,7 @@ type Redemption @entity {
   id: ID!
   "Address which is redeeming these outcomes"
   redeemer: Account!
-  collateralToken: Bytes!
+  collateralToken: Collateral!
   parentCollectionId: Bytes!
   condition: Condition!
   "Outcomes which are being redeemed"
@@ -78,7 +85,7 @@ type FixedProductMarketMaker @entity {
   "Time at which this market was deployed"
   creationTimestamp: BigInt!
 
-  collateralToken: Bytes!
+  collateralToken: Collateral!
   conditions: [Condition!] @derivedFrom(field: "fixedProductMarketMakers")
   "Percentage fee of trades taken by market maker. A 2% fee is represented as 2*10^16"
   fee: BigInt!
@@ -90,6 +97,7 @@ type FixedProductMarketMaker @entity {
   "fees scaled by the number of decimals of collateralToken"
   scaledFeeVolume: BigDecimal!
 
+  "Constant product parameter k"
   liquidityParameter: BigInt!
   scaledLiquidityParameter: BigDecimal!
 

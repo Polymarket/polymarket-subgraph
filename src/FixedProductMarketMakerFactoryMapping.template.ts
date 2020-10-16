@@ -1,4 +1,4 @@
-import { BigInt, log, Address, BigDecimal } from '@graphprotocol/graph-ts';
+import { BigInt, log, BigDecimal } from '@graphprotocol/graph-ts';
 
 import { FixedProductMarketMakerCreation } from './types/FixedProductMarketMakerFactory/FixedProductMarketMakerFactory';
 import { FixedProductMarketMaker, Condition } from './types/schema';
@@ -7,11 +7,14 @@ import { nthRoot } from './utils/nth-root';
 import { timestampToDay, joinDayAndVolume } from './utils/day-volume-utils';
 import {
   updateScaledVolumes,
-  getCollateralScale,
   updateLiquidityFields,
   calculatePrices,
 } from './utils/fpmm-utils';
 import { bigZero, bigOne } from './utils/constants';
+import {
+  getCollateralDetails,
+  getCollateralScale,
+} from './utils/collateralTokens';
 
 export function handleFixedProductMarketMakerCreation(
   event: FixedProductMarketMakerCreation,
@@ -36,7 +39,8 @@ export function handleFixedProductMarketMakerCreation(
   fixedProductMarketMaker.creator = event.params.creator;
   fixedProductMarketMaker.creationTimestamp = event.block.timestamp;
 
-  fixedProductMarketMaker.collateralToken = event.params.collateralToken;
+  getCollateralDetails(event.params.collateralToken);
+  fixedProductMarketMaker.collateralToken = event.params.collateralToken.toHexString();
   fixedProductMarketMaker.fee = event.params.fee;
 
   let conditionIds = event.params.conditionIds;
@@ -78,7 +82,7 @@ export function handleFixedProductMarketMakerCreation(
   );
   let liquidityParameter = nthRoot(amountsProduct, outcomeTokenAmounts.length);
   let collateralScale = getCollateralScale(
-    fixedProductMarketMaker.collateralToken as Address,
+    fixedProductMarketMaker.collateralToken,
   );
   let collateralScaleDec = collateralScale.toBigDecimal();
   updateLiquidityFields(

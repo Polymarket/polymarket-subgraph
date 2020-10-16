@@ -20,7 +20,7 @@ import { bigZero } from './utils/constants';
 export function handlePositionSplit(event: PositionSplit): void {
   let split = new Split(event.transaction.hash.toHexString());
   split.stakeholder = event.params.stakeholder.toHexString();
-  split.collateralToken = event.params.collateralToken;
+  split.collateralToken = event.params.collateralToken.toHexString();
   split.parentCollectionId = event.params.parentCollectionId;
   split.condition = event.params.conditionId.toHexString();
   split.partition = event.params.partition;
@@ -48,7 +48,7 @@ export function handlePositionSplit(event: PositionSplit): void {
 export function handlePositionsMerge(event: PositionsMerge): void {
   let merge = new Merge(event.transaction.hash.toHexString());
   merge.stakeholder = event.params.stakeholder.toHexString();
-  merge.collateralToken = event.params.collateralToken;
+  merge.collateralToken = event.params.collateralToken.toHexString();
   merge.parentCollectionId = event.params.parentCollectionId;
   merge.condition = event.params.conditionId.toHexString();
   merge.partition = event.params.partition;
@@ -76,7 +76,6 @@ export function handlePositionsMerge(event: PositionsMerge): void {
 export function handlePayoutRedemption(event: PayoutRedemption): void {
   let redemption = new Redemption(event.transaction.hash.toHexString());
   redemption.redeemer = event.params.redeemer.toHexString();
-  redemption.collateralToken = event.params.collateralToken;
   redemption.parentCollectionId = event.params.parentCollectionId;
   redemption.condition = event.params.conditionId.toHexString();
   redemption.indexSets = event.params.indexSets;

@@ -1,20 +1,12 @@
 /* eslint-disable no-param-reassign */
-import { BigInt, Address, BigDecimal } from '@graphprotocol/graph-ts';
+import { BigInt, BigDecimal } from '@graphprotocol/graph-ts';
 import { FixedProductMarketMaker } from '../types/schema';
-import { ERC20Detailed } from '../types/templates/ERC20Detailed/ERC20Detailed';
 import {
   timestampToDay,
   joinDayAndVolume,
   joinDayAndScaledVolume,
 } from './day-volume-utils';
 import { bigOne, bigZero } from './constants';
-
-export function getCollateralScale(collateralTokenAddress: Address): BigInt {
-  let collateralToken = ERC20Detailed.bind(collateralTokenAddress);
-  let result = collateralToken.try_decimals();
-
-  return result.reverted ? bigOne : BigInt.fromI32(10).pow(<u8>result.value);
-}
 
 /**
  * Computes the price of each outcome token given their holdings. Returns an array of numbers in the range [0, 1]

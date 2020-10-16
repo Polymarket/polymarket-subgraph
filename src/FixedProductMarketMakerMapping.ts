@@ -1,4 +1,4 @@
-import { BigInt, log, Address } from '@graphprotocol/graph-ts';
+import { BigInt, log, Address, Bytes } from '@graphprotocol/graph-ts';
 
 import {
   FixedProductMarketMaker,
@@ -134,7 +134,7 @@ export function handleFundingAdded(event: FPMMFundingAdded): void {
   }
   fpmm.outcomeTokenAmounts = newAmounts;
   let liquidityParameter = nthRoot(amountsProduct, newAmounts.length);
-  let collateralScale = getCollateralScale(fpmm.collateralToken as Address);
+  let collateralScale = getCollateralScale(fpmm.collateralToken);
   updateLiquidityFields(
     fpmm as FixedProductMarketMaker,
     liquidityParameter,
@@ -175,7 +175,7 @@ export function handleFundingRemoved(event: FPMMFundingRemoved): void {
   fpmm.outcomeTokenAmounts = newAmounts;
 
   let liquidityParameter = nthRoot(amountsProduct, newAmounts.length);
-  let collateralScale = getCollateralScale(fpmm.collateralToken as Address);
+  let collateralScale = getCollateralScale(fpmm.collateralToken);
   updateLiquidityFields(
     fpmm as FixedProductMarketMaker,
     liquidityParameter,
@@ -224,7 +224,7 @@ export function handleBuy(event: FPMMBuy): void {
   fpmm.outcomeTokenAmounts = newAmounts;
   fpmm.outcomeTokenPrices = calculatePrices(newAmounts);
   let liquidityParameter = nthRoot(amountsProduct, newAmounts.length);
-  let collateralScale = getCollateralScale(fpmm.collateralToken as Address);
+  let collateralScale = getCollateralScale(fpmm.collateralToken);
   let collateralScaleDec = collateralScale.toBigDecimal();
   updateLiquidityFields(
     fpmm as FixedProductMarketMaker,
@@ -282,7 +282,7 @@ export function handleSell(event: FPMMSell): void {
   fpmm.outcomeTokenAmounts = newAmounts;
   fpmm.outcomeTokenPrices = calculatePrices(newAmounts);
   let liquidityParameter = nthRoot(amountsProduct, newAmounts.length);
-  let collateralScale = getCollateralScale(fpmm.collateralToken as Address);
+  let collateralScale = getCollateralScale(fpmm.collateralToken);
   let collateralScaleDec = collateralScale.toBigDecimal();
   updateLiquidityFields(
     fpmm as FixedProductMarketMaker,
