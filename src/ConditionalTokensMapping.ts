@@ -16,8 +16,10 @@ import {
 } from './utils/market-positions-utils';
 import { partitionCheck } from './utils/conditional-utils';
 import { bigZero } from './utils/constants';
+import { getCollateralDetails } from './utils/collateralTokens';
 
 export function handlePositionSplit(event: PositionSplit): void {
+  getCollateralDetails(event.params.collateralToken);
   let split = new Split(event.transaction.hash.toHexString());
   split.stakeholder = event.params.stakeholder.toHexString();
   split.collateralToken = event.params.collateralToken.toHexString();
