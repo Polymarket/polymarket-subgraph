@@ -76,6 +76,7 @@ export function handlePositionsMerge(event: PositionsMerge): void {
 export function handlePayoutRedemption(event: PayoutRedemption): void {
   let redemption = new Redemption(event.transaction.hash.toHexString());
   redemption.redeemer = event.params.redeemer.toHexString();
+  redemption.collateralToken = event.params.collateralToken.toHexString();
   redemption.parentCollectionId = event.params.parentCollectionId;
   redemption.condition = event.params.conditionId.toHexString();
   redemption.indexSets = event.params.indexSets;
