@@ -10,10 +10,13 @@ type Global @entity {
 
 type Account @entity {
   id: ID!
-  "markets in which user has provided liquidity"
+  "Markets in which user has provided liquidity"
   fpmmPoolMemberships: [FpmmPoolMembership!] @derivedFrom(field: "funder")
+  "Markets in which the user has taken a position on the outcome"
   marketPositions: [MarketPosition!] @derivedFrom(field: "user")
+  "Purchases and sales of shares by the user"
   transactions: [Transaction!] @derivedFrom(field: "user")
+  "Redemption of underlying collateral after a market has resolved"
   redemptions: [Redemption!] @derivedFrom(field: "redeemer")
 }
 
@@ -85,16 +88,20 @@ type FixedProductMarketMaker @entity {
   "Time at which this market was deployed"
   creationTimestamp: BigInt!
 
+  "Token which is colleralising this market"
   collateralToken: Collateral!
+  "Conditions which this market is trading against"
   conditions: [Condition!] @derivedFrom(field: "fixedProductMarketMakers")
   "Percentage fee of trades taken by market maker. A 2% fee is represented as 2*10^16"
   fee: BigInt!
 
+  "Market volume in terms of the underlying collateral value"
   collateralVolume: BigInt!
   "Volume scaled by the number of decimals of collateralToken"
   scaledCollateralVolume: BigDecimal!
+  "Fees collected in terms of the underlying collateral value"
   feeVolume: BigInt!
-  "fees scaled by the number of decimals of collateralToken"
+  "Fees scaled by the number of decimals of collateralToken"
   scaledFeeVolume: BigDecimal!
 
   "Constant product parameter k"
@@ -120,23 +127,33 @@ type FixedProductMarketMaker @entity {
   "Number of shares for tokens in the market maker's reserves"
   totalSupply: BigInt!
 
+  "Addresses which are supplying liquidity to the market maker"
   poolMembers: [FpmmPoolMembership!] @derivedFrom(field: "pool")
 }
 
 type MarketPosition @entity {
   id: ID!
+  "Market on which this position is on"
   market: FixedProductMarketMaker!
+  "Address which holds this position"
   user: Account!
+  "The outcome which this position is supporting"
   outcomeIndex: BigInt!
-  "number of outcome shares that the user has bought and sold"
+  "Number of outcome shares that the user has ever bought"
   quantityBought: BigInt!
+  "Number of outcome shares that the user has ever sold"
   quantitySold: BigInt!
+  "Number of outcome shares that the user current has"
   netQuantity: BigInt!
-  "total value paid by the user to enter this position"
+  "Total value of outcome shares that the user has bought"
   valueBought: BigInt!
+  "Total value of outcome shares that the user has sold"
   valueSold: BigInt!
+  "Total value paid by the user to enter this position"
   netValue: BigInt!
 }
+
+# Market Actions
 
 type FpmmFundingAddition @entity {
   id: ID!
