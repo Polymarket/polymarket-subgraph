@@ -4,7 +4,6 @@ import {
   FixedProductMarketMaker,
   Account,
   FpmmPoolMembership,
-  FpmmParticipation,
   FpmmFundingAddition,
   FpmmFundingRemoval,
   Transaction,
@@ -112,22 +111,6 @@ function recordFundingRemoval(event: FPMMFundingRemoved): void {
     event.params.collateralRemovedFromFeePool;
   fpmmFundingRemoved.sharesBurnt = event.params.sharesBurnt;
   fpmmFundingRemoved.save();
-}
-
-function recordParticipation(
-  fpmmAddress: string,
-  participantAddress: string,
-): void {
-  requireAccount(participantAddress);
-
-  let fpmmParticipationId = fpmmAddress.concat(participantAddress);
-  let fpmmParticipation = FpmmParticipation.load(fpmmParticipationId);
-  if (fpmmParticipation == null) {
-    fpmmParticipation = new FpmmParticipation(fpmmParticipationId);
-    fpmmParticipation.fpmm = fpmmAddress;
-    fpmmParticipation.participant = participantAddress;
-    fpmmParticipation.save();
-  }
 }
 
 export function handleFundingAdded(event: FPMMFundingAdded): void {
@@ -263,7 +246,6 @@ export function handleBuy(event: FPMMBuy): void {
   );
   fpmm.save();
 
-  recordParticipation(fpmmAddress, event.params.buyer.toHexString());
   recordBuy(event);
   updateMarketPositionFromTrade(event);
 }
@@ -323,7 +305,6 @@ export function handleSell(event: FPMMSell): void {
 
   fpmm.save();
 
-  recordParticipation(fpmmAddress, event.params.seller.toHexString());
   recordSell(event);
   updateMarketPositionFromTrade(event);
 }
