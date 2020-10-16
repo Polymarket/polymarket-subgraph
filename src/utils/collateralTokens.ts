@@ -36,5 +36,5 @@ export function getCollateralDetails(collateralAddress: Address): Collateral {
 
 export function getCollateralScale(collateralTokenAddress: string): BigInt {
   let collateralToken = Collateral.load(collateralTokenAddress) as Collateral;
-  return BigInt.fromI32(10).pow(collateralToken.decimals);
+  return BigInt.fromI32(10).pow(<u8>collateralToken.decimals);
 }
