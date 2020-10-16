@@ -30,6 +30,7 @@ export function getCollateralDetails(collateralAddress: Address): Collateral {
     collateral.name = getTokenName(collateralAddress);
     collateral.symbol = getTokenSymbol(collateralAddress);
     collateral.decimals = getTokenDecimals(collateralAddress);
+    collateral.save();
   }
   return collateral as Collateral;
 }
