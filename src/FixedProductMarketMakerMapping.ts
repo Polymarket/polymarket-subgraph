@@ -1,4 +1,4 @@
-import { BigInt, log, Address, Bytes } from '@graphprotocol/graph-ts';
+import { BigInt, log } from '@graphprotocol/graph-ts';
 
 import {
   FixedProductMarketMaker,
