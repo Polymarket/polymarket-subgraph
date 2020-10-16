@@ -19,7 +19,6 @@ import { nthRoot } from './utils/nth-root';
 import {
   updateVolumes,
   updateLiquidityFields,
-  getCollateralScale,
   updateFeeFields,
   calculatePrices,
 } from './utils/fpmm-utils';
@@ -29,6 +28,7 @@ import {
   updateMarketPositionFromTrade,
 } from './utils/market-positions-utils';
 import { bigOne, bigZero } from './utils/constants';
+import { getCollateralScale } from './utils/collateralTokens';
 
 function requireAccount(accountAddress: string): void {
   let account = Account.load(accountAddress);
