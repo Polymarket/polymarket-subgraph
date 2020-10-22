@@ -3,7 +3,6 @@ import { BigInt, log } from '@graphprotocol/graph-ts';
 import {
   FixedProductMarketMaker,
   Account,
-  FpmmPoolMembership,
   FpmmFundingAddition,
   FpmmFundingRemoval,
   Transaction,
@@ -21,6 +20,7 @@ import {
   updateLiquidityFields,
   updateFeeFields,
   calculatePrices,
+  loadPoolMembership,
 } from './utils/fpmm-utils';
 import {
   updateMarketPositionFromLiquidityAdded,
@@ -150,6 +150,14 @@ export function handleFundingAdded(event: FPMMFundingAdded): void {
 
   fpmm.save();
   recordFundingAddition(event);
+
+  let poolMembership = loadPoolMembership(
+    event.address.toHexString(),
+    event.params.funder.toHexString(),
+  );
+  poolMembership.amount = poolMembership.amount.plus(event.params.sharesMinted);
+  poolMembership.save();
+
   updateMarketPositionFromLiquidityAdded(event);
 }
 
@@ -189,6 +197,14 @@ export function handleFundingRemoved(event: FPMMFundingRemoved): void {
   }
   fpmm.save();
   recordFundingRemoval(event);
+
+  let poolMembership = loadPoolMembership(
+    event.address.toHexString(),
+    event.params.funder.toHexString(),
+  );
+  poolMembership.amount = poolMembership.amount.minus(event.params.sharesBurnt);
+  poolMembership.save();
+
   updateMarketPositionFromLiquidityRemoved(event);
 }
 
@@ -307,21 +323,6 @@ export function handleSell(event: FPMMSell): void {
 
   recordSell(event);
   updateMarketPositionFromTrade(event);
-}
-
-function loadPoolMembership(
-  fpmmAddress: string,
-  userAddress: string,
-): FpmmPoolMembership {
-  let poolMembershipId = fpmmAddress.concat(userAddress);
-  let poolMembership = FpmmPoolMembership.load(poolMembershipId);
-  if (poolMembership == null) {
-    poolMembership = new FpmmPoolMembership(poolMembershipId);
-    poolMembership.pool = fpmmAddress;
-    poolMembership.funder = userAddress;
-    poolMembership.amount = bigZero;
-  }
-  return poolMembership as FpmmPoolMembership;
 }
 
 export function handlePoolShareTransfer(event: Transfer): void {

@@ -1,12 +1,27 @@
 /* eslint-disable no-param-reassign */
 import { BigInt, BigDecimal } from '@graphprotocol/graph-ts';
-import { FixedProductMarketMaker } from '../types/schema';
+import { FixedProductMarketMaker, FpmmPoolMembership } from '../types/schema';
 import {
   timestampToDay,
   joinDayAndVolume,
   joinDayAndScaledVolume,
 } from './day-volume-utils';
 import { bigOne, bigZero } from './constants';
+
+export function loadPoolMembership(
+  fpmmAddress: string,
+  userAddress: string,
+): FpmmPoolMembership {
+  let poolMembershipId = fpmmAddress.concat(userAddress);
+  let poolMembership = FpmmPoolMembership.load(poolMembershipId);
+  if (poolMembership == null) {
+    poolMembership = new FpmmPoolMembership(poolMembershipId);
+    poolMembership.pool = fpmmAddress;
+    poolMembership.funder = userAddress;
+    poolMembership.amount = bigZero;
+  }
+  return poolMembership as FpmmPoolMembership;
+}
 
 /**
  * Computes the price of each outcome token given their holdings. Returns an array of numbers in the range [0, 1]
