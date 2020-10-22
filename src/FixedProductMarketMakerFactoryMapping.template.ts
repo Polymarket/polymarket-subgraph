@@ -3,14 +3,42 @@ import { BigInt, log, BigDecimal } from '@graphprotocol/graph-ts';
 import { FixedProductMarketMakerCreation } from './types/FixedProductMarketMakerFactory/FixedProductMarketMakerFactory';
 import { FixedProductMarketMaker, Condition } from './types/schema';
 import { FixedProductMarketMaker as FixedProductMarketMakerTemplate } from './types/templates';
-import { nthRoot } from './utils/nth-root';
 import { timestampToDay } from './utils/day-volume-utils';
-import { updateLiquidityFields, calculatePrices } from './utils/fpmm-utils';
-import { bigZero, bigOne } from './utils/constants';
-import {
-  getCollateralDetails,
-  getCollateralScale,
-} from './utils/collateralTokens';
+import { bigZero } from './utils/constants';
+import { getCollateralDetails } from './utils/collateralTokens';
+
+/**
+ * Initialise all variables of fpmm which start at zero
+ * @param fpmm A half initialised FixedProductMarketMaker
+ * @returns FixedProductMarketMaker with remaining variables set
+ */
+function initialiseFPMM(
+  fpmm: FixedProductMarketMaker,
+  event: FixedProductMarketMakerCreation,
+): FixedProductMarketMaker {
+  /* eslint-disable no-param-reassign */
+
+  fpmm.totalSupply = bigZero;
+  let outcomeTokenAmounts = new Array<BigInt>(fpmm.outcomeSlotCount);
+  let outcomeTokenPrices = new Array<BigDecimal>(fpmm.outcomeSlotCount);
+  for (let i = 0; i < outcomeTokenAmounts.length; i += 1) {
+    outcomeTokenAmounts[i] = bigZero;
+    outcomeTokenPrices[i] = bigZero.toBigDecimal();
+  }
+  fpmm.outcomeTokenAmounts = outcomeTokenAmounts;
+  // Market maker starts with no tokens so results in zero prices
+  fpmm.outcomeTokenPrices = outcomeTokenPrices;
+
+  fpmm.lastActiveDay = timestampToDay(event.block.timestamp);
+  fpmm.collateralVolume = bigZero;
+  fpmm.scaledCollateralVolume = bigZero.toBigDecimal();
+  fpmm.liquidityParameter = bigZero;
+  fpmm.scaledLiquidityParameter = bigZero.toBigDecimal();
+  fpmm.feeVolume = bigZero;
+  fpmm.scaledFeeVolume = bigZero.toBigDecimal();
+
+  return fpmm;
+}
 
 export function handleFixedProductMarketMakerCreation(
   event: FixedProductMarketMakerCreation,
@@ -59,38 +87,10 @@ export function handleFixedProductMarketMakerCreation(
     );
     condition.save();
   }
+
   fixedProductMarketMaker.outcomeSlotCount = outcomeTokenCount;
 
-  // Initialise FPMM state
-  fixedProductMarketMaker.totalSupply = bigZero;
-  fixedProductMarketMaker.collateralVolume = bigZero;
-  fixedProductMarketMaker.feeVolume = bigZero;
-
-  let outcomeTokenAmounts = new Array<BigInt>(outcomeTokenCount);
-  let amountsProduct = bigOne;
-  for (let i = 0; i < outcomeTokenAmounts.length; i += 1) {
-    outcomeTokenAmounts[i] = bigZero;
-    amountsProduct = amountsProduct.times(outcomeTokenAmounts[i]);
-  }
-  fixedProductMarketMaker.outcomeTokenAmounts = outcomeTokenAmounts;
-  fixedProductMarketMaker.outcomeTokenPrices = calculatePrices(
-    outcomeTokenAmounts,
-  );
-  let liquidityParameter = nthRoot(amountsProduct, outcomeTokenAmounts.length);
-  let collateralScale = getCollateralScale(
-    fixedProductMarketMaker.collateralToken,
-  );
-  let collateralScaleDec = collateralScale.toBigDecimal();
-  updateLiquidityFields(
-    fixedProductMarketMaker,
-    liquidityParameter,
-    collateralScaleDec,
-  );
-
-  fixedProductMarketMaker.lastActiveDay = timestampToDay(event.block.timestamp);
-
-  fixedProductMarketMaker.scaledFeeVolume = new BigDecimal(bigZero);
-
+  fixedProductMarketMaker = initialiseFPMM(fixedProductMarketMaker, event);
   fixedProductMarketMaker.save();
 
   FixedProductMarketMakerTemplate.create(address);

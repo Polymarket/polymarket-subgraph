@@ -83,8 +83,8 @@ export function updateLiquidityFields(
 export function updateFeeFields(
   fpmm: FixedProductMarketMaker,
   feeAmount: BigInt,
-  collateralScale: BigDecimal,
+  collateralScaleDec: BigDecimal,
 ): void {
   fpmm.feeVolume = fpmm.feeVolume.plus(feeAmount);
-  fpmm.scaledFeeVolume = fpmm.feeVolume.divDecimal(collateralScale);
+  fpmm.scaledFeeVolume = fpmm.feeVolume.divDecimal(collateralScaleDec);
 }
