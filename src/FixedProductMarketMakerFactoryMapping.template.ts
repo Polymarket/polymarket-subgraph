@@ -4,12 +4,8 @@ import { FixedProductMarketMakerCreation } from './types/FixedProductMarketMaker
 import { FixedProductMarketMaker, Condition } from './types/schema';
 import { FixedProductMarketMaker as FixedProductMarketMakerTemplate } from './types/templates';
 import { nthRoot } from './utils/nth-root';
-import { timestampToDay, joinDayAndVolume } from './utils/day-volume-utils';
-import {
-  updateScaledVolumes,
-  updateLiquidityFields,
-  calculatePrices,
-} from './utils/fpmm-utils';
+import { timestampToDay } from './utils/day-volume-utils';
+import { updateLiquidityFields, calculatePrices } from './utils/fpmm-utils';
 import { bigZero, bigOne } from './utils/constants';
 import {
   getCollateralDetails,
@@ -91,21 +87,8 @@ export function handleFixedProductMarketMakerCreation(
     collateralScaleDec,
   );
 
-  let currentDay = timestampToDay(event.block.timestamp);
-  fixedProductMarketMaker.lastActiveDay = currentDay;
-  fixedProductMarketMaker.runningDailyVolume = bigZero;
-  fixedProductMarketMaker.lastActiveDayAndRunningDailyVolume = joinDayAndVolume(
-    currentDay,
-    bigZero,
-  );
-  fixedProductMarketMaker.collateralVolumeBeforeLastActiveDay = bigZero;
+  fixedProductMarketMaker.lastActiveDay = timestampToDay(event.block.timestamp);
 
-  updateScaledVolumes(
-    fixedProductMarketMaker,
-    collateralScale,
-    collateralScaleDec,
-    currentDay,
-  );
   fixedProductMarketMaker.scaledFeeVolume = new BigDecimal(bigZero);
 
   fixedProductMarketMaker.save();

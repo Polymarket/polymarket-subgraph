@@ -252,7 +252,6 @@ export function handleBuy(event: FPMMBuy): void {
     fpmm as FixedProductMarketMaker,
     event.block.timestamp,
     event.params.investmentAmount,
-    collateralScale,
     collateralScaleDec,
   );
   updateFeeFields(
@@ -310,7 +309,6 @@ export function handleSell(event: FPMMSell): void {
     fpmm as FixedProductMarketMaker,
     event.block.timestamp,
     event.params.returnAmount,
-    collateralScale,
     collateralScaleDec,
   );
   updateFeeFields(

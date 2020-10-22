@@ -117,12 +117,6 @@ type FixedProductMarketMaker @entity {
 
   "Timestamp of last day during which someone made a trade"
   lastActiveDay: BigInt!
-  runningDailyVolume: BigInt!
-  scaledRunningDailyVolume: BigDecimal!
-  lastActiveDayAndRunningDailyVolume: BigInt!
-  lastActiveDayAndScaledRunningDailyVolume: BigInt!
-
-  collateralVolumeBeforeLastActiveDay: BigInt!
 
   "Number of shares for tokens in the market maker's reserves"
   totalSupply: BigInt!

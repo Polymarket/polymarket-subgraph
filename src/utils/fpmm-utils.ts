@@ -1,11 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { BigInt, BigDecimal } from '@graphprotocol/graph-ts';
 import { FixedProductMarketMaker, FpmmPoolMembership } from '../types/schema';
-import {
-  timestampToDay,
-  joinDayAndVolume,
-  joinDayAndScaledVolume,
-} from './day-volume-utils';
+import { timestampToDay } from './day-volume-utils';
 import { bigOne, bigZero } from './constants';
 
 export function loadPoolMembership(
@@ -55,56 +51,21 @@ export function calculatePrices(outcomeTokenAmounts: BigInt[]): BigDecimal[] {
   return outcomePrices;
 }
 
-// We export updatedScaledVolumes so that it can be used in the FPMMDeterministicFactoryMapping to initialise the values
-// On any further updates we allow use updateVolumes which will automatically call this.
-export function updateScaledVolumes(
-  fpmm: FixedProductMarketMaker,
-  collateralScale: BigInt,
-  collateralScaleDec: BigDecimal,
-  currentDay: BigInt,
-): void {
-  fpmm.scaledCollateralVolume = fpmm.collateralVolume.divDecimal(
-    collateralScaleDec,
-  );
-  fpmm.scaledRunningDailyVolume = fpmm.runningDailyVolume.divDecimal(
-    collateralScaleDec,
-  );
-
-  fpmm.lastActiveDayAndScaledRunningDailyVolume = joinDayAndScaledVolume(
-    currentDay,
-    fpmm.runningDailyVolume,
-    collateralScale,
-  );
-}
-
 export function updateVolumes(
   fpmm: FixedProductMarketMaker,
   timestamp: BigInt,
   tradeSize: BigInt,
-  collateralScale: BigInt,
   collateralScaleDec: BigDecimal,
 ): void {
   let currentDay = timestampToDay(timestamp);
 
   if (fpmm.lastActiveDay.notEqual(currentDay)) {
     fpmm.lastActiveDay = currentDay;
-    fpmm.collateralVolumeBeforeLastActiveDay = fpmm.collateralVolume;
   }
 
   fpmm.collateralVolume = fpmm.collateralVolume.plus(tradeSize);
-  fpmm.runningDailyVolume = fpmm.collateralVolume.minus(
-    fpmm.collateralVolumeBeforeLastActiveDay,
-  );
-  fpmm.lastActiveDayAndRunningDailyVolume = joinDayAndVolume(
-    currentDay,
-    fpmm.runningDailyVolume,
-  );
-
-  updateScaledVolumes(
-    fpmm as FixedProductMarketMaker,
-    collateralScale,
+  fpmm.scaledCollateralVolume = fpmm.collateralVolume.divDecimal(
     collateralScaleDec,
-    currentDay,
   );
 }
 
