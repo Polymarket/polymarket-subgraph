@@ -9,6 +9,7 @@ type Global @entity {
 }
 
 type Account @entity {
+  "User address"
   id: ID!
   "Markets in which user has provided liquidity"
   fpmmPoolMemberships: [FpmmPoolMembership!] @derivedFrom(field: "funder")
@@ -21,6 +22,7 @@ type Account @entity {
 }
 
 type Collateral @entity {
+  "Token address"
   id: ID!
   name: String!
   symbol: String!
@@ -45,6 +47,7 @@ type Condition @entity {
 }
 
 type Split @entity {
+  "Transaction Hash"
   id: ID!
   "Address which is performing this split"
   stakeholder: Account!
@@ -56,6 +59,7 @@ type Split @entity {
 }
 
 type Merge @entity {
+  "Transaction Hash"
   id: ID!
   "Address which is performing this merge"
   stakeholder: Account!
@@ -67,6 +71,7 @@ type Merge @entity {
 }
 
 type Redemption @entity {
+  "Transaction Hash"
   id: ID!
   "Address which is redeeming these outcomes"
   redeemer: Account!
@@ -81,6 +86,7 @@ type Redemption @entity {
 # Market Makers
 
 type FixedProductMarketMaker @entity {
+  "Market maker address"
   id: ID!
 
   "Address which deployed this market"
@@ -150,6 +156,7 @@ type MarketPosition @entity {
 # Market Actions
 
 type FpmmFundingAddition @entity {
+  "Transaction Hash"
   id: ID!
   timestamp: BigInt!
   fpmm: FixedProductMarketMaker!
@@ -160,6 +167,7 @@ type FpmmFundingAddition @entity {
 }
 
 type FpmmFundingRemoval @entity {
+  "Transaction Hash"
   id: ID!
   timestamp: BigInt!
   fpmm: FixedProductMarketMaker!
@@ -170,6 +178,7 @@ type FpmmFundingRemoval @entity {
 }
 
 type Transaction @entity {
+  "Transaction Hash"
   id: ID!
   type: String!
   timestamp: BigInt!
