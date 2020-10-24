@@ -18,6 +18,9 @@ dataSources:
       entities:
         - Condition
         - FixedProductMarketMaker
+        - Split
+        - Merge
+        - Redemption
       abis:
         - name: ConditionalTokens
           file: ./abis/ConditionalTokens.json
@@ -68,7 +71,13 @@ templates:
       apiVersion: 0.0.3
       language: wasm/assemblyscript
       entities:
+        - Account
         - FixedProductMarketMaker
+        - FpmmFundingAddition
+        - FpmmFundingRemoval
+        - FpmmPoolMembership
+        - Transaction
+        - MarketPosition
       abis:
         - name: FixedProductMarketMaker
           file: ./abis/FixedProductMarketMaker.json
