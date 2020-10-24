@@ -323,7 +323,7 @@ export function handlePoolShareTransfer(event: Transfer): void {
   }
 
   if (toAddress != AddressZero) {
-    let toMembership = loadPoolMembership(fpmmAddress, fromAddress);
+    let toMembership = loadPoolMembership(fpmmAddress, toAddress);
     toMembership.amount = toMembership.amount.plus(sharesAmount);
     toMembership.save();
   }
