@@ -3,7 +3,7 @@ import { BigInt, log, BigDecimal } from '@graphprotocol/graph-ts';
 import { FixedProductMarketMakerCreation } from './types/FixedProductMarketMakerFactory/FixedProductMarketMakerFactory';
 import { FixedProductMarketMaker, Condition } from './types/schema';
 import { FixedProductMarketMaker as FixedProductMarketMakerTemplate } from './types/templates';
-import { timestampToDay } from './utils/day-volume-utils';
+import { timestampToDay } from './utils/time';
 import { bigZero } from './utils/constants';
 import { getCollateralDetails } from './utils/collateralTokens';
 

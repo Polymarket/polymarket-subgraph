@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { BigInt, BigDecimal } from '@graphprotocol/graph-ts';
 import { FixedProductMarketMaker, FpmmPoolMembership } from '../types/schema';
-import { timestampToDay } from './day-volume-utils';
+import { timestampToDay } from './time';
 import { bigOne, bigZero } from './constants';
 
 export function loadPoolMembership(
