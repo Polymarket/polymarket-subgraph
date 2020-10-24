@@ -150,14 +150,6 @@ export function handleFundingAdded(event: FPMMFundingAdded): void {
 
   fpmm.save();
   recordFundingAddition(event);
-
-  let poolMembership = loadPoolMembership(
-    event.address.toHexString(),
-    event.params.funder.toHexString(),
-  );
-  poolMembership.amount = poolMembership.amount.plus(event.params.sharesMinted);
-  poolMembership.save();
-
   updateMarketPositionFromLiquidityAdded(event);
 }
 
@@ -197,14 +189,6 @@ export function handleFundingRemoved(event: FPMMFundingRemoved): void {
   }
   fpmm.save();
   recordFundingRemoval(event);
-
-  let poolMembership = loadPoolMembership(
-    event.address.toHexString(),
-    event.params.funder.toHexString(),
-  );
-  poolMembership.amount = poolMembership.amount.minus(event.params.sharesBurnt);
-  poolMembership.save();
-
   updateMarketPositionFromLiquidityRemoved(event);
 }
 
