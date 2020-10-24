@@ -27,7 +27,7 @@ import {
   updateMarketPositionFromLiquidityRemoved,
   updateMarketPositionFromTrade,
 } from './utils/market-positions-utils';
-import { bigOne, bigZero } from './utils/constants';
+import { AddressZero, bigOne, bigZero } from './utils/constants';
 import { getCollateralScale } from './utils/collateralTokens';
 
 function requireAccount(accountAddress: string): void {
@@ -311,15 +311,20 @@ export function handlePoolShareTransfer(event: Transfer): void {
   let fpmmAddress = event.address.toHexString();
   let fromAddress = event.params.from.toHexString();
   let toAddress = event.params.to.toHexString();
+  let sharesAmount = event.params.value;
 
   requireAccount(fromAddress);
   requireAccount(toAddress);
 
-  let fromMembership = loadPoolMembership(fpmmAddress, fromAddress);
-  fromMembership.amount = fromMembership.amount.minus(event.params.value);
-  fromMembership.save();
+  if (fromAddress != AddressZero) {
+    let fromMembership = loadPoolMembership(fpmmAddress, fromAddress);
+    fromMembership.amount = fromMembership.amount.minus(sharesAmount);
+    fromMembership.save();
+  }
 
-  let toMembership = loadPoolMembership(fpmmAddress, fromAddress);
-  toMembership.amount = toMembership.amount.plus(event.params.value);
-  toMembership.save();
+  if (toAddress != AddressZero) {
+    let toMembership = loadPoolMembership(fpmmAddress, fromAddress);
+    toMembership.amount = toMembership.amount.plus(sharesAmount);
+    toMembership.save();
+  }
 }
