@@ -193,6 +193,8 @@ export function handleFundingRemoved(event: FPMMFundingRemoved): void {
 }
 
 export function handleBuy(event: FPMMBuy): void {
+  requireAccount(event.params.buyer.toHexString());
+
   let fpmmAddress = event.address.toHexString();
   let fpmm = FixedProductMarketMaker.load(fpmmAddress);
   if (fpmm == null) {
@@ -250,6 +252,8 @@ export function handleBuy(event: FPMMBuy): void {
 }
 
 export function handleSell(event: FPMMSell): void {
+  requireAccount(event.params.seller.toHexString());
+
   let fpmmAddress = event.address.toHexString();
   let fpmm = FixedProductMarketMaker.load(fpmmAddress);
   if (fpmm == null) {
