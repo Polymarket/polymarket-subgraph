@@ -1,7 +1,7 @@
 # Generic
 
 type Global @entity {
-  # ID is empty string, this is a singleton
+  "ID is empty string, this is a singleton"
   id: ID!
   numConditions: Int!
   numOpenConditions: Int!
