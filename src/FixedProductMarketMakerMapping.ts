@@ -36,6 +36,7 @@ import {
 } from './utils/constants';
 import { getCollateralScale } from './utils/collateralTokens';
 import { updateGlobalVolume } from './utils/global-utils';
+import { max } from './utils/maths';
 
 function requireAccount(accountAddress: string): void {
   let account = Account.load(accountAddress);
@@ -84,10 +85,7 @@ function recordFundingAddition(event: FPMMFundingAdded): void {
   // The amounts of outcome token are limited by the cheapest outcome.
   // This will have the full balance added to the market maker
   // therefore this is the amount of collateral that the user has split.
-  let addedFunds = amountsAdded
-    .slice()
-    .sort((a, b) => BigInt.compare(a, b))
-    .pop() as BigInt;
+  let addedFunds = max(amountsAdded);
 
   let amountsRefunded = new Array<BigInt>(amountsAdded.length);
   for (

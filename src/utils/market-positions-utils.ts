@@ -16,6 +16,7 @@ import {
   FPMMFundingRemoved,
 } from '../types/templates/FixedProductMarketMaker/FixedProductMarketMaker';
 import { bigZero } from './constants';
+import { max } from './maths';
 
 /*
  * Returns the user's position for the given market and outcome
@@ -224,10 +225,7 @@ export function updateMarketPositionFromLiquidityAdded(
   // The amounts of outcome token are limited by the cheapest outcome.
   // This will have the full balance added to the market maker
   // therefore this is the amount of collateral that the user has split.
-  let addedFunds = amountsAdded
-    .slice()
-    .sort((a, b) => BigInt.compare(a, b))
-    .pop() as BigInt;
+  let addedFunds = max(amountsAdded);
 
   // Calculate the full number of outcome tokens which are refunded to the funder address
   let totalRefundedOutcomeTokens = bigZero;
