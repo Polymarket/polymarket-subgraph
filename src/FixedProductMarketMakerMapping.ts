@@ -250,6 +250,9 @@ export function handleBuy(event: FPMMBuy): void {
     event.params.feeAmount,
     collateralScaleDec,
   );
+
+  fpmm.tradesQuantity = fpmm.tradesQuantity.plus(bigOne);
+  fpmm.buysQuantity = fpmm.buysQuantity.plus(bigOne);
   fpmm.save();
 
   recordBuy(event);
@@ -315,6 +318,8 @@ export function handleSell(event: FPMMSell): void {
     collateralScaleDec,
   );
 
+  fpmm.tradesQuantity = fpmm.tradesQuantity.plus(bigOne);
+  fpmm.sellsQuantity = fpmm.sellsQuantity.plus(bigOne);
   fpmm.save();
 
   recordSell(event);

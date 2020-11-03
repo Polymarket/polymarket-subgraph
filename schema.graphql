@@ -109,6 +109,13 @@ type FixedProductMarketMaker @entity {
   "Percentage fee of trades taken by market maker. A 2% fee is represented as 2*10^16"
   fee: BigInt!
 
+  "Number of trades of any kind against this market maker"
+  tradesQuantity: BigInt!
+  "Number of purchases of shares from this market maker"
+  buysQuantity: BigInt!
+  "Number of sales of shares to this market maker"
+  sellsQuantity: BigInt!
+
   "Market volume in terms of the underlying collateral value"
   collateralVolume: BigInt!
   "Volume scaled by the number of decimals of collateralToken"

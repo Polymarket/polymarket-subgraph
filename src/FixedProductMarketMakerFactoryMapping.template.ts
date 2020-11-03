@@ -37,6 +37,10 @@ function initialiseFPMM(
   fpmm.feeVolume = bigZero;
   fpmm.scaledFeeVolume = bigZero.toBigDecimal();
 
+  fpmm.tradesQuantity = bigZero;
+  fpmm.buysQuantity = bigZero;
+  fpmm.sellsQuantity = bigZero;
+
   return fpmm;
 }
 
