@@ -185,10 +185,15 @@ type FpmmFundingRemoval @entity {
   sharesBurnt: BigInt!
 }
 
+enum TradeType {
+  Buy
+  Sell
+}
+
 type Transaction @entity {
   "Transaction Hash"
   id: ID!
-  type: String!
+  type: TradeType!
   timestamp: BigInt!
   market: FixedProductMarketMaker!
   user: Account!
