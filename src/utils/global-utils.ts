@@ -1,4 +1,4 @@
-import { BigInt } from '@graphprotocol/graph-ts';
+import { BigDecimal, BigInt } from '@graphprotocol/graph-ts';
 import { Global } from '../types/schema';
 import { bigZero } from './constants';
 
@@ -21,15 +21,12 @@ export function requireGlobal(): Global {
 export function updateGlobalVolume(
   tradeAmount: BigInt,
   feesAmount: BigInt,
+  collateralScaleDec: BigDecimal,
 ): void {
   let global = requireGlobal();
   global.usdcVolume = global.usdcVolume.plus(tradeAmount);
-  global.scaledUsdcVolume = global.usdcVolume.divDecimal(
-    BigInt.fromI32(10).pow(6).toBigDecimal(),
-  );
+  global.scaledUsdcVolume = global.usdcVolume.divDecimal(collateralScaleDec);
   global.usdcFees = global.usdcVolume.plus(feesAmount);
-  global.scaledUsdcFees = global.usdcFees.divDecimal(
-    BigInt.fromI32(10).pow(6).toBigDecimal(),
-  );
+  global.scaledUsdcFees = global.usdcFees.divDecimal(collateralScaleDec);
   global.save();
 }

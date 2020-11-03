@@ -253,7 +253,11 @@ export function handleBuy(event: FPMMBuy): void {
   fpmm.save();
 
   recordBuy(event);
-  updateGlobalVolume(event.params.investmentAmount, event.params.feeAmount);
+  updateGlobalVolume(
+    event.params.investmentAmount,
+    event.params.feeAmount,
+    collateralScaleDec,
+  );
   updateMarketPositionFromTrade(event);
 }
 
@@ -314,7 +318,11 @@ export function handleSell(event: FPMMSell): void {
   fpmm.save();
 
   recordSell(event);
-  updateGlobalVolume(event.params.returnAmount, event.params.feeAmount);
+  updateGlobalVolume(
+    event.params.returnAmount,
+    event.params.feeAmount,
+    collateralScaleDec,
+  );
   updateMarketPositionFromTrade(event);
 }
 
