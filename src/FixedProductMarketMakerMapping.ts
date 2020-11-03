@@ -27,7 +27,13 @@ import {
   updateMarketPositionFromLiquidityRemoved,
   updateMarketPositionFromTrade,
 } from './utils/market-positions-utils';
-import { AddressZero, bigOne, bigZero } from './utils/constants';
+import {
+  AddressZero,
+  bigOne,
+  bigZero,
+  TRADE_TYPE_BUY,
+  TRADE_TYPE_SELL,
+} from './utils/constants';
 import { getCollateralScale } from './utils/collateralTokens';
 import { updateGlobalVolume } from './utils/global-utils';
 
@@ -41,7 +47,7 @@ function requireAccount(accountAddress: string): void {
 
 function recordBuy(event: FPMMBuy): void {
   let buy = new Transaction(event.transaction.hash.toHexString());
-  buy.type = 'Buy';
+  buy.type = TRADE_TYPE_BUY;
   buy.timestamp = event.block.timestamp;
   buy.market = event.address.toHexString();
   buy.user = event.params.buyer.toHexString();
@@ -54,7 +60,7 @@ function recordBuy(event: FPMMBuy): void {
 
 function recordSell(event: FPMMSell): void {
   let sell = new Transaction(event.transaction.hash.toHexString());
-  sell.type = 'Sell';
+  sell.type = TRADE_TYPE_SELL;
   sell.timestamp = event.block.timestamp;
   sell.market = event.address.toHexString();
   sell.user = event.params.seller.toHexString();
