@@ -29,6 +29,7 @@ import {
 } from './utils/market-positions-utils';
 import { AddressZero, bigOne, bigZero } from './utils/constants';
 import { getCollateralScale } from './utils/collateralTokens';
+import { updateGlobalVolume } from './utils/global-utils';
 
 function requireAccount(accountAddress: string): void {
   let account = Account.load(accountAddress);
@@ -248,6 +249,7 @@ export function handleBuy(event: FPMMBuy): void {
   fpmm.save();
 
   recordBuy(event);
+  updateGlobalVolume(event.params.investmentAmount, event.params.feeAmount);
   updateMarketPositionFromTrade(event);
 }
 
@@ -308,6 +310,7 @@ export function handleSell(event: FPMMSell): void {
   fpmm.save();
 
   recordSell(event);
+  updateGlobalVolume(event.params.returnAmount, event.params.feeAmount);
   updateMarketPositionFromTrade(event);
 }
 

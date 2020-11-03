@@ -6,6 +6,14 @@ type Global @entity {
   numConditions: Int!
   numOpenConditions: Int!
   numClosedConditions: Int!
+  "Global volume in USDC base units"
+  usdcVolume: BigInt!
+  "Global volume in USDC scaled by 10^6"
+  scaledUsdcVolume: BigDecimal!
+  "Global fees in USDC base units"
+  usdcFees: BigInt!
+  "Global fees in USDC scaled by 10^6"
+  scaledUsdcFees: BigDecimal!
 }
 
 type Account @entity {
