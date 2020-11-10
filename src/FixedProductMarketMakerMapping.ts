@@ -23,6 +23,7 @@ import {
   loadPoolMembership,
 } from './utils/fpmm-utils';
 import {
+  requireAccount,
   updateMarketPositionFromLiquidityAdded,
   updateMarketPositionFromLiquidityRemoved,
   updateMarketPositionFromTrade,
@@ -37,14 +38,6 @@ import {
 import { getCollateralScale } from './utils/collateralTokens';
 import { updateGlobalVolume } from './utils/global-utils';
 import { max } from './utils/maths';
-
-function requireAccount(accountAddress: string): void {
-  let account = Account.load(accountAddress);
-  if (account == null) {
-    account = new Account(accountAddress);
-    account.save();
-  }
-}
 
 function recordBuy(event: FPMMBuy): void {
   let buy = new Transaction(event.transaction.hash.toHexString());

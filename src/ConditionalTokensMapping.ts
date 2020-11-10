@@ -16,6 +16,7 @@ import {
 } from './types/schema';
 import { requireGlobal } from './utils/global-utils';
 import {
+  requireAccount,
   updateMarketPositionsFromMerge,
   updateMarketPositionsFromRedemption,
   updateMarketPositionsFromSplit,
@@ -25,14 +26,15 @@ import { bigZero } from './utils/constants';
 import { getCollateralDetails } from './utils/collateralTokens';
 
 export function handlePositionSplit(event: PositionSplit): void {
-  getCollateralDetails(event.params.collateralToken);
-
   if (
     FixedProductMarketMaker.load(event.params.stakeholder.toHexString()) != null
   ) {
     // We don't track splits within the market makers
     return;
   }
+
+  getCollateralDetails(event.params.collateralToken);
+  requireAccount(event.params.stakeholder.toHexString());
 
   let split = new Split(event.transaction.hash.toHexString());
   split.stakeholder = event.params.stakeholder.toHexString();
@@ -67,6 +69,7 @@ export function handlePositionsMerge(event: PositionsMerge): void {
     // We don't track merges within the market makers
     return;
   }
+  requireAccount(event.params.stakeholder.toHexString());
 
   let merge = new Merge(event.transaction.hash.toHexString());
   merge.stakeholder = event.params.stakeholder.toHexString();
@@ -95,6 +98,8 @@ export function handlePositionsMerge(event: PositionsMerge): void {
 }
 
 export function handlePayoutRedemption(event: PayoutRedemption): void {
+  requireAccount(event.params.redeemer.toHexString());
+
   let redemption = new Redemption(event.transaction.hash.toHexString());
   redemption.redeemer = event.params.redeemer.toHexString();
   redemption.collateralToken = event.params.collateralToken.toHexString();

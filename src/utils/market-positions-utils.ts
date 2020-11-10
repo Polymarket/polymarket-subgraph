@@ -5,6 +5,7 @@ import {
   MarketPosition,
   Transaction,
   Condition,
+  Account,
 } from '../types/schema';
 import {
   PositionsMerge,
@@ -17,6 +18,14 @@ import {
 } from '../types/templates/FixedProductMarketMaker/FixedProductMarketMaker';
 import { bigZero } from './constants';
 import { max } from './maths';
+
+export function requireAccount(accountAddress: string): void {
+  let account = Account.load(accountAddress);
+  if (account == null) {
+    account = new Account(accountAddress);
+    account.save();
+  }
+}
 
 /*
  * Returns the user's position for the given market and outcome
