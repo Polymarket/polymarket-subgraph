@@ -39,7 +39,6 @@ export function handlePositionSplit(event: PositionSplit): void {
 
   // If the user has split from collateral then we want to update their market position accordingly
   if (partitionCheck(split.partition, condition.outcomeSlotCount)) {
-    log.info('Splitting from collateral', []);
     let marketMakers = condition.fixedProductMarketMakers;
     for (let i = 0; i < marketMakers.length; i += 1) {
       updateMarketPositionsFromSplit(marketMakers[i], event);
@@ -67,7 +66,6 @@ export function handlePositionsMerge(event: PositionsMerge): void {
 
   // If the user has merged a full set of outcome tokens then we want to update their market position accordingly
   if (partitionCheck(merge.partition, condition.outcomeSlotCount)) {
-    log.info('Merging a full position', []);
     let marketMakers = condition.fixedProductMarketMakers;
     for (let i = 0; i < marketMakers.length; i += 1) {
       updateMarketPositionsFromMerge(marketMakers[i], event);
