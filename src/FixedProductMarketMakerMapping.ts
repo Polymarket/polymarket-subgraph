@@ -2,7 +2,6 @@ import { BigInt, log } from '@graphprotocol/graph-ts';
 
 import {
   FixedProductMarketMaker,
-  Account,
   FpmmFundingAddition,
   FpmmFundingRemoval,
   Transaction,
