@@ -7,7 +7,13 @@ import {
   PositionsMerge,
   PayoutRedemption,
 } from './types/ConditionalTokens/ConditionalTokens';
-import { Condition, Redemption, Merge, Split } from './types/schema';
+import {
+  Condition,
+  Redemption,
+  Merge,
+  Split,
+  FixedProductMarketMaker,
+} from './types/schema';
 import { requireGlobal } from './utils/global-utils';
 import {
   updateMarketPositionsFromMerge,
@@ -20,6 +26,14 @@ import { getCollateralDetails } from './utils/collateralTokens';
 
 export function handlePositionSplit(event: PositionSplit): void {
   getCollateralDetails(event.params.collateralToken);
+
+  if (
+    FixedProductMarketMaker.load(event.params.stakeholder.toHexString()) != null
+  ) {
+    // We don't track splits within the market makers
+    return;
+  }
+
   let split = new Split(event.transaction.hash.toHexString());
   split.stakeholder = event.params.stakeholder.toHexString();
   split.collateralToken = event.params.collateralToken.toHexString();
@@ -47,6 +61,13 @@ export function handlePositionSplit(event: PositionSplit): void {
 }
 
 export function handlePositionsMerge(event: PositionsMerge): void {
+  if (
+    FixedProductMarketMaker.load(event.params.stakeholder.toHexString()) != null
+  ) {
+    // We don't track merges within the market makers
+    return;
+  }
+
   let merge = new Merge(event.transaction.hash.toHexString());
   merge.stakeholder = event.params.stakeholder.toHexString();
   merge.collateralToken = event.params.collateralToken.toHexString();
