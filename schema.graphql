@@ -27,6 +27,10 @@ type Global @entity {
 type Account @entity {
   "User address"
   id: ID!
+  "Total volume of this user's trades in USDC base units"
+  usdcVolume: BigInt!
+  "Total volume of this user's trades in USDC scaled by 10^6"
+  scaledUsdcVolume: BigDecimal!
   "Timestamp of last Buy or Sell transaction"
   lastTradedTimestamp: BigInt!
   "Markets in which user has provided liquidity"

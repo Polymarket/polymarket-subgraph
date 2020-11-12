@@ -36,7 +36,7 @@ import {
 import { getCollateralScale } from './utils/collateralTokens';
 import { updateGlobalVolume } from './utils/global-utils';
 import { max } from './utils/maths';
-import { markTraded, requireAccount } from './utils/account-utils';
+import { requireAccount, updateUserVolume } from './utils/account-utils';
 
 function recordBuy(event: FPMMBuy): void {
   let buy = new Transaction(event.transaction.hash.toHexString());
@@ -190,8 +190,6 @@ export function handleFundingRemoved(event: FPMMFundingRemoved): void {
 }
 
 export function handleBuy(event: FPMMBuy): void {
-  markTraded(event.params.buyer.toHexString(), event.block.timestamp);
-
   let fpmmAddress = event.address.toHexString();
   let fpmm = FixedProductMarketMaker.load(fpmmAddress);
   if (fpmm == null) {
@@ -247,6 +245,12 @@ export function handleBuy(event: FPMMBuy): void {
   fpmm.buysQuantity = fpmm.buysQuantity.plus(bigOne);
   fpmm.save();
 
+  updateUserVolume(
+    event.params.buyer.toHexString(),
+    event.params.investmentAmount,
+    collateralScaleDec,
+    event.block.timestamp,
+  );
   recordBuy(event);
   updateGlobalVolume(
     event.params.investmentAmount,
@@ -258,8 +262,6 @@ export function handleBuy(event: FPMMBuy): void {
 }
 
 export function handleSell(event: FPMMSell): void {
-  markTraded(event.params.seller.toHexString(), event.block.timestamp);
-
   let fpmmAddress = event.address.toHexString();
   let fpmm = FixedProductMarketMaker.load(fpmmAddress);
   if (fpmm == null) {
@@ -315,6 +317,12 @@ export function handleSell(event: FPMMSell): void {
   fpmm.sellsQuantity = fpmm.sellsQuantity.plus(bigOne);
   fpmm.save();
 
+  updateUserVolume(
+    event.params.seller.toHexString(),
+    event.params.returnAmount,
+    collateralScaleDec,
+    event.block.timestamp,
+  );
   recordSell(event);
   updateGlobalVolume(
     event.params.returnAmount,
