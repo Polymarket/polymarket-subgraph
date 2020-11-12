@@ -252,6 +252,7 @@ export function handleBuy(event: FPMMBuy): void {
     event.params.investmentAmount,
     event.params.feeAmount,
     collateralScaleDec,
+    TRADE_TYPE_BUY,
   );
   updateMarketPositionFromTrade(event);
 }
@@ -319,6 +320,7 @@ export function handleSell(event: FPMMSell): void {
     event.params.returnAmount,
     event.params.feeAmount,
     collateralScaleDec,
+    TRADE_TYPE_SELL,
   );
   updateMarketPositionFromTrade(event);
 }

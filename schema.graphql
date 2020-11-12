@@ -6,6 +6,14 @@ type Global @entity {
   numConditions: Int!
   numOpenConditions: Int!
   numClosedConditions: Int!
+
+ "Number of trades of any kind for all market makers"
+  tradesQuantity: BigInt!
+  "Number of purchases of shares from any market maker"
+  buysQuantity: BigInt!
+  "Number of sales of shares to any market maker"
+  sellsQuantity: BigInt!
+
   "Global volume in USDC base units"
   usdcVolume: BigInt!
   "Global volume in USDC scaled by 10^6"
