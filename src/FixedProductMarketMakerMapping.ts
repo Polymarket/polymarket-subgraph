@@ -22,7 +22,6 @@ import {
   loadPoolMembership,
 } from './utils/fpmm-utils';
 import {
-  requireAccount,
   updateMarketPositionFromLiquidityAdded,
   updateMarketPositionFromLiquidityRemoved,
   updateMarketPositionFromTrade,
@@ -37,6 +36,7 @@ import {
 import { getCollateralScale } from './utils/collateralTokens';
 import { updateGlobalVolume } from './utils/global-utils';
 import { max } from './utils/maths';
+import { markTraded, requireAccount } from './utils/account-utils';
 
 function recordBuy(event: FPMMBuy): void {
   let buy = new Transaction(event.transaction.hash.toHexString());
@@ -190,7 +190,7 @@ export function handleFundingRemoved(event: FPMMFundingRemoved): void {
 }
 
 export function handleBuy(event: FPMMBuy): void {
-  requireAccount(event.params.buyer.toHexString());
+  markTraded(event.params.buyer.toHexString(), event.block.timestamp);
 
   let fpmmAddress = event.address.toHexString();
   let fpmm = FixedProductMarketMaker.load(fpmmAddress);
@@ -257,7 +257,7 @@ export function handleBuy(event: FPMMBuy): void {
 }
 
 export function handleSell(event: FPMMSell): void {
-  requireAccount(event.params.seller.toHexString());
+  markTraded(event.params.seller.toHexString(), event.block.timestamp);
 
   let fpmmAddress = event.address.toHexString();
   let fpmm = FixedProductMarketMaker.load(fpmmAddress);

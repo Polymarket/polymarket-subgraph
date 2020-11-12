@@ -16,7 +16,6 @@ import {
 } from './types/schema';
 import { requireGlobal } from './utils/global-utils';
 import {
-  requireAccount,
   updateMarketPositionsFromMerge,
   updateMarketPositionsFromRedemption,
   updateMarketPositionsFromSplit,
@@ -24,6 +23,7 @@ import {
 import { partitionCheck } from './utils/conditional-utils';
 import { bigZero } from './utils/constants';
 import { getCollateralDetails } from './utils/collateralTokens';
+import { requireAccount } from './utils/account-utils';
 
 export function handlePositionSplit(event: PositionSplit): void {
   if (
