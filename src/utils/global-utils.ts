@@ -10,6 +10,10 @@ export function requireGlobal(): Global {
     global.numOpenConditions = 0;
     global.numClosedConditions = 0;
 
+    global.tradesQuantity = bigZero;
+    global.buysQuantity = bigZero;
+    global.sellsQuantity = bigZero;
+
     global.collateralVolume = bigZero;
     global.scaledCollateralVolume = bigZero.toBigDecimal();
     global.collateralFees = bigZero;
