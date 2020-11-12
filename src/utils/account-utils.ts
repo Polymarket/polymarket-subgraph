@@ -8,8 +8,8 @@ export function requireAccount(accountAddress: string): Account {
   let account = Account.load(accountAddress);
   if (account == null) {
     account = new Account(accountAddress);
-    account.usdcVolume = bigZero;
-    account.scaledUsdcVolume = bigZero.toBigDecimal();
+    account.collateralVolume = bigZero;
+    account.scaledCollateralVolume = bigZero.toBigDecimal();
     account.lastTradedTimestamp = bigZero;
     account.save();
   }
@@ -23,8 +23,10 @@ export function updateUserVolume(
   timestamp: BigInt,
 ): void {
   let account = requireAccount(accountAddress);
-  account.usdcVolume = account.usdcVolume.plus(tradeAmount);
-  account.scaledUsdcVolume = account.usdcVolume.divDecimal(collateralScaleDec);
+  account.collateralVolume = account.collateralVolume.plus(tradeAmount);
+  account.scaledCollateralVolume = account.collateralVolume.divDecimal(
+    collateralScaleDec,
+  );
   account.lastTradedTimestamp = timestamp;
   account.save();
 }

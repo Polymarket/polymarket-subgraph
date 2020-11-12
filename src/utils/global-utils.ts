@@ -10,10 +10,10 @@ export function requireGlobal(): Global {
     global.numOpenConditions = 0;
     global.numClosedConditions = 0;
 
-    global.usdcVolume = bigZero;
-    global.scaledUsdcVolume = bigZero.toBigDecimal();
-    global.usdcFees = bigZero;
-    global.scaledUsdcFees = bigZero.toBigDecimal();
+    global.collateralVolume = bigZero;
+    global.scaledCollateralVolume = bigZero.toBigDecimal();
+    global.collateralFees = bigZero;
+    global.scaledCollateralFees = bigZero.toBigDecimal();
   }
   return global as Global;
 }
@@ -25,10 +25,14 @@ export function updateGlobalVolume(
   tradeType: string,
 ): void {
   let global = requireGlobal();
-  global.usdcVolume = global.usdcVolume.plus(tradeAmount);
-  global.scaledUsdcVolume = global.usdcVolume.divDecimal(collateralScaleDec);
-  global.usdcFees = global.usdcVolume.plus(feesAmount);
-  global.scaledUsdcFees = global.usdcFees.divDecimal(collateralScaleDec);
+  global.collateralVolume = global.collateralVolume.plus(tradeAmount);
+  global.scaledCollateralVolume = global.collateralVolume.divDecimal(
+    collateralScaleDec,
+  );
+  global.collateralFees = global.collateralFees.plus(feesAmount);
+  global.scaledCollateralFees = global.collateralFees.divDecimal(
+    collateralScaleDec,
+  );
   global.tradesQuantity = global.tradesQuantity.plus(bigOne);
   if (tradeType == TRADE_TYPE_BUY) {
     global.buysQuantity = global.buysQuantity.plus(bigOne);

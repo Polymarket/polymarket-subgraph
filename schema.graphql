@@ -15,22 +15,22 @@ type Global @entity {
   sellsQuantity: BigInt!
 
   "Global volume in USDC base units"
-  usdcVolume: BigInt!
+  collateralVolume: BigInt!
   "Global volume in USDC scaled by 10^6"
-  scaledUsdcVolume: BigDecimal!
+  scaledCollateralVolume: BigDecimal!
   "Global fees in USDC base units"
-  usdcFees: BigInt!
+  collateralFees: BigInt!
   "Global fees in USDC scaled by 10^6"
-  scaledUsdcFees: BigDecimal!
+  scaledCollateralFees: BigDecimal!
 }
 
 type Account @entity {
   "User address"
   id: ID!
   "Total volume of this user's trades in USDC base units"
-  usdcVolume: BigInt!
+  collateralVolume: BigInt!
   "Total volume of this user's trades in USDC scaled by 10^6"
-  scaledUsdcVolume: BigDecimal!
+  scaledCollateralVolume: BigDecimal!
   "Timestamp of last Buy or Sell transaction"
   lastTradedTimestamp: BigInt!
   "Markets in which user has provided liquidity"
