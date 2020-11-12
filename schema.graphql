@@ -7,6 +7,9 @@ type Global @entity {
   numOpenConditions: Int!
   numClosedConditions: Int!
 
+  "Number of unique traders interacting with Polymarket"
+  numTraders: BigInt!
+
  "Number of trades of any kind for all market makers"
   tradesQuantity: BigInt!
   "Number of purchases of shares from any market maker"

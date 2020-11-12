@@ -3,6 +3,7 @@ import { BigDecimal, BigInt } from '@graphprotocol/graph-ts';
 import { Account } from '../types/schema';
 
 import { bigZero } from './constants';
+import { countNewTrader } from './global-utils';
 
 export function requireAccount(accountAddress: string): Account {
   let account = Account.load(accountAddress);
@@ -11,6 +12,7 @@ export function requireAccount(accountAddress: string): Account {
     account.collateralVolume = bigZero;
     account.scaledCollateralVolume = bigZero.toBigDecimal();
     account.lastTradedTimestamp = bigZero;
+    countNewTrader();
     account.save();
   }
   return account as Account;

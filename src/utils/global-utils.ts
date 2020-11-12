@@ -10,6 +10,8 @@ export function requireGlobal(): Global {
     global.numOpenConditions = 0;
     global.numClosedConditions = 0;
 
+    global.numTraders = bigZero;
+
     global.tradesQuantity = bigZero;
     global.buysQuantity = bigZero;
     global.sellsQuantity = bigZero;
@@ -20,6 +22,12 @@ export function requireGlobal(): Global {
     global.scaledCollateralFees = bigZero.toBigDecimal();
   }
   return global as Global;
+}
+
+export function countNewTrader(): void {
+  let global = requireGlobal();
+  global.numTraders = global.numTraders.plus(bigOne);
+  global.save();
 }
 
 export function updateGlobalVolume(
