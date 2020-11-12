@@ -20,6 +20,11 @@ export function requireGlobal(): Global {
     global.scaledCollateralVolume = bigZero.toBigDecimal();
     global.collateralFees = bigZero;
     global.scaledCollateralFees = bigZero.toBigDecimal();
+
+    global.collateralBuyVolume = bigZero;
+    global.scaledCollateralBuyVolume = bigZero.toBigDecimal();
+    global.collateralSellVolume = bigZero;
+    global.scaledCollateralSellVolume = bigZero.toBigDecimal();
   }
   return global as Global;
 }
@@ -48,8 +53,16 @@ export function updateGlobalVolume(
   global.tradesQuantity = global.tradesQuantity.plus(bigOne);
   if (tradeType == TRADE_TYPE_BUY) {
     global.buysQuantity = global.buysQuantity.plus(bigOne);
+    global.collateralBuyVolume = global.collateralBuyVolume.plus(tradeAmount);
+    global.scaledCollateralBuyVolume = global.collateralBuyVolume.divDecimal(
+      collateralScaleDec,
+    );
   } else if (tradeType == TRADE_TYPE_SELL) {
     global.sellsQuantity = global.sellsQuantity.plus(bigOne);
+    global.collateralSellVolume = global.collateralSellVolume.plus(tradeAmount);
+    global.scaledCollateralSellVolume = global.collateralSellVolume.divDecimal(
+      collateralScaleDec,
+    );
   }
   global.save();
 }

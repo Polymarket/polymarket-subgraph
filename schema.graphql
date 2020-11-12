@@ -25,6 +25,15 @@ type Global @entity {
   collateralFees: BigInt!
   "Global fees in USDC scaled by 10^6"
   scaledCollateralFees: BigDecimal!
+
+  "Global volume of share purchases in USDC base units"
+  collateralBuyVolume: BigInt!
+  "Global volume of share purchases in USDC scaled by 10^6"
+  scaledCollateralBuyVolume: BigDecimal!
+  "Global volume of share sales in USDC base units"
+  collateralSellVolume: BigInt!
+  "Global volume of share sales in USDC scaled by 10^6"
+  scaledCollateralSellVolume: BigDecimal!
 }
 
 type Account @entity {
