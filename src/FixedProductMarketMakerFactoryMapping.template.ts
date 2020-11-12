@@ -40,6 +40,8 @@ function initialiseFPMM(
   fpmm.tradesQuantity = bigZero;
   fpmm.buysQuantity = bigZero;
   fpmm.sellsQuantity = bigZero;
+  fpmm.liquidityAddQuantity = bigZero;
+  fpmm.liquidityRemoveQuantity = bigZero;
 
   return fpmm;
 }

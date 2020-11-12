@@ -129,6 +129,10 @@ type FixedProductMarketMaker @entity {
   buysQuantity: BigInt!
   "Number of sales of shares to this market maker"
   sellsQuantity: BigInt!
+  "Number of times liquidity has been added to this market maker"
+  liquidityAddQuantity: BigInt!
+  "Number of times liquidity has been removed from this market maker"
+  liquidityRemoveQuantity: BigInt!
 
   "Market volume in terms of the underlying collateral value"
   collateralVolume: BigInt!

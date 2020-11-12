@@ -145,6 +145,7 @@ export function handleFundingAdded(event: FPMMFundingAdded): void {
     fpmm.outcomeTokenPrices = calculatePrices(newAmounts);
   }
 
+  fpmm.liquidityAddQuantity = fpmm.liquidityAddQuantity.plus(bigOne);
   fpmm.save();
   recordFundingAddition(event);
   updateMarketPositionFromLiquidityAdded(event);
@@ -184,6 +185,8 @@ export function handleFundingRemoved(event: FPMMFundingRemoved): void {
     // All liquidity has been removed and so prices need to be zeroed out.
     fpmm.outcomeTokenPrices = calculatePrices(newAmounts);
   }
+
+  fpmm.liquidityRemoveQuantity = fpmm.liquidityRemoveQuantity.plus(bigOne);
   fpmm.save();
   recordFundingRemoval(event);
   updateMarketPositionFromLiquidityRemoved(event);
