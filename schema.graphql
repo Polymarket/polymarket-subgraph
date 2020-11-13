@@ -150,6 +150,14 @@ type FixedProductMarketMaker @entity {
   collateralVolume: BigInt!
   "Volume scaled by the number of decimals of collateralToken"
   scaledCollateralVolume: BigDecimal!
+  "Global volume of share purchases in USDC base units"
+  collateralBuyVolume: BigInt!
+  "Global volume of share purchases in USDC scaled by 10^6"
+  scaledCollateralBuyVolume: BigDecimal!
+  "Global volume of share sales in USDC base units"
+  collateralSellVolume: BigInt!
+  "Global volume of share sales in USDC scaled by 10^6"
+  scaledCollateralSellVolume: BigDecimal!
   "Fees collected in terms of the underlying collateral value"
   feeVolume: BigInt!
   "Fees scaled by the number of decimals of collateralToken"

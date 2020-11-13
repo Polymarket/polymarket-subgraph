@@ -32,6 +32,10 @@ function initialiseFPMM(
   fpmm.lastActiveDay = timestampToDay(event.block.timestamp);
   fpmm.collateralVolume = bigZero;
   fpmm.scaledCollateralVolume = bigZero.toBigDecimal();
+  fpmm.collateralBuyVolume = bigZero;
+  fpmm.scaledCollateralBuyVolume = bigZero.toBigDecimal();
+  fpmm.collateralSellVolume = bigZero;
+  fpmm.scaledCollateralSellVolume = bigZero.toBigDecimal();
   fpmm.liquidityParameter = bigZero;
   fpmm.scaledLiquidityParameter = bigZero.toBigDecimal();
   fpmm.feeVolume = bigZero;

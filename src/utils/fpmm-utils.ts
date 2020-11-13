@@ -2,7 +2,7 @@
 import { BigInt, BigDecimal } from '@graphprotocol/graph-ts';
 import { FixedProductMarketMaker, FpmmPoolMembership } from '../types/schema';
 import { timestampToDay } from './time';
-import { bigOne, bigZero } from './constants';
+import { bigOne, bigZero, TRADE_TYPE_BUY, TRADE_TYPE_SELL } from './constants';
 
 export function loadPoolMembership(
   fpmmAddress: string,
@@ -56,6 +56,7 @@ export function updateVolumes(
   timestamp: BigInt,
   tradeSize: BigInt,
   collateralScaleDec: BigDecimal,
+  tradeType: string,
 ): void {
   let currentDay = timestampToDay(timestamp);
 
@@ -67,6 +68,18 @@ export function updateVolumes(
   fpmm.scaledCollateralVolume = fpmm.collateralVolume.divDecimal(
     collateralScaleDec,
   );
+
+  if (tradeType == TRADE_TYPE_BUY) {
+    fpmm.collateralBuyVolume = fpmm.collateralBuyVolume.plus(tradeSize);
+    fpmm.scaledCollateralBuyVolume = fpmm.collateralBuyVolume.divDecimal(
+      collateralScaleDec,
+    );
+  } else if (tradeType == TRADE_TYPE_SELL) {
+    fpmm.collateralSellVolume = fpmm.collateralSellVolume.plus(tradeSize);
+    fpmm.scaledCollateralSellVolume = fpmm.collateralSellVolume.divDecimal(
+      collateralScaleDec,
+    );
+  }
 }
 
 export function updateLiquidityFields(
