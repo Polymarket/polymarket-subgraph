@@ -1,14 +1,22 @@
-import { BigInt, Address, BigDecimal } from '@graphprotocol/graph-ts'
-import { FixedProductMarketMaker } from "../../generated/schema";
-import { ERC20Detailed } from "../../generated/templates/ERC20Detailed/ERC20Detailed"
-import { timestampToDay, joinDayAndVolume, joinDayAndScaledVolume } from './day-volume-utils';
-import { bigOne, bigZero } from './constants';
+/* eslint-disable no-param-reassign */
+import { BigInt, BigDecimal } from '@graphprotocol/graph-ts';
+import { FixedProductMarketMaker, FpmmPoolMembership } from '../types/schema';
+import { timestampToDay } from './time';
+import { bigOne, bigZero, TRADE_TYPE_BUY, TRADE_TYPE_SELL } from './constants';
 
-export function getCollateralScale(collateralTokenAddress: Address): BigInt {
-  let collateralToken = ERC20Detailed.bind(collateralTokenAddress);
-  let result = collateralToken.try_decimals();
-
-  return result.reverted ? bigOne : BigInt.fromI32(10).pow(<u8>result.value);
+export function loadPoolMembership(
+  fpmmAddress: string,
+  userAddress: string,
+): FpmmPoolMembership {
+  let poolMembershipId = fpmmAddress.concat(userAddress);
+  let poolMembership = FpmmPoolMembership.load(poolMembershipId);
+  if (poolMembership == null) {
+    poolMembership = new FpmmPoolMembership(poolMembershipId);
+    poolMembership.pool = fpmmAddress;
+    poolMembership.funder = userAddress;
+    poolMembership.amount = bigZero;
+  }
+  return poolMembership as FpmmPoolMembership;
 }
 
 /**
@@ -20,65 +28,58 @@ export function calculatePrices(outcomeTokenAmounts: BigInt[]): BigDecimal[] {
 
   let totalTokensBalance = bigZero;
   let product = bigOne;
-  for(let i = 0; i < outcomeTokenAmounts.length; i++) {
+  for (let i = 0; i < outcomeTokenAmounts.length; i += 1) {
     totalTokensBalance = totalTokensBalance.plus(outcomeTokenAmounts[i]);
     product = product.times(outcomeTokenAmounts[i]);
   }
 
   // If there are no tokens in the market maker then return a zero price for everything
   if (totalTokensBalance.equals(bigZero)) {
-    return outcomePrices
+    return outcomePrices;
   }
 
   let denominator = bigZero;
-  for(let i = 0; i < outcomeTokenAmounts.length; i++) {
+  for (let i = 0; i < outcomeTokenAmounts.length; i += 1) {
     denominator = denominator.plus(product.div(outcomeTokenAmounts[i]));
   }
 
-  for(let i = 0; i < outcomeTokenAmounts.length; i++) {
-    outcomePrices[i] = product.divDecimal(outcomeTokenAmounts[i].toBigDecimal()).div(denominator.toBigDecimal());
+  for (let i = 0; i < outcomeTokenAmounts.length; i += 1) {
+    outcomePrices[i] = product
+      .divDecimal(outcomeTokenAmounts[i].toBigDecimal())
+      .div(denominator.toBigDecimal());
   }
-  return outcomePrices
+  return outcomePrices;
 }
 
-export function updateVolumes (
+export function updateVolumes(
   fpmm: FixedProductMarketMaker,
   timestamp: BigInt,
   tradeSize: BigInt,
-  collateralScale: BigInt,
-  collateralScaleDec: BigDecimal
+  collateralScaleDec: BigDecimal,
+  tradeType: string,
 ): void {
-  
   let currentDay = timestampToDay(timestamp);
 
   if (fpmm.lastActiveDay.notEqual(currentDay)) {
     fpmm.lastActiveDay = currentDay;
-    fpmm.collateralVolumeBeforeLastActiveDay = fpmm.collateralVolume;
   }
 
   fpmm.collateralVolume = fpmm.collateralVolume.plus(tradeSize);
-  fpmm.runningDailyVolume = fpmm.collateralVolume.minus(fpmm.collateralVolumeBeforeLastActiveDay);
-  fpmm.lastActiveDayAndRunningDailyVolume = joinDayAndVolume(currentDay, fpmm.runningDailyVolume);
-
-  updateScaledVolumes(fpmm as FixedProductMarketMaker, collateralScale, collateralScaleDec, currentDay);  
-}
-
-// We export updatedScaledVolumes so that it can be used in the FPMMDeterministicFactoryMapping to initialise the values
-// On any further updates we allow use updateVolumes which will automatically call this.
-export function updateScaledVolumes(
-  fpmm: FixedProductMarketMaker,
-  collateralScale: BigInt,
-  collateralScaleDec: BigDecimal,
-  currentDay: BigInt,
-): void {
-  fpmm.scaledCollateralVolume = fpmm.collateralVolume.divDecimal(collateralScaleDec);
-  fpmm.scaledRunningDailyVolume = fpmm.runningDailyVolume.divDecimal(collateralScaleDec);
-  
-  fpmm.lastActiveDayAndScaledRunningDailyVolume = joinDayAndScaledVolume(
-    currentDay,
-    fpmm.runningDailyVolume,
-    collateralScale
+  fpmm.scaledCollateralVolume = fpmm.collateralVolume.divDecimal(
+    collateralScaleDec,
   );
+
+  if (tradeType == TRADE_TYPE_BUY) {
+    fpmm.collateralBuyVolume = fpmm.collateralBuyVolume.plus(tradeSize);
+    fpmm.scaledCollateralBuyVolume = fpmm.collateralBuyVolume.divDecimal(
+      collateralScaleDec,
+    );
+  } else if (tradeType == TRADE_TYPE_SELL) {
+    fpmm.collateralSellVolume = fpmm.collateralSellVolume.plus(tradeSize);
+    fpmm.scaledCollateralSellVolume = fpmm.collateralSellVolume.divDecimal(
+      collateralScaleDec,
+    );
+  }
 }
 
 export function updateLiquidityFields(
@@ -87,14 +88,16 @@ export function updateLiquidityFields(
   collateralScale: BigDecimal,
 ): void {
   fpmm.liquidityParameter = liquidityParameter;
-  fpmm.scaledLiquidityParameter = liquidityParameter.divDecimal(collateralScale);
+  fpmm.scaledLiquidityParameter = liquidityParameter.divDecimal(
+    collateralScale,
+  );
 }
 
 export function updateFeeFields(
   fpmm: FixedProductMarketMaker,
   feeAmount: BigInt,
-  collateralScale: BigDecimal,
+  collateralScaleDec: BigDecimal,
 ): void {
   fpmm.feeVolume = fpmm.feeVolume.plus(feeAmount);
-  fpmm.scaledFeeVolume = fpmm.feeVolume.divDecimal(collateralScale);
+  fpmm.scaledFeeVolume = fpmm.feeVolume.divDecimal(collateralScaleDec);
 }

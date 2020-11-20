@@ -1,4 +1,5 @@
-import { log } from '@graphprotocol/graph-ts'
+/* eslint-disable no-bitwise */
+import { log } from '@graphprotocol/graph-ts';
 
 enum UnescapeState {
   Normal,
@@ -11,16 +12,15 @@ enum UnescapeState {
 
 export function unescape(input: string): string {
   let output = '';
-  let i = 0;
   let state = UnescapeState.Normal;
   let escapedCodeUnitBuffer = 0;
-  for (let i = 0; i < input.length; i++) {
+  for (let i = 0; i < input.length; i += 1) {
     let codeUnit = input.charCodeAt(i);
 
     if (state == UnescapeState.Normal) {
       if (codeUnit == 0x5c) {
         // \
-        state = UnescapeState.Escaped
+        state = UnescapeState.Escaped;
       } else {
         output += String.fromCharCode(codeUnit);
       }
@@ -44,19 +44,14 @@ export function unescape(input: string): string {
         } else if (codeUnit == 0x74) {
           // %x74 /          ; t    tab             U+0009
           output += '\t';
-        } else if (
-          codeUnit == 0x22 ||
-          codeUnit == 0x5c || 
-          codeUnit == 0x2f
-        ) {
+        } else if (codeUnit == 0x22 || codeUnit == 0x5c || codeUnit == 0x2f) {
           output += String.fromCharCode(codeUnit);
         } else {
           let badEscCode = String.fromCharCode(codeUnit);
-          log.warning('got invalid escape code \\{} in position {} while unescaping "{}"', [
-            badEscCode,
-            i.toString(),
-            input,
-          ]);
+          log.warning(
+            'got invalid escape code \\{} in position {} while unescaping "{}"',
+            [badEscCode, i.toString(), input],
+          );
           output += '�';
         }
         state = UnescapeState.Normal;
@@ -76,30 +71,27 @@ export function unescape(input: string): string {
       } else {
         nibble = -1;
       }
-      
+
       if (nibble < 0) {
-        log.warning('got invalid hex character {} in position {} while unescaping "{}"', [
-          String.fromCharCode(codeUnit),
-          i.toString(),
-          input,
-        ]);
+        log.warning(
+          'got invalid hex character {} in position {} while unescaping "{}"',
+          [String.fromCharCode(codeUnit), i.toString(), input],
+        );
         output += '�';
         state = UnescapeState.Normal;
-      } else {
-        if (state == UnescapeState.ReadingHex1) {
-          escapedCodeUnitBuffer |= nibble << 12;
-          state = UnescapeState.ReadingHex2;
-        } else if (state == UnescapeState.ReadingHex2) {
-          escapedCodeUnitBuffer |= nibble << 8;
-          state = UnescapeState.ReadingHex3;
-        } else if (state == UnescapeState.ReadingHex3) {
-          escapedCodeUnitBuffer |= nibble << 4;
-          state = UnescapeState.ReadingHex4;
-        } else if (state == UnescapeState.ReadingHex4) {
-          output += String.fromCharCode(escapedCodeUnitBuffer | nibble);
-          escapedCodeUnitBuffer = 0;
-          state = UnescapeState.Normal;
-        }
+      } else if (state == UnescapeState.ReadingHex1) {
+        escapedCodeUnitBuffer |= nibble << 12;
+        state = UnescapeState.ReadingHex2;
+      } else if (state == UnescapeState.ReadingHex2) {
+        escapedCodeUnitBuffer |= nibble << 8;
+        state = UnescapeState.ReadingHex3;
+      } else if (state == UnescapeState.ReadingHex3) {
+        escapedCodeUnitBuffer |= nibble << 4;
+        state = UnescapeState.ReadingHex4;
+      } else if (state == UnescapeState.ReadingHex4) {
+        output += String.fromCharCode(escapedCodeUnitBuffer | nibble);
+        escapedCodeUnitBuffer = 0;
+        state = UnescapeState.Normal;
       }
     }
   }

@@ -1,42 +1,91 @@
 # Generic
 
 type Global @entity {
-  # ID is empty string, this is a singleton
+  "ID is empty string, this is a singleton"
   id: ID!
   numConditions: Int!
   numOpenConditions: Int!
   numClosedConditions: Int!
+
+  "Number of unique traders interacting with Polymarket"
+  numTraders: BigInt!
+
+ "Number of trades of any kind for all market makers"
+  tradesQuantity: BigInt!
+  "Number of purchases of shares from any market maker"
+  buysQuantity: BigInt!
+  "Number of sales of shares to any market maker"
+  sellsQuantity: BigInt!
+
+  "Global volume in USDC base units"
+  collateralVolume: BigInt!
+  "Global volume in USDC scaled by 10^6"
+  scaledCollateralVolume: BigDecimal!
+  "Global fees in USDC base units"
+  collateralFees: BigInt!
+  "Global fees in USDC scaled by 10^6"
+  scaledCollateralFees: BigDecimal!
+
+  "Global volume of share purchases in USDC base units"
+  collateralBuyVolume: BigInt!
+  "Global volume of share purchases in USDC scaled by 10^6"
+  scaledCollateralBuyVolume: BigDecimal!
+  "Global volume of share sales in USDC base units"
+  collateralSellVolume: BigInt!
+  "Global volume of share sales in USDC scaled by 10^6"
+  scaledCollateralSellVolume: BigDecimal!
 }
 
 type Account @entity {
+  "User address"
   id: ID!
-  # Which markets has user provided liquidity to
+  "Total volume of this user's trades in USDC base units"
+  collateralVolume: BigInt!
+  "Total volume of this user's trades in USDC scaled by 10^6"
+  scaledCollateralVolume: BigDecimal!
+  "Timestamp of last Buy or Sell transaction"
+  lastTradedTimestamp: BigInt!
+  "Markets in which user has provided liquidity"
   fpmmPoolMemberships: [FpmmPoolMembership!] @derivedFrom(field: "funder")
-  # Which markets has user bought shares in
-  fpmmParticipations: [FpmmParticipation!] @derivedFrom(field: "participant")
+  "Markets in which the user has taken a position on the outcome"
   marketPositions: [MarketPosition!] @derivedFrom(field: "user")
+  "Purchases and sales of shares by the user"
   transactions: [Transaction!] @derivedFrom(field: "user")
+  "Redemption of underlying collateral after a market has resolved"
   redemptions: [Redemption!] @derivedFrom(field: "redeemer")
+}
+
+type Collateral @entity {
+  "Token address"
+  id: ID!
+  name: String!
+  symbol: String!
+  decimals: Int!
 }
 
 # Conditional Tokens
 
 type Condition @entity {
   id: ID!
+  "Address which can resolve this condition"
   oracle: Bytes!
   questionId: Bytes!
   outcomeSlotCount: Int!
   resolutionTimestamp: BigInt
+  "Fraction of collateral assigned to each outcome"
   payouts: [BigDecimal!]
   payoutNumerators: [BigInt!]
   payoutDenominator: BigInt
+  "Market makers which are trading on this condition"
   fixedProductMarketMakers: [FixedProductMarketMaker!]!
 }
 
 type Split @entity {
+  "Transaction Hash"
   id: ID!
+  "Address which is performing this split"
   stakeholder: Account!
-  collateralToken: Bytes!
+  collateralToken: Collateral!
   parentCollectionId: Bytes!
   condition: Condition!
   partition: [BigInt!]!
@@ -44,9 +93,11 @@ type Split @entity {
 }
 
 type Merge @entity {
+  "Transaction Hash"
   id: ID!
+  "Address which is performing this merge"
   stakeholder: Account!
-  collateralToken: Bytes!
+  collateralToken: Collateral!
   parentCollectionId: Bytes!
   condition: Condition!
   partition: [BigInt!]!
@@ -54,11 +105,14 @@ type Merge @entity {
 }
 
 type Redemption @entity {
+  "Transaction Hash"
   id: ID!
+  "Address which is redeeming these outcomes"
   redeemer: Account!
-  collateralToken: Bytes!
+  collateralToken: Collateral!
   parentCollectionId: Bytes!
   condition: Condition!
+  "Outcomes which are being redeemed"
   indexSets: [BigInt!]!
   payout: BigInt!
 }
@@ -66,56 +120,96 @@ type Redemption @entity {
 # Market Makers
 
 type FixedProductMarketMaker @entity {
+  "Market maker address"
   id: ID!
 
+  "Address which deployed this market"
   creator: Bytes!
+  "Time at which this market was deployed"
   creationTimestamp: BigInt!
 
-  collateralToken: Bytes!
+  "Token which is colleralising this market"
+  collateralToken: Collateral!
+  "Conditions which this market is trading against"
   conditions: [Condition!] @derivedFrom(field: "fixedProductMarketMakers")
+  "Percentage fee of trades taken by market maker. A 2% fee is represented as 2*10^16"
   fee: BigInt!
 
+  "Number of trades of any kind against this market maker"
+  tradesQuantity: BigInt!
+  "Number of purchases of shares from this market maker"
+  buysQuantity: BigInt!
+  "Number of sales of shares to this market maker"
+  sellsQuantity: BigInt!
+  "Number of times liquidity has been added to this market maker"
+  liquidityAddQuantity: BigInt!
+  "Number of times liquidity has been removed from this market maker"
+  liquidityRemoveQuantity: BigInt!
+
+  "Market volume in terms of the underlying collateral value"
   collateralVolume: BigInt!
+  "Volume scaled by the number of decimals of collateralToken"
   scaledCollateralVolume: BigDecimal!
+  "Global volume of share purchases in USDC base units"
+  collateralBuyVolume: BigInt!
+  "Global volume of share purchases in USDC scaled by 10^6"
+  scaledCollateralBuyVolume: BigDecimal!
+  "Global volume of share sales in USDC base units"
+  collateralSellVolume: BigInt!
+  "Global volume of share sales in USDC scaled by 10^6"
+  scaledCollateralSellVolume: BigDecimal!
+  "Fees collected in terms of the underlying collateral value"
   feeVolume: BigInt!
+  "Fees scaled by the number of decimals of collateralToken"
   scaledFeeVolume: BigDecimal!
-  outcomeTokenAmounts: [BigInt!]!
-  outcomeTokenPrices: [BigDecimal!]!
-  outcomeSlotCount: Int
+
+  "Constant product parameter k"
   liquidityParameter: BigInt!
   scaledLiquidityParameter: BigDecimal!
 
+  "Balances of each outcome token held by the market maker"
+  outcomeTokenAmounts: [BigInt!]!
+  "Prices at which market maker values each outcome token"
+  outcomeTokenPrices: [BigDecimal!]!
+  "Number of outcomes which this market maker is trading"
+  outcomeSlotCount: Int
+
+  "Timestamp of last day during which someone made a trade"
   lastActiveDay: BigInt!
-  runningDailyVolume: BigInt!
-  scaledRunningDailyVolume: BigDecimal!
-  lastActiveDayAndRunningDailyVolume: BigInt!
-  lastActiveDayAndScaledRunningDailyVolume: BigInt!
 
-  collateralVolumeBeforeLastActiveDay: BigInt!
-
+  "Number of shares for tokens in the market maker's reserves"
   totalSupply: BigInt!
 
+  "Addresses which are supplying liquidity to the market maker"
   poolMembers: [FpmmPoolMembership!] @derivedFrom(field: "pool")
-  participants: [FpmmParticipation!] @derivedFrom(field: "fpmm")
 }
 
 type MarketPosition @entity {
   id: ID!
+  "Market on which this position is on"
   market: FixedProductMarketMaker!
+  "Address which holds this position"
   user: Account!
+  "The outcome which this position is supporting"
   outcomeIndex: BigInt!
-  # number of outcome shares that the user has bought and sold.
+  "Number of outcome shares that the user has ever bought"
   quantityBought: BigInt!
+  "Number of outcome shares that the user has ever sold"
   quantitySold: BigInt!
+  "Number of outcome shares that the user current has"
   netQuantity: BigInt!
-  # total value paid by the user to enter this position.
-  # if valueSold > valueBought then the user has cashed out at a profit.
+  "Total value of outcome shares that the user has bought"
   valueBought: BigInt!
+  "Total value of outcome shares that the user has sold"
   valueSold: BigInt!
+  "Total value paid by the user to enter this position"
   netValue: BigInt!
 }
 
+# Market Actions
+
 type FpmmFundingAddition @entity {
+  "Transaction Hash"
   id: ID!
   timestamp: BigInt!
   fpmm: FixedProductMarketMaker!
@@ -126,6 +220,7 @@ type FpmmFundingAddition @entity {
 }
 
 type FpmmFundingRemoval @entity {
+  "Transaction Hash"
   id: ID!
   timestamp: BigInt!
   fpmm: FixedProductMarketMaker!
@@ -135,9 +230,15 @@ type FpmmFundingRemoval @entity {
   sharesBurnt: BigInt!
 }
 
+enum TradeType {
+  Buy
+  Sell
+}
+
 type Transaction @entity {
+  "Transaction Hash"
   id: ID!
-  type: String!
+  type: TradeType!
   timestamp: BigInt!
   market: FixedProductMarketMaker!
   user: Account!
@@ -152,10 +253,4 @@ type FpmmPoolMembership @entity {
   pool: FixedProductMarketMaker!
   funder: Account!
   amount: BigInt!
-}
-
-type FpmmParticipation @entity {
-  id: ID!
-  fpmm: FixedProductMarketMaker!
-  participant: Account!
 }
