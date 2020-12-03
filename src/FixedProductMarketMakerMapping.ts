@@ -344,8 +344,8 @@ export function handlePoolShareTransfer(event: Transfer): void {
   let toAddress = event.params.to.toHexString();
   let sharesAmount = event.params.value;
 
-  requireAccount(fromAddress);
-  requireAccount(toAddress);
+  requireAccount(fromAddress, event.block.timestamp);
+  requireAccount(toAddress, event.block.timestamp);
 
   if (fromAddress != AddressZero) {
     let fromMembership = loadPoolMembership(fpmmAddress, fromAddress);

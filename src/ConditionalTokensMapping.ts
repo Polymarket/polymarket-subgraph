@@ -34,7 +34,7 @@ export function handlePositionSplit(event: PositionSplit): void {
   }
 
   getCollateralDetails(event.params.collateralToken);
-  requireAccount(event.params.stakeholder.toHexString());
+  requireAccount(event.params.stakeholder.toHexString(), event.block.timestamp);
 
   let split = new Split(event.transaction.hash.toHexString());
   split.stakeholder = event.params.stakeholder.toHexString();
@@ -71,7 +71,7 @@ export function handlePositionsMerge(event: PositionsMerge): void {
     // We don't track merges within the market makers
     return;
   }
-  requireAccount(event.params.stakeholder.toHexString());
+  requireAccount(event.params.stakeholder.toHexString(), event.block.timestamp);
 
   let merge = new Merge(event.transaction.hash.toHexString());
   merge.stakeholder = event.params.stakeholder.toHexString();
@@ -102,7 +102,7 @@ export function handlePositionsMerge(event: PositionsMerge): void {
 }
 
 export function handlePayoutRedemption(event: PayoutRedemption): void {
-  requireAccount(event.params.redeemer.toHexString());
+  requireAccount(event.params.redeemer.toHexString(), event.block.timestamp);
 
   let redemption = new Redemption(event.transaction.hash.toHexString());
   redemption.redeemer = event.params.redeemer.toHexString();

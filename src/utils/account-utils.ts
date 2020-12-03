@@ -5,13 +5,17 @@ import { Account } from '../types/schema';
 import { bigZero } from './constants';
 import { countNewTrader } from './global-utils';
 
-export function requireAccount(accountAddress: string): Account {
+export function requireAccount(
+  accountAddress: string,
+  timestamp: BigInt,
+): Account {
   let account = Account.load(accountAddress);
   if (account == null) {
     account = new Account(accountAddress);
     account.collateralVolume = bigZero;
     account.scaledCollateralVolume = bigZero.toBigDecimal();
     account.lastTradedTimestamp = bigZero;
+    account.creationTimestamp = timestamp;
     countNewTrader();
     account.save();
   }
@@ -24,7 +28,7 @@ export function updateUserVolume(
   collateralScaleDec: BigDecimal,
   timestamp: BigInt,
 ): void {
-  let account = requireAccount(accountAddress);
+  let account = requireAccount(accountAddress, timestamp);
   account.collateralVolume = account.collateralVolume.plus(tradeAmount);
   account.scaledCollateralVolume = account.collateralVolume.divDecimal(
     collateralScaleDec,

@@ -39,6 +39,8 @@ type Global @entity {
 type Account @entity {
   "User address"
   id: ID!
+  "Timestamp at which account first interacted with Polymarket"
+  creationTimestamp: BigInt!
   "Total volume of this user's trades in USDC base units"
   collateralVolume: BigInt!
   "Total volume of this user's trades in USDC scaled by 10^6"
