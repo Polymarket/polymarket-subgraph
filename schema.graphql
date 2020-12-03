@@ -51,6 +51,10 @@ type Account @entity {
   marketPositions: [MarketPosition!] @derivedFrom(field: "user")
   "Purchases and sales of shares by the user"
   transactions: [Transaction!] @derivedFrom(field: "user")
+  "Split of collateral / outcome tokens into multiple positions"
+  splits: [Split!] @derivedFrom(field: "stakeholder")
+  "Merge of more specific outcome tokens into collateral / more general outcome tokens"
+  merges: [Merge!] @derivedFrom(field: "stakeholder")
   "Redemption of underlying collateral after a market has resolved"
   redemptions: [Redemption!] @derivedFrom(field: "redeemer")
 }
