@@ -69,8 +69,11 @@ type Condition @entity {
   id: ID!
   "Address which can resolve this condition"
   oracle: Bytes!
+  "Question ID which corresponds to this condition"
   questionId: Bytes!
+  "Number of possible outcomes for this condition"
   outcomeSlotCount: Int!
+  "Timestamp at which this condition was resolved"
   resolutionTimestamp: BigInt
   "Fraction of collateral assigned to each outcome"
   payouts: [BigDecimal!]
@@ -85,10 +88,13 @@ type Split @entity {
   id: ID!
   "Address which is performing this split"
   stakeholder: Account!
+  "Token which is collateralising positions being split"
   collateralToken: Collateral!
   parentCollectionId: Bytes!
+  "Condition on which split is occuring"
   condition: Condition!
   partition: [BigInt!]!
+  "The amount of collateral/outcome tokens being split"
   amount: BigInt!
 }
 
@@ -97,10 +103,13 @@ type Merge @entity {
   id: ID!
   "Address which is performing this merge"
   stakeholder: Account!
+  "Token which is collateralising positions being merged"
   collateralToken: Collateral!
   parentCollectionId: Bytes!
+  "Condition on which merge is occuring"
   condition: Condition!
   partition: [BigInt!]!
+  "The amount of outcome tokens being merged"
   amount: BigInt!
 }
 
@@ -109,11 +118,14 @@ type Redemption @entity {
   id: ID!
   "Address which is redeeming these outcomes"
   redeemer: Account!
+  "Token which is being claimed in return for outcome tokens"
   collateralToken: Collateral!
   parentCollectionId: Bytes!
+  "Condition on which redemption is occuring"
   condition: Condition!
   "Outcomes which are being redeemed"
   indexSets: [BigInt!]!
+  "The amount of collateral being claimed"
   payout: BigInt!
 }
 
@@ -211,22 +223,33 @@ type MarketPosition @entity {
 type FpmmFundingAddition @entity {
   "Transaction Hash"
   id: ID!
+  "Timestamp at which funding addition occurred"
   timestamp: BigInt!
+  "FPMM to which funding is being added"
   fpmm: FixedProductMarketMaker!
+  "Account adding funding"
   funder: Account!
+  "Outcome tokens amounts added to FPMM"
   amountsAdded: [BigInt!]!
+  "Outcome tokens amounts refunded to funder"
   amountsRefunded: [BigInt!]!
+  "Liquidity shares minted to funder"
   sharesMinted: BigInt!
 }
 
 type FpmmFundingRemoval @entity {
   "Transaction Hash"
   id: ID!
+  "Timestamp at which funding removal occurred"
   timestamp: BigInt!
+  "FPMM to which funding is being removed"
   fpmm: FixedProductMarketMaker!
+  "Account removing funding"
   funder: Account!
+  "Outcome tokens amounts removed from FPMM"
   amountsRemoved: [BigInt!]!
   collateralRemoved: BigInt!
+  "Liquidity shares burned by funder"
   sharesBurnt: BigInt!
 }
 
@@ -238,19 +261,31 @@ enum TradeType {
 type Transaction @entity {
   "Transaction Hash"
   id: ID!
+  "Buy or Sell transaction"
   type: TradeType!
+  "Timestamp at which transaction occurred"
   timestamp: BigInt!
+  "Market which transaction is interacting with"
   market: FixedProductMarketMaker!
+  "Account performing transaction"
   user: Account!
+  "Amount of collateral in trade"
   tradeAmount: BigInt!
+  "Amount of collateral paid in fees"
   feeAmount: BigInt!
+  "Index of outcome token being bought or sold"
   outcomeIndex: BigInt!
+  "Amount of outcome tokens being bought or sold"
   outcomeTokensAmount: BigInt!
 }
 
 type FpmmPoolMembership @entity {
+  "funder address + pool address"
   id: ID!
+  "Market to which funder is providing funding"
   pool: FixedProductMarketMaker!
+  "Account which is providing funding"
   funder: Account!
+  "Amount of liquidity tokens owned by funder"
   amount: BigInt!
 }
