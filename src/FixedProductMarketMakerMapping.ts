@@ -36,7 +36,11 @@ import {
 import { getCollateralScale } from './utils/collateralTokens';
 import { updateGlobalVolume } from './utils/global-utils';
 import { max } from './utils/maths';
-import { requireAccount, updateUserVolume } from './utils/account-utils';
+import {
+  markAccountAsSeen,
+  requireAccount,
+  updateUserVolume,
+} from './utils/account-utils';
 
 function recordBuy(event: FPMMBuy): void {
   let buy = new Transaction(event.transaction.hash.toHexString());
@@ -147,6 +151,7 @@ export function handleFundingAdded(event: FPMMFundingAdded): void {
 
   fpmm.liquidityAddQuantity = fpmm.liquidityAddQuantity.plus(bigOne);
   fpmm.save();
+  markAccountAsSeen(event.params.funder.toHexString(), event.block.timestamp);
   recordFundingAddition(event);
   updateMarketPositionFromLiquidityAdded(event);
 }
@@ -188,6 +193,7 @@ export function handleFundingRemoved(event: FPMMFundingRemoved): void {
 
   fpmm.liquidityRemoveQuantity = fpmm.liquidityRemoveQuantity.plus(bigOne);
   fpmm.save();
+  markAccountAsSeen(event.params.funder.toHexString(), event.block.timestamp);
   recordFundingRemoval(event);
   updateMarketPositionFromLiquidityRemoved(event);
 }
@@ -255,6 +261,7 @@ export function handleBuy(event: FPMMBuy): void {
     collateralScaleDec,
     event.block.timestamp,
   );
+  markAccountAsSeen(event.params.buyer.toHexString(), event.block.timestamp);
   recordBuy(event);
   updateGlobalVolume(
     event.params.investmentAmount,
@@ -328,6 +335,7 @@ export function handleSell(event: FPMMSell): void {
     collateralScaleDec,
     event.block.timestamp,
   );
+  markAccountAsSeen(event.params.seller.toHexString(), event.block.timestamp);
   recordSell(event);
   updateGlobalVolume(
     event.params.returnAmount,

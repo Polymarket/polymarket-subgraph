@@ -23,7 +23,7 @@ import {
 import { partitionCheck } from './utils/conditional-utils';
 import { bigZero } from './utils/constants';
 import { getCollateralDetails } from './utils/collateralTokens';
-import { requireAccount } from './utils/account-utils';
+import { markAccountAsSeen, requireAccount } from './utils/account-utils';
 
 export function handlePositionSplit(event: PositionSplit): void {
   if (
@@ -35,6 +35,10 @@ export function handlePositionSplit(event: PositionSplit): void {
 
   getCollateralDetails(event.params.collateralToken);
   requireAccount(event.params.stakeholder.toHexString(), event.block.timestamp);
+  markAccountAsSeen(
+    event.params.stakeholder.toHexString(),
+    event.block.timestamp,
+  );
 
   let split = new Split(event.transaction.hash.toHexString());
   split.stakeholder = event.params.stakeholder.toHexString();
@@ -72,6 +76,10 @@ export function handlePositionsMerge(event: PositionsMerge): void {
     return;
   }
   requireAccount(event.params.stakeholder.toHexString(), event.block.timestamp);
+  markAccountAsSeen(
+    event.params.stakeholder.toHexString(),
+    event.block.timestamp,
+  );
 
   let merge = new Merge(event.transaction.hash.toHexString());
   merge.stakeholder = event.params.stakeholder.toHexString();
@@ -103,6 +111,7 @@ export function handlePositionsMerge(event: PositionsMerge): void {
 
 export function handlePayoutRedemption(event: PayoutRedemption): void {
   requireAccount(event.params.redeemer.toHexString(), event.block.timestamp);
+  markAccountAsSeen(event.params.redeemer.toHexString(), event.block.timestamp);
 
   let redemption = new Redemption(event.transaction.hash.toHexString());
   redemption.redeemer = event.params.redeemer.toHexString();
