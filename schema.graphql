@@ -147,6 +147,8 @@ type FixedProductMarketMaker @entity {
   creator: Bytes!
   "Time at which this market was deployed"
   creationTimestamp: BigInt!
+  "Hash of deployment transactions"
+  creationTransactionHash: Bytes!
 
   "Token which is colleralising this market"
   collateralToken: Collateral!
