@@ -41,6 +41,7 @@ export function handlePositionSplit(event: PositionSplit): void {
   );
 
   let split = new Split(event.transaction.hash.toHexString());
+  split.timestamp = event.block.timestamp;
   split.stakeholder = event.params.stakeholder.toHexString();
   split.collateralToken = event.params.collateralToken.toHexString();
   split.parentCollectionId = event.params.parentCollectionId;
@@ -82,6 +83,7 @@ export function handlePositionsMerge(event: PositionsMerge): void {
   );
 
   let merge = new Merge(event.transaction.hash.toHexString());
+  merge.timestamp = event.block.timestamp;
   merge.stakeholder = event.params.stakeholder.toHexString();
   merge.collateralToken = event.params.collateralToken.toHexString();
   merge.parentCollectionId = event.params.parentCollectionId;

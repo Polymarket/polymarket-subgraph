@@ -94,6 +94,8 @@ type Condition @entity {
 type Split @entity {
   "Transaction Hash"
   id: ID!
+  "Timestamp at which split occurred"
+  timestamp: BigInt!
   "Address which is performing this split"
   stakeholder: Account!
   "Token which is collateralising positions being split"
@@ -109,6 +111,8 @@ type Split @entity {
 type Merge @entity {
   "Transaction Hash"
   id: ID!
+  "Timestamp at which merge occurred"
+  timestamp: BigInt!
   "Address which is performing this merge"
   stakeholder: Account!
   "Token which is collateralising positions being merged"
