@@ -128,6 +128,8 @@ type Merge @entity {
 type Redemption @entity {
   "Transaction Hash"
   id: ID!
+  "Timestamp at which redemption occurred"
+  timestamp: BigInt!
   "Address which is redeeming these outcomes"
   redeemer: Account!
   "Token which is being claimed in return for outcome tokens"

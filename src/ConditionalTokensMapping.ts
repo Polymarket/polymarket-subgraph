@@ -116,6 +116,7 @@ export function handlePayoutRedemption(event: PayoutRedemption): void {
   markAccountAsSeen(event.params.redeemer.toHexString(), event.block.timestamp);
 
   let redemption = new Redemption(event.transaction.hash.toHexString());
+  redemption.timestamp = event.block.timestamp;
   redemption.redeemer = event.params.redeemer.toHexString();
   redemption.collateralToken = event.params.collateralToken.toHexString();
   redemption.parentCollectionId = event.params.parentCollectionId;
