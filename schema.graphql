@@ -232,6 +232,8 @@ type MarketPosition @entity {
   valueSold: BigInt!
   "Total value paid by the user to enter this position"
   netValue: BigInt!
+  "Total amount of fees paid by user in relation to this position"
+  feesPaid: BigInt!
 }
 
 # Market Actions

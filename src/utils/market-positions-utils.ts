@@ -40,6 +40,7 @@ export function getMarketPosition(
     position.valueBought = bigZero;
     position.valueSold = bigZero;
     position.netValue = bigZero;
+    position.feesPaid = bigZero;
   }
   return position as MarketPosition;
 }
@@ -78,16 +79,32 @@ export function updateMarketPositionFromTrade(event: ethereum.Event): void {
     transaction.outcomeIndex,
   );
 
+  let fee = (FixedProductMarketMaker.load(
+    transaction.market,
+  ) as FixedProductMarketMaker).fee;
+
   if (transaction.type == 'Buy') {
     position.quantityBought = position.quantityBought.plus(
       transaction.outcomeTokensAmount,
     );
     position.valueBought = position.valueBought.plus(transaction.tradeAmount);
+
+    // feeAmount = investmentAmount * fee
+    let feeAmount = transaction.tradeAmount
+      .times(fee)
+      .div(BigInt.fromI32(10).pow(18));
+    position.feesPaid = position.feesPaid.plus(feeAmount);
   } else {
     position.quantitySold = position.quantitySold.plus(
       transaction.outcomeTokensAmount,
     );
     position.valueSold = position.valueSold.plus(transaction.tradeAmount);
+
+    // feeAmount = returnAmount * (fee/(1-fee));
+    let feeAmount = transaction.tradeAmount
+      .times(fee)
+      .div(BigInt.fromI32(10).pow(18).minus(fee));
+    position.feesPaid = position.feesPaid.plus(feeAmount);
   }
 
   updateNetPositionAndSave(position);
