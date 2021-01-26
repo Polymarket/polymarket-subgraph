@@ -244,19 +244,6 @@ export function updateMarketPositionFromLiquidityAdded(
   // therefore this is the amount of collateral that the user has split.
   let addedFunds = max(amountsAdded);
 
-  // Calculate the full number of outcome tokens which are refunded to the funder address
-  let totalRefundedOutcomeTokens = bigZero;
-  for (
-    let outcomeIndex = 0;
-    outcomeIndex < amountsAdded.length;
-    outcomeIndex += 1
-  ) {
-    let refundedAmount = addedFunds.minus(amountsAdded[outcomeIndex]);
-    totalRefundedOutcomeTokens = totalRefundedOutcomeTokens.plus(
-      refundedAmount,
-    );
-  }
-
   let outcomeTokenPrices = (FixedProductMarketMaker.load(
     fpmmAddress,
   ) as FixedProductMarketMaker).outcomeTokenPrices;
