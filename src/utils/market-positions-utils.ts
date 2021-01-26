@@ -306,14 +306,11 @@ export function updateMarketPositionFromLiquidityRemoved(
       fpmmAddress,
       BigInt.fromI32(outcomeIndex),
     );
-    position.quantityBought = position.quantityBought.plus(
-      amountsRemoved[outcomeIndex],
-    );
 
-    let removedValue = timesBD(
-      amountsRemoved[outcomeIndex],
-      outcomeTokenPrices[outcomeIndex],
-    );
+    let amountRemoved = amountsRemoved[outcomeIndex];
+    position.quantityBought = position.quantityBought.plus(amountRemoved);
+
+    let removedValue = timesBD(amountRemoved, outcomeTokenPrices[outcomeIndex]);
     position.valueBought = position.valueBought.plus(removedValue);
 
     updateNetPositionAndSave(position);
