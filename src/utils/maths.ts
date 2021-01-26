@@ -1,4 +1,4 @@
-import { BigInt } from '@graphprotocol/graph-ts';
+import { BigDecimal, BigInt } from '@graphprotocol/graph-ts';
 import { bigOne, bigZero } from './constants';
 
 export function max(array: BigInt[]): BigInt {
