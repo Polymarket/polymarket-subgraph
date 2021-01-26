@@ -16,7 +16,7 @@ import {
   FPMMFundingRemoved,
 } from '../types/templates/FixedProductMarketMaker/FixedProductMarketMaker';
 import { bigZero } from './constants';
-import { max } from './maths';
+import { max, timesBD } from './maths';
 
 /*
  * Returns the user's position for the given market and outcome
@@ -268,10 +268,10 @@ export function updateMarketPositionFromLiquidityAdded(
 
       position.quantityBought = position.quantityBought.plus(refundedAmount);
 
-      let refundValue = refundedAmount
-        .toBigDecimal()
-        .times(outcomeTokenPrices[outcomeIndex])
-        .truncate(0).digits;
+      let refundValue = timesBD(
+        refundedAmount,
+        outcomeTokenPrices[outcomeIndex],
+      );
       position.valueBought = position.valueBought.plus(refundValue);
 
       updateNetPositionAndSave(position);
@@ -306,10 +306,10 @@ export function updateMarketPositionFromLiquidityRemoved(
       amountsRemoved[outcomeIndex],
     );
 
-    let removedValue = amountsRemoved[outcomeIndex]
-      .toBigDecimal()
-      .times(outcomeTokenPrices[outcomeIndex])
-      .truncate(0).digits;
+    let removedValue = timesBD(
+      amountsRemoved[outcomeIndex],
+      outcomeTokenPrices[outcomeIndex],
+    );
     position.valueBought = position.valueBought.plus(removedValue);
 
     updateNetPositionAndSave(position);
