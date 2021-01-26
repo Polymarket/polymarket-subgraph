@@ -157,6 +157,8 @@ export function updateMarketPositionsFromMerge(
     marketMakerAddress,
   ) as FixedProductMarketMaker;
   let totalSlots = marketMaker.outcomeSlotCount;
+  let outcomeTokenPrices = marketMaker.outcomeTokenPrices;
+
   for (let outcomeIndex = 0; outcomeIndex < totalSlots; outcomeIndex += 1) {
     let position = getMarketPosition(
       userAddress,
@@ -166,9 +168,11 @@ export function updateMarketPositionsFromMerge(
     // Event emits the amount of outcome tokens to be merged as `amount`
     position.quantitySold = position.quantitySold.plus(event.params.amount);
 
-    // We treat it as the user selling tokens for equal values
-    // TODO: weight for the prices in the market maker.
-    let mergeValue = event.params.amount.div(BigInt.fromI32(totalSlots));
+    // Distribute merge value proportionately based on share value
+    let mergeValue = timesBD(
+      event.params.amount,
+      outcomeTokenPrices[outcomeIndex],
+    );
     position.valueSold = position.valueSold.plus(mergeValue);
 
     updateNetPositionAndSave(position);
