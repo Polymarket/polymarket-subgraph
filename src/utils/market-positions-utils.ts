@@ -124,8 +124,13 @@ export function updateMarketPositionsFromSplit(
   let marketMaker = FixedProductMarketMaker.load(
     marketMakerAddress,
   ) as FixedProductMarketMaker;
-  let totalSlots = marketMaker.outcomeSlotCount;
-  for (let outcomeIndex = 0; outcomeIndex < totalSlots; outcomeIndex += 1) {
+  let outcomeTokenPrices = marketMaker.outcomeTokenPrices;
+
+  for (
+    let outcomeIndex = 0;
+    outcomeIndex < outcomeTokenPrices.length;
+    outcomeIndex += 1
+  ) {
     let position = getMarketPosition(
       userAddress,
       marketMakerAddress,
@@ -134,8 +139,11 @@ export function updateMarketPositionsFromSplit(
     // Event emits the amount of collateral to be split as `amount`
     position.quantityBought = position.quantityBought.plus(event.params.amount);
 
-    // The user is essentially buys all tokens at an equal price
-    let mergeValue = event.params.amount.div(BigInt.fromI32(totalSlots));
+    // Distribute split value proportionately based on share value
+    let mergeValue = timesBD(
+      event.params.amount,
+      outcomeTokenPrices[outcomeIndex],
+    );
     position.valueBought = position.valueBought.plus(mergeValue);
 
     updateNetPositionAndSave(position);
@@ -156,10 +164,13 @@ export function updateMarketPositionsFromMerge(
   let marketMaker = FixedProductMarketMaker.load(
     marketMakerAddress,
   ) as FixedProductMarketMaker;
-  let totalSlots = marketMaker.outcomeSlotCount;
   let outcomeTokenPrices = marketMaker.outcomeTokenPrices;
 
-  for (let outcomeIndex = 0; outcomeIndex < totalSlots; outcomeIndex += 1) {
+  for (
+    let outcomeIndex = 0;
+    outcomeIndex < outcomeTokenPrices.length;
+    outcomeIndex += 1
+  ) {
     let position = getMarketPosition(
       userAddress,
       marketMakerAddress,
