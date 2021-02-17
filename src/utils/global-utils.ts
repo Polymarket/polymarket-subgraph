@@ -1,6 +1,7 @@
 import { BigDecimal, BigInt } from '@graphprotocol/graph-ts';
 import { Global } from '../types/schema';
-import { bigOne, bigZero, TRADE_TYPE_BUY, TRADE_TYPE_SELL } from './constants';
+import { bigZero, TRADE_TYPE_BUY, TRADE_TYPE_SELL } from './constants';
+import { increment } from './maths';
 
 export function requireGlobal(): Global {
   let global = Global.load('');
@@ -31,7 +32,7 @@ export function requireGlobal(): Global {
 
 export function countNewTrader(): void {
   let global = requireGlobal();
-  global.numTraders = global.numTraders.plus(bigOne);
+  global.numTraders = increment(global.numTraders);
   global.save();
 }
 
@@ -50,15 +51,15 @@ export function updateGlobalVolume(
   global.scaledCollateralFees = global.collateralFees.divDecimal(
     collateralScaleDec,
   );
-  global.tradesQuantity = global.tradesQuantity.plus(bigOne);
+  global.tradesQuantity = increment(global.tradesQuantity);
   if (tradeType == TRADE_TYPE_BUY) {
-    global.buysQuantity = global.buysQuantity.plus(bigOne);
+    global.buysQuantity = increment(global.buysQuantity);
     global.collateralBuyVolume = global.collateralBuyVolume.plus(tradeAmount);
     global.scaledCollateralBuyVolume = global.collateralBuyVolume.divDecimal(
       collateralScaleDec,
     );
   } else if (tradeType == TRADE_TYPE_SELL) {
-    global.sellsQuantity = global.sellsQuantity.plus(bigOne);
+    global.sellsQuantity = increment(global.sellsQuantity);
     global.collateralSellVolume = global.collateralSellVolume.plus(tradeAmount);
     global.scaledCollateralSellVolume = global.collateralSellVolume.divDecimal(
       collateralScaleDec,

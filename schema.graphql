@@ -39,6 +39,10 @@ type Global @entity {
 type Account @entity {
   "User address"
   id: ID!
+  "Timestamp at which account first interacted with Polymarket"
+  creationTimestamp: BigInt!
+  "Timestamp at which account most recently interacted with Polymarket"
+  lastSeenTimestamp: BigInt!
   "Total volume of this user's trades in USDC base units"
   collateralVolume: BigInt!
   "Total volume of this user's trades in USDC scaled by 10^6"
@@ -51,6 +55,10 @@ type Account @entity {
   marketPositions: [MarketPosition!] @derivedFrom(field: "user")
   "Purchases and sales of shares by the user"
   transactions: [Transaction!] @derivedFrom(field: "user")
+  "Split of collateral / outcome tokens into multiple positions"
+  splits: [Split!] @derivedFrom(field: "stakeholder")
+  "Merge of more specific outcome tokens into collateral / more general outcome tokens"
+  merges: [Merge!] @derivedFrom(field: "stakeholder")
   "Redemption of underlying collateral after a market has resolved"
   redemptions: [Redemption!] @derivedFrom(field: "redeemer")
 }
@@ -69,8 +77,11 @@ type Condition @entity {
   id: ID!
   "Address which can resolve this condition"
   oracle: Bytes!
+  "Question ID which corresponds to this condition"
   questionId: Bytes!
+  "Number of possible outcomes for this condition"
   outcomeSlotCount: Int!
+  "Timestamp at which this condition was resolved"
   resolutionTimestamp: BigInt
   "Fraction of collateral assigned to each outcome"
   payouts: [BigDecimal!]
@@ -83,37 +94,52 @@ type Condition @entity {
 type Split @entity {
   "Transaction Hash"
   id: ID!
+  "Timestamp at which split occurred"
+  timestamp: BigInt!
   "Address which is performing this split"
   stakeholder: Account!
+  "Token which is collateralising positions being split"
   collateralToken: Collateral!
   parentCollectionId: Bytes!
+  "Condition on which split is occuring"
   condition: Condition!
   partition: [BigInt!]!
+  "The amount of collateral/outcome tokens being split"
   amount: BigInt!
 }
 
 type Merge @entity {
   "Transaction Hash"
   id: ID!
+  "Timestamp at which merge occurred"
+  timestamp: BigInt!
   "Address which is performing this merge"
   stakeholder: Account!
+  "Token which is collateralising positions being merged"
   collateralToken: Collateral!
   parentCollectionId: Bytes!
+  "Condition on which merge is occuring"
   condition: Condition!
   partition: [BigInt!]!
+  "The amount of outcome tokens being merged"
   amount: BigInt!
 }
 
 type Redemption @entity {
   "Transaction Hash"
   id: ID!
+  "Timestamp at which redemption occurred"
+  timestamp: BigInt!
   "Address which is redeeming these outcomes"
   redeemer: Account!
+  "Token which is being claimed in return for outcome tokens"
   collateralToken: Collateral!
   parentCollectionId: Bytes!
+  "Condition on which redemption is occuring"
   condition: Condition!
   "Outcomes which are being redeemed"
   indexSets: [BigInt!]!
+  "The amount of collateral being claimed"
   payout: BigInt!
 }
 
@@ -127,6 +153,8 @@ type FixedProductMarketMaker @entity {
   creator: Bytes!
   "Time at which this market was deployed"
   creationTimestamp: BigInt!
+  "Hash of deployment transactions"
+  creationTransactionHash: Bytes!
 
   "Token which is colleralising this market"
   collateralToken: Collateral!
@@ -204,6 +232,8 @@ type MarketPosition @entity {
   valueSold: BigInt!
   "Total value paid by the user to enter this position"
   netValue: BigInt!
+  "Total amount of fees paid by user in relation to this position"
+  feesPaid: BigInt!
 }
 
 # Market Actions
@@ -211,22 +241,33 @@ type MarketPosition @entity {
 type FpmmFundingAddition @entity {
   "Transaction Hash"
   id: ID!
+  "Timestamp at which funding addition occurred"
   timestamp: BigInt!
+  "FPMM to which funding is being added"
   fpmm: FixedProductMarketMaker!
+  "Account adding funding"
   funder: Account!
+  "Outcome tokens amounts added to FPMM"
   amountsAdded: [BigInt!]!
+  "Outcome tokens amounts refunded to funder"
   amountsRefunded: [BigInt!]!
+  "Liquidity shares minted to funder"
   sharesMinted: BigInt!
 }
 
 type FpmmFundingRemoval @entity {
   "Transaction Hash"
   id: ID!
+  "Timestamp at which funding removal occurred"
   timestamp: BigInt!
+  "FPMM to which funding is being removed"
   fpmm: FixedProductMarketMaker!
+  "Account removing funding"
   funder: Account!
+  "Outcome tokens amounts removed from FPMM"
   amountsRemoved: [BigInt!]!
   collateralRemoved: BigInt!
+  "Liquidity shares burned by funder"
   sharesBurnt: BigInt!
 }
 
@@ -238,19 +279,31 @@ enum TradeType {
 type Transaction @entity {
   "Transaction Hash"
   id: ID!
+  "Buy or Sell transaction"
   type: TradeType!
+  "Timestamp at which transaction occurred"
   timestamp: BigInt!
+  "Market which transaction is interacting with"
   market: FixedProductMarketMaker!
+  "Account performing transaction"
   user: Account!
+  "Amount of collateral in trade"
   tradeAmount: BigInt!
+  "Amount of collateral paid in fees"
   feeAmount: BigInt!
+  "Index of outcome token being bought or sold"
   outcomeIndex: BigInt!
+  "Amount of outcome tokens being bought or sold"
   outcomeTokensAmount: BigInt!
 }
 
 type FpmmPoolMembership @entity {
+  "funder address + pool address"
   id: ID!
+  "Market to which funder is providing funding"
   pool: FixedProductMarketMaker!
+  "Account which is providing funding"
   funder: Account!
+  "Amount of liquidity tokens owned by funder"
   amount: BigInt!
 }

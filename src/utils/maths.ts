@@ -1,5 +1,5 @@
-import { BigInt } from '@graphprotocol/graph-ts';
-import { bigZero } from './constants';
+import { BigDecimal, BigInt } from '@graphprotocol/graph-ts';
+import { bigOne, bigZero } from './constants';
 
 export function max(array: BigInt[]): BigInt {
   let len = array.length;
@@ -23,4 +23,12 @@ export function min(array: BigInt[]): BigInt {
     }
   }
   return minValue;
+}
+
+export function timesBD(a: BigInt, b: BigDecimal): BigInt {
+  return a.toBigDecimal().times(b).truncate(0).digits;
+}
+
+export function increment(a: BigInt): BigInt {
+  return a.plus(bigOne);
 }

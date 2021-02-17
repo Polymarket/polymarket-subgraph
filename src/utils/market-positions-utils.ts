@@ -16,7 +16,7 @@ import {
   FPMMFundingRemoved,
 } from '../types/templates/FixedProductMarketMaker/FixedProductMarketMaker';
 import { bigZero } from './constants';
-import { max } from './maths';
+import { max, timesBD } from './maths';
 
 /*
  * Returns the user's position for the given market and outcome
@@ -40,6 +40,7 @@ export function getMarketPosition(
     position.valueBought = bigZero;
     position.valueSold = bigZero;
     position.netValue = bigZero;
+    position.feesPaid = bigZero;
   }
   return position as MarketPosition;
 }
@@ -78,16 +79,32 @@ export function updateMarketPositionFromTrade(event: ethereum.Event): void {
     transaction.outcomeIndex,
   );
 
+  let fee = (FixedProductMarketMaker.load(
+    transaction.market,
+  ) as FixedProductMarketMaker).fee;
+
   if (transaction.type == 'Buy') {
     position.quantityBought = position.quantityBought.plus(
       transaction.outcomeTokensAmount,
     );
     position.valueBought = position.valueBought.plus(transaction.tradeAmount);
+
+    // feeAmount = investmentAmount * fee
+    let feeAmount = transaction.tradeAmount
+      .times(fee)
+      .div(BigInt.fromI32(10).pow(18));
+    position.feesPaid = position.feesPaid.plus(feeAmount);
   } else {
     position.quantitySold = position.quantitySold.plus(
       transaction.outcomeTokensAmount,
     );
     position.valueSold = position.valueSold.plus(transaction.tradeAmount);
+
+    // feeAmount = returnAmount * (fee/(1-fee));
+    let feeAmount = transaction.tradeAmount
+      .times(fee)
+      .div(BigInt.fromI32(10).pow(18).minus(fee));
+    position.feesPaid = position.feesPaid.plus(feeAmount);
   }
 
   updateNetPositionAndSave(position);
@@ -107,8 +124,13 @@ export function updateMarketPositionsFromSplit(
   let marketMaker = FixedProductMarketMaker.load(
     marketMakerAddress,
   ) as FixedProductMarketMaker;
-  let totalSlots = marketMaker.outcomeSlotCount;
-  for (let outcomeIndex = 0; outcomeIndex < totalSlots; outcomeIndex += 1) {
+  let outcomeTokenPrices = marketMaker.outcomeTokenPrices;
+
+  for (
+    let outcomeIndex = 0;
+    outcomeIndex < outcomeTokenPrices.length;
+    outcomeIndex += 1
+  ) {
     let position = getMarketPosition(
       userAddress,
       marketMakerAddress,
@@ -117,9 +139,12 @@ export function updateMarketPositionsFromSplit(
     // Event emits the amount of collateral to be split as `amount`
     position.quantityBought = position.quantityBought.plus(event.params.amount);
 
-    // The user is essentially buys all tokens at an equal price
-    let mergeValue = event.params.amount.div(BigInt.fromI32(totalSlots));
-    position.valueBought = position.valueBought.plus(mergeValue);
+    // Distribute split value proportionately based on share value
+    let splitValue = timesBD(
+      event.params.amount,
+      outcomeTokenPrices[outcomeIndex],
+    );
+    position.valueBought = position.valueBought.plus(splitValue);
 
     updateNetPositionAndSave(position);
   }
@@ -139,8 +164,13 @@ export function updateMarketPositionsFromMerge(
   let marketMaker = FixedProductMarketMaker.load(
     marketMakerAddress,
   ) as FixedProductMarketMaker;
-  let totalSlots = marketMaker.outcomeSlotCount;
-  for (let outcomeIndex = 0; outcomeIndex < totalSlots; outcomeIndex += 1) {
+  let outcomeTokenPrices = marketMaker.outcomeTokenPrices;
+
+  for (
+    let outcomeIndex = 0;
+    outcomeIndex < outcomeTokenPrices.length;
+    outcomeIndex += 1
+  ) {
     let position = getMarketPosition(
       userAddress,
       marketMakerAddress,
@@ -149,9 +179,11 @@ export function updateMarketPositionsFromMerge(
     // Event emits the amount of outcome tokens to be merged as `amount`
     position.quantitySold = position.quantitySold.plus(event.params.amount);
 
-    // We treat it as the user selling tokens for equal values
-    // TODO: weight for the prices in the market maker.
-    let mergeValue = event.params.amount.div(BigInt.fromI32(totalSlots));
+    // Distribute merge value proportionately based on share value
+    let mergeValue = timesBD(
+      event.params.amount,
+      outcomeTokenPrices[outcomeIndex],
+    );
     position.valueSold = position.valueSold.plus(mergeValue);
 
     updateNetPositionAndSave(position);
@@ -227,19 +259,6 @@ export function updateMarketPositionFromLiquidityAdded(
   // therefore this is the amount of collateral that the user has split.
   let addedFunds = max(amountsAdded);
 
-  // Calculate the full number of outcome tokens which are refunded to the funder address
-  let totalRefundedOutcomeTokens = bigZero;
-  for (
-    let outcomeIndex = 0;
-    outcomeIndex < amountsAdded.length;
-    outcomeIndex += 1
-  ) {
-    let refundedAmount = addedFunds.minus(amountsAdded[outcomeIndex]);
-    totalRefundedOutcomeTokens = totalRefundedOutcomeTokens.plus(
-      refundedAmount,
-    );
-  }
-
   let outcomeTokenPrices = (FixedProductMarketMaker.load(
     fpmmAddress,
   ) as FixedProductMarketMaker).outcomeTokenPrices;
@@ -264,10 +283,10 @@ export function updateMarketPositionFromLiquidityAdded(
 
       position.quantityBought = position.quantityBought.plus(refundedAmount);
 
-      let refundValue = refundedAmount
-        .toBigDecimal()
-        .times(outcomeTokenPrices[outcomeIndex])
-        .truncate(0).digits;
+      let refundValue = timesBD(
+        refundedAmount,
+        outcomeTokenPrices[outcomeIndex],
+      );
       position.valueBought = position.valueBought.plus(refundValue);
 
       updateNetPositionAndSave(position);
@@ -282,15 +301,9 @@ export function updateMarketPositionFromLiquidityRemoved(
   let funder = event.params.funder.toHexString();
   let amountsRemoved = event.params.amountsRemoved;
 
-  // We value each share at 1 USDC
-  // so number of shares burnt is equal to price paid for all outcome tokens
-  let sharesBurnt = event.params.sharesBurnt;
-
-  // Outcome tokens are removed in proportion to their balances in the market maker
-  // Therefore the withdrawal of each outcome token should have the same value.
-  let pricePaidForTokens = sharesBurnt.div(
-    BigInt.fromI32(amountsRemoved.length),
-  );
+  let outcomeTokenPrices = (FixedProductMarketMaker.load(
+    fpmmAddress,
+  ) as FixedProductMarketMaker).outcomeTokenPrices;
 
   // The funder is sent all of the outcome tokens for which they were providing liquidity
   // This means we must update the funder's market position for each outcome.
@@ -304,10 +317,12 @@ export function updateMarketPositionFromLiquidityRemoved(
       fpmmAddress,
       BigInt.fromI32(outcomeIndex),
     );
-    position.quantityBought = position.quantityBought.plus(
-      amountsRemoved[outcomeIndex],
-    );
-    position.valueBought = position.valueBought.plus(pricePaidForTokens);
+
+    let amountRemoved = amountsRemoved[outcomeIndex];
+    position.quantityBought = position.quantityBought.plus(amountRemoved);
+
+    let removedValue = timesBD(amountRemoved, outcomeTokenPrices[outcomeIndex]);
+    position.valueBought = position.valueBought.plus(removedValue);
 
     updateNetPositionAndSave(position);
   }

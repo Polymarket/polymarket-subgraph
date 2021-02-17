@@ -23,7 +23,7 @@ import {
 import { partitionCheck } from './utils/conditional-utils';
 import { bigZero } from './utils/constants';
 import { getCollateralDetails } from './utils/collateralTokens';
-import { requireAccount } from './utils/account-utils';
+import { markAccountAsSeen, requireAccount } from './utils/account-utils';
 
 export function handlePositionSplit(event: PositionSplit): void {
   if (
@@ -34,9 +34,14 @@ export function handlePositionSplit(event: PositionSplit): void {
   }
 
   getCollateralDetails(event.params.collateralToken);
-  requireAccount(event.params.stakeholder.toHexString());
+  requireAccount(event.params.stakeholder.toHexString(), event.block.timestamp);
+  markAccountAsSeen(
+    event.params.stakeholder.toHexString(),
+    event.block.timestamp,
+  );
 
   let split = new Split(event.transaction.hash.toHexString());
+  split.timestamp = event.block.timestamp;
   split.stakeholder = event.params.stakeholder.toHexString();
   split.collateralToken = event.params.collateralToken.toHexString();
   split.parentCollectionId = event.params.parentCollectionId;
@@ -71,9 +76,14 @@ export function handlePositionsMerge(event: PositionsMerge): void {
     // We don't track merges within the market makers
     return;
   }
-  requireAccount(event.params.stakeholder.toHexString());
+  requireAccount(event.params.stakeholder.toHexString(), event.block.timestamp);
+  markAccountAsSeen(
+    event.params.stakeholder.toHexString(),
+    event.block.timestamp,
+  );
 
   let merge = new Merge(event.transaction.hash.toHexString());
+  merge.timestamp = event.block.timestamp;
   merge.stakeholder = event.params.stakeholder.toHexString();
   merge.collateralToken = event.params.collateralToken.toHexString();
   merge.parentCollectionId = event.params.parentCollectionId;
@@ -102,9 +112,11 @@ export function handlePositionsMerge(event: PositionsMerge): void {
 }
 
 export function handlePayoutRedemption(event: PayoutRedemption): void {
-  requireAccount(event.params.redeemer.toHexString());
+  requireAccount(event.params.redeemer.toHexString(), event.block.timestamp);
+  markAccountAsSeen(event.params.redeemer.toHexString(), event.block.timestamp);
 
   let redemption = new Redemption(event.transaction.hash.toHexString());
+  redemption.timestamp = event.block.timestamp;
   redemption.redeemer = event.params.redeemer.toHexString();
   redemption.collateralToken = event.params.collateralToken.toHexString();
   redemption.parentCollectionId = event.params.parentCollectionId;
