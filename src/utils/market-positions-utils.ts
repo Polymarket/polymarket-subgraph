@@ -140,11 +140,11 @@ export function updateMarketPositionsFromSplit(
     position.quantityBought = position.quantityBought.plus(event.params.amount);
 
     // Distribute split value proportionately based on share value
-    let mergeValue = timesBD(
+    let splitValue = timesBD(
       event.params.amount,
       outcomeTokenPrices[outcomeIndex],
     );
-    position.valueBought = position.valueBought.plus(mergeValue);
+    position.valueBought = position.valueBought.plus(splitValue);
 
     updateNetPositionAndSave(position);
   }
