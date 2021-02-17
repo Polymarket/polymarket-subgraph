@@ -36,12 +36,13 @@ function getNetworkNameForSubgraph(): string | null {
   const networkName = process.env.NETWORK_NAME || getNetworkNameForSubgraph();
   const network = networks[networkName || ''];
 
-  if (!network.networkName) {
+  if (!networkName) {
     throw new Error(
       'Please set either a "NETWORK_NAME" or a "SUBGRAPH" environment variable',
     );
   }
 
+  // eslint-disable-next-line no-restricted-syntax
   for (const templatedFileDesc of [
     ['subgraph', 'yaml'],
     ['src/FixedProductMarketMakerFactoryMapping', 'ts'],

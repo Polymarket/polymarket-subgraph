@@ -1,5 +1,4 @@
 mainnet:
-  networkName: mainnet
   contracts:
     ConditionalTokens:
       address: '0xC59b0e4De5F1248C1140964E0fF287B192407E0C'
@@ -10,7 +9,6 @@ mainnet:
       transactionHash: '0xc21edc19c4f4249f047cec4cb13052e4ce39446766f723b9a94b3748a433e9b6'
       startBlock: 9969340
 matic:
-  networkName: matic
   contracts:
     ConditionalTokens:
       address: '0x4D97DCd97eC945f40cF65F87097ACe5EA0476045'
@@ -21,7 +19,6 @@ matic:
       transactionHash: '0x1af1b88e36bb0289f6e037e00d01b26bed997ce7a0406ebafce07dcf766ce7c6'
       startBlock: 4023693
 mumbai:
-  networkName: matic
   contracts:
     ConditionalTokens:
       address: '0x7D8610E9567d2a6C9FBf66a5A13E9Ba8bb120d43'
