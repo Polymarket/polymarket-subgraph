@@ -2,7 +2,7 @@
 import { BigDecimal, BigInt } from '@graphprotocol/graph-ts';
 import { Account } from '../types/schema';
 
-import { bigZero } from './constants';
+import { bigOne, bigZero } from './constants';
 import { countNewTrader } from './global-utils';
 
 export function requireAccount(
@@ -15,6 +15,7 @@ export function requireAccount(
     account.collateralVolume = bigZero;
     account.scaledCollateralVolume = bigZero.toBigDecimal();
     account.lastTradedTimestamp = bigZero;
+    account.numTrades = bigZero;
     account.creationTimestamp = timestamp;
     account.lastSeenTimestamp = timestamp;
     countNewTrader();
@@ -35,6 +36,21 @@ export function markAccountAsSeen(
 ): void {
   let account = requireAccount(accountAddress, timestamp);
   account.lastSeenTimestamp = timestamp;
+  account.save();
+}
+
+/**
+ * Updates the "last seen" timestamp on an Account.
+ * @dev This function should be called once on each interaction with a market maker or conditional tokens contract
+ * @param accountAddress - Address of account to mark as "seen"
+ * @param timestamp - Timestamp at which interaction occurred
+ */
+export function incrementAccountTrades(
+  accountAddress: string,
+  timestamp: BigInt,
+): void {
+  let account = requireAccount(accountAddress, timestamp);
+  account.numTrades = account.numTrades.plus(bigOne);
   account.save();
 }
 

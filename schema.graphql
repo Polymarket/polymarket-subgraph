@@ -10,7 +10,7 @@ type Global @entity {
   "Number of unique traders interacting with Polymarket"
   numTraders: BigInt!
 
- "Number of trades of any kind for all market makers"
+  "Number of trades of any kind for all market makers"
   tradesQuantity: BigInt!
   "Number of purchases of shares from any market maker"
   buysQuantity: BigInt!
@@ -45,6 +45,8 @@ type Account @entity {
   lastSeenTimestamp: BigInt!
   "Total volume of this user's trades in USDC base units"
   collateralVolume: BigInt!
+  "Total number of trades performed by this user"
+  numTrades: BigInt!
   "Total volume of this user's trades in USDC scaled by 10^6"
   scaledCollateralVolume: BigDecimal!
   "Timestamp of last Buy or Sell transaction"
