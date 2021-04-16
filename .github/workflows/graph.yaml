@@ -1,0 +1,25 @@
+name: Deploy Graph
+
+on:
+  push:
+    branches: master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14
+      - name: Install
+        run: yarn --frozen-lockfile
+      - name: Codegen
+        run: yarn codegen:matic
+      - uses: gtaschuk/graph-deploy@v0.1.0
+        with:
+          graph_access_token: ${{secrets.GRAPH_ACCESS_TOKEN}}
+          graph_subgraph_name: 'polymarket-matic'
+          graph_account: ${{github.repository_owner}}
+          graph_config_file: 'subgraph.yaml'
