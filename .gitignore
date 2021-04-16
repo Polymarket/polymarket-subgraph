@@ -23,7 +23,6 @@ node_modules/
 build/
 
 # Subgraph stuff
-abis/
 subgraph.yaml
 src/types/
 

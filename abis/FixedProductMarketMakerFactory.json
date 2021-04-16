@@ -1,0 +1,234 @@
+[
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "implementationMaster",
+        "outputs": [
+            {
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "conditionalTokens",
+                "type": "address"
+            },
+            {
+                "name": "collateralToken",
+                "type": "address"
+            },
+            {
+                "name": "conditionIds",
+                "type": "bytes32[]"
+            },
+            {
+                "name": "fee",
+                "type": "uint256"
+            }
+        ],
+        "name": "createFixedProductMarketMaker",
+        "outputs": [
+            {
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "consData",
+                "type": "bytes"
+            }
+        ],
+        "name": "cloneConstructor",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "name": "creator",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "name": "fixedProductMarketMaker",
+                "type": "address"
+            },
+            {
+                "indexed": true,
+                "name": "conditionalTokens",
+                "type": "address"
+            },
+            {
+                "indexed": true,
+                "name": "collateralToken",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "name": "conditionIds",
+                "type": "bytes32[]"
+            },
+            {
+                "indexed": false,
+                "name": "fee",
+                "type": "uint256"
+            }
+        ],
+        "name": "FixedProductMarketMakerCreation",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "name": "funder",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "name": "amountsAdded",
+                "type": "uint256[]"
+            },
+            {
+                "indexed": false,
+                "name": "sharesMinted",
+                "type": "uint256"
+            }
+        ],
+        "name": "FPMMFundingAdded",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "name": "funder",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "name": "amountsRemoved",
+                "type": "uint256[]"
+            },
+            {
+                "indexed": false,
+                "name": "collateralRemovedFromFeePool",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "name": "sharesBurnt",
+                "type": "uint256"
+            }
+        ],
+        "name": "FPMMFundingRemoved",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "name": "buyer",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "name": "investmentAmount",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "name": "feeAmount",
+                "type": "uint256"
+            },
+            {
+                "indexed": true,
+                "name": "outcomeIndex",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "name": "outcomeTokensBought",
+                "type": "uint256"
+            }
+        ],
+        "name": "FPMMBuy",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "name": "seller",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "name": "returnAmount",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "name": "feeAmount",
+                "type": "uint256"
+            },
+            {
+                "indexed": true,
+                "name": "outcomeIndex",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "name": "outcomeTokensSold",
+                "type": "uint256"
+            }
+        ],
+        "name": "FPMMSell",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "name": "target",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "name": "clone",
+                "type": "address"
+            }
+        ],
+        "name": "CloneCreated",
+        "type": "event"
+    }
+]
