@@ -23,9 +23,12 @@ node_modules/
 build/
 
 # Subgraph stuff
-abis/
+#abis/
 subgraph.yaml
 src/types/
 
 # built templates
 src/FixedProductMarketMakerFactoryMapping.ts
+
+# Jetbrains
+.idea/
