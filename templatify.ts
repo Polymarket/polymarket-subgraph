@@ -23,7 +23,7 @@ function getNetworkNameForSubgraph(): string | null {
     case 'TokenUnion/polymarket-mumbai':
       return 'mumbai';
     default:
-      return null;
+      return 'matic';
   }
 }
 
