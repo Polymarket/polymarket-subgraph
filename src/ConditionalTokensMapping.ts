@@ -191,6 +191,7 @@ export function handleConditionResolution(event: ConditionResolution): void {
   condition.payouts = payouts;
   condition.payoutNumerators = payoutNumerators;
   condition.payoutDenominator = payoutDenominator;
-
+  condition.resolutionHash = event.transaction.hash;
+  
   condition.save();
 }
