@@ -90,7 +90,7 @@ type Condition @entity {
   "Market makers which are trading on this condition"
   fixedProductMarketMakers: [FixedProductMarketMaker!]!
   "Hash of the resolution transaction"
-  resolutionHash: Bytes!
+  resolutionHash: Bytes
 }
 
 type Split @entity {
