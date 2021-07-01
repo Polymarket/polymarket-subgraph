@@ -16,6 +16,7 @@
     "deploy:matic-backup": "SUBGRAPH=polymarket/polymarket-matic-backup NODE_URL=http://ec2-54-185-99-202.us-west-2.compute.amazonaws.com:8020/ yarn deploy:self",
     "deploy:matic-staging": "SUBGRAPH=TokenUnion/polymarket-matic-staging yarn deploy",
     "deploy:matic-trading": "SUBGRAPH=Polymarket/polymarket-matic-trading yarn deploy",
+    "deploy:matic-markets": "SUBGRAPH=Polymarket/matic-markets yarn deploy",
     "deploy:mumbai": "SUBGRAPH=TokenUnion/polymarket-mumbai yarn deploy",
     "codegen": "graph codegen --debug --output-dir src/types/",
     "prepare:matic": "NETWORK_NAME=matic ts-node ./templatify.ts && yarn codegen",
@@ -24,6 +25,7 @@
     "publish-graph:matic-backup": "yarn prepare:matic && yarn deploy:matic-backup",
     "publish-graph:matic-staging": "yarn prepare:matic && yarn deploy:matic-staging",
     "publish-graph:matic-trading": "yarn prepare:matic && yarn deploy:matic-trading",
+    "publish-graph:matic-markets": "yarn prepare:matic && yarn deploy:matic-markets",
     "publish-graph:mumbai": "yarn prepare:mumbai && yarn deploy:mumbai"
   },
   "repository": {
@@ -48,7 +50,7 @@
   "devDependencies": {
     "@gnosis.pm/conditional-tokens-contracts": "^1.0.1",
     "@gnosis.pm/conditional-tokens-market-makers": "^1.8.1",
-    "@graphprotocol/graph-cli": "^0.18.0",
+    "@graphprotocol/graph-cli": "^0.19.0",
     "@types/fs-extra": "^9.0.2",
     "@types/js-yaml": "^3.12.5",
     "eslint": "^7.10.0",
@@ -60,6 +62,6 @@
     "typescript": "^4.0.3"
   },
   "dependencies": {
-    "@graphprotocol/graph-ts": "^0.18.1"
+    "@graphprotocol/graph-ts": "^0.20.0"
   }
 }
