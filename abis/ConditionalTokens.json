@@ -1,0 +1,1699 @@
+{
+  "contractName": "ConditionalTokens",
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "owner",
+          "type": "address"
+        },
+        {
+          "name": "id",
+          "type": "uint256"
+        }
+      ],
+      "name": "balanceOf",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "interfaceId",
+          "type": "bytes4"
+        }
+      ],
+      "name": "supportsInterface",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "",
+          "type": "bytes32"
+        },
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "payoutNumerators",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "from",
+          "type": "address"
+        },
+        {
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "name": "ids",
+          "type": "uint256[]"
+        },
+        {
+          "name": "values",
+          "type": "uint256[]"
+        },
+        {
+          "name": "data",
+          "type": "bytes"
+        }
+      ],
+      "name": "safeBatchTransferFrom",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "owners",
+          "type": "address[]"
+        },
+        {
+          "name": "ids",
+          "type": "uint256[]"
+        }
+      ],
+      "name": "balanceOfBatch",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256[]"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "operator",
+          "type": "address"
+        },
+        {
+          "name": "approved",
+          "type": "bool"
+        }
+      ],
+      "name": "setApprovalForAll",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "name": "payoutDenominator",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "owner",
+          "type": "address"
+        },
+        {
+          "name": "operator",
+          "type": "address"
+        }
+      ],
+      "name": "isApprovedForAll",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "from",
+          "type": "address"
+        },
+        {
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "name": "value",
+          "type": "uint256"
+        },
+        {
+          "name": "data",
+          "type": "bytes"
+        }
+      ],
+      "name": "safeTransferFrom",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "conditionId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "name": "oracle",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "questionId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "name": "outcomeSlotCount",
+          "type": "uint256"
+        }
+      ],
+      "name": "ConditionPreparation",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "conditionId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "name": "oracle",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "questionId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "name": "outcomeSlotCount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "name": "payoutNumerators",
+          "type": "uint256[]"
+        }
+      ],
+      "name": "ConditionResolution",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "stakeholder",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "collateralToken",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "parentCollectionId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "name": "conditionId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "name": "partition",
+          "type": "uint256[]"
+        },
+        {
+          "indexed": false,
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "PositionSplit",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "stakeholder",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "collateralToken",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "parentCollectionId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "name": "conditionId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "name": "partition",
+          "type": "uint256[]"
+        },
+        {
+          "indexed": false,
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "PositionsMerge",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "redeemer",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "collateralToken",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "parentCollectionId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "name": "conditionId",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "name": "indexSets",
+          "type": "uint256[]"
+        },
+        {
+          "indexed": false,
+          "name": "payout",
+          "type": "uint256"
+        }
+      ],
+      "name": "PayoutRedemption",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "operator",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "from",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "name": "value",
+          "type": "uint256"
+        }
+      ],
+      "name": "TransferSingle",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "operator",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "from",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "ids",
+          "type": "uint256[]"
+        },
+        {
+          "indexed": false,
+          "name": "values",
+          "type": "uint256[]"
+        }
+      ],
+      "name": "TransferBatch",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "owner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "operator",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "approved",
+          "type": "bool"
+        }
+      ],
+      "name": "ApprovalForAll",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "value",
+          "type": "string"
+        },
+        {
+          "indexed": true,
+          "name": "id",
+          "type": "uint256"
+        }
+      ],
+      "name": "URI",
+      "type": "event"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "oracle",
+          "type": "address"
+        },
+        {
+          "name": "questionId",
+          "type": "bytes32"
+        },
+        {
+          "name": "outcomeSlotCount",
+          "type": "uint256"
+        }
+      ],
+      "name": "prepareCondition",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "questionId",
+          "type": "bytes32"
+        },
+        {
+          "name": "payouts",
+          "type": "uint256[]"
+        }
+      ],
+      "name": "reportPayouts",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "collateralToken",
+          "type": "address"
+        },
+        {
+          "name": "parentCollectionId",
+          "type": "bytes32"
+        },
+        {
+          "name": "conditionId",
+          "type": "bytes32"
+        },
+        {
+          "name": "partition",
+          "type": "uint256[]"
+        },
+        {
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "splitPosition",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "collateralToken",
+          "type": "address"
+        },
+        {
+          "name": "parentCollectionId",
+          "type": "bytes32"
+        },
+        {
+          "name": "conditionId",
+          "type": "bytes32"
+        },
+        {
+          "name": "partition",
+          "type": "uint256[]"
+        },
+        {
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "mergePositions",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "collateralToken",
+          "type": "address"
+        },
+        {
+          "name": "parentCollectionId",
+          "type": "bytes32"
+        },
+        {
+          "name": "conditionId",
+          "type": "bytes32"
+        },
+        {
+          "name": "indexSets",
+          "type": "uint256[]"
+        }
+      ],
+      "name": "redeemPositions",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "conditionId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "getOutcomeSlotCount",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "oracle",
+          "type": "address"
+        },
+        {
+          "name": "questionId",
+          "type": "bytes32"
+        },
+        {
+          "name": "outcomeSlotCount",
+          "type": "uint256"
+        }
+      ],
+      "name": "getConditionId",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "parentCollectionId",
+          "type": "bytes32"
+        },
+        {
+          "name": "conditionId",
+          "type": "bytes32"
+        },
+        {
+          "name": "indexSet",
+          "type": "uint256"
+        }
+      ],
+      "name": "getCollectionId",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "collateralToken",
+          "type": "address"
+        },
+        {
+          "name": "collectionId",
+          "type": "bytes32"
+        }
+      ],
+      "name": "getPositionId",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "pure",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.5.10+commit.5a6ea5b1\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":true,\"inputs\":[{\"name\":\"owner\",\"type\":\"address\"},{\"name\":\"id\",\"type\":\"uint256\"}],\"name\":\"balanceOf\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"collateralToken\",\"type\":\"address\"},{\"name\":\"parentCollectionId\",\"type\":\"bytes32\"},{\"name\":\"conditionId\",\"type\":\"bytes32\"},{\"name\":\"indexSets\",\"type\":\"uint256[]\"}],\"name\":\"redeemPositions\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"interfaceId\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32\"},{\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"payoutNumerators\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"from\",\"type\":\"address\"},{\"name\":\"to\",\"type\":\"address\"},{\"name\":\"ids\",\"type\":\"uint256[]\"},{\"name\":\"values\",\"type\":\"uint256[]\"},{\"name\":\"data\",\"type\":\"bytes\"}],\"name\":\"safeBatchTransferFrom\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"collateralToken\",\"type\":\"address\"},{\"name\":\"collectionId\",\"type\":\"bytes32\"}],\"name\":\"getPositionId\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"pure\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"owners\",\"type\":\"address[]\"},{\"name\":\"ids\",\"type\":\"uint256[]\"}],\"name\":\"balanceOfBatch\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256[]\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"collateralToken\",\"type\":\"address\"},{\"name\":\"parentCollectionId\",\"type\":\"bytes32\"},{\"name\":\"conditionId\",\"type\":\"bytes32\"},{\"name\":\"partition\",\"type\":\"uint256[]\"},{\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"splitPosition\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"oracle\",\"type\":\"address\"},{\"name\":\"questionId\",\"type\":\"bytes32\"},{\"name\":\"outcomeSlotCount\",\"type\":\"uint256\"}],\"name\":\"getConditionId\",\"outputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"payable\":false,\"stateMutability\":\"pure\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"parentCollectionId\",\"type\":\"bytes32\"},{\"name\":\"conditionId\",\"type\":\"bytes32\"},{\"name\":\"indexSet\",\"type\":\"uint256\"}],\"name\":\"getCollectionId\",\"outputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"collateralToken\",\"type\":\"address\"},{\"name\":\"parentCollectionId\",\"type\":\"bytes32\"},{\"name\":\"conditionId\",\"type\":\"bytes32\"},{\"name\":\"partition\",\"type\":\"uint256[]\"},{\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"mergePositions\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"operator\",\"type\":\"address\"},{\"name\":\"approved\",\"type\":\"bool\"}],\"name\":\"setApprovalForAll\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"questionId\",\"type\":\"bytes32\"},{\"name\":\"payouts\",\"type\":\"uint256[]\"}],\"name\":\"reportPayouts\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"conditionId\",\"type\":\"bytes32\"}],\"name\":\"getOutcomeSlotCount\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"oracle\",\"type\":\"address\"},{\"name\":\"questionId\",\"type\":\"bytes32\"},{\"name\":\"outcomeSlotCount\",\"type\":\"uint256\"}],\"name\":\"prepareCondition\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"payoutDenominator\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"owner\",\"type\":\"address\"},{\"name\":\"operator\",\"type\":\"address\"}],\"name\":\"isApprovedForAll\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"from\",\"type\":\"address\"},{\"name\":\"to\",\"type\":\"address\"},{\"name\":\"id\",\"type\":\"uint256\"},{\"name\":\"value\",\"type\":\"uint256\"},{\"name\":\"data\",\"type\":\"bytes\"}],\"name\":\"safeTransferFrom\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"conditionId\",\"type\":\"bytes32\"},{\"indexed\":true,\"name\":\"oracle\",\"type\":\"address\"},{\"indexed\":true,\"name\":\"questionId\",\"type\":\"bytes32\"},{\"indexed\":false,\"name\":\"outcomeSlotCount\",\"type\":\"uint256\"}],\"name\":\"ConditionPreparation\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"conditionId\",\"type\":\"bytes32\"},{\"indexed\":true,\"name\":\"oracle\",\"type\":\"address\"},{\"indexed\":true,\"name\":\"questionId\",\"type\":\"bytes32\"},{\"indexed\":false,\"name\":\"outcomeSlotCount\",\"type\":\"uint256\"},{\"indexed\":false,\"name\":\"payoutNumerators\",\"type\":\"uint256[]\"}],\"name\":\"ConditionResolution\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"stakeholder\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"collateralToken\",\"type\":\"address\"},{\"indexed\":true,\"name\":\"parentCollectionId\",\"type\":\"bytes32\"},{\"indexed\":true,\"name\":\"conditionId\",\"type\":\"bytes32\"},{\"indexed\":false,\"name\":\"partition\",\"type\":\"uint256[]\"},{\"indexed\":false,\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"PositionSplit\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"stakeholder\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"collateralToken\",\"type\":\"address\"},{\"indexed\":true,\"name\":\"parentCollectionId\",\"type\":\"bytes32\"},{\"indexed\":true,\"name\":\"conditionId\",\"type\":\"bytes32\"},{\"indexed\":false,\"name\":\"partition\",\"type\":\"uint256[]\"},{\"indexed\":false,\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"PositionsMerge\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"redeemer\",\"type\":\"address\"},{\"indexed\":true,\"name\":\"collateralToken\",\"type\":\"address\"},{\"indexed\":true,\"name\":\"parentCollectionId\",\"type\":\"bytes32\"},{\"indexed\":false,\"name\":\"conditionId\",\"type\":\"bytes32\"},{\"indexed\":false,\"name\":\"indexSets\",\"type\":\"uint256[]\"},{\"indexed\":false,\"name\":\"payout\",\"type\":\"uint256\"}],\"name\":\"PayoutRedemption\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"operator\",\"type\":\"address\"},{\"indexed\":true,\"name\":\"from\",\"type\":\"address\"},{\"indexed\":true,\"name\":\"to\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"id\",\"type\":\"uint256\"},{\"indexed\":false,\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"TransferSingle\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"operator\",\"type\":\"address\"},{\"indexed\":true,\"name\":\"from\",\"type\":\"address\"},{\"indexed\":true,\"name\":\"to\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"ids\",\"type\":\"uint256[]\"},{\"indexed\":false,\"name\":\"values\",\"type\":\"uint256[]\"}],\"name\":\"TransferBatch\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":true,\"name\":\"operator\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"approved\",\"type\":\"bool\"}],\"name\":\"ApprovalForAll\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"name\":\"value\",\"type\":\"string\"},{\"indexed\":true,\"name\":\"id\",\"type\":\"uint256\"}],\"name\":\"URI\",\"type\":\"event\"}],\"devdoc\":{\"methods\":{\"balanceOf(address,uint256)\":{\"details\":\"Get the specified address' balance for token with specified ID.\",\"params\":{\"id\":\"ID of the token\",\"owner\":\"The address of the token holder\"},\"return\":\"The owner's balance of the token type requested\"},\"balanceOfBatch(address[],uint256[])\":{\"details\":\"Get the balance of multiple account/token pairs\",\"params\":{\"ids\":\"IDs of the tokens\",\"owners\":\"The addresses of the token holders\"},\"return\":\"Balances for each owner and token id pair\"},\"getCollectionId(bytes32,bytes32,uint256)\":{\"details\":\"Constructs an outcome collection ID from a parent collection and an outcome collection.\",\"params\":{\"conditionId\":\"Condition ID of the outcome collection to combine with the parent outcome collection.\",\"indexSet\":\"Index set of the outcome collection to combine with the parent outcome collection.\",\"parentCollectionId\":\"Collection ID of the parent outcome collection, or bytes32(0) if there's no parent.\"}},\"getConditionId(address,bytes32,uint256)\":{\"details\":\"Constructs a condition ID from an oracle, a question ID, and the outcome slot count for the question.\",\"params\":{\"oracle\":\"The account assigned to report the result for the prepared condition.\",\"outcomeSlotCount\":\"The number of outcome slots which should be used for this condition. Must not exceed 256.\",\"questionId\":\"An identifier for the question to be answered by the oracle.\"}},\"getOutcomeSlotCount(bytes32)\":{\"details\":\"Gets the outcome slot count of a condition.\",\"params\":{\"conditionId\":\"ID of the condition.\"},\"return\":\"Number of outcome slots associated with a condition, or zero if condition has not been prepared yet.\"},\"getPositionId(address,bytes32)\":{\"details\":\"Constructs a position ID from a collateral token and an outcome collection. These IDs are used as the ERC-1155 ID for this contract.\",\"params\":{\"collateralToken\":\"Collateral token which backs the position.\",\"collectionId\":\"ID of the outcome collection associated with this position.\"}},\"isApprovedForAll(address,address)\":{\"params\":{\"operator\":\"Address of authorized operator\",\"owner\":\"The owner of the Tokens\"},\"return\":\"True if the operator is approved, false if not\"},\"prepareCondition(address,bytes32,uint256)\":{\"details\":\"This function prepares a condition by initializing a payout vector associated with the condition.\",\"params\":{\"oracle\":\"The account assigned to report the result for the prepared condition.\",\"outcomeSlotCount\":\"The number of outcome slots which should be used for this condition. Must not exceed 256.\",\"questionId\":\"An identifier for the question to be answered by the oracle.\"}},\"reportPayouts(bytes32,uint256[])\":{\"details\":\"Called by the oracle for reporting results of conditions. Will set the payout vector for the condition with the ID ``keccak256(abi.encodePacked(oracle, questionId, outcomeSlotCount))``, where oracle is the message sender, questionId is one of the parameters of this function, and outcomeSlotCount is the length of the payouts parameter, which contains the payoutNumerators for each outcome slot of the condition.\",\"params\":{\"payouts\":\"The oracle's answer\",\"questionId\":\"The question ID the oracle is answering for\"}},\"safeBatchTransferFrom(address,address,uint256[],uint256[],bytes)\":{\"details\":\"Transfers `values` amount(s) of `ids` from the `from` address to the `to` address specified. Caller must be approved to manage the tokens being transferred out of the `from` account. If `to` is a smart contract, will call `onERC1155BatchReceived` on `to` and act appropriately.\",\"params\":{\"data\":\"Data forwarded to `onERC1155Received` if `to` is a contract receiver\",\"from\":\"Source address\",\"ids\":\"IDs of each token type\",\"to\":\"Target address\",\"values\":\"Transfer amounts per token type\"}},\"safeTransferFrom(address,address,uint256,uint256,bytes)\":{\"details\":\"Transfers `value` amount of an `id` from the `from` address to the `to` address specified. Caller must be approved to manage the tokens being transferred out of the `from` account. If `to` is a smart contract, will call `onERC1155Received` on `to` and act appropriately.\",\"params\":{\"data\":\"Data forwarded to `onERC1155Received` if `to` is a contract receiver\",\"from\":\"Source address\",\"id\":\"ID of the token type\",\"to\":\"Target address\",\"value\":\"Transfer amount\"}},\"setApprovalForAll(address,bool)\":{\"details\":\"Sets or unsets the approval of a given operator An operator is allowed to transfer all tokens of the sender on their behalf\",\"params\":{\"approved\":\"representing the status of the approval to be set\",\"operator\":\"address to set the approval\"}},\"splitPosition(address,bytes32,bytes32,uint256[],uint256)\":{\"details\":\"This function splits a position. If splitting from the collateral, this contract will attempt to transfer `amount` collateral from the message sender to itself. Otherwise, this contract will burn `amount` stake held by the message sender in the position being split worth of EIP 1155 tokens. Regardless, if successful, `amount` stake will be minted in the split target positions. If any of the transfers, mints, or burns fail, the transaction will revert. The transaction will also revert if the given partition is trivial, invalid, or refers to more slots than the condition is prepared with.\",\"params\":{\"amount\":\"The amount of collateral or stake to split.\",\"collateralToken\":\"The address of the positions' backing collateral token.\",\"conditionId\":\"The ID of the condition to split on.\",\"parentCollectionId\":\"The ID of the outcome collections common to the position being split and the split target positions. May be null, in which only the collateral is shared.\",\"partition\":\"An array of disjoint index sets representing a nontrivial partition of the outcome slots of the given condition. E.g. A|B and C but not A|B and B|C (is not disjoint). Each element's a number which, together with the condition, represents the outcome collection. E.g. 0b110 is A|B, 0b010 is B, etc.\"}},\"supportsInterface(bytes4)\":{\"details\":\"See `IERC165.supportsInterface`.     * Time complexity O(1), guaranteed to always use less than 30 000 gas.\"}}},\"userdoc\":{\"methods\":{\"isApprovedForAll(address,address)\":{\"notice\":\"Queries the approval status of an operator for a given owner.\"}}}},\"settings\":{\"compilationTarget\":{\"/C/Users/Alan/Documents/GitHub/conditional-tokens-contracts/contracts/ConditionalTokens.sol\":\"ConditionalTokens\"},\"evmVersion\":\"petersburg\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/C/Users/Alan/Documents/GitHub/conditional-tokens-contracts/contracts/CTHelpers.sol\":{\"keccak256\":\"0x921eadb1d6cd0e742448334fb84c39b358a18cdeb7c6badbb89cae847d44a201\",\"urls\":[\"bzzr://54ea8cd3a2ef100710306ce15475573542ad5235ced471d59fa1744cfaea51c8\",\"dweb:/ipfs/Qme871evGa1PBSBnV9PisLhYnFnnahLmBuy5KakLSUKRPF\"]},\"/C/Users/Alan/Documents/GitHub/conditional-tokens-contracts/contracts/ConditionalTokens.sol\":{\"keccak256\":\"0x11a610a3fa07ac8a59a09a76fdb944f058fdb06d3414fe49995595e68cd17d41\",\"urls\":[\"bzzr://aec70f70bf6166a9ae46146c7d293156967b345273a250667732f6f8a4355342\",\"dweb:/ipfs/QmWUFR7eKVsMS61UCK1yY2bQQhcqEQHAAmJ2FJ3GozWV8k\"]},\"/C/Users/Alan/Documents/GitHub/conditional-tokens-contracts/contracts/ERC1155/ERC1155.sol\":{\"keccak256\":\"0xd8e6583f45a98380ff10a5656a7ae7ba6a275e0d051043e5842f0d541abd7caa\",\"urls\":[\"bzzr://978cc82d056d10d8cc14b02f35801b10c0c2f87b0adbf6c41bbd622e20ab8cee\",\"dweb:/ipfs/QmYWqCK6moph6oeBEUc1nDaGz4GRdGXmykwKD5rykVbhcU\"]},\"/C/Users/Alan/Documents/GitHub/conditional-tokens-contracts/contracts/ERC1155/IERC1155.sol\":{\"keccak256\":\"0x4971631d7de74464fed3e0abac04553e917be5e8cd10b3f825e2e7c39ccc2734\",\"urls\":[\"bzzr://e1e88dfe7440ceab59d4cd604d12e5dc93409a3c5058e497763703027ea7b9e6\",\"dweb:/ipfs/QmRzsL1o6iVEFmqBYCo3XpM4kpvbK7iSJWssXHQ3gHb5uq\"]},\"/C/Users/Alan/Documents/GitHub/conditional-tokens-contracts/contracts/ERC1155/IERC1155TokenReceiver.sol\":{\"keccak256\":\"0xca815b5ca57df8f1056b962c2728d6a1e56fc7d9a7869ccee8f5a1ac6075b75d\",\"urls\":[\"bzzr://61df3e61bf24c80714e326ffdc274aaefc342241de3e72374131f613cddbd042\",\"dweb:/ipfs/QmPnF3rGuY2H3Gifvha4dW7fJPptP7wJerHzjz4dpzfTJW\"]},\"openzeppelin-solidity/contracts/introspection/ERC165.sol\":{\"keccak256\":\"0xac2eacd7e7762e275442f28f21d821544df5aae2ed7698af13be8c41b7005e2e\",\"urls\":[\"bzzr://43e901f6f210568ebc1d3591da3ce6a9d10796b854767a9c6e3da10305a8a332\",\"dweb:/ipfs/QmQhfx2Ufr8a2gFXm3KogL66xGgAuAWMwcamkWFKGG6Vya\"]},\"openzeppelin-solidity/contracts/introspection/IERC165.sol\":{\"keccak256\":\"0x661553e43d7c4fbb2de504e5999fd5c104d367488350ed5bf023031bd1ba5ac5\",\"urls\":[\"bzzr://fc2ba15143ce3a00268ecd15fc98eb2469b18bfe27a64bbab0ac6446f161c739\",\"dweb:/ipfs/QmV7wjtRf11ibUHh4g8JjuhMpy68pPhV95L2y46UBoRfsZ\"]},\"openzeppelin-solidity/contracts/math/SafeMath.sol\":{\"keccak256\":\"0x4ccf2d7b51873db1ccfd54ca2adae5eac3b184f9699911ed4490438419f1c690\",\"urls\":[\"bzzr://1604f5b6d6e916c154efd8c6720cda069e5ba32dfa0a9dedf2b42e5b02d07f89\",\"dweb:/ipfs/QmV3yVktya1s617QmuzQR2CfuJgUi3dR2xEZY9ecmqZ2G1\"]},\"openzeppelin-solidity/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0x90e8c2521653bbb1768b05889c5760031e688d9cd361f167489b89215e201b95\",\"urls\":[\"bzzr://aa8b45b57edafc3d67bc5d916327ea16807fae33f753ca163ae0c4061b789766\",\"dweb:/ipfs/QmP5NaEwZthQeM2ESz4WTT3osrP7jhbvu7ocbttBi2JAw6\"]},\"openzeppelin-solidity/contracts/utils/Address.sol\":{\"keccak256\":\"0xf3358e5819ca73357abd6c90bdfffd0474af54364897f6b3e3234c4b71fbe9a1\",\"urls\":[\"bzzr://f7f6da60a184233fd666ac44e6fb2bd51ca6ebdc4867a310d368049aa4e62786\",\"dweb:/ipfs/Qmb3kNCoBUZdah1AgBBD4zMk898j5Qw8ahT1w5cCMYp5Y3\"]}},\"version\":1}",
+  "bytecode": "0x6080604052620000387f01ffc9a7000000000000000000000000000000000000000000000000000000006001600160e01b036200007216565b6200006c7fd9b67a26000000000000000000000000000000000000000000000000000000006001600160e01b036200007216565b62000141565b7fffffffff0000000000000000000000000000000000000000000000000000000080821614156200010457604080517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820152601c60248201527f4552433136353a20696e76616c696420696e7465726661636520696400000000604482015290519081900360640190fd5b7fffffffff00000000000000000000000000000000000000000000000000000000166000908152602081905260409020805460ff19166001179055565b6139b380620001516000396000f3fe608060405234801561001057600080fd5b50600436106101155760003560e01c8063856296f7116100a2578063d42dc0c211610071578063d42dc0c21461071a578063d96ee75414610737578063dd34de6714610769578063e985e9c514610786578063f242432a146107b457610115565b8063856296f7146105c45780639e7212ad146105ed578063a22cb46514610677578063c49298ac146106a557610115565b80632eb2c2d6116100e95780632eb2c2d61461024257806339dd7530146103695780634e1273f41461039557806372ce427514610508578063852c6ae21461059257610115565b8062fdd58e1461011a57806301b7037c1461015857806301ffc9a7146101e45780630504c8141461021f575b600080fd5b6101466004803603604081101561013057600080fd5b506001600160a01b038135169060200135610847565b60408051918252519081900360200190f35b6101e26004803603608081101561016e57600080fd5b6001600160a01b038235169160208101359160408201359190810190608081016060820135600160201b8111156101a457600080fd5b8201836020820111156101b657600080fd5b803590602001918460208302840111600160201b831117156101d757600080fd5b5090925090506108b9565b005b61020b600480360360208110156101fa57600080fd5b50356001600160e01b031916610c38565b604080519115158252519081900360200190f35b6101466004803603604081101561023557600080fd5b5080359060200135610c57565b6101e2600480360360a081101561025857600080fd5b6001600160a01b038235811692602081013590911691810190606081016040820135600160201b81111561028b57600080fd5b82018360208201111561029d57600080fd5b803590602001918460208302840111600160201b831117156102be57600080fd5b919390929091602081019035600160201b8111156102db57600080fd5b8201836020820111156102ed57600080fd5b803590602001918460208302840111600160201b8311171561030e57600080fd5b919390929091602081019035600160201b81111561032b57600080fd5b82018360208201111561033d57600080fd5b803590602001918460018302840111600160201b8311171561035e57600080fd5b509092509050610c85565b6101466004803603604081101561037f57600080fd5b506001600160a01b038135169060200135611012565b6104b8600480360360408110156103ab57600080fd5b810190602081018135600160201b8111156103c557600080fd5b8201836020820111156103d757600080fd5b803590602001918460208302840111600160201b831117156103f857600080fd5b9190808060200260200160405190810160405280939291908181526020018383602002808284376000920191909152509295949360208101935035915050600160201b81111561044757600080fd5b82018360208201111561045957600080fd5b803590602001918460208302840111600160201b8311171561047a57600080fd5b919080806020026020016040519081016040528093929190818152602001838360200280828437600092019190915250929550611025945050505050565b60408051602080825283518183015283519192839290830191858101910280838360005b838110156104f45781810151838201526020016104dc565b505050509050019250505060405180910390f35b6101e2600480360360a081101561051e57600080fd5b6001600160a01b038235169160208101359160408201359190810190608081016060820135600160201b81111561055457600080fd5b82018360208201111561056657600080fd5b803590602001918460208302840111600160201b8311171561058757600080fd5b91935091503561118c565b610146600480360360608110156105a857600080fd5b506001600160a01b038135169060208101359060400135611573565b610146600480360360608110156105da57600080fd5b5080359060208101359060400135611588565b6101e2600480360360a081101561060357600080fd5b6001600160a01b038235169160208101359160408201359190810190608081016060820135600160201b81111561063957600080fd5b82018360208201111561064b57600080fd5b803590602001918460208302840111600160201b8311171561066c57600080fd5b919350915035611595565b6101e26004803603604081101561068d57600080fd5b506001600160a01b038135169060200135151561198c565b6101e2600480360360408110156106bb57600080fd5b81359190810190604081016020820135600160201b8111156106dc57600080fd5b8201836020820111156106ee57600080fd5b803590602001918460208302840111600160201b8311171561070f57600080fd5b5090925090506119fa565b6101466004803603602081101561073057600080fd5b5035611ce4565b6101e26004803603606081101561074d57600080fd5b506001600160a01b038135169060208101359060400135611cf6565b6101466004803603602081101561077f57600080fd5b5035611e8e565b61020b6004803603604081101561079c57600080fd5b506001600160a01b0381358116916020013516611ea0565b6101e2600480360360a08110156107ca57600080fd5b6001600160a01b03823581169260208101359091169160408201359160608101359181019060a081016080820135600160201b81111561080957600080fd5b82018360208201111561081b57600080fd5b803590602001918460018302840111600160201b8311171561083c57600080fd5b509092509050611ece565b60006001600160a01b03831661088e5760405162461bcd60e51b815260040180806020018281038252602b8152602001806136fc602b913960400191505060405180910390fd5b5060008181526001602090815260408083206001600160a01b03861684529091529020545b92915050565b600083815260046020526040902054806109045760405162461bcd60e51b81526004018080602001828103825260258152602001806136d76025913960400191505060405180910390fd5b60008481526003602052604090205480610962576040805162461bcd60e51b815260206004820152601a60248201527918dbdb991a5d1a5bdb881b9bdd081c1c995c185c9959081e595d60321b604482015290519081900360640190fd5b60006000196001831b01815b85811015610aba57600087878381811061098457fe5b90506020020135905060008111801561099c57508281105b6109e5576040805162461bcd60e51b815260206004820152601560248201527419dbdd081a5b9d985b1a59081a5b99195e081cd95d605a1b604482015290519081900360640190fd5b60006109fb8c6109f68d8d866120aa565b6123d9565b90506000805b87811015610a58576001811b841615610a505760008c81526003602052604090208054610a4d919083908110610a3357fe5b90600052602060002001548361241d90919063ffffffff16565b91505b600101610a01565b506000610a653384610847565b90508015610aaa57610a9d610a908a610a84848663ffffffff61247716565b9063ffffffff6124d016565b889063ffffffff61241d16565b9650610aaa33848361253a565b50506001909201915061096e9050565b508115610ba55787610b81576040805163a9059cbb60e01b81523360048201526024810184905290516001600160a01b038b169163a9059cbb9160448083019260209291908290030181600087803b158015610b1557600080fd5b505af1158015610b29573d6000803e3d6000fd5b505050506040513d6020811015610b3f57600080fd5b5051610b7c5760405162461bcd60e51b815260040180806020018281038252602b815260200180613727602b913960400191505060405180910390fd5b610ba5565b610ba533610b8f8b8b6123d9565b84604051806020016040528060008152506125d5565b87896001600160a01b0316336001600160a01b03167f2682012a4a4f1973119f1c9b90745d1bd91fa2bab387344f044cb3586864d18d8a8a8a8860405180858152602001806020018381526020018281038252858582818152602001925060200280828437600083820152604051601f909101601f191690920182900397509095505050505050a4505050505050505050565b6001600160e01b03191660009081526020819052604090205460ff1690565b60036020528160005260406000208181548110610c7057fe5b90600052602060002001600091509150505481565b848314610cc35760405162461bcd60e51b815260040180806020018281038252602e815260200180613876602e913960400191505060405180910390fd5b6001600160a01b038716610d085760405162461bcd60e51b81526004018080602001828103825260288152602001806137526028913960400191505060405180910390fd5b6001600160a01b038816331480610d4757506001600160a01b038816600090815260026020908152604080832033845290915290205460ff1615156001145b610d825760405162461bcd60e51b81526004018080602001828103825260388152602001806138a46038913960400191505060405180910390fd5b60005b85811015610eb2576000878783818110610d9b57fe5b9050602002013590506000868684818110610db257fe5b905060200201359050610e04816001600085815260200190815260200160002060008e6001600160a01b03166001600160a01b03168152602001908152602001600020546126c390919063ffffffff16565b6001600084815260200190815260200160002060008d6001600160a01b03166001600160a01b0316815260200190815260200160002081905550610e876001600084815260200190815260200160002060008c6001600160a01b03166001600160a01b03168152602001908152602001600020548261241d90919063ffffffff16565b60009283526001602081815260408086206001600160a01b038f168752909152909320555001610d85565b50866001600160a01b0316886001600160a01b0316336001600160a01b03167f4a39dc06d4c0dbc64b70af90fd698a233a518aa5d07e595d983b8c0526c8f7fb898989896040518080602001806020018381038352878782818152602001925060200280828437600083820152601f01601f19169091018481038352858152602090810191508690860280828437600083820152604051601f909101601f19169092018290039850909650505050505050a461100833898989898080602002602001604051908101604052809392919081815260200183836020028082843760009201919091525050604080516020808d0282810182019093528c82529093508c92508b91829185019084908082843760009201919091525050604080516020601f8c018190048102820181019092528a815292508a915089908190840183828082843760009201919091525061272092505050565b5050505050505050565b600061101e83836123d9565b9392505050565b606081518351146110675760405162461bcd60e51b815260040180806020018281038252602e815260200180613848602e913960400191505060405180910390fd5b60608351604051908082528060200260200182016040528015611094578160200160208202803883390190505b50905060005b84518110156111845760006001600160a01b03168582815181106110ba57fe5b60200260200101516001600160a01b031614156111085760405162461bcd60e51b81526004018080602001828103825260348152602001806137f36034913960400191505060405180910390fd5b6001600085838151811061111857fe5b60200260200101518152602001908152602001600020600086838151811061113c57fe5b60200260200101516001600160a01b03166001600160a01b031681526020019081526020016000205482828151811061117157fe5b602090810291909101015260010161109a565b509392505050565b600182116111e1576040805162461bcd60e51b815260206004820181905260248201527f676f7420656d707479206f722073696e676c65746f6e20706172746974696f6e604482015290519081900360640190fd5b6000848152600360205260409020548061123f576040805162461bcd60e51b815260206004820152601a60248201527918dbdb991a5d1a5bdb881b9bdd081c1c995c185c9959081e595d60321b604482015290519081900360640190fd5b6040805184815260208086028201019091526000196001831b01908190606090868015611276578160200160208202803883390190505b5090506060878790506040519080825280602002602001820160405280156112a8578160200160208202803883390190505b50905060005b878110156113c05760008989838181106112c457fe5b9050602002013590506000811180156112dc57508581105b611325576040805162461bcd60e51b815260206004820152601560248201527419dbdd081a5b9d985b1a59081a5b99195e081cd95d605a1b604482015290519081900360640190fd5b8085821614611374576040805162461bcd60e51b81526020600482015260166024820152751c185c9d1a5d1a5bdb881b9bdd08191a5cda9bda5b9d60521b604482015290519081900360640190fd5b938418936113878d6109f68e8e856120aa565b84838151811061139357fe5b602002602001018181525050878383815181106113ac57fe5b6020908102919091010152506001016112ae565b50826114a5578961148c57604080516323b872dd60e01b81523360048201523060248201526044810188905290516001600160a01b038d16916323b872dd9160648083019260209291908290030181600087803b15801561142057600080fd5b505af1158015611434573d6000803e3d6000fd5b505050506040513d602081101561144a57600080fd5b50516114875760405162461bcd60e51b81526004018080602001828103825260238152602001806137d06023913960400191505060405180910390fd5b6114a0565b6114a03361149a8d8d6123d9565b8861253a565b6114ba565b6114ba3361149a8d6109f68e8e898b186120aa565b6114d5338383604051806020016040528060008152506128fd565b888a336001600160a01b03167f2e6bb91f8cbcda0c93623c54d0403a43514fabc40084ec96b6d5379a747862988e8c8c8c60405180856001600160a01b03166001600160a01b03168152602001806020018381526020018281038252858582818152602001925060200280828437600083820152604051601f909101601f191690920182900397509095505050505050a45050505050505050505050565b6000611580848484612b30565b949350505050565b60006115808484846120aa565b600182116115ea576040805162461bcd60e51b815260206004820181905260248201527f676f7420656d707479206f722073696e676c65746f6e20706172746974696f6e604482015290519081900360640190fd5b60008481526003602052604090205480611648576040805162461bcd60e51b815260206004820152601a60248201527918dbdb991a5d1a5bdb881b9bdd081c1c995c185c9959081e595d60321b604482015290519081900360640190fd5b6040805184815260208086028201019091526000196001831b0190819060609086801561167f578160200160208202803883390190505b5090506060878790506040519080825280602002602001820160405280156116b1578160200160208202803883390190505b50905060005b878110156117c95760008989838181106116cd57fe5b9050602002013590506000811180156116e557508581105b61172e576040805162461bcd60e51b815260206004820152601560248201527419dbdd081a5b9d985b1a59081a5b99195e081cd95d605a1b604482015290519081900360640190fd5b808582161461177d576040805162461bcd60e51b81526020600482015260166024820152751c185c9d1a5d1a5bdb881b9bdd08191a5cda9bda5b9d60521b604482015290519081900360640190fd5b938418936117908d6109f68e8e856120aa565b84838151811061179c57fe5b602002602001018181525050878383815181106117b557fe5b6020908102919091010152506001016116b7565b506117d5338383612b7d565b826118d957896118b0576040805163a9059cbb60e01b81523360048201526024810188905290516001600160a01b038d169163a9059cbb9160448083019260209291908290030181600087803b15801561182e57600080fd5b505af1158015611842573d6000803e3d6000fd5b505050506040513d602081101561185857600080fd5b50516118ab576040805162461bcd60e51b815260206004820181905260248201527f636f756c64206e6f742073656e6420636f6c6c61746572616c20746f6b656e73604482015290519081900360640190fd5b6118d4565b6118d4336118be8d8d6123d9565b88604051806020016040528060008152506125d5565b6118ee565b6118ee336118be8d6109f68e8e898b186120aa565b888a336001600160a01b03167f6f13ca62553fcc2bcd2372180a43949c1e4cebba603901ede2f4e14f36b282ca8e8c8c8c60405180856001600160a01b03166001600160a01b03168152602001806020018381526020018281038252858582818152602001925060200280828437600083820152604051601f909101601f191690920182900397509095505050505050a45050505050505050505050565b3360008181526002602090815260408083206001600160a01b03871680855290835292819020805460ff1916861515908117909155815190815290519293927f17307eab39ab6107e8899845ad3d59bd9653f200f220920489ca2b5937696c31929181900390910190a35050565b8060018111611a3a5760405162461bcd60e51b815260040180806020018281038252602a8152602001806138dc602a913960400191505060405180910390fd5b6000611a47338684612b30565b6000818152600360205260409020549091508214611aac576040805162461bcd60e51b815260206004820152601f60248201527f636f6e646974696f6e206e6f74207072657061726564206f7220666f756e6400604482015290519081900360640190fd5b60008181526004602052604090205415611b0d576040805162461bcd60e51b815260206004820152601e60248201527f7061796f75742064656e6f6d696e61746f7220616c7265616479207365740000604482015290519081900360640190fd5b6000805b83811015611bf2576000868683818110611b2757fe5b905060200201359050611b43818461241d90919063ffffffff16565b600085815260036020526040902080549194509083908110611b6157fe5b9060005260206000200154600014611bc0576040805162461bcd60e51b815260206004820152601c60248201527f7061796f7574206e756d657261746f7220616c72656164792073657400000000604482015290519081900360640190fd5b6000848152600360205260409020805482919084908110611bdd57fe5b60009182526020909120015550600101611b11565b5060008111611c3f576040805162461bcd60e51b81526020600482015260146024820152737061796f757420697320616c6c207a65726f657360601b604482015290519081900360640190fd5b60008281526004602090815260408083208490556003825291829020825186815291820183815281549383018490528993339387937fb44d84d3289691f71497564b85d4233648d9dbae8cbdbb4329f301c3a0185894938a93919291606083019084908015611ccd57602002820191906000526020600020905b815481526020019060010190808311611cb9575b5050935050505060405180910390a4505050505050565b60009081526003602052604090205490565b610100811115611d46576040805162461bcd60e51b8152602060048201526016602482015275746f6f206d616e79206f7574636f6d6520736c6f747360501b604482015290519081900360640190fd5b60018111611d855760405162461bcd60e51b815260040180806020018281038252602a8152602001806138dc602a913960400191505060405180910390fd5b6000611d92848484612b30565b60008181526003602052604090205490915015611df6576040805162461bcd60e51b815260206004820152601a60248201527f636f6e646974696f6e20616c7265616479207072657061726564000000000000604482015290519081900360640190fd5b81604051908082528060200260200182016040528015611e20578160200160208202803883390190505b5060008281526003602090815260409091208251611e44939192919091019061366e565b5082846001600160a01b0316827fab3760c3bd2bb38b5bcf54dc79802ed67338b4cf29f3054ded67ed24661e4177856040518082815260200191505060405180910390a450505050565b60046020526000908152604090205481565b6001600160a01b03918216600090815260026020908152604080832093909416825291909152205460ff1690565b6001600160a01b038516611f135760405162461bcd60e51b81526004018080602001828103825260288152602001806137526028913960400191505060405180910390fd5b6001600160a01b038616331480611f5257506001600160a01b038616600090815260026020908152604080832033845290915290205460ff1615156001145b611f8d5760405162461bcd60e51b81526004018080602001828103825260388152602001806138a46038913960400191505060405180910390fd5b60008481526001602090815260408083206001600160a01b038a168452909152902054611fc0908463ffffffff6126c316565b60008581526001602090815260408083206001600160a01b038b81168552925280832093909355871681522054611ff890849061241d565b60008581526001602090815260408083206001600160a01b03808b16808652918452938290209490945580518881529182018790528051928a169233927fc3d58168c5ae7397731d063d5bbf3d657854427343f4c083240f7aacaa2d0f6292908290030190a46120a2338787878787878080601f016020809104026020016040519081016040528093929190818152602001838380828437600092019190915250612d6192505050565b505050505050565b6040805160208082018590528183018490528251808303840181526060909201909252805191012060009060ff81901c151582805b60008051602061377a83398151915260018508935060008051602061377a833981519152600360008051602061377a83398151915280878809870908905061212681612ec3565b91508060008051602061377a83398151915283840914156120df5782801561214f575060028206155b806121665750821580156121665750600282066001145b1561217f578160008051602061377a8339815191520391505b8780156123b65760fe81901c151593506001600160fe1b031660008051602061377a833981519152600360008051602061377a83398151915280848509840908915060006121cc83612ec3565b90508480156121dc575060028106155b806121f35750841580156121f35750600281066001145b156122095760008051602061377a833981519152035b8260008051602061377a8339815191528283091461226e576040805162461bcd60e51b815260206004820152601c60248201527f696e76616c696420706172656e7420636f6c6c656374696f6e20494400000000604482015290519081900360640190fd5b6000606060066001600160a01b031688878686604051602001808581526020018481526020018381526020018281526020019450505050506040516020818303038152906040526040518082805190602001908083835b602083106122e45780518252601f1990920191602091820191016122c5565b6001836020036101000a038019825116818451168082178552505050505050905001915050600060405180830381855afa9150503d8060008114612344576040519150601f19603f3d011682016040523d82523d6000602084013e612349565b606091505b50915091508161238f576040805162461bcd60e51b815260206004820152600c60248201526b1958d859190819985a5b195960a21b604482015290519081900360640190fd5b8080602001905160408110156123a457600080fd5b50805160209091015190985095505050505b60028306600114156123cc57600160fe1b851894505b5092979650505050505050565b6040805160609390931b6bffffffffffffffffffffffff19166020808501919091526034808501939093528151808503909301835260549093019052805191012090565b60008282018381101561101e576040805162461bcd60e51b815260206004820152601b60248201527f536166654d6174683a206164646974696f6e206f766572666c6f770000000000604482015290519081900360640190fd5b600082612486575060006108b3565b8282028284828161249357fe5b041461101e5760405162461bcd60e51b81526004018080602001828103825260218152602001806138276021913960400191505060405180910390fd5b6000808211612526576040805162461bcd60e51b815260206004820152601a60248201527f536166654d6174683a206469766973696f6e206279207a65726f000000000000604482015290519081900360640190fd5b600082848161253157fe5b04949350505050565b60008281526001602090815260408083206001600160a01b038716845290915290205461256d908263ffffffff6126c316565b60008381526001602090815260408083206001600160a01b038816808552908352818420949094558051868152918201859052805192939233927fc3d58168c5ae7397731d063d5bbf3d657854427343f4c083240f7aacaa2d0f6292908290030190a4505050565b6001600160a01b03841661261a5760405162461bcd60e51b815260040180806020018281038252602181526020018061392d6021913960400191505060405180910390fd5b60008381526001602090815260408083206001600160a01b038816845290915290205461264e90839063ffffffff61241d16565b60008481526001602090815260408083206001600160a01b038916808552908352818420949094558051878152918201869052805133927fc3d58168c5ae7397731d063d5bbf3d657854427343f4c083240f7aacaa2d0f6292908290030190a46126bd33600086868686612d61565b50505050565b60008282111561271a576040805162461bcd60e51b815260206004820152601e60248201527f536166654d6174683a207375627472616374696f6e206f766572666c6f770000604482015290519081900360640190fd5b50900390565b612732846001600160a01b0316613668565b156120a25760405163bc197c8160e01b8082526001600160a01b0388811660048401908152888216602485015260a060448501908152875160a4860152875193949289169363bc197c81938c938c938b938b938b9392916064820191608481019160c4909101906020808a01910280838360005b838110156127be5781810151838201526020016127a6565b50505050905001848103835286818151815260200191508051906020019060200280838360005b838110156127fd5781810151838201526020016127e5565b50505050905001848103825285818151815260200191508051906020019080838360005b83811015612839578181015183820152602001612821565b50505050905090810190601f1680156128665780820380516001836020036101000a031916815260200191505b5098505050505050505050602060405180830381600087803b15801561288b57600080fd5b505af115801561289f573d6000803e3d6000fd5b505050506040513d60208110156128b557600080fd5b50516001600160e01b031916146120a25760405162461bcd60e51b815260040180806020018281038252603681526020018061379a6036913960400191505060405180910390fd5b6001600160a01b0384166129425760405162461bcd60e51b81526004018080602001828103825260278152602001806139066027913960400191505060405180910390fd5b81518351146129825760405162461bcd60e51b815260040180806020018281038252602e815260200180613876602e913960400191505060405180910390fd5b60005b8351811015612a46576129fd600160008684815181106129a157fe5b602002602001015181526020019081526020016000206000876001600160a01b03166001600160a01b03168152602001908152602001600020548483815181106129e757fe5b602002602001015161241d90919063ffffffff16565b60016000868481518110612a0d57fe5b602090810291909101810151825281810192909252604090810160009081206001600160a01b038a168252909252902055600101612985565b50836001600160a01b031660006001600160a01b0316336001600160a01b03167f4a39dc06d4c0dbc64b70af90fd698a233a518aa5d07e595d983b8c0526c8f7fb8686604051808060200180602001838103835285818151815260200191508051906020019060200280838360005b83811015612acd578181015183820152602001612ab5565b50505050905001838103825284818151815260200191508051906020019060200280838360005b83811015612b0c578181015183820152602001612af4565b5050505090500194505050505060405180910390a46126bd33600086868686612720565b6040805160609490941b6bffffffffffffffffffffffff19166020808601919091526034850193909352605480850192909252805180850390920182526074909301909252815191012090565b8051825114612bbd5760405162461bcd60e51b815260040180806020018281038252602e815260200180613876602e913960400191505060405180910390fd5b60005b8251811015612c8157612c38828281518110612bd857fe5b602002602001015160016000868581518110612bf057fe5b602002602001015181526020019081526020016000206000876001600160a01b03166001600160a01b03168152602001908152602001600020546126c390919063ffffffff16565b60016000858481518110612c4857fe5b602090810291909101810151825281810192909252604090810160009081206001600160a01b0389168252909252902055600101612bc0565b5060006001600160a01b0316836001600160a01b0316336001600160a01b03167f4a39dc06d4c0dbc64b70af90fd698a233a518aa5d07e595d983b8c0526c8f7fb8585604051808060200180602001838103835285818151815260200191508051906020019060200280838360005b83811015612d08578181015183820152602001612cf0565b50505050905001838103825284818151815260200191508051906020019060200280838360005b83811015612d47578181015183820152602001612d2f565b5050505090500194505050505060405180910390a4505050565b612d73846001600160a01b0316613668565b156120a25760405163f23a6e6160e01b8082526001600160a01b03888116600484019081528882166024850152604484018790526064840186905260a060848501908152855160a4860152855193949289169363f23a6e61938c938c938b938b938b93929160c490910190602085019080838360005b83811015612e01578181015183820152602001612de9565b50505050905090810190601f168015612e2e5780820380516001836020036101000a031916815260200191505b509650505050505050602060405180830381600087803b158015612e5157600080fd5b505af1158015612e65573d6000803e3d6000fd5b505050506040513d6020811015612e7b57600080fd5b50516001600160e01b031916146120a25760405162461bcd60e51b815260040180806020018281038252603181526020018061394e6031913960400191505060405180910390fd5b600060008051602061377a833981519152808380099150808283098181820990508181840992508183850993508184840992508183840990508181820982818309905082818209905082818209905082818309915082828609945082858609915082828309915082828509935082848509915082828309915082828309915082828509915082828609945082858609915082828309915082828309915082828609915082828509935082848609945082858609915082828309915082828509935082848509915082828309905082818209905082818209905082818309915082828609945082858509935082848509915082828309915082828309915082828609945082858609915082828309915082828609915082828309915082828309915082828609915082828509935082848509915082828309905082818209905082818309905082818509905082818209905082818209905082818209905082818209905082818309915082828609945082858609915082828609915082828509935082848509915082828509915082828309915082828309905082818309905082818209838182099050838182099050838182099050838182099050838183099150508281830991508282860994508285850993508284850991508282860994508285850993508284860994508285850993508284860994508285860991508282860991508282830991508282850993508284850991508282830991508282860994508285850993508284850991508282850991508282860994508285850993508284860994508285850993508284850991508282830991508282850991508282860994508285860991508282860991508282850993508284860994508285850993508284860994508285850993508284850991508282850991508282830991508282860994508285850993508284850991508282850991508282830991508282860994508285860991508282830990508281820990508281830990508281860990508281820990508281820990508281820990508281820990508281830991508282850993508284860994508285850993508284860994508285860991508282860991508282830991508282830991508282830991508282860991508282850993508284850991508282850991508282830991508282860994508285860991508282860991508282850993508284860994508285860991508282830991508282850993508284860994508285860991508282850993508284860994508285850993508284850991508282850991508282860994508285850993508284850991508282850991508282830991508282830991508282860994508285860991508282830991508282830991508282860991508282850993508284860994508285860991508282860990508281820990508281820990508281830991508282850993508284850991508282860994508285850993508284860994508285850993508284860994508285850993508284850991508282850990508281850991508282830991508282830991508282820991505081818509935081848409925081838509935081848409925081838509935081848509905081818509905081818409925050808284099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808383099392505050565b3b151590565b8280548282559060005260206000209081019282156136a9579160200282015b828111156136a957825182559160200191906001019061368e565b506136b59291506136b9565b5090565b6136d391905b808211156136b557600081556001016136bf565b9056fe726573756c7420666f7220636f6e646974696f6e206e6f7420726563656976656420796574455243313135353a2062616c616e636520717565727920666f7220746865207a65726f2061646472657373636f756c64206e6f74207472616e73666572207061796f757420746f206d6573736167652073656e646572455243313135353a207461726765742061646472657373206d757374206265206e6f6e2d7a65726f30644e72e131a029b85045b68181585d97816a916871ca8d3c208c16d87cfd47455243313135353a20676f7420756e6b6e6f776e2076616c75652066726f6d206f6e4552433131353542617463685265636569766564636f756c64206e6f74207265636569766520636f6c6c61746572616c20746f6b656e73455243313135353a20736f6d65206164647265737320696e2062617463682062616c616e6365207175657279206973207a65726f536166654d6174683a206d756c7469706c69636174696f6e206f766572666c6f77455243313135353a206f776e65727320616e6420494473206d75737420686176652073616d65206c656e67746873455243313135353a2049447320616e642076616c756573206d75737420686176652073616d65206c656e67746873455243313135353a206e656564206f70657261746f7220617070726f76616c20666f7220337264207061727479207472616e73666572732e74686572652073686f756c64206265206d6f7265207468616e206f6e65206f7574636f6d6520736c6f74455243313135353a206261746368206d696e7420746f20746865207a65726f2061646472657373455243313135353a206d696e7420746f20746865207a65726f2061646472657373455243313135353a20676f7420756e6b6e6f776e2076616c75652066726f6d206f6e455243313135355265636569766564a265627a7a7230582099b1c43cf91d9448c419eae7eabbd7bd8bf4bbfad8d18069c16b15ef7a0de20d64736f6c634300050a0032",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106101155760003560e01c8063856296f7116100a2578063d42dc0c211610071578063d42dc0c21461071a578063d96ee75414610737578063dd34de6714610769578063e985e9c514610786578063f242432a146107b457610115565b8063856296f7146105c45780639e7212ad146105ed578063a22cb46514610677578063c49298ac146106a557610115565b80632eb2c2d6116100e95780632eb2c2d61461024257806339dd7530146103695780634e1273f41461039557806372ce427514610508578063852c6ae21461059257610115565b8062fdd58e1461011a57806301b7037c1461015857806301ffc9a7146101e45780630504c8141461021f575b600080fd5b6101466004803603604081101561013057600080fd5b506001600160a01b038135169060200135610847565b60408051918252519081900360200190f35b6101e26004803603608081101561016e57600080fd5b6001600160a01b038235169160208101359160408201359190810190608081016060820135600160201b8111156101a457600080fd5b8201836020820111156101b657600080fd5b803590602001918460208302840111600160201b831117156101d757600080fd5b5090925090506108b9565b005b61020b600480360360208110156101fa57600080fd5b50356001600160e01b031916610c38565b604080519115158252519081900360200190f35b6101466004803603604081101561023557600080fd5b5080359060200135610c57565b6101e2600480360360a081101561025857600080fd5b6001600160a01b038235811692602081013590911691810190606081016040820135600160201b81111561028b57600080fd5b82018360208201111561029d57600080fd5b803590602001918460208302840111600160201b831117156102be57600080fd5b919390929091602081019035600160201b8111156102db57600080fd5b8201836020820111156102ed57600080fd5b803590602001918460208302840111600160201b8311171561030e57600080fd5b919390929091602081019035600160201b81111561032b57600080fd5b82018360208201111561033d57600080fd5b803590602001918460018302840111600160201b8311171561035e57600080fd5b509092509050610c85565b6101466004803603604081101561037f57600080fd5b506001600160a01b038135169060200135611012565b6104b8600480360360408110156103ab57600080fd5b810190602081018135600160201b8111156103c557600080fd5b8201836020820111156103d757600080fd5b803590602001918460208302840111600160201b831117156103f857600080fd5b9190808060200260200160405190810160405280939291908181526020018383602002808284376000920191909152509295949360208101935035915050600160201b81111561044757600080fd5b82018360208201111561045957600080fd5b803590602001918460208302840111600160201b8311171561047a57600080fd5b919080806020026020016040519081016040528093929190818152602001838360200280828437600092019190915250929550611025945050505050565b60408051602080825283518183015283519192839290830191858101910280838360005b838110156104f45781810151838201526020016104dc565b505050509050019250505060405180910390f35b6101e2600480360360a081101561051e57600080fd5b6001600160a01b038235169160208101359160408201359190810190608081016060820135600160201b81111561055457600080fd5b82018360208201111561056657600080fd5b803590602001918460208302840111600160201b8311171561058757600080fd5b91935091503561118c565b610146600480360360608110156105a857600080fd5b506001600160a01b038135169060208101359060400135611573565b610146600480360360608110156105da57600080fd5b5080359060208101359060400135611588565b6101e2600480360360a081101561060357600080fd5b6001600160a01b038235169160208101359160408201359190810190608081016060820135600160201b81111561063957600080fd5b82018360208201111561064b57600080fd5b803590602001918460208302840111600160201b8311171561066c57600080fd5b919350915035611595565b6101e26004803603604081101561068d57600080fd5b506001600160a01b038135169060200135151561198c565b6101e2600480360360408110156106bb57600080fd5b81359190810190604081016020820135600160201b8111156106dc57600080fd5b8201836020820111156106ee57600080fd5b803590602001918460208302840111600160201b8311171561070f57600080fd5b5090925090506119fa565b6101466004803603602081101561073057600080fd5b5035611ce4565b6101e26004803603606081101561074d57600080fd5b506001600160a01b038135169060208101359060400135611cf6565b6101466004803603602081101561077f57600080fd5b5035611e8e565b61020b6004803603604081101561079c57600080fd5b506001600160a01b0381358116916020013516611ea0565b6101e2600480360360a08110156107ca57600080fd5b6001600160a01b03823581169260208101359091169160408201359160608101359181019060a081016080820135600160201b81111561080957600080fd5b82018360208201111561081b57600080fd5b803590602001918460018302840111600160201b8311171561083c57600080fd5b509092509050611ece565b60006001600160a01b03831661088e5760405162461bcd60e51b815260040180806020018281038252602b8152602001806136fc602b913960400191505060405180910390fd5b5060008181526001602090815260408083206001600160a01b03861684529091529020545b92915050565b600083815260046020526040902054806109045760405162461bcd60e51b81526004018080602001828103825260258152602001806136d76025913960400191505060405180910390fd5b60008481526003602052604090205480610962576040805162461bcd60e51b815260206004820152601a60248201527918dbdb991a5d1a5bdb881b9bdd081c1c995c185c9959081e595d60321b604482015290519081900360640190fd5b60006000196001831b01815b85811015610aba57600087878381811061098457fe5b90506020020135905060008111801561099c57508281105b6109e5576040805162461bcd60e51b815260206004820152601560248201527419dbdd081a5b9d985b1a59081a5b99195e081cd95d605a1b604482015290519081900360640190fd5b60006109fb8c6109f68d8d866120aa565b6123d9565b90506000805b87811015610a58576001811b841615610a505760008c81526003602052604090208054610a4d919083908110610a3357fe5b90600052602060002001548361241d90919063ffffffff16565b91505b600101610a01565b506000610a653384610847565b90508015610aaa57610a9d610a908a610a84848663ffffffff61247716565b9063ffffffff6124d016565b889063ffffffff61241d16565b9650610aaa33848361253a565b50506001909201915061096e9050565b508115610ba55787610b81576040805163a9059cbb60e01b81523360048201526024810184905290516001600160a01b038b169163a9059cbb9160448083019260209291908290030181600087803b158015610b1557600080fd5b505af1158015610b29573d6000803e3d6000fd5b505050506040513d6020811015610b3f57600080fd5b5051610b7c5760405162461bcd60e51b815260040180806020018281038252602b815260200180613727602b913960400191505060405180910390fd5b610ba5565b610ba533610b8f8b8b6123d9565b84604051806020016040528060008152506125d5565b87896001600160a01b0316336001600160a01b03167f2682012a4a4f1973119f1c9b90745d1bd91fa2bab387344f044cb3586864d18d8a8a8a8860405180858152602001806020018381526020018281038252858582818152602001925060200280828437600083820152604051601f909101601f191690920182900397509095505050505050a4505050505050505050565b6001600160e01b03191660009081526020819052604090205460ff1690565b60036020528160005260406000208181548110610c7057fe5b90600052602060002001600091509150505481565b848314610cc35760405162461bcd60e51b815260040180806020018281038252602e815260200180613876602e913960400191505060405180910390fd5b6001600160a01b038716610d085760405162461bcd60e51b81526004018080602001828103825260288152602001806137526028913960400191505060405180910390fd5b6001600160a01b038816331480610d4757506001600160a01b038816600090815260026020908152604080832033845290915290205460ff1615156001145b610d825760405162461bcd60e51b81526004018080602001828103825260388152602001806138a46038913960400191505060405180910390fd5b60005b85811015610eb2576000878783818110610d9b57fe5b9050602002013590506000868684818110610db257fe5b905060200201359050610e04816001600085815260200190815260200160002060008e6001600160a01b03166001600160a01b03168152602001908152602001600020546126c390919063ffffffff16565b6001600084815260200190815260200160002060008d6001600160a01b03166001600160a01b0316815260200190815260200160002081905550610e876001600084815260200190815260200160002060008c6001600160a01b03166001600160a01b03168152602001908152602001600020548261241d90919063ffffffff16565b60009283526001602081815260408086206001600160a01b038f168752909152909320555001610d85565b50866001600160a01b0316886001600160a01b0316336001600160a01b03167f4a39dc06d4c0dbc64b70af90fd698a233a518aa5d07e595d983b8c0526c8f7fb898989896040518080602001806020018381038352878782818152602001925060200280828437600083820152601f01601f19169091018481038352858152602090810191508690860280828437600083820152604051601f909101601f19169092018290039850909650505050505050a461100833898989898080602002602001604051908101604052809392919081815260200183836020028082843760009201919091525050604080516020808d0282810182019093528c82529093508c92508b91829185019084908082843760009201919091525050604080516020601f8c018190048102820181019092528a815292508a915089908190840183828082843760009201919091525061272092505050565b5050505050505050565b600061101e83836123d9565b9392505050565b606081518351146110675760405162461bcd60e51b815260040180806020018281038252602e815260200180613848602e913960400191505060405180910390fd5b60608351604051908082528060200260200182016040528015611094578160200160208202803883390190505b50905060005b84518110156111845760006001600160a01b03168582815181106110ba57fe5b60200260200101516001600160a01b031614156111085760405162461bcd60e51b81526004018080602001828103825260348152602001806137f36034913960400191505060405180910390fd5b6001600085838151811061111857fe5b60200260200101518152602001908152602001600020600086838151811061113c57fe5b60200260200101516001600160a01b03166001600160a01b031681526020019081526020016000205482828151811061117157fe5b602090810291909101015260010161109a565b509392505050565b600182116111e1576040805162461bcd60e51b815260206004820181905260248201527f676f7420656d707479206f722073696e676c65746f6e20706172746974696f6e604482015290519081900360640190fd5b6000848152600360205260409020548061123f576040805162461bcd60e51b815260206004820152601a60248201527918dbdb991a5d1a5bdb881b9bdd081c1c995c185c9959081e595d60321b604482015290519081900360640190fd5b6040805184815260208086028201019091526000196001831b01908190606090868015611276578160200160208202803883390190505b5090506060878790506040519080825280602002602001820160405280156112a8578160200160208202803883390190505b50905060005b878110156113c05760008989838181106112c457fe5b9050602002013590506000811180156112dc57508581105b611325576040805162461bcd60e51b815260206004820152601560248201527419dbdd081a5b9d985b1a59081a5b99195e081cd95d605a1b604482015290519081900360640190fd5b8085821614611374576040805162461bcd60e51b81526020600482015260166024820152751c185c9d1a5d1a5bdb881b9bdd08191a5cda9bda5b9d60521b604482015290519081900360640190fd5b938418936113878d6109f68e8e856120aa565b84838151811061139357fe5b602002602001018181525050878383815181106113ac57fe5b6020908102919091010152506001016112ae565b50826114a5578961148c57604080516323b872dd60e01b81523360048201523060248201526044810188905290516001600160a01b038d16916323b872dd9160648083019260209291908290030181600087803b15801561142057600080fd5b505af1158015611434573d6000803e3d6000fd5b505050506040513d602081101561144a57600080fd5b50516114875760405162461bcd60e51b81526004018080602001828103825260238152602001806137d06023913960400191505060405180910390fd5b6114a0565b6114a03361149a8d8d6123d9565b8861253a565b6114ba565b6114ba3361149a8d6109f68e8e898b186120aa565b6114d5338383604051806020016040528060008152506128fd565b888a336001600160a01b03167f2e6bb91f8cbcda0c93623c54d0403a43514fabc40084ec96b6d5379a747862988e8c8c8c60405180856001600160a01b03166001600160a01b03168152602001806020018381526020018281038252858582818152602001925060200280828437600083820152604051601f909101601f191690920182900397509095505050505050a45050505050505050505050565b6000611580848484612b30565b949350505050565b60006115808484846120aa565b600182116115ea576040805162461bcd60e51b815260206004820181905260248201527f676f7420656d707479206f722073696e676c65746f6e20706172746974696f6e604482015290519081900360640190fd5b60008481526003602052604090205480611648576040805162461bcd60e51b815260206004820152601a60248201527918dbdb991a5d1a5bdb881b9bdd081c1c995c185c9959081e595d60321b604482015290519081900360640190fd5b6040805184815260208086028201019091526000196001831b0190819060609086801561167f578160200160208202803883390190505b5090506060878790506040519080825280602002602001820160405280156116b1578160200160208202803883390190505b50905060005b878110156117c95760008989838181106116cd57fe5b9050602002013590506000811180156116e557508581105b61172e576040805162461bcd60e51b815260206004820152601560248201527419dbdd081a5b9d985b1a59081a5b99195e081cd95d605a1b604482015290519081900360640190fd5b808582161461177d576040805162461bcd60e51b81526020600482015260166024820152751c185c9d1a5d1a5bdb881b9bdd08191a5cda9bda5b9d60521b604482015290519081900360640190fd5b938418936117908d6109f68e8e856120aa565b84838151811061179c57fe5b602002602001018181525050878383815181106117b557fe5b6020908102919091010152506001016116b7565b506117d5338383612b7d565b826118d957896118b0576040805163a9059cbb60e01b81523360048201526024810188905290516001600160a01b038d169163a9059cbb9160448083019260209291908290030181600087803b15801561182e57600080fd5b505af1158015611842573d6000803e3d6000fd5b505050506040513d602081101561185857600080fd5b50516118ab576040805162461bcd60e51b815260206004820181905260248201527f636f756c64206e6f742073656e6420636f6c6c61746572616c20746f6b656e73604482015290519081900360640190fd5b6118d4565b6118d4336118be8d8d6123d9565b88604051806020016040528060008152506125d5565b6118ee565b6118ee336118be8d6109f68e8e898b186120aa565b888a336001600160a01b03167f6f13ca62553fcc2bcd2372180a43949c1e4cebba603901ede2f4e14f36b282ca8e8c8c8c60405180856001600160a01b03166001600160a01b03168152602001806020018381526020018281038252858582818152602001925060200280828437600083820152604051601f909101601f191690920182900397509095505050505050a45050505050505050505050565b3360008181526002602090815260408083206001600160a01b03871680855290835292819020805460ff1916861515908117909155815190815290519293927f17307eab39ab6107e8899845ad3d59bd9653f200f220920489ca2b5937696c31929181900390910190a35050565b8060018111611a3a5760405162461bcd60e51b815260040180806020018281038252602a8152602001806138dc602a913960400191505060405180910390fd5b6000611a47338684612b30565b6000818152600360205260409020549091508214611aac576040805162461bcd60e51b815260206004820152601f60248201527f636f6e646974696f6e206e6f74207072657061726564206f7220666f756e6400604482015290519081900360640190fd5b60008181526004602052604090205415611b0d576040805162461bcd60e51b815260206004820152601e60248201527f7061796f75742064656e6f6d696e61746f7220616c7265616479207365740000604482015290519081900360640190fd5b6000805b83811015611bf2576000868683818110611b2757fe5b905060200201359050611b43818461241d90919063ffffffff16565b600085815260036020526040902080549194509083908110611b6157fe5b9060005260206000200154600014611bc0576040805162461bcd60e51b815260206004820152601c60248201527f7061796f7574206e756d657261746f7220616c72656164792073657400000000604482015290519081900360640190fd5b6000848152600360205260409020805482919084908110611bdd57fe5b60009182526020909120015550600101611b11565b5060008111611c3f576040805162461bcd60e51b81526020600482015260146024820152737061796f757420697320616c6c207a65726f657360601b604482015290519081900360640190fd5b60008281526004602090815260408083208490556003825291829020825186815291820183815281549383018490528993339387937fb44d84d3289691f71497564b85d4233648d9dbae8cbdbb4329f301c3a0185894938a93919291606083019084908015611ccd57602002820191906000526020600020905b815481526020019060010190808311611cb9575b5050935050505060405180910390a4505050505050565b60009081526003602052604090205490565b610100811115611d46576040805162461bcd60e51b8152602060048201526016602482015275746f6f206d616e79206f7574636f6d6520736c6f747360501b604482015290519081900360640190fd5b60018111611d855760405162461bcd60e51b815260040180806020018281038252602a8152602001806138dc602a913960400191505060405180910390fd5b6000611d92848484612b30565b60008181526003602052604090205490915015611df6576040805162461bcd60e51b815260206004820152601a60248201527f636f6e646974696f6e20616c7265616479207072657061726564000000000000604482015290519081900360640190fd5b81604051908082528060200260200182016040528015611e20578160200160208202803883390190505b5060008281526003602090815260409091208251611e44939192919091019061366e565b5082846001600160a01b0316827fab3760c3bd2bb38b5bcf54dc79802ed67338b4cf29f3054ded67ed24661e4177856040518082815260200191505060405180910390a450505050565b60046020526000908152604090205481565b6001600160a01b03918216600090815260026020908152604080832093909416825291909152205460ff1690565b6001600160a01b038516611f135760405162461bcd60e51b81526004018080602001828103825260288152602001806137526028913960400191505060405180910390fd5b6001600160a01b038616331480611f5257506001600160a01b038616600090815260026020908152604080832033845290915290205460ff1615156001145b611f8d5760405162461bcd60e51b81526004018080602001828103825260388152602001806138a46038913960400191505060405180910390fd5b60008481526001602090815260408083206001600160a01b038a168452909152902054611fc0908463ffffffff6126c316565b60008581526001602090815260408083206001600160a01b038b81168552925280832093909355871681522054611ff890849061241d565b60008581526001602090815260408083206001600160a01b03808b16808652918452938290209490945580518881529182018790528051928a169233927fc3d58168c5ae7397731d063d5bbf3d657854427343f4c083240f7aacaa2d0f6292908290030190a46120a2338787878787878080601f016020809104026020016040519081016040528093929190818152602001838380828437600092019190915250612d6192505050565b505050505050565b6040805160208082018590528183018490528251808303840181526060909201909252805191012060009060ff81901c151582805b60008051602061377a83398151915260018508935060008051602061377a833981519152600360008051602061377a83398151915280878809870908905061212681612ec3565b91508060008051602061377a83398151915283840914156120df5782801561214f575060028206155b806121665750821580156121665750600282066001145b1561217f578160008051602061377a8339815191520391505b8780156123b65760fe81901c151593506001600160fe1b031660008051602061377a833981519152600360008051602061377a83398151915280848509840908915060006121cc83612ec3565b90508480156121dc575060028106155b806121f35750841580156121f35750600281066001145b156122095760008051602061377a833981519152035b8260008051602061377a8339815191528283091461226e576040805162461bcd60e51b815260206004820152601c60248201527f696e76616c696420706172656e7420636f6c6c656374696f6e20494400000000604482015290519081900360640190fd5b6000606060066001600160a01b031688878686604051602001808581526020018481526020018381526020018281526020019450505050506040516020818303038152906040526040518082805190602001908083835b602083106122e45780518252601f1990920191602091820191016122c5565b6001836020036101000a038019825116818451168082178552505050505050905001915050600060405180830381855afa9150503d8060008114612344576040519150601f19603f3d011682016040523d82523d6000602084013e612349565b606091505b50915091508161238f576040805162461bcd60e51b815260206004820152600c60248201526b1958d859190819985a5b195960a21b604482015290519081900360640190fd5b8080602001905160408110156123a457600080fd5b50805160209091015190985095505050505b60028306600114156123cc57600160fe1b851894505b5092979650505050505050565b6040805160609390931b6bffffffffffffffffffffffff19166020808501919091526034808501939093528151808503909301835260549093019052805191012090565b60008282018381101561101e576040805162461bcd60e51b815260206004820152601b60248201527f536166654d6174683a206164646974696f6e206f766572666c6f770000000000604482015290519081900360640190fd5b600082612486575060006108b3565b8282028284828161249357fe5b041461101e5760405162461bcd60e51b81526004018080602001828103825260218152602001806138276021913960400191505060405180910390fd5b6000808211612526576040805162461bcd60e51b815260206004820152601a60248201527f536166654d6174683a206469766973696f6e206279207a65726f000000000000604482015290519081900360640190fd5b600082848161253157fe5b04949350505050565b60008281526001602090815260408083206001600160a01b038716845290915290205461256d908263ffffffff6126c316565b60008381526001602090815260408083206001600160a01b038816808552908352818420949094558051868152918201859052805192939233927fc3d58168c5ae7397731d063d5bbf3d657854427343f4c083240f7aacaa2d0f6292908290030190a4505050565b6001600160a01b03841661261a5760405162461bcd60e51b815260040180806020018281038252602181526020018061392d6021913960400191505060405180910390fd5b60008381526001602090815260408083206001600160a01b038816845290915290205461264e90839063ffffffff61241d16565b60008481526001602090815260408083206001600160a01b038916808552908352818420949094558051878152918201869052805133927fc3d58168c5ae7397731d063d5bbf3d657854427343f4c083240f7aacaa2d0f6292908290030190a46126bd33600086868686612d61565b50505050565b60008282111561271a576040805162461bcd60e51b815260206004820152601e60248201527f536166654d6174683a207375627472616374696f6e206f766572666c6f770000604482015290519081900360640190fd5b50900390565b612732846001600160a01b0316613668565b156120a25760405163bc197c8160e01b8082526001600160a01b0388811660048401908152888216602485015260a060448501908152875160a4860152875193949289169363bc197c81938c938c938b938b938b9392916064820191608481019160c4909101906020808a01910280838360005b838110156127be5781810151838201526020016127a6565b50505050905001848103835286818151815260200191508051906020019060200280838360005b838110156127fd5781810151838201526020016127e5565b50505050905001848103825285818151815260200191508051906020019080838360005b83811015612839578181015183820152602001612821565b50505050905090810190601f1680156128665780820380516001836020036101000a031916815260200191505b5098505050505050505050602060405180830381600087803b15801561288b57600080fd5b505af115801561289f573d6000803e3d6000fd5b505050506040513d60208110156128b557600080fd5b50516001600160e01b031916146120a25760405162461bcd60e51b815260040180806020018281038252603681526020018061379a6036913960400191505060405180910390fd5b6001600160a01b0384166129425760405162461bcd60e51b81526004018080602001828103825260278152602001806139066027913960400191505060405180910390fd5b81518351146129825760405162461bcd60e51b815260040180806020018281038252602e815260200180613876602e913960400191505060405180910390fd5b60005b8351811015612a46576129fd600160008684815181106129a157fe5b602002602001015181526020019081526020016000206000876001600160a01b03166001600160a01b03168152602001908152602001600020548483815181106129e757fe5b602002602001015161241d90919063ffffffff16565b60016000868481518110612a0d57fe5b602090810291909101810151825281810192909252604090810160009081206001600160a01b038a168252909252902055600101612985565b50836001600160a01b031660006001600160a01b0316336001600160a01b03167f4a39dc06d4c0dbc64b70af90fd698a233a518aa5d07e595d983b8c0526c8f7fb8686604051808060200180602001838103835285818151815260200191508051906020019060200280838360005b83811015612acd578181015183820152602001612ab5565b50505050905001838103825284818151815260200191508051906020019060200280838360005b83811015612b0c578181015183820152602001612af4565b5050505090500194505050505060405180910390a46126bd33600086868686612720565b6040805160609490941b6bffffffffffffffffffffffff19166020808601919091526034850193909352605480850192909252805180850390920182526074909301909252815191012090565b8051825114612bbd5760405162461bcd60e51b815260040180806020018281038252602e815260200180613876602e913960400191505060405180910390fd5b60005b8251811015612c8157612c38828281518110612bd857fe5b602002602001015160016000868581518110612bf057fe5b602002602001015181526020019081526020016000206000876001600160a01b03166001600160a01b03168152602001908152602001600020546126c390919063ffffffff16565b60016000858481518110612c4857fe5b602090810291909101810151825281810192909252604090810160009081206001600160a01b0389168252909252902055600101612bc0565b5060006001600160a01b0316836001600160a01b0316336001600160a01b03167f4a39dc06d4c0dbc64b70af90fd698a233a518aa5d07e595d983b8c0526c8f7fb8585604051808060200180602001838103835285818151815260200191508051906020019060200280838360005b83811015612d08578181015183820152602001612cf0565b50505050905001838103825284818151815260200191508051906020019060200280838360005b83811015612d47578181015183820152602001612d2f565b5050505090500194505050505060405180910390a4505050565b612d73846001600160a01b0316613668565b156120a25760405163f23a6e6160e01b8082526001600160a01b03888116600484019081528882166024850152604484018790526064840186905260a060848501908152855160a4860152855193949289169363f23a6e61938c938c938b938b938b93929160c490910190602085019080838360005b83811015612e01578181015183820152602001612de9565b50505050905090810190601f168015612e2e5780820380516001836020036101000a031916815260200191505b509650505050505050602060405180830381600087803b158015612e5157600080fd5b505af1158015612e65573d6000803e3d6000fd5b505050506040513d6020811015612e7b57600080fd5b50516001600160e01b031916146120a25760405162461bcd60e51b815260040180806020018281038252603181526020018061394e6031913960400191505060405180910390fd5b600060008051602061377a833981519152808380099150808283098181820990508181840992508183850993508184840992508183840990508181820982818309905082818209905082818209905082818309915082828609945082858609915082828309915082828509935082848509915082828309915082828309915082828509915082828609945082858609915082828309915082828309915082828609915082828509935082848609945082858609915082828309915082828509935082848509915082828309905082818209905082818209905082818309915082828609945082858509935082848509915082828309915082828309915082828609945082858609915082828309915082828609915082828309915082828309915082828609915082828509935082848509915082828309905082818209905082818309905082818509905082818209905082818209905082818209905082818209905082818309915082828609945082858609915082828609915082828509935082848509915082828509915082828309915082828309905082818309905082818209838182099050838182099050838182099050838182099050838183099150508281830991508282860994508285850993508284850991508282860994508285850993508284860994508285850993508284860994508285860991508282860991508282830991508282850993508284850991508282830991508282860994508285850993508284850991508282850991508282860994508285850993508284860994508285850993508284850991508282830991508282850991508282860994508285860991508282860991508282850993508284860994508285850993508284860994508285850993508284850991508282850991508282830991508282860994508285850993508284850991508282850991508282830991508282860994508285860991508282830990508281820990508281830990508281860990508281820990508281820990508281820990508281820990508281830991508282850993508284860994508285850993508284860994508285860991508282860991508282830991508282830991508282830991508282860991508282850993508284850991508282850991508282830991508282860994508285860991508282860991508282850993508284860994508285860991508282830991508282850993508284860994508285860991508282850993508284860994508285850993508284850991508282850991508282860994508285850993508284850991508282850991508282830991508282830991508282860994508285860991508282830991508282830991508282860991508282850993508284860994508285860991508282860990508281820990508281820990508281830991508282850993508284850991508282860994508285850993508284860994508285850993508284860994508285850993508284850991508282850990508281850991508282830991508282830991508282820991505081818509935081848409925081838509935081848409925081838509935081848509905081818509905081818409925050808284099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808384099250808383099392505050565b3b151590565b8280548282559060005260206000209081019282156136a9579160200282015b828111156136a957825182559160200191906001019061368e565b506136b59291506136b9565b5090565b6136d391905b808211156136b557600081556001016136bf565b9056fe726573756c7420666f7220636f6e646974696f6e206e6f7420726563656976656420796574455243313135353a2062616c616e636520717565727920666f7220746865207a65726f2061646472657373636f756c64206e6f74207472616e73666572207061796f757420746f206d6573736167652073656e646572455243313135353a207461726765742061646472657373206d757374206265206e6f6e2d7a65726f30644e72e131a029b85045b68181585d97816a916871ca8d3c208c16d87cfd47455243313135353a20676f7420756e6b6e6f776e2076616c75652066726f6d206f6e4552433131353542617463685265636569766564636f756c64206e6f74207265636569766520636f6c6c61746572616c20746f6b656e73455243313135353a20736f6d65206164647265737320696e2062617463682062616c616e6365207175657279206973207a65726f536166654d6174683a206d756c7469706c69636174696f6e206f766572666c6f77455243313135353a206f776e65727320616e6420494473206d75737420686176652073616d65206c656e67746873455243313135353a2049447320616e642076616c756573206d75737420686176652073616d65206c656e67746873455243313135353a206e656564206f70657261746f7220617070726f76616c20666f7220337264207061727479207472616e73666572732e74686572652073686f756c64206265206d6f7265207468616e206f6e65206f7574636f6d6520736c6f74455243313135353a206261746368206d696e7420746f20746865207a65726f2061646472657373455243313135353a206d696e7420746f20746865207a65726f2061646472657373455243313135353a20676f7420756e6b6e6f776e2076616c75652066726f6d206f6e455243313135355265636569766564a265627a7a7230582099b1c43cf91d9448c419eae7eabbd7bd8bf4bbfad8d18069c16b15ef7a0de20d64736f6c634300050a0032",
+  "sourceMap": "200:15561:1:-;;;718:40:7;737:20;-1:-1:-1;;;;;718:18:7;:40;:::i;:::-;894:330:2;926:288;-1:-1:-1;;;;;894:18:2;:330;:::i;:::-;200:15561:1;;1442:190:7;1517:25;;;;;;1509:66;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1585:33;;:20;:33;;;;;;;;;;:40;;-1:-1:-1;;1585:40:7;1621:4;1585:40;;;1442:190::o;200:15561:1:-;;;;;;;",
+  "deployedSourceMap": "200:15561:1:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;200:15561:1;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1481:205:2;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;-1:-1;;;;;;1481:205:2;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;11764:1857:1;;;;;;13:3:-1;8;5:12;2:2;;;30:1;27;20:12;2:2;-1:-1;;;;;11764:1857:1;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;;5:28;;2:2;;;46:1;43;36:12;2:2;11764:1857:1;;35:9:-1;28:4;12:14;8:25;5:40;2:2;;;58:1;55;48:12;2:2;11764:1857:1;;;;;;101:9:-1;95:2;81:12;77:21;67:8;63:36;60:51;-1:-1;;;25:12;22:29;11:108;8:2;;;132:1;129;122:12;8:2;-1:-1;11764:1857:1;;-1:-1:-1;11764:1857:1;-1:-1:-1;11764:1857:1;:::i;:::-;;915:133:7;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;-1:-1;915:133:7;-1:-1:-1;;;;;;915:133:7;;:::i;:::-;;;;;;;;;;;;;;;;;;2587:50:1;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;-1:-1;2587:50:1;;;;;;;:::i;5265:971:2:-;;;;;;13:3:-1;8;5:12;2:2;;;30:1;27;20:12;2:2;-1:-1;;;;;5265:971:2;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;;5:28;;2:2;;;46:1;43;36:12;2:2;5265:971:2;;35:9:-1;28:4;12:14;8:25;5:40;2:2;;;58:1;55;48:12;2:2;5265:971:2;;;;;;101:9:-1;95:2;81:12;77:21;67:8;63:36;60:51;-1:-1;;;25:12;22:29;11:108;8:2;;;132:1;129;122:12;8:2;5265:971:2;;;;;;;;;;;-1:-1:-1;;;5:28;;2:2;;;46:1;43;36:12;2:2;5265:971:2;;35:9:-1;28:4;12:14;8:25;5:40;2:2;;;58:1;55;48:12;2:2;5265:971:2;;;;;;101:9:-1;95:2;81:12;77:21;67:8;63:36;60:51;-1:-1;;;25:12;22:29;11:108;8:2;;;132:1;129;122:12;8:2;5265:971:2;;;;;;;;;;;-1:-1:-1;;;5:28;;2:2;;;46:1;43;36:12;2:2;5265:971:2;;35:9:-1;28:4;12:14;8:25;5:40;2:2;;;58:1;55;48:12;2:2;5265:971:2;;;;;;100:9:-1;95:1;81:12;77:20;67:8;63:35;60:50;-1:-1;;;25:12;22:29;11:107;8:2;;;131:1;128;121:12;8:2;-1:-1;5265:971:2;;-1:-1:-1;5265:971:2;-1:-1:-1;5265:971:2;:::i;15583:176:1:-;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;-1:-1;;;;;;15583:176:1;;;;;;;;:::i;1921:594:2:-;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;1921:594:2;;;;;;;;-1:-1:-1;;;5:28;;2:2;;;46:1;43;36:12;2:2;1921:594:2;;35:9:-1;28:4;12:14;8:25;5:40;2:2;;;58:1;55;48:12;2:2;1921:594:2;;;;;;101:9:-1;95:2;81:12;77:21;67:8;63:36;60:51;-1:-1;;;25:12;22:29;11:108;8:2;;;132:1;129;122:12;8:2;1921:594:2;;;;;;;;;;;;;;;;;;;;;;;;;;;;;30:3:-1;22:6;14;1:33;99:1;81:16;;74:27;;;;-1:-1;1921:594:2;;;;;;;;-1:-1:-1;1921:594:2;;-1:-1:-1;;;;;5:28;;2:2;;;46:1;43;36:12;2:2;1921:594:2;;35:9:-1;28:4;12:14;8:25;5:40;2:2;;;58:1;55;48:12;2:2;1921:594:2;;;;;;101:9:-1;95:2;81:12;77:21;67:8;63:36;60:51;-1:-1;;;25:12;22:29;11:108;8:2;;;132:1;129;122:12;8:2;1921:594:2;;;;;;;;;;;;;;;;;;;;;;;;;;;;;30:3:-1;22:6;14;1:33;99:1;81:16;;74:27;;;;-1:-1;1921:594:2;;-1:-1:-1;1921:594:2;;-1:-1:-1;;;;;1921:594:2:i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;8:100:-1;33:3;30:1;27:10;8:100;;;90:11;;;84:18;71:11;;;64:39;52:2;45:10;8:100;;;12:14;1921:594:2;;;;;;;;;;;;;;;;;6951:2724:1;;;;;;13:3:-1;8;5:12;2:2;;;30:1;27;20:12;2:2;-1:-1;;;;;6951:2724:1;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;;5:28;;2:2;;;46:1;43;36:12;2:2;6951:2724:1;;35:9:-1;28:4;12:14;8:25;5:40;2:2;;;58:1;55;48:12;2:2;6951:2724:1;;;;;;101:9:-1;95:2;81:12;77:21;67:8;63:36;60:51;-1:-1;;;25:12;22:29;11:108;8:2;;;132:1;129;122:12;8:2;6951:2724:1;;-1:-1:-1;6951:2724:1;-1:-1:-1;6951:2724:1;;:::i;14410:201::-;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;-1:-1;;;;;;14410:201:1;;;;;;;;;;;;;:::i;15056:213::-;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;-1:-1;15056:213:1;;;;;;;;;;;;:::i;9681:2077::-;;;;;;13:3:-1;8;5:12;2:2;;;30:1;27;20:12;2:2;-1:-1;;;;;9681:2077:1;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;;5:28;;2:2;;;46:1;43;36:12;2:2;9681:2077:1;;35:9:-1;28:4;12:14;8:25;5:40;2:2;;;58:1;55;48:12;2:2;9681:2077:1;;;;;;101:9:-1;95:2;81:12;77:21;67:8;63:36;60:51;-1:-1;;;25:12;22:29;11:108;8:2;;;132:1;129;122:12;8:2;9681:2077:1;;-1:-1:-1;9681:2077:1;-1:-1:-1;9681:2077:1;;:::i;2804:198:2:-;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;-1:-1;;;;;;2804:198:2;;;;;;;;;;:::i;4489:1121:1:-;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;4489:1121:1;;;;;;;;;;;;;;-1:-1:-1;;;5:28;;2:2;;;46:1;43;36:12;2:2;4489:1121:1;;35:9:-1;28:4;12:14;8:25;5:40;2:2;;;58:1;55;48:12;2:2;4489:1121:1;;;;;;101:9:-1;95:2;81:12;77:21;67:8;63:36;60:51;-1:-1;;;25:12;22:29;11:108;8:2;;;132:1;129;122:12;8:2;-1:-1;4489:1121:1;;-1:-1:-1;4489:1121:1;-1:-1:-1;4489:1121:1;:::i;13849:139::-;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;-1:-1;13849:139:1;;:::i;3263:681::-;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;-1:-1;;;;;;3263:681:1;;;;;;;;;;;;;:::i;2795:49::-;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;-1:-1;2795:49:1;;:::i;3279:147:2:-;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;-1:-1;;;;;;3279:147:2;;;;;;;;;;:::i;3980:696::-;;;;;;13:3:-1;8;5:12;2:2;;;30:1;27;20:12;2:2;-1:-1;;;;;3980:696:2;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;;5:28;;2:2;;;46:1;43;36:12;2:2;3980:696:2;;35:9:-1;28:4;12:14;8:25;5:40;2:2;;;58:1;55;48:12;2:2;3980:696:2;;;;;;100:9:-1;95:1;81:12;77:20;67:8;63:35;60:50;-1:-1;;;25:12;22:29;11:107;8:2;;;131:1;128;121:12;8:2;-1:-1;3980:696:2;;-1:-1:-1;3980:696:2;-1:-1:-1;3980:696:2;:::i;1481:205::-;1548:7;-1:-1:-1;;;;;1575:19:2;;1567:75;;;;-1:-1:-1;;;1567:75:2;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;1659:13:2;;;;:9;:13;;;;;;;;-1:-1:-1;;;;;1659:20:2;;;;;;;;;;1481:205;;;;;:::o;11764:1857:1:-;11908:8;11919:30;;;:17;:30;;;;;;11967:7;11959:57;;;;-1:-1:-1;;;11959:57:1;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;12026:21;12050:29;;;:16;:29;;;;;:36;12104:20;12096:59;;;;;-1:-1:-1;;;12096:59:1;;;;;;;;;;;;-1:-1:-1;;;12096:59:1;;;;;;;;;;;;;;;12166:16;-1:-1:-1;;12243:1:1;12218:21;;12217:27;12166:16;12254:878;12271:20;;;12254:878;;;12312:13;12328:9;;12338:1;12328:12;;;;;;;;;;;;;12312:28;;12373:1;12362:8;:12;:39;;;;;12389:12;12378:8;:23;12362:39;12354:73;;;;;-1:-1:-1;;;12354:73:1;;;;;;;;;;;;-1:-1:-1;;;12354:73:1;;;;;;;;;;;;;;;12441:15;12459:126;12483:15;12516:68;12542:18;12562:11;12575:8;12516:25;:68::i;:::-;12459:23;:126::i;:::-;12441:144;-1:-1:-1;12600:20:1;;12638:218;12659:16;12655:1;:20;12638:218;;;12716:1;:6;;12704:19;;:24;12700:142;;12790:29;;;;:16;:29;;;;;:32;;12770:53;;12790:29;12820:1;;12790:32;;;;;;;;;;;;;;12770:15;:19;;:53;;;;:::i;:::-;12752:71;;12700:142;12677:3;;12638:218;;;;12870:16;12889:33;12899:10;12911;12889:9;:33::i;:::-;12870:52;-1:-1:-1;12940:15:1;;12936:186;;12989:58;13005:41;13042:3;13005:32;:11;13021:15;13005:32;:15;:32;:::i;:::-;:36;:41;:36;:41;:::i;:::-;12989:11;;:58;:15;:58;:::i;:::-;12975:72;;13065:42;13071:10;13083;13095:11;13065:5;:42::i;:::-;-1:-1:-1;;12293:3:1;;;;;-1:-1:-1;12254:878:1;;-1:-1:-1;12254:878:1;;-1:-1:-1;13146:15:1;;13142:356;;13181:32;13177:311;;13241:49;;;-1:-1:-1;;;13241:49:1;;13266:10;13241:49;;;;;;;;;;;;-1:-1:-1;;;;;13241:24:1;;;;;:49;;;;;;;;;;;;;;-1:-1:-1;13241:24:1;:49;;;5:2:-1;;;;30:1;27;20:12;5:2;13241:49:1;;;;8:9:-1;5:2;;;45:16;42:1;39;24:38;77:16;74:1;67:27;5:2;13241:49:1;;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;-1:-1;13241:49:1;13233:105;;;;-1:-1:-1;;;13233:105:1;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;13177:311;;;13377:96;13383:10;13395:60;13419:15;13436:18;13395:23;:60::i;:::-;13457:11;13377:96;;;;;;;;;;;;:5;:96::i;:::-;13558:18;13541:15;-1:-1:-1;;;;;13512:102:1;13529:10;-1:-1:-1;;;;;13512:102:1;;13578:11;13591:9;;13602:11;13512:102;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;30:3:-1;22:6;14;1:33;99:1;81:16;;;74:27;13512:102:1;;137:4:-1;117:14;;;-1:-1;;113:30;157:16;;;13512:102:1;;;;-1:-1:-1;13512:102:1;;-1:-1:-1;;;;;;13512:102:1;11764:1857;;;;;;;;;:::o;915:133:7:-;-1:-1:-1;;;;;;1008:33:7;985:4;1008:33;;;;;;;;;;;;;;915:133::o;2587:50:1:-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::o;5265:971:2:-;5479:27;;;5471:86;;;;-1:-1:-1;;;5471:86:2;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;;;;5575:16:2;;5567:69;;;;-1:-1:-1;;;5567:69:2;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;;;;5667:18:2;;5675:10;5667:18;;:66;;-1:-1:-1;;;;;;5689:24:2;;;;;;:18;:24;;;;;;;;5714:10;5689:36;;;;;;;;;;:44;;:36;:44;5667:66;5646:169;;;;-1:-1:-1;;;5646:169:2;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;5831:9;5826:253;5846:14;;;5826:253;;;5881:10;5894:3;;5898:1;5894:6;;;;;;;;;;;;;5881:19;;5914:13;5930:6;;5937:1;5930:9;;;;;;;;;;;;;5914:25;;5976:30;6000:5;5976:9;:13;5986:2;5976:13;;;;;;;;;;;:19;5990:4;-1:-1:-1;;;;;5976:19:2;-1:-1:-1;;;;;5976:19:2;;;;;;;;;;;;;:23;;:30;;;;:::i;:::-;5954:9;:13;5964:2;5954:13;;;;;;;;;;;:19;5968:4;-1:-1:-1;;;;;5954:19:2;-1:-1:-1;;;;;5954:19:2;;;;;;;;;;;;:52;;;;6040:28;6050:9;:13;6060:2;6050:13;;;;;;;;;;;:17;6064:2;-1:-1:-1;;;;;6050:17:2;-1:-1:-1;;;;;6050:17:2;;;;;;;;;;;;;6040:5;:9;;:28;;;;:::i;:::-;6020:13;;;;:9;:13;;;;;;;;-1:-1:-1;;;;;6020:17:2;;;;;;;;;;:48;-1:-1:-1;5862:3:2;5826:253;;;;6126:2;-1:-1:-1;;;;;6094:48:2;6120:4;-1:-1:-1;;;;;6094:48:2;6108:10;-1:-1:-1;;;;;6094:48:2;;6130:3;;6135:6;;6094:48;;;;;;;;;;;;;;;;;;;;;;;;;;30:3:-1;22:6;14;1:33;99:1;81:16;;;74:27;137:4;117:14;-1:-1;;113:30;157:16;;;6094:48:2;;;;;;;;;;;;;-1:-1:-1;6094:48:2;;;;;;;1:33:-1;99:1;81:16;;;74:27;6094:48:2;;137:4:-1;117:14;;;-1:-1;;113:30;157:16;;;6094:48:2;;;;-1:-1:-1;6094:48:2;;-1:-1:-1;;;;;;;6094:48:2;6153:76;6189:10;6201:4;6207:2;6211:3;;6153:76;;;;;;;;;;;;;;;;;;;;;;;;;;;30:3:-1;22:6;14;1:33;99:1;81:16;;74:27;;;;-1:-1;;6153:76:2;;;;;;;;;;;;;;;;;;;;-1:-1:-1;6216:6:2;;-1:-1:-1;6216:6:2;;;;6153:76;;;6216:6;;6153:76;6216:6;6153:76;1:33:-1;99:1;81:16;;74:27;;;;-1:-1;;6153:76:2;;;;137:4:-1;6153:76:2;;;;;;;;;;;;;;;;;;-1:-1:-1;6224:4:2;;-1:-1:-1;6224:4:2;;;;6153:76;;6224:4;;;;6153:76;1:33:-1;99:1;81:16;;74:27;;;;-1:-1;6153:35:2;;-1:-1:-1;;;6153:76:2:i;:::-;5265:971;;;;;;;;:::o;15583:176:1:-;15675:4;15698:54;15722:15;15739:12;15698:23;:54::i;:::-;15691:61;15583:176;-1:-1:-1;;;15583:176:1:o;1921:594:2:-;2059:16;2116:3;:10;2099:6;:13;:27;2091:86;;;;-1:-1:-1;;;2091:86:2;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2188:30;2235:6;:13;2221:28;;;;;;;;;;;;;;;;;;;;;;29:2:-1;21:6;17:15;117:4;105:10;97:6;88:34;136:17;;-1:-1;2221:28:2;-1:-1:-1;2188:61:2;-1:-1:-1;2265:9:2;2260:218;2284:6;:13;2280:1;:17;2260:218;;;2347:1;-1:-1:-1;;;;;2326:23:2;:6;2333:1;2326:9;;;;;;;;;;;;;;-1:-1:-1;;;;;2326:23:2;;;2318:88;;;;-1:-1:-1;;;2318:88:2;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2439:9;:17;2449:3;2453:1;2449:6;;;;;;;;;;;;;;2439:17;;;;;;;;;;;:28;2457:6;2464:1;2457:9;;;;;;;;;;;;;;-1:-1:-1;;;;;2439:28:2;-1:-1:-1;;;;;2439:28:2;;;;;;;;;;;;;2420:13;2434:1;2420:16;;;;;;;;;;;;;;;;;:47;2299:3;;2260:218;;;-1:-1:-1;2495:13:2;1921:594;-1:-1:-1;;;1921:594:2:o;6951:2724:1:-;7179:1;7160:20;;7152:65;;;;;-1:-1:-1;;;7152:65:1;;;;;;;;;;;;;;;;;;;;;;;;;;;;;7227:21;7251:29;;;:16;:29;;;;;:36;7305:20;7297:59;;;;;-1:-1:-1;;;7297:59:1;;;;;;;;;;;;-1:-1:-1;;;7297:59:1;;;;;;;;;;;;;;;7751:28;;;;;;;;;;;;;;;;-1:-1:-1;;7501:1:1;7476:21;;7475:27;;;;7723:25;;7762:9;7751:28;;;;;;;29:2:-1;21:6;17:15;117:4;105:10;97:6;88:34;136:17;;-1:-1;7751:28:1;;7723:56;;7789:21;7824:9;;:16;;7813:28;;;;;;;;;;;;;;;;;;;;;;29:2:-1;21:6;17:15;117:4;105:10;97:6;88:34;136:17;;-1:-1;7813:28:1;-1:-1:-1;7789:52:1;-1:-1:-1;7856:6:1;7851:482;7868:20;;;7851:482;;;7909:13;7925:9;;7935:1;7925:12;;;;;;;;;;;;;7909:28;;7970:1;7959:8;:12;:39;;;;;7986:12;7975:8;:23;7959:39;7951:73;;;;;-1:-1:-1;;;7951:73:1;;;;;;;;;;;;-1:-1:-1;;;7951:73:1;;;;;;;;;;;;;;;8075:8;8058:12;8047:8;:23;8046:37;8038:72;;;;;-1:-1:-1;;;8038:72:1;;;;;;;;;;;;-1:-1:-1;;;8038:72:1;;;;;;;;;;;;;;;8124:24;;;;8179:110;8203:15;8220:68;8246:18;8266:11;8140:8;8220:25;:68::i;8179:110::-;8162:11;8174:1;8162:14;;;;;;;;;;;;;:127;;;;;8316:6;8303:7;8311:1;8303:10;;;;;;;;;;;;;;;;;:19;-1:-1:-1;7890:3:1;;7851:482;;;-1:-1:-1;8347:17:1;8343:1048;;8470:32;8466:386;;8530:63;;;-1:-1:-1;;;8530:63:1;;8559:10;8530:63;;;;8579:4;8530:63;;;;;;;;;;;;-1:-1:-1;;;;;8530:28:1;;;;;:63;;;;;;;;;;;;;;-1:-1:-1;8530:28:1;:63;;;5:2:-1;;;;30:1;27;20:12;5:2;8530:63:1;;;;8:9:-1;5:2;;;45:16;42:1;39;24:38;77:16;74:1;67:27;5:2;8530:63:1;;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;-1:-1;8530:63:1;8522:111;;;;-1:-1:-1;;;8522:111:1;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;8466:386;;;8672:165;8699:10;8731:60;8755:15;8772:18;8731:23;:60::i;:::-;8813:6;8672:5;:165::i;:::-;8343:1048;;;9142:238;9165:10;9193:149;9217:15;9254:87;9280:18;9300:11;9328:12;9313;:27;9254:25;:87::i;9142:238::-;9401:158;9425:10;9501:11;9526:7;9401:158;;;;;;;;;;;;:10;:158::i;:::-;9637:11;9617:18;9588:10;-1:-1:-1;;;;;9574:94:1;;9600:15;9650:9;;9661:6;9574:94;;;;-1:-1:-1;;;;;9574:94:1;-1:-1:-1;;;;;9574:94:1;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;30:3:-1;22:6;14;1:33;99:1;81:16;;;74:27;9574:94:1;;137:4:-1;117:14;;;-1:-1;;113:30;157:16;;;9574:94:1;;;;-1:-1:-1;9574:94:1;;-1:-1:-1;;;;;;9574:94:1;6951:2724;;;;;;;;;;;:::o;14410:201::-;14516:7;14542:62;14567:6;14575:10;14587:16;14542:24;:62::i;:::-;14535:69;14410:201;-1:-1:-1;;;;14410:201:1:o;15056:213::-;15168:7;15194:68;15220:18;15240:11;15253:8;15194:25;:68::i;9681:2077::-;9910:1;9891:20;;9883:65;;;;;-1:-1:-1;;;9883:65:1;;;;;;;;;;;;;;;;;;;;;;;;;;;;;9958:21;9982:29;;;:16;:29;;;;;:36;10036:20;10028:59;;;;;-1:-1:-1;;;10028:59:1;;;;;;;;;;;;-1:-1:-1;;;10028:59:1;;;;;;;;;;;;;;;10225:28;;;;;;;;;;;;;;;;-1:-1:-1;;10144:1:1;10119:21;;10118:27;;;;10197:25;;10236:9;10225:28;;;;;;;29:2:-1;21:6;17:15;117:4;105:10;97:6;88:34;136:17;;-1:-1;10225:28:1;;10197:56;;10263:21;10298:9;;:16;;10287:28;;;;;;;;;;;;;;;;;;;;;;29:2:-1;21:6;17:15;117:4;105:10;97:6;88:34;136:17;;-1:-1;10287:28:1;-1:-1:-1;10263:52:1;-1:-1:-1;10330:6:1;10325:482;10342:20;;;10325:482;;;10383:13;10399:9;;10409:1;10399:12;;;;;;;;;;;;;10383:28;;10444:1;10433:8;:12;:39;;;;;10460:12;10449:8;:23;10433:39;10425:73;;;;;-1:-1:-1;;;10425:73:1;;;;;;;;;;;;-1:-1:-1;;;10425:73:1;;;;;;;;;;;;;;;10549:8;10532:12;10521:8;:23;10520:37;10512:72;;;;;-1:-1:-1;;;10512:72:1;;;;;;;;;;;;-1:-1:-1;;;10512:72:1;;;;;;;;;;;;;;;10598:24;;;;10653:110;10677:15;10694:68;10720:18;10740:11;10614:8;10694:25;:68::i;10653:110::-;10636:11;10648:1;10636:14;;;;;;;;;;;;;:127;;;;;10790:6;10777:7;10785:1;10777:10;;;;;;;;;;;;;;;;;:19;-1:-1:-1;10364:3:1;;10325:482;;;;10816:90;10840:10;10864:11;10889:7;10816:10;:90::i;:::-;10921:17;10917:724;;10958:32;10954:388;;11018:44;;;-1:-1:-1;;;11018:44:1;;11043:10;11018:44;;;;;;;;;;;;-1:-1:-1;;;;;11018:24:1;;;;;:44;;;;;;;;;;;;;;-1:-1:-1;11018:24:1;:44;;;5:2:-1;;;;30:1;27;20:12;5:2;11018:44:1;;;;8:9:-1;5:2;;;45:16;42:1;39;24:38;77:16;74:1;67:27;5:2;11018:44:1;;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;-1:-1;11018:44:1;11010:89;;;;;-1:-1:-1;;;11010:89:1;;;;;;;;;;;;;;;;;;;;;;;;;;;;;10954:388;;;11138:189;11165:10;11197:60;11221:15;11238:18;11197:23;:60::i;:::-;11279:6;11138:189;;;;;;;;;;;;:5;:189::i;:::-;10917:724;;;11372:258;11395:10;11423:149;11447:15;11484:87;11510:18;11530:11;11558:12;11543;:27;11484:25;:87::i;11372:258::-;11720:11;11700:18;11671:10;-1:-1:-1;;;;;11656:95:1;;11683:15;11733:9;;11744:6;11656:95;;;;-1:-1:-1;;;;;11656:95:1;-1:-1:-1;;;;;11656:95:1;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;30:3:-1;22:6;14;1:33;99:1;81:16;;;74:27;11656:95:1;;137:4:-1;117:14;;;-1:-1;;113:30;157:16;;;11656:95:1;;;;-1:-1:-1;11656:95:1;;-1:-1:-1;;;;;;11656:95:1;9681:2077;;;;;;;;;;;:::o;2804:198:2:-;2902:10;2883:30;;;;:18;:30;;;;;;;;-1:-1:-1;;;;;2883:40:2;;;;;;;;;;;;:51;;-1:-1:-1;;2883:51:2;;;;;;;;;;2949:46;;;;;;;2883:40;;2902:10;2949:46;;;;;;;;;;;2804:198;;:::o;4489:1121:1:-;4600:7;4651:1;4632:20;;4624:75;;;;-1:-1:-1;;;4624:75:1;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;4802:19;4824:66;4849:10;4861;4873:16;4824:24;:66::i;:::-;4908:29;;;;:16;:29;;;;;:36;4802:88;;-1:-1:-1;4908:56:1;;4900:100;;;;;-1:-1:-1;;;4900:100:1;;;;;;;;;;;;;;;;;;;;;;;;;;;;5018:30;;;;:17;:30;;;;;;:35;5010:78;;;;;-1:-1:-1;;;5010:78:1;;;;;;;;;;;;;;;;;;;;;;;;;;;;5099:8;;5121:267;5142:16;5138:1;:20;5121:267;;;5179:8;5190:7;;5198:1;5190:10;;;;;;;;;;;;;5179:21;;5220:12;5228:3;5220;:7;;:12;;;;:::i;:::-;5255:29;;;;:16;:29;;;;;:32;;5214:18;;-1:-1:-1;5255:29:1;5285:1;;5255:32;;;;;;;;;;;;;;5291:1;5255:37;5247:78;;;;;-1:-1:-1;;;5247:78:1;;;;;;;;;;;;;;;;;;;;;;;;;;;;5339:29;;;;:16;:29;;;;;:32;;5374:3;;5339:29;5369:1;;5339:32;;;;;;;;;;;;;;;:38;-1:-1:-1;5160:3:1;;5121:267;;;;5411:1;5405:3;:7;5397:40;;;;;-1:-1:-1;;;5397:40:1;;;;;;;;;;;;-1:-1:-1;;;5397:40:1;;;;;;;;;;;;;;;5447:30;;;;:17;:30;;;;;;;;:36;;;5573:16;:29;;;;;;5498:105;;;;;;;;;;;;;;;;;;;5543:10;;5531;;5465:11;;5498:105;;5555:16;;5573:29;;5498:105;;;;;5573:29;;5498:105;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;4489:1121;;;;;;:::o;13849:139::-;13922:4;13945:29;;;:16;:29;;;;;:36;;13849:139::o;3263:681::-;3482:3;3462:16;:23;;3454:58;;;;;-1:-1:-1;;;3454:58:1;;;;;;;;;;;;-1:-1:-1;;;3454:58:1;;;;;;;;;;;;;;;3549:1;3530:16;:20;3522:75;;;;-1:-1:-1;;;3522:75:1;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;3607:19;3629:62;3654:6;3662:10;3674:16;3629:24;:62::i;:::-;3709:29;;;;:16;:29;;;;;:36;3607:84;;-1:-1:-1;3709:41:1;3701:80;;;;;-1:-1:-1;;;3701:80:1;;;;;;;;;;;;;;;;;;;;;;;;;;;;3834:16;3823:28;;;;;;;;;;;;;;;;;;;;;;29:2:-1;21:6;17:15;117:4;105:10;97:6;88:34;136:17;;-1:-1;3823:28:1;-1:-1:-1;3791:29:1;;;;:16;:29;;;;;;;;:60;;;;:29;;:60;;;;;;:::i;:::-;;3908:10;3900:6;-1:-1:-1;;;;;3866:71:1;3887:11;3866:71;3920:16;3866:71;;;;;;;;;;;;;;;;;;3263:681;;;;:::o;2795:49::-;;;;;;;;;;;;;:::o;3279:147:2:-;-1:-1:-1;;;;;3384:25:2;;;3361:4;3384:25;;;:18;:25;;;;;;;;:35;;;;;;;;;;;;;;;3279:147::o;3980:696::-;-1:-1:-1;;;;;4165:16:2;;4157:69;;;;-1:-1:-1;;;4157:69:2;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;;;;4257:18:2;;4265:10;4257:18;;:66;;-1:-1:-1;;;;;;4279:24:2;;;;;;:18;:24;;;;;;;;4304:10;4279:36;;;;;;;;;;:44;;:36;:44;4257:66;4236:169;;;;-1:-1:-1;;;4236:169:2;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;4438:13;;;;:9;:13;;;;;;;;-1:-1:-1;;;;;4438:19:2;;;;;;;;;;:30;;4462:5;4438:30;:23;:30;:::i;:::-;4416:13;;;;:9;:13;;;;;;;;-1:-1:-1;;;;;4416:19:2;;;;;;;;;;:52;;;;4508:17;;;;;;4498:28;;:5;;:9;:28::i;:::-;4478:13;;;;:9;:13;;;;;;;;-1:-1:-1;;;;;4478:17:2;;;;;;;;;;;;;:48;;;;4542:47;;;;;;;;;;;;;;;;;4557:10;;4542:47;;;;;;;;;4600:69;4631:10;4643:4;4649:2;4653;4657:5;4664:4;;4600:69;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;30:3:-1;22:6;14;1:33;99:1;81:16;;74:27;;;;-1:-1;4600:30:2;;-1:-1:-1;;;4600:69:2:i;:::-;3980:696;;;;;;:::o;16697:1221:0:-;16853:39;;;;;;;;;;;;;;;;;;26:21:-1;;;22:32;;6:49;;16853:39:0;;;;;;;16843:50;;;;;16809:7;;16921:3;16915:9;;;:14;;16809:7;;16973:173;-1:-1:-1;;;;;;;;;;;17006:1:0;17002:2;16995:16;16990:21;-1:-1:-1;;;;;;;;;;;;876:1:0;-1:-1:-1;;;;;;;;;;;775:77:0;17059:2;17055;17048:17;17044:2;17037:32;17030:46;17025:51;;17095:8;17100:2;17095:4;:8::i;:::-;17090:13;-1:-1:-1;17142:2:0;-1:-1:-1;;;;;;;;;;;17132:2:0;17128;17121:17;:23;;16973:173;;17158:3;:18;;;;-1:-1:-1;17170:1:0;17165:2;:6;:11;17158:18;:41;;;;17181:3;17180:4;:19;;;;-1:-1:-1;17193:1:0;17188:2;:6;17198:1;17188:11;17180:19;17155:69;;;17222:2;-1:-1:-1;;;;;;;;;;;17218:6:0;17213:11;;17155:69;17250:18;17282:7;;17279:551;;17317:3;17311:9;;;:14;;;-1:-1:-1;;;;;;17344:14:0;-1:-1:-1;;;;;;;;;;;876:1:0;-1:-1:-1;;;;;;;;;;;775:77:0;17406:2;17402;17395:17;17391:2;17384:32;17377:46;17372:51;;17437:7;17447:8;17452:2;17447:4;:8::i;:::-;17437:18;;17472:3;:18;;;;-1:-1:-1;17484:1:0;17479:2;:6;:11;17472:18;:41;;;;17495:3;17494:4;:19;;;;-1:-1:-1;17507:1:0;17502:2;:6;17512:1;17502:11;17494:19;17469:73;;;-1:-1:-1;;;;;;;;;;;17536:6:0;17469:73;17585:2;-1:-1:-1;;;;;;;;;;;17575:2:0;17571;17564:17;:23;17556:64;;;;;-1:-1:-1;;;17556:64:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;17636:12;17650:16;17678:1;-1:-1:-1;;;;;17670:21:0;17703:2;17707;17711;17715;17692:26;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;49:4:-1;39:7;30;26:21;22:32;13:7;6:49;17692:26:0;;;17670:49;;;;;;;;;;;;;36:153:-1;66:2;61:3;58:11;36:153;;176:10;;164:23;;-1:-1;;139:12;;;;98:2;89:12;;;;114;36:153;;;274:1;267:3;263:2;259:12;254:3;250:22;246:30;315:4;311:9;305:3;299:10;295:26;356:4;350:3;344:10;340:21;389:7;380;377:20;372:3;365:33;3:399;;;17670:49:0;;;;;;;;;;;;;;;;;;;;;;;14:1:-1;21;16:31;;;;75:4;69:11;64:16;;144:4;140:9;133:4;115:16;111:27;107:43;104:1;100:51;94:4;87:65;169:16;166:1;159:27;225:16;222:1;215:4;212:1;208:12;193:49;7:242;;16:31;36:4;31:9;;7:242;;17635:84:0;;;;17741:7;17733:32;;;;;-1:-1:-1;;;17733:32:0;;;;;;;;;;;;-1:-1:-1;;;17733:32:0;;;;;;;;;;;;;;;17801:3;17790:29;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;-1:-1;17790:29:0;;;;;;;;;-1:-1:-1;17790:29:0;-1:-1:-1;;;;17279:551:0;17848:1;17843:2;:6;17853:1;17843:11;17840:42;;;-1:-1:-1;;;17868:14:0;;;;17840:42;-1:-1:-1;17908:2:0;;16697:1221;-1:-1:-1;;;;;;;16697:1221:0:o;18232:186::-;18362:47;;;;;;;;-1:-1:-1;;18362:47:0;;;;;;;;;;;;;;;;;;;26:21:-1;;;22:32;;;6:49;;18362:47:0;;;;;;18352:58;;;;;;18232:186::o;834:176:9:-;892:7;923:5;;;946:6;;;;938:46;;;;;-1:-1:-1;;;938:46:9;;;;;;;;;;;;;;;;;;;;;;;;;;;1693:458;1751:7;1991:6;1987:45;;-1:-1:-1;2020:1:9;2013:8;;1987:45;2054:5;;;2058:1;2054;:5;:1;2077:5;;;;;:10;2069:56;;;;-1:-1:-1;;;2069:56:9;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2606:326;2664:7;2761:1;2757;:5;2749:44;;;;;-1:-1:-1;;;2749:44:9;;;;;;;;;;;;;;;;;;;;;;;;;;;;2803:9;2819:1;2815;:5;;;;;;;2606:326;-1:-1:-1;;;;2606:326:9:o;8152:208:2:-;8251:13;;;;:9;:13;;;;;;;;-1:-1:-1;;;;;8251:20:2;;;;;;;;;;:31;;8276:5;8251:31;:24;:31;:::i;:::-;8228:13;;;;:9;:13;;;;;;;;-1:-1:-1;;;;;8228:20:2;;;;;;;;;;;:54;;;;8297:56;;;;;;;;;;;;;8228:13;;:20;8312:10;;8297:56;;;;;;;;;8152:208;;;:::o;6582:374::-;-1:-1:-1;;;;;6682:16:2;;6674:62;;;;-1:-1:-1;;;6674:62:2;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;6777:13;;;;:9;:13;;;;;;;;-1:-1:-1;;;;;6777:17:2;;;;;;;;;;6767:28;;:5;;:28;:9;:28;:::i;:::-;6747:13;;;;:9;:13;;;;;;;;-1:-1:-1;;;;;6747:17:2;;;;;;;;;;;:48;;;;6810:53;;;;;;;;;;;;;6825:10;;6810:53;;;;;;;;;6874:75;6905:10;6925:1;6929:2;6933;6937:5;6944:4;6874:30;:75::i;:::-;6582:374;;;;:::o;1274:179:9:-;1332:7;1364:1;1359;:6;;1351:49;;;;;-1:-1:-1;;;1351:49:9;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;1422:5:9;;;1274:179::o;9573:548:2:-;9816:15;:2;-1:-1:-1;;;;;9816:13:2;;:15::i;:::-;9813:302;;;9872:83;;-1:-1:-1;;;9872:83:2;;;-1:-1:-1;;;;;9872:83:2;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;9959:57;;:48;;;;;;9921:8;;9931:4;;9937:3;;9942:6;;9950:4;;9872:83;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;8:100;33:3;30:1;27:10;8:100;;;90:11;;;84:18;71:11;;;64:39;52:2;45:10;8:100;;;12:14;9872:83:2;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;23:1:-1;8:100;33:3;30:1;27:10;8:100;;;90:11;;;84:18;71:11;;;64:39;52:2;45:10;8:100;;;12:14;9872:83:2;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;23:1:-1;8:100;33:3;30:1;27:10;8:100;;;90:11;;;84:18;71:11;;;64:39;52:2;45:10;8:100;;;12:14;9872:83:2;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;9872:83:2;;;;8:9:-1;5:2;;;45:16;42:1;39;24:38;77:16;74:1;67:27;5:2;9872:83:2;;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;-1:-1;9872:83:2;-1:-1:-1;;;;;;9872:144:2;;9847:257;;;;-1:-1:-1;;;9847:257:2;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;7312:583;-1:-1:-1;;;;;7437:16:2;;7429:68;;;;-1:-1:-1;;;7429:68:2;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;7529:6;:13;7515:3;:10;:27;7507:86;;;;-1:-1:-1;;;7507:86:2;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;7608:6;7604:122;7624:3;:10;7620:1;:14;7604:122;;;7679:36;7693:9;:17;7703:3;7707:1;7703:6;;;;;;;;;;;;;;7693:17;;;;;;;;;;;:21;7711:2;-1:-1:-1;;;;;7693:21:2;-1:-1:-1;;;;;7693:21:2;;;;;;;;;;;;;7679:6;7686:1;7679:9;;;;;;;;;;;;;;:13;;:36;;;;:::i;:::-;7655:9;:17;7665:3;7669:1;7665:6;;;;;;;;;;;;;;;;;;;7655:17;;;;;;;;;;;;;-1:-1:-1;7655:17:2;;;-1:-1:-1;;;;;7655:21:2;;;;;;;;;:60;7636:3;;7604:122;;;;7779:2;-1:-1:-1;;;;;7741:54:2;7775:1;-1:-1:-1;;;;;7741:54:2;7755:10;-1:-1:-1;;;;;7741:54:2;;7783:3;7788:6;7741:54;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;23:1:-1;8:100;33:3;30:1;27:10;8:100;;;90:11;;;84:18;71:11;;;64:39;52:2;45:10;8:100;;;12:14;7741:54:2;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;23:1:-1;8:100;33:3;30:1;27:10;8:100;;;90:11;;;84:18;71:11;;;64:39;52:2;45:10;8:100;;;12:14;7741:54:2;;;;;;;;;;;;;;;;;;;7806:82;7842:10;7862:1;7866:2;7870:3;7875:6;7883:4;7806:35;:82::i;547:204:0:-;689:54;;;;;;;;-1:-1:-1;;689:54:0;;;;;;;;;;;;;;;;;;;;;;;;;;26:21:-1;;;22:32;;;6:49;;689:54:0;;;;;;;679:65;;;;;;547:204::o;8630:405:2:-;8753:6;:13;8739:3;:10;:27;8731:86;;;;-1:-1:-1;;;8731:86:2;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;8832:6;8828:128;8848:3;:10;8844:1;:14;8828:128;;;8906:39;8935:6;8942:1;8935:9;;;;;;;;;;;;;;8906;:17;8916:3;8920:1;8916:6;;;;;;;;;;;;;;8906:17;;;;;;;;;;;:24;8924:5;-1:-1:-1;;;;;8906:24:2;-1:-1:-1;;;;;8906:24:2;;;;;;;;;;;;;:28;;:39;;;;:::i;:::-;8879:9;:17;8889:3;8893:1;8889:6;;;;;;;;;;;;;;;;;;;8879:17;;;;;;;;;;;;;-1:-1:-1;8879:17:2;;;-1:-1:-1;;;;;8879:24:2;;;;;;;;;:66;8860:3;;8828:128;;;;9012:1;-1:-1:-1;;;;;8971:57:2;8997:5;-1:-1:-1;;;;;8971:57:2;8985:10;-1:-1:-1;;;;;8971:57:2;;9016:3;9021:6;8971:57;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;23:1:-1;8:100;33:3;30:1;27:10;8:100;;;90:11;;;84:18;71:11;;;64:39;52:2;45:10;8:100;;;12:14;8971:57:2;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;23:1:-1;8:100;33:3;30:1;27:10;8:100;;;90:11;;;84:18;71:11;;;64:39;52:2;45:10;8:100;;;12:14;8971:57:2;;;;;;;;;;;;;;;;;;;8630:405;;;:::o;9041:526::-;9259:15;:2;-1:-1:-1;;;;;9259:13:2;;:15::i;:::-;9256:305;;;9315:76;;-1:-1:-1;;;9315:76:2;;;-1:-1:-1;;;;;9315:76:2;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;9415:52;;:43;;;;;;9359:8;;9369:4;;9375:2;;9379:5;;9386:4;;9315:76;;;;;;;;;;;;;;-1:-1:-1;8:100;33:3;30:1;27:10;8:100;;;90:11;;;84:18;71:11;;;64:39;52:2;45:10;8:100;;;12:14;9315:76:2;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;9315:76:2;;;;8:9:-1;5:2;;;45:16;42:1;39;24:38;77:16;74:1;67:27;5:2;9315:76:2;;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;-1:-1;9315:76:2;-1:-1:-1;;;;;;9315:152:2;;9290:260;;;;-1:-1:-1;;;9290:260:2;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;884:15368:0;928:6;-1:-1:-1;;;;;;;;;;;775:77:0;3965:1;;3955:15;3950:20;;4023:1;4020;4017;4010:15;4060:1;4057;4054;4047:15;4042:20;;4097:1;4094;4091;4084:15;4079:20;;4134:1;4131;4128;4121:15;4116:20;;4171:1;4168;4165;4158:15;4153:20;;4208:1;4205;4202;4195:15;4190:20;;4271:1;4268;4265;4258:15;4312:1;4309;4306;4299:15;4294:20;;4353:1;4350;4347;4340:15;4335:20;;4394:1;4391;4388;4381:15;4376:20;;4435:1;4432;4429;4422:15;4417:20;;4476:1;4473;4470;4463:15;4458:20;;4517:1;4514;4511;4504:15;4499:20;;4558:1;4555;4552;4545:15;4540:20;;4599:1;4596;4593;4586:15;4581:20;;4640:1;4637;4634;4627:15;4622:20;;4681:1;4678;4675;4668:15;4663:20;;4722:1;4719;4716;4709:15;4704:20;;4763:1;4760;4757;4750:15;4745:20;;4804:1;4801;4798;4791:15;4786:20;;4845:1;4842;4839;4832:15;4827:20;;4886:1;4883;4880;4873:15;4868:20;;4927:1;4924;4921;4914:15;4909:20;;4968:1;4965;4962;4955:15;4950:20;;5009:1;5006;5003;4996:15;4991:20;;5050:1;5047;5044;5037:15;5032:20;;5091:1;5088;5085;5078:15;5073:20;;5132:1;5129;5126;5119:15;5114:20;;5173:1;5170;5167;5160:15;5155:20;;5214:1;5211;5208;5201:15;5196:20;;5255:1;5252;5249;5242:15;5237:20;;5296:1;5293;5290;5283:15;5278:20;;5337:1;5334;5331;5324:15;5319:20;;5378:1;5375;5372;5365:15;5360:20;;5419:1;5416;5413;5406:15;5401:20;;5460:1;5457;5454;5447:15;5442:20;;5501:1;5498;5495;5488:15;5483:20;;5542:1;5539;5536;5529:15;5524:20;;5583:1;5580;5577;5570:15;5565:20;;5624:1;5621;5618;5611:15;5606:20;;5665:1;5662;5659;5652:15;5647:20;;5706:1;5703;5700;5693:15;5688:20;;5747:1;5744;5741;5734:15;5729:20;;5788:1;5785;5782;5775:15;5770:20;;5829:1;5826;5823;5816:15;5811:20;;5870:1;5867;5864;5857:15;5852:20;;5911:1;5908;5905;5898:15;5893:20;;5952:1;5949;5946;5939:15;5934:20;;5993:1;5990;5987;5980:15;5975:20;;6034:1;6031;6028;6021:15;6016:20;;6075:1;6072;6069;6062:15;6057:20;;6116:1;6113;6110;6103:15;6098:20;;6157:1;6154;6151;6144:15;6139:20;;6198:1;6195;6192;6185:15;6180:20;;6239:1;6236;6233;6226:15;6221:20;;6280:1;6277;6274;6267:15;6262:20;;6321:1;6318;6315;6308:15;6303:20;;6362:1;6359;6356;6349:15;6344:20;;6403:1;6400;6397;6390:15;6385:20;;6444:1;6441;6438;6431:15;6426:20;;6485:1;6482;6479;6472:15;6467:20;;6526:1;6523;6520;6513:15;6508:20;;6567:1;6564;6561;6554:15;6549:20;;6608:1;6605;6602;6595:15;6590:20;;6649:1;6646;6643;6636:15;6631:20;;6690:1;6687;6684;6677:15;6672:20;;6761:1;6758;6755;6748:15;6806:1;6803;6800;6793:15;6788:20;;6851:1;6848;6845;6838:15;6833:20;;6896:1;6893;6890;6883:15;6878:20;;6941:1;6938;6935;6928:15;6923:20;;6986:1;6983;6980;6973:15;6968:20;;6713:297;7049:1;7046;7043;7036:15;7031:20;;7090:1;7087;7084;7077:15;7072:20;;7131:1;7128;7125;7118:15;7113:20;;7172:1;7169;7166;7159:15;7154:20;;7213:1;7210;7207;7200:15;7195:20;;7254:1;7251;7248;7241:15;7236:20;;7295:1;7292;7289;7282:15;7277:20;;7336:1;7333;7330;7323:15;7318:20;;7377:1;7374;7371;7364:15;7359:20;;7418:1;7415;7412;7405:15;7400:20;;7459:1;7456;7453;7446:15;7441:20;;7500:1;7497;7494;7487:15;7482:20;;7541:1;7538;7535;7528:15;7523:20;;7582:1;7579;7576;7569:15;7564:20;;7623:1;7620;7617;7610:15;7605:20;;7664:1;7661;7658;7651:15;7646:20;;7705:1;7702;7699;7692:15;7687:20;;7746:1;7743;7740;7733:15;7728:20;;7787:1;7784;7781;7774:15;7769:20;;7828:1;7825;7822;7815:15;7810:20;;7869:1;7866;7863;7856:15;7851:20;;7910:1;7907;7904;7897:15;7892:20;;7951:1;7948;7945;7938:15;7933:20;;7992:1;7989;7986;7979:15;7974:20;;8033:1;8030;8027;8020:15;8015:20;;8074:1;8071;8068;8061:15;8056:20;;8115:1;8112;8109;8102:15;8097:20;;8156:1;8153;8150;8143:15;8138:20;;8197:1;8194;8191;8184:15;8179:20;;8238:1;8235;8232;8225:15;8220:20;;8279:1;8276;8273;8266:15;8261:20;;8320:1;8317;8314;8307:15;8302:20;;8361:1;8358;8355;8348:15;8343:20;;8402:1;8399;8396;8389:15;8384:20;;8443:1;8440;8437;8430:15;8425:20;;8484:1;8481;8478;8471:15;8466:20;;8525:1;8522;8519;8512:15;8507:20;;8566:1;8563;8560;8553:15;8548:20;;8607:1;8604;8601;8594:15;8589:20;;8648:1;8645;8642;8635:15;8630:20;;8689:1;8686;8683;8676:15;8671:20;;8730:1;8727;8724;8717:15;8712:20;;8771:1;8768;8765;8758:15;8753:20;;8812:1;8809;8806;8799:15;8794:20;;8853:1;8850;8847;8840:15;8835:20;;8894:1;8891;8888;8881:15;8876:20;;8935:1;8932;8929;8922:15;8917:20;;8976:1;8973;8970;8963:15;8958:20;;9017:1;9014;9011;9004:15;8999:20;;9058:1;9055;9052;9045:15;9040:20;;9099:1;9096;9093;9086:15;9081:20;;9140:1;9137;9134;9127:15;9122:20;;9181:1;9178;9175;9168:15;9163:20;;9222:1;9219;9216;9209:15;9204:20;;9263:1;9260;9257;9250:15;9245:20;;9304:1;9301;9298;9291:15;9286:20;;9345:1;9342;9339;9332:15;9327:20;;9386:1;9383;9380;9373:15;9368:20;;9427:1;9424;9421;9414:15;9409:20;;9468:1;9465;9462;9455:15;9450:20;;9509:1;9506;9503;9496:15;9491:20;;9550:1;9547;9544;9537:15;9532:20;;9591:1;9588;9585;9578:15;9573:20;;9632:1;9629;9626;9619:15;9614:20;;9673:1;9670;9667;9660:15;9655:20;;9714:1;9711;9708;9701:15;9696:20;;9755:1;9752;9749;9742:15;9737:20;;9796:1;9793;9790;9783:15;9778:20;;9837:1;9834;9831;9824:15;9819:20;;9878:1;9875;9872;9865:15;9860:20;;9919:1;9916;9913;9906:15;9901:20;;9960:1;9957;9954;9947:15;9942:20;;10001:1;9998;9995;9988:15;9983:20;;10042:1;10039;10036;10029:15;10024:20;;10083:1;10080;10077;10070:15;10065:20;;10124:1;10121;10118;10111:15;10106:20;;10165:1;10162;10159;10152:15;10147:20;;10206:1;10203;10200;10193:15;10188:20;;10247:1;10244;10241;10234:15;10229:20;;10288:1;10285;10282;10275:15;10270:20;;10329:1;10326;10323;10316:15;10311:20;;10370:1;10367;10364;10357:15;10352:20;;10411:1;10408;10405;10398:15;10393:20;;10452:1;10449;10446;10439:15;10434:20;;10493:1;10490;10487;10480:15;10475:20;;10534:1;10531;10528;10521:15;10516:20;;10575:1;10572;10569;10562:15;10557:20;;10616:1;10613;10610;10603:15;10598:20;;10657:1;10654;10651;10644:15;10639:20;;10698:1;10695;10692;10685:15;10680:20;;10739:1;10736;10733;10726:15;10721:20;;10780:1;10777;10774;10767:15;10762:20;;10821:1;10818;10815;10808:15;10803:20;;10862:1;10859;10856;10849:15;10844:20;;10903:1;10900;10897;10890:15;10885:20;;10944:1;10941;10938;10931:15;10926:20;;10985:1;10982;10979;10972:15;10967:20;;11026:1;11023;11020;11013:15;11008:20;;11067:1;11064;11061;11054:15;11049:20;;11108:1;11105;11102;11095:15;11090:20;;11149:1;11146;11143;11136:15;11131:20;;11190:1;11187;11184;11177:15;11172:20;;11231:1;11228;11225;11218:15;11213:20;;11272:1;11269;11266;11259:15;11254:20;;11313:1;11310;11307;11300:15;11295:20;;11354:1;11351;11348;11341:15;11336:20;;11395:1;11392;11389;11382:15;11377:20;;11436:1;11433;11430;11423:15;11418:20;;11477:1;11474;11471;11464:15;11459:20;;11518:1;11515;11512;11505:15;11500:20;;11559:1;11556;11553;11546:15;11541:20;;11600:1;11597;11594;11587:15;11582:20;;11641:1;11638;11635;11628:15;11623:20;;11682:1;11679;11676;11669:15;11664:20;;4227:7475;11737:1;11734;11731;11724:15;11719:20;;11774:1;11771;11768;11761:15;11756:20;;11811:1;11808;11805;11798:15;11793:20;;11848:1;11845;11842;11835:15;11830:20;;11885:1;11882;11879;11872:15;11867:20;;11922:1;11919;11916;11909:15;11904:20;;11959:1;11956;11953;11946:15;11941:20;;11996:1;11993;11990;11983:15;11978:20;;3983:8029;12043:1;12040;12037;12030:15;12025:20;;12076:1;12073;12070;12063:15;12058:20;;12109:1;12106;12103;12096:15;12091:20;;12142:1;12139;12136;12129:15;12124:20;;12175:1;12172;12169;12162:15;12157:20;;12208:1;12205;12202;12195:15;12190:20;;12241:1;12238;12235;12228:15;12223:20;;12274:1;12271;12268;12261:15;12256:20;;12307:1;12304;12301;12294:15;12289:20;;12340:1;12337;12334;12327:15;12322:20;;12373:1;12370;12367;12360:15;12355:20;;12406:1;12403;12400;12393:15;12388:20;;12439:1;12436;12433;12426:15;12421:20;;12472:1;12469;12466;12459:15;12454:20;;12505:1;12502;12499;12492:15;12487:20;;12538:1;12535;12532;12525:15;12520:20;;12571:1;12568;12565;12558:15;12553:20;;12604:1;12601;12598;12591:15;12586:20;;12637:1;12634;12631;12624:15;12619:20;;12670:1;12667;12664;12657:15;12652:20;;12703:1;12700;12697;12690:15;12685:20;;12736:1;12733;12730;12723:15;12718:20;;12769:1;12766;12763;12756:15;12751:20;;12802:1;12799;12796;12789:15;12784:20;;12835:1;12832;12829;12822:15;12817:20;;12868:1;12865;12862;12855:15;12850:20;;12901:1;12898;12895;12888:15;12883:20;;12934:1;12931;12928;12921:15;12916:20;;12967:1;12964;12961;12954:15;12949:20;;13000:1;12997;12994;12987:15;12982:20;;13033:1;13030;13027;13020:15;13015:20;;13066:1;13063;13060;13053:15;13048:20;;13099:1;13096;13093;13086:15;13081:20;;13132:1;13129;13126;13119:15;13114:20;;13165:1;13162;13159;13152:15;13147:20;;13198:1;13195;13192;13185:15;13180:20;;13231:1;13228;13225;13218:15;13213:20;;13264:1;13261;13258;13251:15;13246:20;;13297:1;13294;13291;13284:15;13279:20;;13330:1;13327;13324;13317:15;13312:20;;13363:1;13360;13357;13350:15;13345:20;;13396:1;13393;13390;13383:15;13378:20;;13429:1;13426;13423;13416:15;13411:20;;13462:1;13459;13456;13449:15;13444:20;;13495:1;13492;13489;13482:15;13477:20;;13528:1;13525;13522;13515:15;13510:20;;13561:1;13558;13555;13548:15;13543:20;;13594:1;13591;13588;13581:15;13576:20;;13627:1;13624;13621;13614:15;13609:20;;13660:1;13657;13654;13647:15;13642:20;;13693:1;13690;13687;13680:15;13675:20;;13726:1;13723;13720;13713:15;13708:20;;13759:1;13756;13753;13746:15;13741:20;;13792:1;13789;13786;13779:15;13774:20;;13825:1;13822;13819;13812:15;13807:20;;13858:1;13855;13852;13845:15;13840:20;;13891:1;13888;13885;13878:15;13873:20;;13924:1;13921;13918;13911:15;13906:20;;13957:1;13954;13951;13944:15;13939:20;;13990:1;13987;13984;13977:15;13972:20;;14023:1;14020;14017;14010:15;14005:20;;14056:1;14053;14050;14043:15;14038:20;;14089:1;14086;14083;14076:15;14071:20;;14122:1;14119;14116;14109:15;14104:20;;14155:1;14152;14149;14142:15;14137:20;;14188:1;14185;14182;14175:15;14170:20;;14221:1;14218;14215;14208:15;14203:20;;14254:1;14251;14248;14241:15;14236:20;;14287:1;14284;14281;14274:15;14269:20;;14320:1;14317;14314;14307:15;14302:20;;14353:1;14350;14347;14340:15;14335:20;;14386:1;14383;14380;14373:15;14368:20;;14419:1;14416;14413;14406:15;14401:20;;14452:1;14449;14446;14439:15;14434:20;;14485:1;14482;14479;14472:15;14467:20;;14518:1;14515;14512;14505:15;14500:20;;14551:1;14548;14545;14538:15;14533:20;;14584:1;14581;14578;14571:15;14566:20;;14617:1;14614;14611;14604:15;14599:20;;14650:1;14647;14644;14637:15;14632:20;;14683:1;14680;14677;14670:15;14665:20;;14716:1;14713;14710;14703:15;14698:20;;14749:1;14746;14743;14736:15;14731:20;;14782:1;14779;14776;14769:15;14764:20;;14815:1;14812;14809;14802:15;14797:20;;14848:1;14845;14842;14835:15;14830:20;;14881:1;14878;14875;14868:15;14863:20;;14914:1;14911;14908;14901:15;14896:20;;14947:1;14944;14941;14934:15;14929:20;;14980:1;14977;14974;14967:15;14962:20;;15013:1;15010;15007;15000:15;14995:20;;15046:1;15043;15040;15033:15;15028:20;;15079:1;15076;15073;15066:15;15061:20;;15112:1;15109;15106;15099:15;15094:20;;15145:1;15142;15139;15132:15;15127:20;;15178:1;15175;15172;15165:15;15160:20;;15211:1;15208;15205;15198:15;15193:20;;15244:1;15241;15238;15231:15;15226:20;;15277:1;15274;15271;15264:15;15259:20;;15310:1;15307;15304;15297:15;15292:20;;15343:1;15340;15337;15330:15;15325:20;;15376:1;15373;15370;15363:15;15358:20;;15409:1;15406;15403;15396:15;15391:20;;15442:1;15439;15436;15429:15;15424:20;;15475:1;15472;15469;15462:15;15457:20;;15508:1;15505;15502;15495:15;15490:20;;15541:1;15538;15535;15528:15;15523:20;;15574:1;15571;15568;15561:15;15556:20;;15607:1;15604;15601;15594:15;15589:20;;15640:1;15637;15634;15627:15;15622:20;;15673:1;15670;15667;15660:15;15655:20;;15706:1;15703;15700;15693:15;15688:20;;15739:1;15736;15733;15726:15;15721:20;;15772:1;15769;15766;15759:15;15754:20;;15805:1;15802;15799;15792:15;15787:20;;15838:1;15835;15832;15825:15;15820:20;;15871:1;15868;15865;15858:15;15853:20;;15904:1;15901;15898;15891:15;15886:20;;15937:1;15934;15931;15924:15;15919:20;;15970:1;15967;15964;15957:15;15952:20;;16003:1;16000;15997;15990:15;15985:20;;16036:1;16033;16030;16023:15;16018:20;;16069:1;16066;16063;16056:15;16051:20;;16102:1;16099;16096;16089:15;16084:20;;16135:1;16132;16129;16122:15;16117:20;;16168:1;16165;16162;16155:15;16150:20;;16201:1;16198;16195;16188:15;16183:20;;16234:1;16231;16228;16221:15;16216:20;1039:15207;-1:-1:-1;;;1039:15207:0:o;542:413:11:-;902:20;940:8;;;542:413::o;200:15561:1:-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;200:15561:1;;;-1:-1:-1;200:15561:1;:::i;:::-;;;:::o;:::-;;;;;;;;;;;;;;;;;;;;:::o",
+  "source": "pragma solidity ^0.5.1;\nimport { IERC20 } from \"openzeppelin-solidity/contracts/token/ERC20/IERC20.sol\";\nimport { ERC1155 } from \"./ERC1155/ERC1155.sol\";\nimport { CTHelpers } from \"./CTHelpers.sol\";\n\ncontract ConditionalTokens is ERC1155 {\n\n    /// @dev Emitted upon the successful preparation of a condition.\n    /// @param conditionId The condition's ID. This ID may be derived from the other three parameters via ``keccak256(abi.encodePacked(oracle, questionId, outcomeSlotCount))``.\n    /// @param oracle The account assigned to report the result for the prepared condition.\n    /// @param questionId An identifier for the question to be answered by the oracle.\n    /// @param outcomeSlotCount The number of outcome slots which should be used for this condition. Must not exceed 256.\n    event ConditionPreparation(\n        bytes32 indexed conditionId,\n        address indexed oracle,\n        bytes32 indexed questionId,\n        uint outcomeSlotCount\n    );\n\n    event ConditionResolution(\n        bytes32 indexed conditionId,\n        address indexed oracle,\n        bytes32 indexed questionId,\n        uint outcomeSlotCount,\n        uint[] payoutNumerators\n    );\n\n    /// @dev Emitted when a position is successfully split.\n    event PositionSplit(\n        address indexed stakeholder,\n        IERC20 collateralToken,\n        bytes32 indexed parentCollectionId,\n        bytes32 indexed conditionId,\n        uint[] partition,\n        uint amount\n    );\n    /// @dev Emitted when positions are successfully merged.\n    event PositionsMerge(\n        address indexed stakeholder,\n        IERC20 collateralToken,\n        bytes32 indexed parentCollectionId,\n        bytes32 indexed conditionId,\n        uint[] partition,\n        uint amount\n    );\n    event PayoutRedemption(\n        address indexed redeemer,\n        IERC20 indexed collateralToken,\n        bytes32 indexed parentCollectionId,\n        bytes32 conditionId,\n        uint[] indexSets,\n        uint payout\n    );\n\n\n    /// Mapping key is an condition ID. Value represents numerators of the payout vector associated with the condition. This array is initialized with a length equal to the outcome slot count. E.g. Condition with 3 outcomes [A, B, C] and two of those correct [0.5, 0.5, 0]. In Ethereum there are no decimal values, so here, 0.5 is represented by fractions like 1/2 == 0.5. That's why we need numerator and denominator values. Payout numerators are also used as a check of initialization. If the numerators array is empty (has length zero), the condition was not created/prepared. See getOutcomeSlotCount.\n    mapping(bytes32 => uint[]) public payoutNumerators;\n    /// Denominator is also used for checking if the condition has been resolved. If the denominator is non-zero, then the condition has been resolved.\n    mapping(bytes32 => uint) public payoutDenominator;\n\n    /// @dev This function prepares a condition by initializing a payout vector associated with the condition.\n    /// @param oracle The account assigned to report the result for the prepared condition.\n    /// @param questionId An identifier for the question to be answered by the oracle.\n    /// @param outcomeSlotCount The number of outcome slots which should be used for this condition. Must not exceed 256.\n    function prepareCondition(address oracle, bytes32 questionId, uint outcomeSlotCount) external {\n        // Limit of 256 because we use a partition array that is a number of 256 bits.\n        require(outcomeSlotCount <= 256, \"too many outcome slots\");\n        require(outcomeSlotCount > 1, \"there should be more than one outcome slot\");\n        bytes32 conditionId = CTHelpers.getConditionId(oracle, questionId, outcomeSlotCount);\n        require(payoutNumerators[conditionId].length == 0, \"condition already prepared\");\n        payoutNumerators[conditionId] = new uint[](outcomeSlotCount);\n        emit ConditionPreparation(conditionId, oracle, questionId, outcomeSlotCount);\n    }\n\n    /// @dev Called by the oracle for reporting results of conditions. Will set the payout vector for the condition with the ID ``keccak256(abi.encodePacked(oracle, questionId, outcomeSlotCount))``, where oracle is the message sender, questionId is one of the parameters of this function, and outcomeSlotCount is the length of the payouts parameter, which contains the payoutNumerators for each outcome slot of the condition.\n    /// @param questionId The question ID the oracle is answering for\n    /// @param payouts The oracle's answer\n    function reportPayouts(bytes32 questionId, uint[] calldata payouts) external {\n        uint outcomeSlotCount = payouts.length;\n        require(outcomeSlotCount > 1, \"there should be more than one outcome slot\");\n        // IMPORTANT, the oracle is enforced to be the sender because it's part of the hash.\n        bytes32 conditionId = CTHelpers.getConditionId(msg.sender, questionId, outcomeSlotCount);\n        require(payoutNumerators[conditionId].length == outcomeSlotCount, \"condition not prepared or found\");\n        require(payoutDenominator[conditionId] == 0, \"payout denominator already set\");\n\n        uint den = 0;\n        for (uint i = 0; i < outcomeSlotCount; i++) {\n            uint num = payouts[i];\n            den = den.add(num);\n\n            require(payoutNumerators[conditionId][i] == 0, \"payout numerator already set\");\n            payoutNumerators[conditionId][i] = num;\n        }\n        require(den > 0, \"payout is all zeroes\");\n        payoutDenominator[conditionId] = den;\n        emit ConditionResolution(conditionId, msg.sender, questionId, outcomeSlotCount, payoutNumerators[conditionId]);\n    }\n\n    /// @dev This function splits a position. If splitting from the collateral, this contract will attempt to transfer `amount` collateral from the message sender to itself. Otherwise, this contract will burn `amount` stake held by the message sender in the position being split worth of EIP 1155 tokens. Regardless, if successful, `amount` stake will be minted in the split target positions. If any of the transfers, mints, or burns fail, the transaction will revert. The transaction will also revert if the given partition is trivial, invalid, or refers to more slots than the condition is prepared with.\n    /// @param collateralToken The address of the positions' backing collateral token.\n    /// @param parentCollectionId The ID of the outcome collections common to the position being split and the split target positions. May be null, in which only the collateral is shared.\n    /// @param conditionId The ID of the condition to split on.\n    /// @param partition An array of disjoint index sets representing a nontrivial partition of the outcome slots of the given condition. E.g. A|B and C but not A|B and B|C (is not disjoint). Each element's a number which, together with the condition, represents the outcome collection. E.g. 0b110 is A|B, 0b010 is B, etc.\n    /// @param amount The amount of collateral or stake to split.\n    function splitPosition(\n        IERC20 collateralToken,\n        bytes32 parentCollectionId,\n        bytes32 conditionId,\n        uint[] calldata partition,\n        uint amount\n    ) external {\n        require(partition.length > 1, \"got empty or singleton partition\");\n        uint outcomeSlotCount = payoutNumerators[conditionId].length;\n        require(outcomeSlotCount > 0, \"condition not prepared yet\");\n\n        // For a condition with 4 outcomes fullIndexSet's 0b1111; for 5 it's 0b11111...\n        uint fullIndexSet = (1 << outcomeSlotCount) - 1;\n        // freeIndexSet starts as the full collection\n        uint freeIndexSet = fullIndexSet;\n        // This loop checks that all condition sets are disjoint (the same outcome is not part of more than 1 set)\n        uint[] memory positionIds = new uint[](partition.length);\n        uint[] memory amounts = new uint[](partition.length);\n        for (uint i = 0; i < partition.length; i++) {\n            uint indexSet = partition[i];\n            require(indexSet > 0 && indexSet < fullIndexSet, \"got invalid index set\");\n            require((indexSet & freeIndexSet) == indexSet, \"partition not disjoint\");\n            freeIndexSet ^= indexSet;\n            positionIds[i] = CTHelpers.getPositionId(collateralToken, CTHelpers.getCollectionId(parentCollectionId, conditionId, indexSet));\n            amounts[i] = amount;\n        }\n\n        if (freeIndexSet == 0) {\n            // Partitioning the full set of outcomes for the condition in this branch\n            if (parentCollectionId == bytes32(0)) {\n                require(collateralToken.transferFrom(msg.sender, address(this), amount), \"could not receive collateral tokens\");\n            } else {\n                _burn(\n                    msg.sender,\n                    CTHelpers.getPositionId(collateralToken, parentCollectionId),\n                    amount\n                );\n            }\n        } else {\n            // Partitioning a subset of outcomes for the condition in this branch.\n            // For example, for a condition with three outcomes A, B, and C, this branch\n            // allows the splitting of a position $:(A|C) to positions $:(A) and $:(C).\n            _burn(\n                msg.sender,\n                CTHelpers.getPositionId(collateralToken,\n                    CTHelpers.getCollectionId(parentCollectionId, conditionId, fullIndexSet ^ freeIndexSet)),\n                amount\n            );\n        }\n\n        _batchMint(\n            msg.sender,\n            // position ID is the ERC 1155 token ID\n            positionIds,\n            amounts,\n            \"\"\n        );\n        emit PositionSplit(msg.sender, collateralToken, parentCollectionId, conditionId, partition, amount);\n    }\n\n    function mergePositions(\n        IERC20 collateralToken,\n        bytes32 parentCollectionId,\n        bytes32 conditionId,\n        uint[] calldata partition,\n        uint amount\n    ) external {\n        require(partition.length > 1, \"got empty or singleton partition\");\n        uint outcomeSlotCount = payoutNumerators[conditionId].length;\n        require(outcomeSlotCount > 0, \"condition not prepared yet\");\n\n        uint fullIndexSet = (1 << outcomeSlotCount) - 1;\n        uint freeIndexSet = fullIndexSet;\n        uint[] memory positionIds = new uint[](partition.length);\n        uint[] memory amounts = new uint[](partition.length);\n        for (uint i = 0; i < partition.length; i++) {\n            uint indexSet = partition[i];\n            require(indexSet > 0 && indexSet < fullIndexSet, \"got invalid index set\");\n            require((indexSet & freeIndexSet) == indexSet, \"partition not disjoint\");\n            freeIndexSet ^= indexSet;\n            positionIds[i] = CTHelpers.getPositionId(collateralToken, CTHelpers.getCollectionId(parentCollectionId, conditionId, indexSet));\n            amounts[i] = amount;\n        }\n        _batchBurn(\n            msg.sender,\n            positionIds,\n            amounts\n        );\n\n        if (freeIndexSet == 0) {\n            if (parentCollectionId == bytes32(0)) {\n                require(collateralToken.transfer(msg.sender, amount), \"could not send collateral tokens\");\n            } else {\n                _mint(\n                    msg.sender,\n                    CTHelpers.getPositionId(collateralToken, parentCollectionId),\n                    amount,\n                    \"\"\n                );\n            }\n        } else {\n            _mint(\n                msg.sender,\n                CTHelpers.getPositionId(collateralToken,\n                    CTHelpers.getCollectionId(parentCollectionId, conditionId, fullIndexSet ^ freeIndexSet)),\n                amount,\n                \"\"\n            );\n        }\n\n        emit PositionsMerge(msg.sender, collateralToken, parentCollectionId, conditionId, partition, amount);\n    }\n\n    function redeemPositions(IERC20 collateralToken, bytes32 parentCollectionId, bytes32 conditionId, uint[] calldata indexSets) external {\n        uint den = payoutDenominator[conditionId];\n        require(den > 0, \"result for condition not received yet\");\n        uint outcomeSlotCount = payoutNumerators[conditionId].length;\n        require(outcomeSlotCount > 0, \"condition not prepared yet\");\n\n        uint totalPayout = 0;\n\n        uint fullIndexSet = (1 << outcomeSlotCount) - 1;\n        for (uint i = 0; i < indexSets.length; i++) {\n            uint indexSet = indexSets[i];\n            require(indexSet > 0 && indexSet < fullIndexSet, \"got invalid index set\");\n            uint positionId = CTHelpers.getPositionId(collateralToken,\n                CTHelpers.getCollectionId(parentCollectionId, conditionId, indexSet));\n\n            uint payoutNumerator = 0;\n            for (uint j = 0; j < outcomeSlotCount; j++) {\n                if (indexSet & (1 << j) != 0) {\n                    payoutNumerator = payoutNumerator.add(payoutNumerators[conditionId][j]);\n                }\n            }\n\n            uint payoutStake = balanceOf(msg.sender, positionId);\n            if (payoutStake > 0) {\n                totalPayout = totalPayout.add(payoutStake.mul(payoutNumerator).div(den));\n                _burn(msg.sender, positionId, payoutStake);\n            }\n        }\n\n        if (totalPayout > 0) {\n            if (parentCollectionId == bytes32(0)) {\n                require(collateralToken.transfer(msg.sender, totalPayout), \"could not transfer payout to message sender\");\n            } else {\n                _mint(msg.sender, CTHelpers.getPositionId(collateralToken, parentCollectionId), totalPayout, \"\");\n            }\n        }\n        emit PayoutRedemption(msg.sender, collateralToken, parentCollectionId, conditionId, indexSets, totalPayout);\n    }\n\n    /// @dev Gets the outcome slot count of a condition.\n    /// @param conditionId ID of the condition.\n    /// @return Number of outcome slots associated with a condition, or zero if condition has not been prepared yet.\n    function getOutcomeSlotCount(bytes32 conditionId) external view returns (uint) {\n        return payoutNumerators[conditionId].length;\n    }\n\n    /// @dev Constructs a condition ID from an oracle, a question ID, and the outcome slot count for the question.\n    /// @param oracle The account assigned to report the result for the prepared condition.\n    /// @param questionId An identifier for the question to be answered by the oracle.\n    /// @param outcomeSlotCount The number of outcome slots which should be used for this condition. Must not exceed 256.\n    function getConditionId(address oracle, bytes32 questionId, uint outcomeSlotCount) external pure returns (bytes32) {\n        return CTHelpers.getConditionId(oracle, questionId, outcomeSlotCount);\n    }\n\n    /// @dev Constructs an outcome collection ID from a parent collection and an outcome collection.\n    /// @param parentCollectionId Collection ID of the parent outcome collection, or bytes32(0) if there's no parent.\n    /// @param conditionId Condition ID of the outcome collection to combine with the parent outcome collection.\n    /// @param indexSet Index set of the outcome collection to combine with the parent outcome collection.\n    function getCollectionId(bytes32 parentCollectionId, bytes32 conditionId, uint indexSet) external view returns (bytes32) {\n        return CTHelpers.getCollectionId(parentCollectionId, conditionId, indexSet);\n    }\n\n    /// @dev Constructs a position ID from a collateral token and an outcome collection. These IDs are used as the ERC-1155 ID for this contract.\n    /// @param collateralToken Collateral token which backs the position.\n    /// @param collectionId ID of the outcome collection associated with this position.\n    function getPositionId(IERC20 collateralToken, bytes32 collectionId) external pure returns (uint) {\n        return CTHelpers.getPositionId(collateralToken, collectionId);\n    }\n}\n",
+  "compiler": {
+    "name": "solc",
+    "version": "0.5.10+commit.5a6ea5b1.Emscripten.clang"
+  },
+  "networks": {
+    "1": {
+      "events": {
+        "0xab3760c3bd2bb38b5bcf54dc79802ed67338b4cf29f3054ded67ed24661e4177": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "conditionId",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "name": "oracle",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "questionId",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "name": "outcomeSlotCount",
+              "type": "uint256"
+            }
+          ],
+          "name": "ConditionPreparation",
+          "type": "event",
+          "signature": "0xab3760c3bd2bb38b5bcf54dc79802ed67338b4cf29f3054ded67ed24661e4177"
+        },
+        "0xb44d84d3289691f71497564b85d4233648d9dbae8cbdbb4329f301c3a0185894": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "conditionId",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "name": "oracle",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "questionId",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "name": "outcomeSlotCount",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "payoutNumerators",
+              "type": "uint256[]"
+            }
+          ],
+          "name": "ConditionResolution",
+          "type": "event",
+          "signature": "0xb44d84d3289691f71497564b85d4233648d9dbae8cbdbb4329f301c3a0185894"
+        },
+        "0x2e6bb91f8cbcda0c93623c54d0403a43514fabc40084ec96b6d5379a74786298": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "stakeholder",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "collateralToken",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "parentCollectionId",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "name": "conditionId",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "name": "partition",
+              "type": "uint256[]"
+            },
+            {
+              "indexed": false,
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "name": "PositionSplit",
+          "type": "event",
+          "signature": "0x2e6bb91f8cbcda0c93623c54d0403a43514fabc40084ec96b6d5379a74786298"
+        },
+        "0x6f13ca62553fcc2bcd2372180a43949c1e4cebba603901ede2f4e14f36b282ca": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "stakeholder",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "collateralToken",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "parentCollectionId",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "name": "conditionId",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "name": "partition",
+              "type": "uint256[]"
+            },
+            {
+              "indexed": false,
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "name": "PositionsMerge",
+          "type": "event",
+          "signature": "0x6f13ca62553fcc2bcd2372180a43949c1e4cebba603901ede2f4e14f36b282ca"
+        },
+        "0x2682012a4a4f1973119f1c9b90745d1bd91fa2bab387344f044cb3586864d18d": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "redeemer",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "collateralToken",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "parentCollectionId",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "name": "conditionId",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "name": "indexSets",
+              "type": "uint256[]"
+            },
+            {
+              "indexed": false,
+              "name": "payout",
+              "type": "uint256"
+            }
+          ],
+          "name": "PayoutRedemption",
+          "type": "event",
+          "signature": "0x2682012a4a4f1973119f1c9b90745d1bd91fa2bab387344f044cb3586864d18d"
+        },
+        "0xc3d58168c5ae7397731d063d5bbf3d657854427343f4c083240f7aacaa2d0f62": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "operator",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "from",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "to",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "id",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "value",
+              "type": "uint256"
+            }
+          ],
+          "name": "TransferSingle",
+          "type": "event",
+          "signature": "0xc3d58168c5ae7397731d063d5bbf3d657854427343f4c083240f7aacaa2d0f62"
+        },
+        "0x4a39dc06d4c0dbc64b70af90fd698a233a518aa5d07e595d983b8c0526c8f7fb": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "operator",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "from",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "to",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "ids",
+              "type": "uint256[]"
+            },
+            {
+              "indexed": false,
+              "name": "values",
+              "type": "uint256[]"
+            }
+          ],
+          "name": "TransferBatch",
+          "type": "event",
+          "signature": "0x4a39dc06d4c0dbc64b70af90fd698a233a518aa5d07e595d983b8c0526c8f7fb"
+        },
+        "0x17307eab39ab6107e8899845ad3d59bd9653f200f220920489ca2b5937696c31": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "operator",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "approved",
+              "type": "bool"
+            }
+          ],
+          "name": "ApprovalForAll",
+          "type": "event",
+          "signature": "0x17307eab39ab6107e8899845ad3d59bd9653f200f220920489ca2b5937696c31"
+        },
+        "0x6bb7ff708619ba0610cba295a58592e0451dee2622938c8755667688daf3529b": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "value",
+              "type": "string"
+            },
+            {
+              "indexed": true,
+              "name": "id",
+              "type": "uint256"
+            }
+          ],
+          "name": "URI",
+          "type": "event",
+          "signature": "0x6bb7ff708619ba0610cba295a58592e0451dee2622938c8755667688daf3529b"
+        }
+      },
+      "links": {},
+      "address": "0xC59b0e4De5F1248C1140964E0fF287B192407E0C",
+      "transactionHash": "0x7e10ef2a2116a46153d52ad50d6428fa9f4b19c36c803ba2f707cd70b7434348"
+    },
+    "4": {
+      "events": {
+        "0xab3760c3bd2bb38b5bcf54dc79802ed67338b4cf29f3054ded67ed24661e4177": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "conditionId",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "name": "oracle",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "questionId",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "name": "outcomeSlotCount",
+              "type": "uint256"
+            }
+          ],
+          "name": "ConditionPreparation",
+          "type": "event",
+          "signature": "0xab3760c3bd2bb38b5bcf54dc79802ed67338b4cf29f3054ded67ed24661e4177"
+        },
+        "0xb44d84d3289691f71497564b85d4233648d9dbae8cbdbb4329f301c3a0185894": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "conditionId",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "name": "oracle",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "questionId",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "name": "outcomeSlotCount",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "payoutNumerators",
+              "type": "uint256[]"
+            }
+          ],
+          "name": "ConditionResolution",
+          "type": "event",
+          "signature": "0xb44d84d3289691f71497564b85d4233648d9dbae8cbdbb4329f301c3a0185894"
+        },
+        "0x2e6bb91f8cbcda0c93623c54d0403a43514fabc40084ec96b6d5379a74786298": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "stakeholder",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "collateralToken",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "parentCollectionId",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "name": "conditionId",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "name": "partition",
+              "type": "uint256[]"
+            },
+            {
+              "indexed": false,
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "name": "PositionSplit",
+          "type": "event",
+          "signature": "0x2e6bb91f8cbcda0c93623c54d0403a43514fabc40084ec96b6d5379a74786298"
+        },
+        "0x6f13ca62553fcc2bcd2372180a43949c1e4cebba603901ede2f4e14f36b282ca": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "stakeholder",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "collateralToken",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "parentCollectionId",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "name": "conditionId",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "name": "partition",
+              "type": "uint256[]"
+            },
+            {
+              "indexed": false,
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "name": "PositionsMerge",
+          "type": "event",
+          "signature": "0x6f13ca62553fcc2bcd2372180a43949c1e4cebba603901ede2f4e14f36b282ca"
+        },
+        "0x2682012a4a4f1973119f1c9b90745d1bd91fa2bab387344f044cb3586864d18d": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "redeemer",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "collateralToken",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "parentCollectionId",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "name": "conditionId",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "name": "indexSets",
+              "type": "uint256[]"
+            },
+            {
+              "indexed": false,
+              "name": "payout",
+              "type": "uint256"
+            }
+          ],
+          "name": "PayoutRedemption",
+          "type": "event",
+          "signature": "0x2682012a4a4f1973119f1c9b90745d1bd91fa2bab387344f044cb3586864d18d"
+        },
+        "0xc3d58168c5ae7397731d063d5bbf3d657854427343f4c083240f7aacaa2d0f62": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "operator",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "from",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "to",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "id",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "value",
+              "type": "uint256"
+            }
+          ],
+          "name": "TransferSingle",
+          "type": "event",
+          "signature": "0xc3d58168c5ae7397731d063d5bbf3d657854427343f4c083240f7aacaa2d0f62"
+        },
+        "0x4a39dc06d4c0dbc64b70af90fd698a233a518aa5d07e595d983b8c0526c8f7fb": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "operator",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "from",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "to",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "ids",
+              "type": "uint256[]"
+            },
+            {
+              "indexed": false,
+              "name": "values",
+              "type": "uint256[]"
+            }
+          ],
+          "name": "TransferBatch",
+          "type": "event",
+          "signature": "0x4a39dc06d4c0dbc64b70af90fd698a233a518aa5d07e595d983b8c0526c8f7fb"
+        },
+        "0x17307eab39ab6107e8899845ad3d59bd9653f200f220920489ca2b5937696c31": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "operator",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "approved",
+              "type": "bool"
+            }
+          ],
+          "name": "ApprovalForAll",
+          "type": "event",
+          "signature": "0x17307eab39ab6107e8899845ad3d59bd9653f200f220920489ca2b5937696c31"
+        },
+        "0x6bb7ff708619ba0610cba295a58592e0451dee2622938c8755667688daf3529b": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "value",
+              "type": "string"
+            },
+            {
+              "indexed": true,
+              "name": "id",
+              "type": "uint256"
+            }
+          ],
+          "name": "URI",
+          "type": "event",
+          "signature": "0x6bb7ff708619ba0610cba295a58592e0451dee2622938c8755667688daf3529b"
+        }
+      },
+      "links": {},
+      "address": "0x36bede640D19981A82090519bC1626249984c908",
+      "transactionHash": "0x7db87634594160ae8acc745d38329f6e8902ae8cd98a9f1b10afb606b41c436b"
+    },
+    "100": {
+      "events": {
+        "0xab3760c3bd2bb38b5bcf54dc79802ed67338b4cf29f3054ded67ed24661e4177": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "conditionId",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "name": "oracle",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "questionId",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "name": "outcomeSlotCount",
+              "type": "uint256"
+            }
+          ],
+          "name": "ConditionPreparation",
+          "type": "event"
+        },
+        "0xb44d84d3289691f71497564b85d4233648d9dbae8cbdbb4329f301c3a0185894": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "conditionId",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "name": "oracle",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "questionId",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "name": "outcomeSlotCount",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "payoutNumerators",
+              "type": "uint256[]"
+            }
+          ],
+          "name": "ConditionResolution",
+          "type": "event"
+        },
+        "0x2e6bb91f8cbcda0c93623c54d0403a43514fabc40084ec96b6d5379a74786298": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "stakeholder",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "collateralToken",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "parentCollectionId",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "name": "conditionId",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "name": "partition",
+              "type": "uint256[]"
+            },
+            {
+              "indexed": false,
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "name": "PositionSplit",
+          "type": "event"
+        },
+        "0x6f13ca62553fcc2bcd2372180a43949c1e4cebba603901ede2f4e14f36b282ca": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "stakeholder",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "collateralToken",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "parentCollectionId",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "name": "conditionId",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "name": "partition",
+              "type": "uint256[]"
+            },
+            {
+              "indexed": false,
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "name": "PositionsMerge",
+          "type": "event"
+        },
+        "0x2682012a4a4f1973119f1c9b90745d1bd91fa2bab387344f044cb3586864d18d": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "redeemer",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "collateralToken",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "parentCollectionId",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "name": "conditionId",
+              "type": "bytes32"
+            },
+            {
+              "indexed": false,
+              "name": "indexSets",
+              "type": "uint256[]"
+            },
+            {
+              "indexed": false,
+              "name": "payout",
+              "type": "uint256"
+            }
+          ],
+          "name": "PayoutRedemption",
+          "type": "event"
+        },
+        "0xc3d58168c5ae7397731d063d5bbf3d657854427343f4c083240f7aacaa2d0f62": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "operator",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "from",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "to",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "id",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "name": "value",
+              "type": "uint256"
+            }
+          ],
+          "name": "TransferSingle",
+          "type": "event"
+        },
+        "0x4a39dc06d4c0dbc64b70af90fd698a233a518aa5d07e595d983b8c0526c8f7fb": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "operator",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "from",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "to",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "ids",
+              "type": "uint256[]"
+            },
+            {
+              "indexed": false,
+              "name": "values",
+              "type": "uint256[]"
+            }
+          ],
+          "name": "TransferBatch",
+          "type": "event"
+        },
+        "0x17307eab39ab6107e8899845ad3d59bd9653f200f220920489ca2b5937696c31": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "name": "operator",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "approved",
+              "type": "bool"
+            }
+          ],
+          "name": "ApprovalForAll",
+          "type": "event"
+        },
+        "0x6bb7ff708619ba0610cba295a58592e0451dee2622938c8755667688daf3529b": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "value",
+              "type": "string"
+            },
+            {
+              "indexed": true,
+              "name": "id",
+              "type": "uint256"
+            }
+          ],
+          "name": "URI",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0xCeAfDD6bc0bEF976fdCd1112955828E00543c0Ce",
+      "transactionHash": "0x8135a49a80eb20e8932bf8b39a55e34229f992c298c4cdfbb62feffa088001c3"
+    }
+  },
+  "schemaVersion": "3.2.5",
+  "updatedAt": "2020-09-17T16:00:36.853Z",
+  "devdoc": {
+    "methods": {
+      "balanceOf(address,uint256)": {
+        "details": "Get the specified address' balance for token with specified ID.",
+        "params": {
+          "id": "ID of the token",
+          "owner": "The address of the token holder"
+        },
+        "return": "The owner's balance of the token type requested"
+      },
+      "balanceOfBatch(address[],uint256[])": {
+        "details": "Get the balance of multiple account/token pairs",
+        "params": {
+          "ids": "IDs of the tokens",
+          "owners": "The addresses of the token holders"
+        },
+        "return": "Balances for each owner and token id pair"
+      },
+      "getCollectionId(bytes32,bytes32,uint256)": {
+        "details": "Constructs an outcome collection ID from a parent collection and an outcome collection.",
+        "params": {
+          "conditionId": "Condition ID of the outcome collection to combine with the parent outcome collection.",
+          "indexSet": "Index set of the outcome collection to combine with the parent outcome collection.",
+          "parentCollectionId": "Collection ID of the parent outcome collection, or bytes32(0) if there's no parent."
+        }
+      },
+      "getConditionId(address,bytes32,uint256)": {
+        "details": "Constructs a condition ID from an oracle, a question ID, and the outcome slot count for the question.",
+        "params": {
+          "oracle": "The account assigned to report the result for the prepared condition.",
+          "outcomeSlotCount": "The number of outcome slots which should be used for this condition. Must not exceed 256.",
+          "questionId": "An identifier for the question to be answered by the oracle."
+        }
+      },
+      "getOutcomeSlotCount(bytes32)": {
+        "details": "Gets the outcome slot count of a condition.",
+        "params": {
+          "conditionId": "ID of the condition."
+        },
+        "return": "Number of outcome slots associated with a condition, or zero if condition has not been prepared yet."
+      },
+      "getPositionId(address,bytes32)": {
+        "details": "Constructs a position ID from a collateral token and an outcome collection. These IDs are used as the ERC-1155 ID for this contract.",
+        "params": {
+          "collateralToken": "Collateral token which backs the position.",
+          "collectionId": "ID of the outcome collection associated with this position."
+        }
+      },
+      "isApprovedForAll(address,address)": {
+        "params": {
+          "operator": "Address of authorized operator",
+          "owner": "The owner of the Tokens"
+        },
+        "return": "True if the operator is approved, false if not"
+      },
+      "prepareCondition(address,bytes32,uint256)": {
+        "details": "This function prepares a condition by initializing a payout vector associated with the condition.",
+        "params": {
+          "oracle": "The account assigned to report the result for the prepared condition.",
+          "outcomeSlotCount": "The number of outcome slots which should be used for this condition. Must not exceed 256.",
+          "questionId": "An identifier for the question to be answered by the oracle."
+        }
+      },
+      "reportPayouts(bytes32,uint256[])": {
+        "details": "Called by the oracle for reporting results of conditions. Will set the payout vector for the condition with the ID ``keccak256(abi.encodePacked(oracle, questionId, outcomeSlotCount))``, where oracle is the message sender, questionId is one of the parameters of this function, and outcomeSlotCount is the length of the payouts parameter, which contains the payoutNumerators for each outcome slot of the condition.",
+        "params": {
+          "payouts": "The oracle's answer",
+          "questionId": "The question ID the oracle is answering for"
+        }
+      },
+      "safeBatchTransferFrom(address,address,uint256[],uint256[],bytes)": {
+        "details": "Transfers `values` amount(s) of `ids` from the `from` address to the `to` address specified. Caller must be approved to manage the tokens being transferred out of the `from` account. If `to` is a smart contract, will call `onERC1155BatchReceived` on `to` and act appropriately.",
+        "params": {
+          "data": "Data forwarded to `onERC1155Received` if `to` is a contract receiver",
+          "from": "Source address",
+          "ids": "IDs of each token type",
+          "to": "Target address",
+          "values": "Transfer amounts per token type"
+        }
+      },
+      "safeTransferFrom(address,address,uint256,uint256,bytes)": {
+        "details": "Transfers `value` amount of an `id` from the `from` address to the `to` address specified. Caller must be approved to manage the tokens being transferred out of the `from` account. If `to` is a smart contract, will call `onERC1155Received` on `to` and act appropriately.",
+        "params": {
+          "data": "Data forwarded to `onERC1155Received` if `to` is a contract receiver",
+          "from": "Source address",
+          "id": "ID of the token type",
+          "to": "Target address",
+          "value": "Transfer amount"
+        }
+      },
+      "setApprovalForAll(address,bool)": {
+        "details": "Sets or unsets the approval of a given operator An operator is allowed to transfer all tokens of the sender on their behalf",
+        "params": {
+          "approved": "representing the status of the approval to be set",
+          "operator": "address to set the approval"
+        }
+      },
+      "splitPosition(address,bytes32,bytes32,uint256[],uint256)": {
+        "details": "This function splits a position. If splitting from the collateral, this contract will attempt to transfer `amount` collateral from the message sender to itself. Otherwise, this contract will burn `amount` stake held by the message sender in the position being split worth of EIP 1155 tokens. Regardless, if successful, `amount` stake will be minted in the split target positions. If any of the transfers, mints, or burns fail, the transaction will revert. The transaction will also revert if the given partition is trivial, invalid, or refers to more slots than the condition is prepared with.",
+        "params": {
+          "amount": "The amount of collateral or stake to split.",
+          "collateralToken": "The address of the positions' backing collateral token.",
+          "conditionId": "The ID of the condition to split on.",
+          "parentCollectionId": "The ID of the outcome collections common to the position being split and the split target positions. May be null, in which only the collateral is shared.",
+          "partition": "An array of disjoint index sets representing a nontrivial partition of the outcome slots of the given condition. E.g. A|B and C but not A|B and B|C (is not disjoint). Each element's a number which, together with the condition, represents the outcome collection. E.g. 0b110 is A|B, 0b010 is B, etc."
+        }
+      },
+      "supportsInterface(bytes4)": {
+        "details": "See `IERC165.supportsInterface`.     * Time complexity O(1), guaranteed to always use less than 30 000 gas."
+      }
+    }
+  },
+  "userdoc": {
+    "methods": {
+      "isApprovedForAll(address,address)": {
+        "notice": "Queries the approval status of an operator for a given owner."
+      }
+    }
+  }
+}

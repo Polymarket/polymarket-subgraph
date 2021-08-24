@@ -91,6 +91,8 @@ type Condition @entity {
   payoutDenominator: BigInt
   "Market makers which are trading on this condition"
   fixedProductMarketMakers: [FixedProductMarketMaker!]!
+  "Hash of the resolution transaction"
+  resolutionHash: Bytes
 }
 
 type Split @entity {
