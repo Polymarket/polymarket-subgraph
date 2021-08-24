@@ -37,6 +37,7 @@ import { getCollateralScale } from './utils/collateralTokens';
 import { updateGlobalVolume } from './utils/global-utils';
 import { increment, max } from './utils/maths';
 import {
+  incrementAccountTrades,
   markAccountAsSeen,
   requireAccount,
   updateUserVolume,
@@ -262,6 +263,10 @@ export function handleBuy(event: FPMMBuy): void {
     event.block.timestamp,
   );
   markAccountAsSeen(event.params.buyer.toHexString(), event.block.timestamp);
+  incrementAccountTrades(
+    event.params.buyer.toHexString(),
+    event.block.timestamp,
+  );
   recordBuy(event);
   updateGlobalVolume(
     event.params.investmentAmount,
@@ -336,6 +341,10 @@ export function handleSell(event: FPMMSell): void {
     event.block.timestamp,
   );
   markAccountAsSeen(event.params.seller.toHexString(), event.block.timestamp);
+  incrementAccountTrades(
+    event.params.seller.toHexString(),
+    event.block.timestamp,
+  );
   recordSell(event);
   updateGlobalVolume(
     event.params.returnAmount,

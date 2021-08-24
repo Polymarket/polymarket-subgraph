@@ -34,7 +34,7 @@ function getNetworkNameForSubgraph(): string | null {
   );
 
   const networkName = process.env.NETWORK_NAME || getNetworkNameForSubgraph();
-  const network = networks[networkName || ''];
+  const network = { ...networks[networkName || ''], networkName };
 
   if (!networkName) {
     throw new Error(
