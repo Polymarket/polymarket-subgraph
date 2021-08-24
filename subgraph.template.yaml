@@ -4,8 +4,8 @@ repository: https://github.com/TokenUnion/polymarket-subgraph
 schema:
   file: ./schema.graphql
 graft:
-  base: QmchgumBDZ7b6cmCBXAgQ3wpVU7h81UxRmcvVxPg11L6yR
-  block: 15177837
+  base: Qmbty4NjZ7biCw6ym6z5jE7j5hsh8iZSuSeBZMMx78XRT9
+  block: 18249350
 dataSources:
   - kind: ethereum/contract
     name: ConditionalTokens

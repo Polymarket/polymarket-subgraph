@@ -46,7 +46,7 @@ type Account @entity {
   "Total volume of this user's trades in USDC base units"
   collateralVolume: BigInt!
   "Total number of trades performed by this user"
-  numTrades: BigInt!
+  numTrades: BigInt
   "Total volume of this user's trades in USDC scaled by 10^6"
   scaledCollateralVolume: BigDecimal!
   "Timestamp of last Buy or Sell transaction"
