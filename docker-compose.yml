@@ -20,11 +20,16 @@ services:
     image: graphprotocol/graph-node
     ports:
       - '8000:8000'
+      - '8001:8001'
       - '8020:8020'
+      - '8030:8030'
+      - '8040:8040'
     environment:
-      postgres_host: 'postgres:5432'
+      postgres_host: postgres
+      postgres_port: 5432
       postgres_user: postgres
       postgres_pass: letmein
       postgres_db: postgres
       ipfs: 'ipfs:5001'
       ethereum: 'development:http://ganache:8545'
+      #RUST_BACKTRACE: 1
