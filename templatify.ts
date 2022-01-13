@@ -13,7 +13,6 @@ Handlebars.registerHelper('lowercase', function (str) {
 
 function getNetworkNameForSubgraph(): string | null {
   switch (process.env.SUBGRAPH) {
-    case undefined:
     case 'tomafrench/polymarket':
       return 'mainnet';
     case 'TokenUnion/polymarket':
@@ -23,7 +22,7 @@ function getNetworkNameForSubgraph(): string | null {
     case 'TokenUnion/polymarket-mumbai':
       return 'mumbai';
     default:
-      return 'matic';
+      return null;
   }
 }
 
@@ -56,5 +55,5 @@ function getNetworkNameForSubgraph(): string | null {
     );
   }
 
-  console.log('🎉 subgraph successfully generated\n');
+  console.log(`🎉 subgraph successfully generated for ${networkName}\n`);
 })();
