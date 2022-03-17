@@ -311,3 +311,37 @@ type FpmmPoolMembership @entity {
   "Amount of liquidity tokens owned by funder"
   amount: BigInt!
 }
+
+# LimitOrderProtocol
+
+type OrderFilled @entity {
+  "Transaction Hash"
+  id: ID!
+  "Timestamp at which filled occurred"
+  timestamp: BigInt!
+  "Address which is performing this fill"
+  address: Account!
+  "The order"
+  orderHash: Bytes!
+  "Order remaining to be filled"
+  remaining: BigInt!
+}
+
+# OrderExecutorV2
+
+type FilledOrder @entity {
+  "Transaction Hash"
+  id: ID!
+  "Timestamp at which filled occurred"
+  timestamp: BigInt!
+  "Address which is performing this fill"
+  maker: Account!
+  "Address of the maker asset"
+  makerAsset: Account!
+  "Address of the taker asset"
+  takerAsset: Account!
+  "Maker amount filled"
+  makerAmountFilled: BigInt!
+  "Taker amount filled"
+  takerAmountFilled: BigInt!
+}
