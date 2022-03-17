@@ -10,7 +10,7 @@ import { increment } from './utils/maths';
 export function handleOrderFilled (event:OrderFilled):void {
   const fpmmAddress = event.address.toHexString();
   const fpmm = FixedProductMarketMaker.load(fpmmAddress);
-  if (fpmm == null) {
+  if (!fpmm) {
     log.error('cannot fill order: FixedProductMarketMaker instance for {} not found', [
       fpmmAddress,
     ]);
@@ -30,7 +30,7 @@ export function handleOrderFilled (event:OrderFilled):void {
   orderFilled.save()
   
   updateFeeFields(
-    fpmm,
+    fpmm as FixedProductMarketMaker,
     feeAmount,
     collateralScaleDec,
   );

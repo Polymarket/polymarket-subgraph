@@ -34,7 +34,7 @@ function recordSell(event: Filled, tradeAmount:BigInt, feeAmount:BigInt): void {
 export function handleFilled (event:Filled):void {
   const fpmmAddress = event.address.toHexString();
   const fpmm = FixedProductMarketMaker.load(fpmmAddress);
-  if (fpmm == null) {
+  if (!fpmm) {
     log.error('cannot fill order: FixedProductMarketMaker instance for {} not found', [
       fpmmAddress,
     ]);
@@ -66,7 +66,7 @@ export function handleFilled (event:Filled):void {
   filledOrder.save()
 
   updateVolumes(
-    fpmm,
+    fpmm as FixedProductMarketMaker,
     timestamp,
     tradeSize,
     collateralScaleDec,
@@ -74,7 +74,7 @@ export function handleFilled (event:Filled):void {
   );
 
   updateFeeFields(
-    fpmm,
+    fpmm as FixedProductMarketMaker,
     feeAmount,
     collateralScaleDec,
   );
