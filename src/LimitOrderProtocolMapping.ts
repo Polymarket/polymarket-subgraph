@@ -1,8 +1,7 @@
-import { BigInt } from "@graphprotocol/graph-ts";
 import { OrderFilled } from "./types/LimitOrderProtocol/LimitOrderProtocol";
 import { FilledOrder, FilledOrderBook, OrderFilledEvent } from "./types/schema";
 import { getCollateralScale } from "./utils/collateralTokens";
-import { bigZero, ERC20AssetId, TRADE_TYPE_LIMIT_BUY, TRADE_TYPE_LIMIT_SELL } from "./utils/constants";
+import { ERC20AssetId, TRADE_TYPE_LIMIT_BUY, TRADE_TYPE_LIMIT_SELL } from "./utils/constants";
 import { increment } from "./utils/maths";
 import { getOrderPrice, getOrderSize, requireOrderBook, updateVolumes } from "./utils/order-book-utils";
 
