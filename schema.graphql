@@ -314,7 +314,7 @@ type FpmmPoolMembership @entity {
   amount: BigInt!
 }
 
-# OrderExecutorV2
+
 
 type FilledOrderGlobal @entity {
   "ID is empty string, this is a singleton"
@@ -331,10 +331,6 @@ type FilledOrderGlobal @entity {
   collateralVolume: BigInt!
   "Global volume in USDC scaled by 10^6"
   scaledCollateralVolume: BigDecimal!
-  "Global fees in USDC base units"
-  collateralFees: BigInt!
-  "Global fees in USDC scaled by 10^6"
-  scaledCollateralFees: BigDecimal!
 
   "Global volume of share purchases in USDC base units"
   collateralBuyVolume: BigInt!
@@ -346,7 +342,9 @@ type FilledOrderGlobal @entity {
   scaledCollateralSellVolume: BigDecimal!
 }
 
-type FilledOrderEvent @entity {
+# OrderExecutorV2
+
+type FilledOrdersEvent @entity {
   "Transaction Hash"
   id: ID!
   "Timestamp at which filled occurred"
@@ -356,14 +354,37 @@ type FilledOrderEvent @entity {
   "Address of the asset that the taker is giving away(for buy, it's the collateral, for sell it's the conditional)"
   makerAsset: Bytes!
   takerAsset: Bytes!
-  "Maker amount filled"
-  makerAssetID: Bytes!
-  "Taker amount filled"
-  takerAssetID: Bytes!
+  "Maker assetId"
+  makerAssetID: BigInt!
+  "Taker assetId"
+  takerAssetID: BigInt!
   "Maker amount filled"
   makerAmountFilled: BigInt!
   "Taker amount filled"
   takerAmountFilled: BigInt!
+}
+
+# LOP
+
+type OrderFilledEvent @entity {
+  "Transaction Hash"
+  id: ID!
+  orderHash: Bytes!
+  "Addresses of the maker and the taker"
+  maker: Account!
+  taker: Account!
+  "Address of the asset that the taker is giving away(for buy, it's the collateral, for sell it's the conditional)"
+  makerAsset: Bytes!
+  takerAsset: Bytes!
+  "Maker assetId"
+  makerAssetID: BigInt!
+  "Taker assetId"
+  takerAssetID: BigInt!
+  "Maker amount filled"
+  makerAmountFilled: BigInt!
+  "Taker amount filled"
+  takerAmountFilled: BigInt!
+  remainingAmount: BigInt!
 }
 
 type FilledOrder @entity {
@@ -371,10 +392,13 @@ type FilledOrder @entity {
   id: ID!
   "Timestamp at which transaction occurred"
   timestamp: BigInt!
+  "Addresses of the maker and the taker"
+  maker: Account!
+  taker: Account!
+  "Order bytes"
+  orderHash: Bytes!
   "Market which transaction is interacting with"
-  market: FilledOrderBook! # TODO
-  "Event related to the transaction"
-  event: FilledOrderEvent!
+  market: FilledOrderBook!
   "Buy or Sell transaction"
   side: TradeType!
   "Account performing transaction"
@@ -390,9 +414,9 @@ type FilledOrderBook @entity {
   id: ID!
 
   "Buy orders"
-  buys: [FilledOrder!]
+  buys: [FilledOrder!]!
   "Sell orders"
-  sells: [FilledOrder!]
+  sells: [FilledOrder!]!
 
 
   "Number of trades of any kind against this order book"
@@ -414,11 +438,6 @@ type FilledOrderBook @entity {
   collateralSellVolume: BigInt!
   "Global volume of share sales in USDC scaled by 10^6"
   scaledCollateralSellVolume: BigDecimal!
-
-  "Fees collected in terms of the underlying collateral value"
-  feeVolume: BigInt!
-  "Fees scaled by the number of decimals of collateralToken"
-  scaledFeeVolume: BigDecimal!
 
   "Timestamp of last day during which someone made a trade"
   lastActiveDay: BigInt!

@@ -120,7 +120,7 @@
       {
         "indexed": false,
         "internalType": "address",
-        "name": "maker",
+        "name": "taker",
         "type": "address"
       },
       {
@@ -138,6 +138,18 @@
       {
         "indexed": false,
         "internalType": "uint256",
+        "name": "makerAssetID",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "takerAssetID",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
         "name": "makerAmountFilled",
         "type": "uint256"
       },
@@ -148,7 +160,7 @@
         "type": "uint256"
       }
     ],
-    "name": "Filled",
+    "name": "FilledOrders",
     "type": "event"
   },
   {
@@ -204,7 +216,7 @@
         "type": "bytes32"
       }
     ],
-    "name": "executed",
+    "name": "executedMarketOrders",
     "outputs": [
       {
         "internalType": "bool",
@@ -267,7 +279,7 @@
                 "type": "uint256"
               }
             ],
-            "internalType": "struct OrderTypes.MarketOrder",
+            "internalType": "struct Orders.MarketOrder",
             "name": "order",
             "type": "tuple"
           },
@@ -277,7 +289,7 @@
             "type": "bytes"
           }
         ],
-        "internalType": "struct OrderExecutorV2.MarketOrderFillData",
+        "internalType": "struct Orders.MarketOrderFillData",
         "name": "marketOrderFillData",
         "type": "tuple"
       },
@@ -346,7 +358,7 @@
                 "type": "uint256"
               }
             ],
-            "internalType": "struct OrderTypes.LimitOrder[]",
+            "internalType": "struct Orders.LimitOrder[]",
             "name": "orders",
             "type": "tuple[]"
           },
@@ -371,7 +383,7 @@
             "type": "uint256[]"
           }
         ],
-        "internalType": "struct OrderExecutorV2.LimitOrderFillData",
+        "internalType": "struct Orders.LimitOrderFillData",
         "name": "fillData",
         "type": "tuple"
       }

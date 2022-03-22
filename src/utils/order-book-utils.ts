@@ -1,4 +1,6 @@
 import { BigDecimal, BigInt } from "@graphprotocol/graph-ts";
+import { OrderFilled } from "../types/LimitOrderProtocol/LimitOrderProtocol";
+import { FilledOrders } from "../types/OrderExecutorV2/OrderExecutorV2"; 
 import { FilledOrderBook, FilledOrderGlobal } from "../types/schema";
 import { bigZero, TRADE_TYPE_LIMIT_BUY, TRADE_TYPE_LIMIT_SELL } from "./constants";
 import { increment } from "./maths";
@@ -23,9 +25,6 @@ export function requireOrderBook(tokenId:string): FilledOrderBook {
     orderBook.scaledCollateralBuyVolume = bigZero.toBigDecimal();
     orderBook.collateralSellVolume = bigZero;
     orderBook.scaledCollateralSellVolume = bigZero.toBigDecimal()
-
-    orderBook.feeVolume = bigZero;
-    orderBook.scaledFeeVolume = bigZero.toBigDecimal()
 
     orderBook.lastActiveDay = bigZero
   }
@@ -64,15 +63,6 @@ export function updateVolumes(
   }
 }
 
-export function updateFeeFields(
-  orderBook: FilledOrderBook,
-  feeAmount: BigInt,
-  collateralScaleDec: BigDecimal,
-): void {
-  orderBook.feeVolume = orderBook.feeVolume.plus(feeAmount);
-  orderBook.scaledFeeVolume = orderBook.feeVolume.divDecimal(collateralScaleDec);
-}
-
 export function requireGlobal(): FilledOrderGlobal {
   let global = FilledOrderGlobal.load('');
   if (global == null) {
@@ -84,8 +74,6 @@ export function requireGlobal(): FilledOrderGlobal {
 
     global.collateralVolume = bigZero;
     global.scaledCollateralVolume = bigZero.toBigDecimal();
-    global.collateralFees = bigZero;
-    global.scaledCollateralFees = bigZero.toBigDecimal();
 
     global.collateralBuyVolume = bigZero;
     global.scaledCollateralBuyVolume = bigZero.toBigDecimal();
@@ -97,17 +85,12 @@ export function requireGlobal(): FilledOrderGlobal {
 
 export function updateGlobalVolume(
   tradeAmount: BigInt,
-  feesAmount: BigInt,
   collateralScaleDec: BigDecimal,
   tradeType: string,
 ): void {
   let global = requireGlobal();
   global.collateralVolume = global.collateralVolume.plus(tradeAmount);
   global.scaledCollateralVolume = global.collateralVolume.divDecimal(
-    collateralScaleDec,
-  );
-  global.collateralFees = global.collateralFees.plus(feesAmount);
-  global.scaledCollateralFees = global.collateralFees.divDecimal(
     collateralScaleDec,
   );
   global.tradesQuantity = increment(global.tradesQuantity);
@@ -127,3 +110,24 @@ export function updateGlobalVolume(
   global.save();
 }
 
+export function getOrderPrice(order: OrderFilled, side: string): BigInt {
+  const price = bigZero
+
+  const quoteAssetAmount = bigZero
+  const baseAssetAmount = bigZero
+
+  const makerAmount = order.params.makerAmountFilled
+  const takerAmount = order.params.takerAmountFilled
+
+  if (side == TRADE_TYPE_LIMIT_BUY) {
+    quoteAssetAmount.plus(makerAmount)
+    baseAssetAmount.plus(takerAmount)
+  } else {
+    quoteAssetAmount.plus(takerAmount)
+    baseAssetAmount.plus(makerAmount)
+  }
+
+  price.plus(quoteAssetAmount.div(baseAssetAmount))
+
+  return price
+}
