@@ -110,6 +110,14 @@ export function updateGlobalVolume(
   global.save();
 }
 
+export function getOrderSize(order: OrderFilled, side: string): BigInt {
+  if (side == TRADE_TYPE_LIMIT_BUY) {
+    return order.params.makerAmountFilled
+  } else {
+    return order.params.takerAmountFilled
+  }
+}
+
 export function getOrderPrice(order: OrderFilled, side: string): BigInt {
   const price = bigZero
 

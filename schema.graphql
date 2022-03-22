@@ -401,8 +401,6 @@ type FilledOrder @entity {
   market: FilledOrderBook!
   "Buy or Sell transaction"
   side: TradeType!
-  "Account performing transaction"
-  user: Account!
   "Amount of collateral in trade"
   size: BigInt!
   "Price of the conditional token"

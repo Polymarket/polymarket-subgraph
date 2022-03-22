@@ -4,7 +4,7 @@ import { FilledOrder, FilledOrderBook, OrderFilledEvent } from "./types/schema";
 import { getCollateralScale } from "./utils/collateralTokens";
 import { bigZero, ERC20AssetId, TRADE_TYPE_LIMIT_BUY, TRADE_TYPE_LIMIT_SELL } from "./utils/constants";
 import { increment } from "./utils/maths";
-import { getOrderPrice, requireOrderBook, updateVolumes } from "./utils/order-book-utils";
+import { getOrderPrice, getOrderSize, requireOrderBook, updateVolumes } from "./utils/order-book-utils";
 
 /*
 event OrderFilled(
@@ -25,16 +25,15 @@ event OrderFilled(
 OrderFilled - used to calculate side, price and size data for each specific limit order
 */
 
-function recordTx(event: OrderFilled, side: string, marketId:string, size:BigInt): string {
+function recordTx(event: OrderFilled, side: string, marketId:string): string {
   let tx = new FilledOrder(event.transaction.hash.toHexString());
   tx.timestamp = event.block.timestamp
   tx.maker = event.params.maker.toHexString()
   tx.taker = event.params.taker.toHexString()
   tx.orderHash = event.params.orderHash
   tx.market = marketId
-  tx.user = event.params.taker.toHexString()
   tx.side = side
-  tx.size = size
+  tx.size = getOrderSize(event, side)
   tx.price = getOrderPrice(event, side)
 
   tx.save();
@@ -64,35 +63,31 @@ export function handleOrderFilled(event:OrderFilled):void {
   const makerAssetID=event.params.makerAssetID
   const takerAsset=event.params.takerAsset
   const takerAssetID=event.params.takerAssetID
-  const makerAmountFilled=event.params.makerAmountFilled
-  const takerAmountFilled=event.params.takerAmountFilled
 
   let side = ''
   let tokenId = ''
   let collateralAddress = ''
-  let size = bigZero
 
   // buy
   if (makerAssetID.toString() === ERC20AssetId) {
     side = TRADE_TYPE_LIMIT_BUY
     collateralAddress = makerAsset.toHexString()
     tokenId = takerAssetID.toHexString()
-    size.plus(makerAmountFilled)
   } else {
     side = TRADE_TYPE_LIMIT_SELL
     collateralAddress = takerAsset.toHexString()
     tokenId = makerAssetID.toHexString()
-    size.plus(takerAmountFilled)
   }
 
   const collateralScaleDec = getCollateralScale(collateralAddress).toBigDecimal();
   const timestamp = event.block.timestamp
+  const size = getOrderSize(event, side)
 
   // record event
   recordEvent(event)
 
   // record transaction
-  const orderId = recordTx(event, side, tokenId, size);
+  const orderId = recordTx(event, side, tokenId);
 
   // order book
   let orderBook = requireOrderBook(tokenId as string)
