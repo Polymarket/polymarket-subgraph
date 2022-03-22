@@ -192,7 +192,7 @@ export function handleFilled (event:FilledOrder):void {
     orderBook.buysQuantity = increment(orderBook.buysQuantity);
     
     if (!orderBook.buys) {
-    orderBook.buys = [] as string[]
+      orderBook.buys = [] as string[]
     }
     orderBook.buys.push(orderId) 
   } else {
