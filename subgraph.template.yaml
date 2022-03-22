@@ -61,29 +61,6 @@ dataSources:
           handler: handleFixedProductMarketMakerCreation
       file: ./src/FixedProductMarketMakerFactoryMapping.ts
   - kind: ethereum/contract
-    name: LimitOrderProtocol
-    network: {{networkName}}
-    source:
-      address: '{{contracts.LimitOrderProtocol.address}}'
-      abi: LimitOrderProtocol
-      startBlock: {{contracts.LimitOrderProtocol.startBlock}}
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.3
-      language: wasm/assemblyscript
-      entities:
-        - FixedProductMarketMaker
-        - OrderFilled
-      abis:
-        - name: LimitOrderProtocol
-          file: ./abis/LimitOrderProtocol.json
-        - name: ERC20Detailed
-          file: ./abis/ERC20Detailed.json
-      eventHandlers:
-        - event: OrderFilled(indexed address,bytes32,uint256)
-          handler: handleOrderFilled
-      file: ./src/LimitOrderProtocolMapping.ts
-  - kind: ethereum/contract
     name: OrderExecutorV2
     network: {{networkName}}
     source:
@@ -95,14 +72,17 @@ dataSources:
       apiVersion: 0.0.3
       language: wasm/assemblyscript
       entities:
-        - FixedProductMarketMaker
+        - FilledOrderGlobal
+        - FilledOrderEvent
         - FilledOrder
+        - FilledOrderBook
       abis:
         - name: OrderExecutorV2
           file: ./abis/OrderExecutorV2.json
         - name: ERC20Detailed
           file: ./abis/ERC20Detailed.json
       eventHandlers:
+        # TODO(REC): replace this for the real event signature
         - event: Filled(address,address,address,uint256,uint256)
           handler: handleFilled
       file: ./src/OrderExecutorV2Mapping.ts      

@@ -278,6 +278,8 @@ type FpmmFundingRemoval @entity {
 enum TradeType {
   Buy
   Sell
+  Limit_Buy
+  Limit_Sell
 }
 
 type Transaction @entity {
@@ -312,36 +314,112 @@ type FpmmPoolMembership @entity {
   amount: BigInt!
 }
 
-# LimitOrderProtocol
-
-type OrderFilled @entity {
-  "Transaction Hash"
-  id: ID!
-  "Timestamp at which filled occurred"
-  timestamp: BigInt!
-  "Address which is performing this fill"
-  address: Account!
-  "The order"
-  orderHash: Bytes!
-  "Order remaining to be filled"
-  remaining: BigInt!
-}
-
 # OrderExecutorV2
 
-type FilledOrder @entity {
+type FilledOrderGlobal @entity {
+  "ID is empty string, this is a singleton"
+  id: ID!
+
+  "Number of trades of any kind for all order books"
+  tradesQuantity: BigInt!
+  "Number of purchases of shares from any order book"
+  buysQuantity: BigInt!
+  "Number of sales of shares to any order book"
+  sellsQuantity: BigInt!
+
+  "Global volume in USDC base units"
+  collateralVolume: BigInt!
+  "Global volume in USDC scaled by 10^6"
+  scaledCollateralVolume: BigDecimal!
+  "Global fees in USDC base units"
+  collateralFees: BigInt!
+  "Global fees in USDC scaled by 10^6"
+  scaledCollateralFees: BigDecimal!
+
+  "Global volume of share purchases in USDC base units"
+  collateralBuyVolume: BigInt!
+  "Global volume of share purchases in USDC scaled by 10^6"
+  scaledCollateralBuyVolume: BigDecimal!
+  "Global volume of share sales in USDC base units"
+  collateralSellVolume: BigInt!
+  "Global volume of share sales in USDC scaled by 10^6"
+  scaledCollateralSellVolume: BigDecimal!
+}
+
+type FilledOrderEvent @entity {
   "Transaction Hash"
   id: ID!
   "Timestamp at which filled occurred"
   timestamp: BigInt!
-  "Address which is performing this fill"
-  maker: Account!
-  "Address of the maker asset"
-  makerAsset: Account!
-  "Address of the taker asset"
-  takerAsset: Account!
+  "Address of the person that placed the market order"
+  taker: Account!
+  "Address of the asset that the taker is giving away(for buy, it's the collateral, for sell it's the conditional)"
+  makerAsset: Bytes!
+  takerAsset: Bytes!
+  "Maker amount filled"
+  makerAssetID: Bytes!
+  "Taker amount filled"
+  takerAssetID: Bytes!
   "Maker amount filled"
   makerAmountFilled: BigInt!
   "Taker amount filled"
   takerAmountFilled: BigInt!
+}
+
+type FilledOrder @entity {
+  "Transaction Hash"
+  id: ID!
+  "Timestamp at which transaction occurred"
+  timestamp: BigInt!
+  "Market which transaction is interacting with"
+  market: FilledOrderBook! # TODO
+  "Event related to the transaction"
+  event: FilledOrderEvent!
+  "Buy or Sell transaction"
+  side: TradeType!
+  "Account performing transaction"
+  user: Account!
+  "Amount of collateral in trade"
+  size: BigInt!
+  "Price of the conditional token"
+  price: BigInt!
+}
+
+type FilledOrderBook @entity {
+  "Token Id"
+  id: ID!
+
+  "Buy orders"
+  buys: [FilledOrder!]
+  "Sell orders"
+  sells: [FilledOrder!]
+
+
+  "Number of trades of any kind against this order book"
+  tradesQuantity: BigInt!
+  "Number of purchases of shares from this order book"
+  buysQuantity: BigInt!
+  "Number of sales of shares to this order book"
+  sellsQuantity: BigInt!
+
+  "Market volume in terms of the underlying collateral value"
+  collateralVolume: BigInt!
+  "Volume scaled by the number of decimals of collateralToken"
+  scaledCollateralVolume: BigDecimal!
+  "Global volume of share purchases in USDC base units"
+  collateralBuyVolume: BigInt!
+  "Global volume of share purchases in USDC scaled by 10^6"
+  scaledCollateralBuyVolume: BigDecimal!
+  "Global volume of share sales in USDC base units"
+  collateralSellVolume: BigInt!
+  "Global volume of share sales in USDC scaled by 10^6"
+  scaledCollateralSellVolume: BigDecimal!
+
+  "Fees collected in terms of the underlying collateral value"
+  feeVolume: BigInt!
+  "Fees scaled by the number of decimals of collateralToken"
+  scaledFeeVolume: BigDecimal!
+
+  "Timestamp of last day during which someone made a trade"
+  lastActiveDay: BigInt!
 }
