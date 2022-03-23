@@ -2,8 +2,8 @@ import { FilledOrders } from "./types/OrderExecutorV2/OrderExecutorV2";
 import { FilledOrdersEvent } from "./types/schema";
 import { markAccountAsSeen, updateUserVolume } from './utils/account-utils';
 import { getCollateralScale } from './utils/collateralTokens';
-import { bigZero, ERC20AssetId, TRADE_TYPE_LIMIT_BUY, TRADE_TYPE_LIMIT_SELL } from './utils/constants';
-import { updateGlobalVolume } from './utils/order-book-utils';
+import { bigZero, TRADE_TYPE_LIMIT_BUY } from './utils/constants';
+import { getOrderSide, updateGlobalVolume } from './utils/order-book-utils';
 
 /*
 event FilledOrders(
@@ -21,7 +21,7 @@ event FilledOrders(
 FilledOrders - Will be used to calculate global volume
 */
 
-function recordEvent(event: FilledOrders):string {
+function recordEvent(event: FilledOrders): string {
   const filledOrderEvent = new FilledOrdersEvent(event.transaction.hash.toHexString())
   filledOrderEvent.timestamp = event.block.timestamp,
   filledOrderEvent.taker =  event.params.taker.toHexString()
@@ -44,17 +44,16 @@ export function handleFilledOrders (event:FilledOrders):void {
   const makerAmountFilled = event.params.makerAmountFilled
   const takerAmountFilled = event.params.takerAmountFilled
 
-  let side = ''
+  const side = getOrderSide(makerAssetID)
+
   let collateralAddress = ''
   let size = bigZero
 
   // buy
-  if (makerAssetID.toString() === ERC20AssetId) {
-    side = TRADE_TYPE_LIMIT_BUY
+  if (side === TRADE_TYPE_LIMIT_BUY) {
     collateralAddress = makerAsset.toHexString()
     size.plus(makerAmountFilled)
   } else {
-    side = TRADE_TYPE_LIMIT_SELL
     collateralAddress = takerAsset.toHexString()
     size.plus(takerAmountFilled)
   }

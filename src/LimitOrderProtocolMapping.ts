@@ -1,9 +1,9 @@
 import { OrderFilled } from "./types/LimitOrderProtocol/LimitOrderProtocol";
 import { FilledOrder, FilledOrderBook, OrderFilledEvent } from "./types/schema";
 import { getCollateralScale } from "./utils/collateralTokens";
-import { ERC20AssetId, TRADE_TYPE_LIMIT_BUY, TRADE_TYPE_LIMIT_SELL } from "./utils/constants";
+import { TRADE_TYPE_LIMIT_BUY } from "./utils/constants";
 import { increment } from "./utils/maths";
-import { getOrderPrice, getOrderSize, requireOrderBook, updateVolumes } from "./utils/order-book-utils";
+import { getOrderPrice, getOrderSide, getOrderSize, requireOrderBook, updateVolumes } from "./utils/order-book-utils";
 
 /*
 event OrderFilled(
@@ -58,22 +58,21 @@ function recordEvent(event: OrderFilled):string {
 }
 
 export function handleOrderFilled(event:OrderFilled):void {
-  const makerAsset=event.params.makerAsset
-  const makerAssetID=event.params.makerAssetID
-  const takerAsset=event.params.takerAsset
-  const takerAssetID=event.params.takerAssetID
+  const makerAsset = event.params.makerAsset
+  const makerAssetID = event.params.makerAssetID
+  const takerAsset = event.params.takerAsset
+  const takerAssetID = event.params.takerAssetID
 
-  let side = ''
+  const side = getOrderSide(makerAssetID)
+
   let tokenId = ''
   let collateralAddress = ''
 
   // buy
-  if (makerAssetID.toString() === ERC20AssetId) {
-    side = TRADE_TYPE_LIMIT_BUY
+  if (side === TRADE_TYPE_LIMIT_BUY) {
     collateralAddress = makerAsset.toHexString()
     tokenId = takerAssetID.toHexString()
   } else {
-    side = TRADE_TYPE_LIMIT_SELL
     collateralAddress = takerAsset.toHexString()
     tokenId = makerAssetID.toHexString()
   }

@@ -1,7 +1,7 @@
-import { BigDecimal, BigInt } from "@graphprotocol/graph-ts";
+import { Address, BigDecimal, BigInt } from "@graphprotocol/graph-ts";
 import { OrderFilled } from "../types/LimitOrderProtocol/LimitOrderProtocol";
-import { FilledOrders } from "../types/OrderExecutorV2/OrderExecutorV2"; 
 import { FilledOrderBook, FilledOrderGlobal } from "../types/schema";
+import { getTokenDecimals } from "./collateralTokens";
 import { bigZero, TRADE_TYPE_LIMIT_BUY, TRADE_TYPE_LIMIT_SELL } from "./constants";
 import { increment } from "./maths";
 import { timestampToDay } from "./time";
@@ -108,6 +108,12 @@ export function updateGlobalVolume(
     );
   }
   global.save();
+}
+
+export function getOrderSide(makerAssetID: BigInt): string {
+  const d = getTokenDecimals(Address.fromI32(makerAssetID.toI32() as i32) as Address)
+
+  return d > 0 ? TRADE_TYPE_LIMIT_BUY : TRADE_TYPE_LIMIT_SELL
 }
 
 export function getOrderSize(order: OrderFilled, side: string): BigInt {
