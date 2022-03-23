@@ -1,6 +1,5 @@
 import { FilledOrders } from "./types/OrderExecutorV2/OrderExecutorV2"; 
 import { FilledOrdersEvent } from "./types/schema";
-import { markAccountAsSeen, updateUserVolume } from './utils/account-utils';
 import { getCollateralScale } from './utils/collateralTokens';
 import { bigZero, TRADE_TYPE_LIMIT_BUY } from './utils/constants';
 import { getOrderSide, updateGlobalVolume } from './utils/order-book-utils';
@@ -37,7 +36,6 @@ function recordEvent(event: FilledOrders): string {
 }
 
 export function handleFilledOrders (event:FilledOrders):void {
-  const taker = event.params.taker
   const makerAsset = event.params.makerAsset
   const takerAsset = event.params.takerAsset
   const makerAssetID = event.params.makerAssetID
@@ -59,20 +57,9 @@ export function handleFilledOrders (event:FilledOrders):void {
   }
 
   const collateralScaleDec = getCollateralScale(collateralAddress).toBigDecimal();
-  const timestamp = event.block.timestamp
-  const accountAddress = taker.toHexString()
 
   // record event
   recordEvent(event)
-
-  updateUserVolume(
-    accountAddress,
-    size,
-    collateralScaleDec,
-    timestamp,
-  );
-
-  markAccountAsSeen(accountAddress, timestamp);
 
   updateGlobalVolume(
     size,

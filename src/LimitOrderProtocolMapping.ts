@@ -1,5 +1,6 @@
 import { OrderFilled } from "./types/LimitOrderProtocol/LimitOrderProtocol";
 import { FilledOrder, FilledOrderBook, OrderFilledEvent } from "./types/schema";
+import { markAccountAsSeen, updateUserVolume } from "./utils/account-utils";
 import { getCollateralScale } from "./utils/collateralTokens";
 import { TRADE_TYPE_LIMIT_BUY } from "./utils/constants";
 import { increment } from "./utils/maths";
@@ -58,6 +59,8 @@ function recordEvent(event: OrderFilled):string {
 }
 
 export function handleOrderFilled(event:OrderFilled):void {
+  const maker = event.params.maker.toHexString()
+  const taker = event.params.taker.toHexString()
   const makerAsset = event.params.makerAsset
   const makerAssetID = event.params.makerAssetID
   const takerAsset = event.params.takerAsset
@@ -97,6 +100,22 @@ export function handleOrderFilled(event:OrderFilled):void {
     collateralScaleDec,
     side,
   );
+
+  updateUserVolume(
+    taker,
+    size,
+    collateralScaleDec,
+    timestamp,
+  );
+  markAccountAsSeen(taker, timestamp);
+
+  updateUserVolume(
+    maker,
+    size,
+    collateralScaleDec,
+    timestamp,
+  );
+  markAccountAsSeen(maker, timestamp);
 
   orderBook.tradesQuantity = increment(orderBook.tradesQuantity);
 
