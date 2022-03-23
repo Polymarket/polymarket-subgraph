@@ -43,6 +43,7 @@ function recordTx(event: OrderFilled, side: string, marketId:string): string {
 
 function recordEvent(event: OrderFilled):string {
   const orderFilledEvent = new OrderFilledEvent(event.transaction.hash.toHexString())
+  orderFilledEvent.timestamp = event.block.timestamp,
   orderFilledEvent.orderHash =  event.params.orderHash
   orderFilledEvent.maker =  event.params.maker.toHexString()
   orderFilledEvent.taker =  event.params.taker.toHexString()

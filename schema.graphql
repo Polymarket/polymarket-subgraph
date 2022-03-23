@@ -369,6 +369,8 @@ type FilledOrdersEvent @entity {
 type OrderFilledEvent @entity {
   "Transaction Hash"
   id: ID!
+  "Timestamp at which filled occurred"
+  timestamp: BigInt!
   orderHash: Bytes!
   "Addresses of the maker and the taker"
   maker: Account!
