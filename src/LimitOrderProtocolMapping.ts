@@ -1,3 +1,4 @@
+import { BigDecimal, BigInt } from "@graphprotocol/graph-ts";
 import { OrderFilled } from "./types/LimitOrderProtocol/LimitOrderProtocol";
 import { FilledOrder, FilledOrderBook, OrderFilledEvent } from "./types/schema";
 import { markAccountAsSeen, updateUserVolume } from "./utils/account-utils";
@@ -33,7 +34,13 @@ function recordTx(event: OrderFilled, side: string, marketId:string): string {
   tx.market = marketId
   tx.side = side
   tx.size = getOrderSize(event, side)
-  tx.price = getOrderPrice(event, side)
+  tx.price = getOrderPrice(
+    event.params.makerAmountFilled,
+    event.params.takerAmountFilled,
+    event.params.makerAsset,
+    event.params.takerAsset,
+    side,
+  )
 
   tx.save();
 
@@ -80,7 +87,9 @@ export function handleOrderFilled(event:OrderFilled):void {
     tokenId = makerAssetID.toHexString()
   }
 
-  const collateralScaleDec = getCollateralScale(collateralAddress).toBigDecimal();
+
+  const collateralScaleDec = new BigDecimal(BigInt.fromI32(10).pow(<u8>6))
+
   const timestamp = event.block.timestamp
   const size = getOrderSize(event, side)
 

@@ -1,8 +1,9 @@
+import { BigDecimal, BigInt } from "@graphprotocol/graph-ts";
 import { FilledOrders } from "./types/OrderExecutorV2/OrderExecutorV2"; 
 import { FilledOrdersEvent } from "./types/schema";
 import { getCollateralScale } from './utils/collateralTokens';
 import { bigZero, TRADE_TYPE_LIMIT_BUY } from './utils/constants';
-import { getOrderSide, updateGlobalVolume } from './utils/order-book-utils';
+import { getOrderPrice, getOrderSide, updateGlobalVolume } from './utils/order-book-utils';
 
 /*
 event FilledOrders(
@@ -47,18 +48,28 @@ export function handleFilledOrders (event:FilledOrders):void {
   const side = getOrderSide(makerAsset)
 
   let collateralAddress = ''
-  let size = bigZero
+  let size = bigZero.toBigDecimal()
 
   // buy
   if (side === TRADE_TYPE_LIMIT_BUY) {
     collateralAddress = makerAsset.toHexString()
-    size = makerAmountFilled
+    size = makerAmountFilled.toBigDecimal()
   } else {
     collateralAddress = takerAsset.toHexString()
-    size = takerAmountFilled
+    size = takerAmountFilled.toBigDecimal()
   }
 
-  const collateralScaleDec = getCollateralScale(collateralAddress).toBigDecimal();
+  const collateralScaleDec = new BigDecimal(BigInt.fromI32(10).pow(<u8>6))
+
+  const price = getOrderPrice(
+    takerAmountFilled,
+    makerAmountFilled,
+    takerAsset,
+    makerAsset,
+    side,
+  )
+
+  size = size.times(price)
 
   // record event
   recordEvent(event)

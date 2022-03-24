@@ -328,16 +328,16 @@ type FilledOrderGlobal @entity {
   sellsQuantity: BigInt!
 
   "Global volume in USDC base units"
-  collateralVolume: BigInt!
+  collateralVolume: BigDecimal!
   "Global volume in USDC scaled by 10^6"
   scaledCollateralVolume: BigDecimal!
 
   "Global volume of share purchases in USDC base units"
-  collateralBuyVolume: BigInt!
+  collateralBuyVolume: BigDecimal!
   "Global volume of share purchases in USDC scaled by 10^6"
   scaledCollateralBuyVolume: BigDecimal!
   "Global volume of share sales in USDC base units"
-  collateralSellVolume: BigInt!
+  collateralSellVolume: BigDecimal!
   "Global volume of share sales in USDC scaled by 10^6"
   scaledCollateralSellVolume: BigDecimal!
 }

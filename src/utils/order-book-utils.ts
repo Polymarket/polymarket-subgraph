@@ -41,12 +41,12 @@ export function requireGlobal(): FilledOrderGlobal {
     global.buysQuantity = bigZero;
     global.sellsQuantity = bigZero;
 
-    global.collateralVolume = bigZero;
+    global.collateralVolume = bigZero.toBigDecimal();
     global.scaledCollateralVolume = bigZero.toBigDecimal();
 
-    global.collateralBuyVolume = bigZero;
+    global.collateralBuyVolume = bigZero.toBigDecimal();
     global.scaledCollateralBuyVolume = bigZero.toBigDecimal();
-    global.collateralSellVolume = bigZero;
+    global.collateralSellVolume = bigZero.toBigDecimal();
     global.scaledCollateralSellVolume = bigZero.toBigDecimal();
   }
   return global as FilledOrderGlobal;
@@ -70,12 +70,12 @@ export function updateVolumes(
     collateralScaleDec,
   );
 
-  if (tradeType == TRADE_TYPE_LIMIT_BUY) {
+  if (tradeType === TRADE_TYPE_LIMIT_BUY) {
     orderBook.collateralBuyVolume = orderBook.collateralBuyVolume.plus(tradeSize);
     orderBook.scaledCollateralBuyVolume = orderBook.collateralBuyVolume.divDecimal(
       collateralScaleDec,
     );
-  } else if (tradeType == TRADE_TYPE_LIMIT_SELL) {
+  } else if (tradeType === TRADE_TYPE_LIMIT_SELL) {
     orderBook.collateralSellVolume = orderBook.collateralSellVolume.plus(tradeSize);
     orderBook.scaledCollateralSellVolume = orderBook.collateralSellVolume.divDecimal(
       collateralScaleDec,
@@ -108,26 +108,26 @@ export function updateTradesQuantity(
 }
 
 export function updateGlobalVolume(
-  tradeAmount: BigInt,
+  tradeAmount: BigDecimal,
   collateralScaleDec: BigDecimal,
   tradeType: string,
 ): void {
   let global = requireGlobal();
   global.collateralVolume = global.collateralVolume.plus(tradeAmount);
-  global.scaledCollateralVolume = global.collateralVolume.divDecimal(
+  global.scaledCollateralVolume = global.collateralVolume.div(
     collateralScaleDec,
   );
   global.tradesQuantity = increment(global.tradesQuantity);
   if (tradeType === TRADE_TYPE_LIMIT_BUY) {
     global.buysQuantity = increment(global.buysQuantity);
     global.collateralBuyVolume = global.collateralBuyVolume.plus(tradeAmount);
-    global.scaledCollateralBuyVolume = global.collateralBuyVolume.divDecimal(
+    global.scaledCollateralBuyVolume = global.collateralBuyVolume.div(
       collateralScaleDec,
     );
   } else if (tradeType === TRADE_TYPE_LIMIT_SELL) {
     global.sellsQuantity = increment(global.sellsQuantity);
     global.collateralSellVolume = global.collateralSellVolume.plus(tradeAmount);
-    global.scaledCollateralSellVolume = global.collateralSellVolume.divDecimal(
+    global.scaledCollateralSellVolume = global.collateralSellVolume.div(
       collateralScaleDec,
     );
   }
@@ -141,20 +141,26 @@ export function getOrderSide(makerAsset: Address): string {
 }
 
 export function getOrderSize(order: OrderFilled, side: string): BigInt {
-  if (side == TRADE_TYPE_LIMIT_BUY) {
+  if (side === TRADE_TYPE_LIMIT_BUY) {
     return order.params.makerAmountFilled
   } else {
     return order.params.takerAmountFilled
   }
 }
 
-export function getOrderPrice(order: OrderFilled, side: string): BigDecimal {
+export function getOrderPrice(
+  makerAmountFilled:BigInt, 
+  takerAmountFilled:BigInt, 
+  makerAsset: Address,
+  takerAsset: Address,
+  side: string,
+): BigDecimal {
   let price = BigDecimal.fromString("0")
   let quoteAssetAmount = BigDecimal.fromString("0")
   let baseAssetAmount = BigDecimal.fromString("0")
 
-  const makerAmount = normalizeAmounts(order.params.makerAmountFilled, order.params.makerAsset)
-  const takerAmount = normalizeAmounts(order.params.takerAmountFilled, order.params.takerAsset)
+  const makerAmount = normalizeAmounts(makerAmountFilled, makerAsset)
+  const takerAmount = normalizeAmounts(takerAmountFilled, takerAsset)
 
   if (side == TRADE_TYPE_LIMIT_BUY) {
     quoteAssetAmount = makerAmount
