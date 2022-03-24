@@ -24,22 +24,25 @@ function recordEvent(event: FilledOrders): string {
   const filledOrderEvent = new FilledOrdersEvent(event.transaction.hash.toHexString())
   filledOrderEvent.timestamp = event.block.timestamp,
   filledOrderEvent.taker =  event.params.taker.toHexString()
-  filledOrderEvent.makerAsset =  event.params.makerAsset
-  filledOrderEvent.takerAsset =  event.params.takerAsset
-  filledOrderEvent.makerAssetID =  event.params.makerAssetID
-  filledOrderEvent.takerAssetID =  event.params.takerAssetID
-  filledOrderEvent.makerAmountFilled = event.params.makerAmountFilled
-  filledOrderEvent.takerAmountFilled = event.params.takerAmountFilled
+  // swapping maker/taker: https://github.com/Polymarket/polymarket-subgraph/pull/16#issuecomment-1077927805
+  filledOrderEvent.makerAsset =  event.params.takerAsset
+  filledOrderEvent.takerAsset =  event.params.makerAsset
+  filledOrderEvent.makerAssetID =  event.params.takerAssetID
+  filledOrderEvent.takerAssetID =  event.params.makerAssetID
+  filledOrderEvent.makerAmountFilled = event.params.takerAmountFilled
+  filledOrderEvent.takerAmountFilled = event.params.makerAmountFilled
+
   filledOrderEvent.save()
 
   return filledOrderEvent.id
 }
 
 export function handleFilledOrders (event:FilledOrders):void {
-  const makerAsset = event.params.makerAsset
-  const takerAsset = event.params.takerAsset
-  const makerAmountFilled = event.params.makerAmountFilled
-  const takerAmountFilled = event.params.takerAmountFilled
+  // swapping maker/taker: https://github.com/Polymarket/polymarket-subgraph/pull/16#issuecomment-1077927805
+  const makerAsset = event.params.takerAsset
+  const takerAsset = event.params.makerAsset
+  const makerAmountFilled = event.params.takerAmountFilled
+  const takerAmountFilled = event.params.makerAmountFilled
 
   const side = getOrderSide(makerAsset)
 
