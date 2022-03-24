@@ -38,11 +38,10 @@ function recordEvent(event: FilledOrders): string {
 export function handleFilledOrders (event:FilledOrders):void {
   const makerAsset = event.params.makerAsset
   const takerAsset = event.params.takerAsset
-  const makerAssetID = event.params.makerAssetID
   const makerAmountFilled = event.params.makerAmountFilled
   const takerAmountFilled = event.params.takerAmountFilled
 
-  const side = getOrderSide(makerAssetID)
+  const side = getOrderSide(makerAsset)
 
   let collateralAddress = ''
   let size = bigZero
@@ -50,10 +49,10 @@ export function handleFilledOrders (event:FilledOrders):void {
   // buy
   if (side === TRADE_TYPE_LIMIT_BUY) {
     collateralAddress = makerAsset.toHexString()
-    size.plus(makerAmountFilled)
+    size = makerAmountFilled
   } else {
     collateralAddress = takerAsset.toHexString()
-    size.plus(takerAmountFilled)
+    size = takerAmountFilled
   }
 
   const collateralScaleDec = getCollateralScale(collateralAddress).toBigDecimal();

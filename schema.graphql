@@ -406,7 +406,7 @@ type FilledOrder @entity {
   "Amount of collateral in trade"
   size: BigInt!
   "Price of the conditional token"
-  price: BigInt!
+  price: BigDecimal!
 }
 
 type FilledOrderBook @entity {

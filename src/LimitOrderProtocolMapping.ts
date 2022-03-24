@@ -3,8 +3,7 @@ import { FilledOrder, FilledOrderBook, OrderFilledEvent } from "./types/schema";
 import { markAccountAsSeen, updateUserVolume } from "./utils/account-utils";
 import { getCollateralScale } from "./utils/collateralTokens";
 import { TRADE_TYPE_LIMIT_BUY } from "./utils/constants";
-import { increment } from "./utils/maths";
-import { getOrderPrice, getOrderSide, getOrderSize, requireOrderBook, updateVolumes } from "./utils/order-book-utils";
+import { getOrderPrice, getOrderSide, getOrderSize, requireOrderBook, updateTradesQuantity, updateVolumes } from "./utils/order-book-utils";
 
 /*
 event OrderFilled(
@@ -38,7 +37,7 @@ function recordTx(event: OrderFilled, side: string, marketId:string): string {
 
   tx.save();
 
-  return tx.id
+  return event.transaction.hash.toHexString()
 }
 
 function recordEvent(event: OrderFilled):string {
@@ -56,7 +55,7 @@ function recordEvent(event: OrderFilled):string {
   orderFilledEvent.remainingAmount = event.params.remainingAmount
   orderFilledEvent.save()
 
-  return orderFilledEvent.id
+  return event.transaction.hash.toHexString()
 }
 
 export function handleOrderFilled(event:OrderFilled):void {
@@ -67,7 +66,7 @@ export function handleOrderFilled(event:OrderFilled):void {
   const takerAsset = event.params.takerAsset
   const takerAssetID = event.params.takerAssetID
 
-  const side = getOrderSide(makerAssetID)
+  const side = getOrderSide(makerAsset)
 
   let tokenId = ''
   let collateralAddress = ''
@@ -118,15 +117,11 @@ export function handleOrderFilled(event:OrderFilled):void {
   );
   markAccountAsSeen(maker, timestamp);
 
-  orderBook.tradesQuantity = increment(orderBook.tradesQuantity);
-
-  if (side === TRADE_TYPE_LIMIT_BUY) {
-    orderBook.buysQuantity = increment(orderBook.buysQuantity);
-    orderBook.buys.push(orderId) 
-  } else {
-    orderBook.sellsQuantity = increment(orderBook.sellsQuantity);
-    orderBook.sells.push(orderId) 
-  }
+  updateTradesQuantity(
+    orderBook as FilledOrderBook,
+    side,
+    orderId
+  )
 
   // persist order book
   orderBook.save();

@@ -32,6 +32,26 @@ export function requireOrderBook(tokenId:string): FilledOrderBook {
   return orderBook as FilledOrderBook;
 } 
 
+export function requireGlobal(): FilledOrderGlobal {
+  let global = FilledOrderGlobal.load('');
+  if (global == null) {
+    global = new FilledOrderGlobal('');
+
+    global.tradesQuantity = bigZero;
+    global.buysQuantity = bigZero;
+    global.sellsQuantity = bigZero;
+
+    global.collateralVolume = bigZero;
+    global.scaledCollateralVolume = bigZero.toBigDecimal();
+
+    global.collateralBuyVolume = bigZero;
+    global.scaledCollateralBuyVolume = bigZero.toBigDecimal();
+    global.collateralSellVolume = bigZero;
+    global.scaledCollateralSellVolume = bigZero.toBigDecimal();
+  }
+  return global as FilledOrderGlobal;
+}
+
 export function updateVolumes(
   orderBook: FilledOrderBook,
   timestamp: BigInt,
@@ -63,24 +83,28 @@ export function updateVolumes(
   }
 }
 
-export function requireGlobal(): FilledOrderGlobal {
-  let global = FilledOrderGlobal.load('');
-  if (global == null) {
-    global = new FilledOrderGlobal('');
-
-    global.tradesQuantity = bigZero;
-    global.buysQuantity = bigZero;
-    global.sellsQuantity = bigZero;
-
-    global.collateralVolume = bigZero;
-    global.scaledCollateralVolume = bigZero.toBigDecimal();
-
-    global.collateralBuyVolume = bigZero;
-    global.scaledCollateralBuyVolume = bigZero.toBigDecimal();
-    global.collateralSellVolume = bigZero;
-    global.scaledCollateralSellVolume = bigZero.toBigDecimal();
+export function updateTradesQuantity(
+  orderBook: FilledOrderBook,
+  side: string, 
+  orderId:string,
+): void {
+  if (side === TRADE_TYPE_LIMIT_BUY) {
+    if (orderBook.buys.indexOf(orderId) === -1) {
+      orderBook.tradesQuantity = increment(orderBook.tradesQuantity);
+      orderBook.buysQuantity = increment(orderBook.buysQuantity);
+      orderBook.buys = orderBook.buys.concat(
+        [orderId],
+      );
+    }
+  } else if (side === TRADE_TYPE_LIMIT_SELL) {
+    if (orderBook.sells.indexOf(orderId) === -1) {
+      orderBook.tradesQuantity = increment(orderBook.tradesQuantity);
+      orderBook.sellsQuantity = increment(orderBook.sellsQuantity);
+      orderBook.sells = orderBook.sells.concat(
+        [orderId],
+      );
+    }
   }
-  return global as FilledOrderGlobal;
 }
 
 export function updateGlobalVolume(
@@ -94,13 +118,13 @@ export function updateGlobalVolume(
     collateralScaleDec,
   );
   global.tradesQuantity = increment(global.tradesQuantity);
-  if (tradeType == TRADE_TYPE_LIMIT_BUY) {
+  if (tradeType === TRADE_TYPE_LIMIT_BUY) {
     global.buysQuantity = increment(global.buysQuantity);
     global.collateralBuyVolume = global.collateralBuyVolume.plus(tradeAmount);
     global.scaledCollateralBuyVolume = global.collateralBuyVolume.divDecimal(
       collateralScaleDec,
     );
-  } else if (tradeType == TRADE_TYPE_LIMIT_SELL) {
+  } else if (tradeType === TRADE_TYPE_LIMIT_SELL) {
     global.sellsQuantity = increment(global.sellsQuantity);
     global.collateralSellVolume = global.collateralSellVolume.plus(tradeAmount);
     global.scaledCollateralSellVolume = global.collateralSellVolume.divDecimal(
@@ -110,8 +134,8 @@ export function updateGlobalVolume(
   global.save();
 }
 
-export function getOrderSide(makerAssetID: BigInt): string {
-  const d = getTokenDecimals(Address.fromI32(makerAssetID.toI32() as i32) as Address)
+export function getOrderSide(makerAsset: Address): string {
+  const d = getTokenDecimals(makerAsset as Address)
 
   return d > 0 ? TRADE_TYPE_LIMIT_BUY : TRADE_TYPE_LIMIT_SELL
 }
@@ -124,24 +148,41 @@ export function getOrderSize(order: OrderFilled, side: string): BigInt {
   }
 }
 
-export function getOrderPrice(order: OrderFilled, side: string): BigInt {
-  const price = bigZero
+export function getOrderPrice(order: OrderFilled, side: string): BigDecimal {
+  let price = BigDecimal.fromString("0")
+  let quoteAssetAmount = BigDecimal.fromString("0")
+  let baseAssetAmount = BigDecimal.fromString("0")
 
-  const quoteAssetAmount = bigZero
-  const baseAssetAmount = bigZero
-
-  const makerAmount = order.params.makerAmountFilled
-  const takerAmount = order.params.takerAmountFilled
+  const makerAmount = normalizeAmounts(order.params.makerAmountFilled, order.params.makerAsset)
+  const takerAmount = normalizeAmounts(order.params.takerAmountFilled, order.params.takerAsset)
 
   if (side == TRADE_TYPE_LIMIT_BUY) {
-    quoteAssetAmount.plus(makerAmount)
-    baseAssetAmount.plus(takerAmount)
+    quoteAssetAmount = makerAmount
+    baseAssetAmount = takerAmount
   } else {
-    quoteAssetAmount.plus(takerAmount)
-    baseAssetAmount.plus(makerAmount)
+    quoteAssetAmount = takerAmount
+    baseAssetAmount = makerAmount
   }
 
-  price.plus(quoteAssetAmount.div(baseAssetAmount))
+  if (!baseAssetAmount.equals(BigDecimal.fromString("0"))) {
+    price = quoteAssetAmount.div(baseAssetAmount)
+  }
 
   return price
+}
+
+function normalizeAmounts(amount: BigInt, address: Address): BigDecimal {
+  let normalized = BigDecimal.fromString("0")
+  const amtDecimal = new BigDecimal(amount)
+
+  const collateralDecimals = getTokenDecimals(address)
+  if (collateralDecimals > 0){
+    const t = new BigDecimal(BigInt.fromI32(10).pow(<u8>collateralDecimals))
+    normalized = amtDecimal.div(t)
+  } else {    
+    const t = new BigDecimal(BigInt.fromI32(10).pow(<u8>6))
+    normalized = amtDecimal.div(t)
+  }
+
+  return normalized
 }
