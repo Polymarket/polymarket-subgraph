@@ -30,6 +30,7 @@ import {
   AddressZero,
   bigOne,
   bigZero,
+  CONDITIONAL_TOKENS_ADDRESS,
   TRADE_TYPE_BUY,
   TRADE_TYPE_SELL,
 } from './utils/constants';
@@ -374,5 +375,27 @@ export function handlePoolShareTransfer(event: Transfer): void {
     let toMembership = loadPoolMembership(fpmmAddress, toAddress);
     toMembership.amount = toMembership.amount.plus(sharesAmount);
     toMembership.save();
+  }
+}
+export function handleERC20Transfer(event: Transfer): void {
+  let fpmmAddress = event.address.toHexString();
+  let fromAddress = event.params.from.toHexString();
+  let toAddress = event.params.to.toHexString();
+  let amount = event.params.value;
+
+  if (toAddress == CONDITIONAL_TOKENS_ADDRESS) {
+    let fpmm = FixedProductMarketMaker.load(fpmmAddress);
+    if (fpmm) {
+      fpmm.openInterest = fpmm.openInterest.plus(amount);
+      fpmm.save();
+    }
+  }
+
+  if (fromAddress == CONDITIONAL_TOKENS_ADDRESS) {
+    let fpmm = FixedProductMarketMaker.load(fpmmAddress);
+    if (fpmm) {
+      fpmm.openInterest = fpmm.openInterest.minus(amount);
+      fpmm.save();
+    }
   }
 }
