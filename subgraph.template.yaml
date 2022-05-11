@@ -94,6 +94,8 @@ templates:
           handler: handleSell
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handlePoolShareTransfer
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleERC20Transfer
       file: ./src/FixedProductMarketMakerMapping.ts
   - name: ERC20Detailed
     kind: ethereum/contract
