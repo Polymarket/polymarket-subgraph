@@ -104,8 +104,12 @@ templates:
       kind: ethereum/events
       apiVersion: 0.0.3
       language: wasm/assemblyscript
-      entities: []
+      entities:
+        - Global
       abis:
         - name: ERC20Detailed
           file: ./abis/ERC20Detailed.json
-      file: ./src/empty.ts
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleERC20Transfer
+      file: ./src/ERC20Mappings.ts

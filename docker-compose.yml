@@ -31,5 +31,5 @@ services:
       postgres_pass: letmein
       postgres_db: postgres
       ipfs: 'ipfs:5001'
-      ethereum: 'development:http://ganache:8545'
-      #RUST_BACKTRACE: 1
+      ethereum: 'mumbai:https://polygon-mumbai.g.alchemy.com/v2/_zAlDi7GcXY0YXIeR8kQPZTtXcbRvATm'
+      RUST_BACKTRACE: 1

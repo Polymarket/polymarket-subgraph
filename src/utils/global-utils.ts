@@ -26,6 +26,7 @@ export function requireGlobal(): Global {
     global.scaledCollateralBuyVolume = bigZero.toBigDecimal();
     global.collateralSellVolume = bigZero;
     global.scaledCollateralSellVolume = bigZero.toBigDecimal();
+    global.openInterest = bigZero;
   }
   return global as Global;
 }
@@ -64,6 +65,19 @@ export function updateGlobalVolume(
     global.scaledCollateralSellVolume = global.collateralSellVolume.divDecimal(
       collateralScaleDec,
     );
+  }
+  global.save();
+}
+export function updateOpenInterest(
+  amount: BigInt,
+  isTransferToCT: boolean,
+): void {
+  let global = requireGlobal();
+
+  if (isTransferToCT) {
+    global.openInterest = global.openInterest.plus(amount);
+  } else {
+    global.openInterest = global.openInterest.minus(amount);
   }
   global.save();
 }
