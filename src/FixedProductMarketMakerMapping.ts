@@ -31,6 +31,7 @@ import {
   AddressZero,
   bigOne,
   bigZero,
+  CONDITIONAL_TOKENS_ADDRESS,
   TRADE_TYPE_BUY,
   TRADE_TYPE_SELL,
 } from './utils/constants';
@@ -255,11 +256,6 @@ export function handleBuy(event: FPMMBuy): void {
 
   fpmm.tradesQuantity = increment(fpmm.tradesQuantity);
   fpmm.buysQuantity = increment(fpmm.buysQuantity);
-  updateFPMMOpenInterest(
-    fpmm as FixedProductMarketMaker,
-    event.params.investmentAmount,
-    TRADE_TYPE_BUY,
-  );
   fpmm.save();
 
   updateUserVolume(
@@ -338,11 +334,6 @@ export function handleSell(event: FPMMSell): void {
 
   fpmm.tradesQuantity = increment(fpmm.tradesQuantity);
   fpmm.sellsQuantity = increment(fpmm.sellsQuantity);
-  updateFPMMOpenInterest(
-    fpmm as FixedProductMarketMaker,
-    event.params.returnAmount,
-    TRADE_TYPE_SELL,
-  );
   fpmm.save();
 
   updateUserVolume(
@@ -366,24 +357,39 @@ export function handleSell(event: FPMMSell): void {
   updateMarketPositionFromTrade(event);
 }
 
-export function handlePoolShareTransfer(event: Transfer): void {
+export function handleERC20Transfer(event: Transfer): void {
   let fpmmAddress = event.address.toHexString();
   let fromAddress = event.params.from.toHexString();
   let toAddress = event.params.to.toHexString();
-  let sharesAmount = event.params.value;
-
+  let amount = event.params.value;
+  if (
+    fromAddress == CONDITIONAL_TOKENS_ADDRESS ||
+    toAddress == CONDITIONAL_TOKENS_ADDRESS
+  ) {
+    let fpmm = FixedProductMarketMaker.load(fpmmAddress);
+    if (fpmm) {
+      updateFPMMOpenInterest(
+        fpmm as FixedProductMarketMaker,
+        amount,
+        fromAddress,
+        toAddress,
+      );
+      fpmm.save();
+      return;
+    }
+  }
   requireAccount(fromAddress, event.block.timestamp);
   requireAccount(toAddress, event.block.timestamp);
 
   if (fromAddress != AddressZero) {
     let fromMembership = loadPoolMembership(fpmmAddress, fromAddress);
-    fromMembership.amount = fromMembership.amount.minus(sharesAmount);
+    fromMembership.amount = fromMembership.amount.minus(amount);
     fromMembership.save();
   }
 
   if (toAddress != AddressZero) {
     let toMembership = loadPoolMembership(fpmmAddress, toAddress);
-    toMembership.amount = toMembership.amount.plus(sharesAmount);
+    toMembership.amount = toMembership.amount.plus(amount);
     toMembership.save();
   }
 }

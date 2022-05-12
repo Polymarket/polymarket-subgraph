@@ -112,7 +112,7 @@ templates:
         - event: FPMMSell(indexed address,uint256,uint256,indexed uint256,uint256)
           handler: handleSell
         - event: Transfer(indexed address,indexed address,uint256)
-          handler: handlePoolShareTransfer
+          handler: handleERC20Transfer
       file: ./src/FixedProductMarketMakerMapping.ts
   - name: ERC20Detailed
     kind: ethereum/contract

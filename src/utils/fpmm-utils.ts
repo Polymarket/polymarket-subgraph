@@ -2,7 +2,7 @@
 import { BigInt, BigDecimal } from '@graphprotocol/graph-ts';
 import { FixedProductMarketMaker, FpmmPoolMembership } from '../types/schema';
 import { timestampToDay } from './time';
-import { bigOne, bigZero, TRADE_TYPE_BUY, TRADE_TYPE_SELL } from './constants';
+import { bigOne, bigZero, CONDITIONAL_TOKENS_ADDRESS, TRADE_TYPE_BUY, TRADE_TYPE_SELL } from './constants';
 
 export function loadPoolMembership(
   fpmmAddress: string,
@@ -105,11 +105,12 @@ export function updateFeeFields(
 export function updateFPMMOpenInterest(
   fpmm: FixedProductMarketMaker,
   amount: BigInt,
-  tradeType: string,
+  fromAddress: string,
+  toAddress: string,
 ): void {
-  if (tradeType == TRADE_TYPE_BUY) {
+  if (toAddress == CONDITIONAL_TOKENS_ADDRESS) {
     fpmm.openInterest = fpmm.openInterest.plus(amount);
-  } else if (tradeType == TRADE_TYPE_SELL) {
+  } else if (fromAddress == CONDITIONAL_TOKENS_ADDRESS) {
     fpmm.openInterest = fpmm.openInterest.minus(amount);
   }
 }
