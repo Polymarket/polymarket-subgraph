@@ -42,10 +42,7 @@ function getNetworkNameForSubgraph(): string | null {
   }
 
   // eslint-disable-next-line no-restricted-syntax
-  for (const templatedFileDesc of [
-    ['subgraph', 'yaml'],
-    ['src/FixedProductMarketMakerFactoryMapping', 'ts'],
-  ]) {
+  for (const templatedFileDesc of [['subgraph', 'yaml']]) {
     const template = fs
       .readFileSync(`${templatedFileDesc[0]}.template.${templatedFileDesc[1]}`)
       .toString();
