@@ -68,3 +68,17 @@ export function updateUserVolume(
   account.lastTradedTimestamp = timestamp;
   account.save();
 }
+
+export function updateUserProfit(
+  accountAddress: string,
+  pnl: BigInt,
+  timestamp: BigInt,
+): void {
+  let account = requireAccount(accountAddress, timestamp);
+  if (pnl > bigZero) {
+    account.profit = account.profit.plus(pnl);
+  } else {
+    account.profit = account.profit.minus(pnl);
+  }
+  account.save();
+}

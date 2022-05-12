@@ -17,6 +17,7 @@ import {
 } from '../types/templates/FixedProductMarketMaker/FixedProductMarketMaker';
 import { bigZero } from './constants';
 import { max, timesBD } from './maths';
+import { updateUserProfit } from './account-utils';
 
 /*
  * Returns the user's position for the given market and outcome
@@ -99,6 +100,11 @@ export function updateMarketPositionFromTrade(event: ethereum.Event): void {
       transaction.outcomeTokensAmount,
     );
     position.valueSold = position.valueSold.plus(transaction.tradeAmount);
+    let averageSellPrice = position.valueSold.div(position.quantitySold);
+    let averagePricePaid = position.valueBought.div(position.quantityBought);
+
+    let positionProfit = averageSellPrice.minus(averagePricePaid);
+    updateUserProfit(transaction.user, positionProfit, transaction.timestamp);
 
     // feeAmount = returnAmount * (fee/(1-fee));
     let feeAmount = transaction.tradeAmount
