@@ -47,6 +47,10 @@ type Account @entity {
   collateralVolume: BigInt!
   "Total number of trades performed by this user"
   numTrades: BigInt!
+  "Realized profit from redemptions"
+  profit: BigInt!
+  "Profits by market"
+  fpmmProfits: [MarketProfitPerAccount!] @derviedFrom(field: "account")
   "Total volume of this user's trades in USDC scaled by 10^6"
   scaledCollateralVolume: BigDecimal!
   "Timestamp of last Buy or Sell transaction"
@@ -311,3 +315,15 @@ type FpmmPoolMembership @entity {
   "Amount of liquidity tokens owned by funder"
   amount: BigInt!
 }
+type MarketProfitPerAccount @entity {
+  "account address + market address"
+	id: ID!
+	"Market to which funder is providing funding"
+	market: FixedProductMarketMaker!
+	"Account which is trading/funding"
+	account: Account!
+	"Amount of Profit per market per account"
+	amount: BigInt!
+}
+
+
