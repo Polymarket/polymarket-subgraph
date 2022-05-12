@@ -1,4 +1,4 @@
-import { Transfer } from './types/ConditionalTokens/ERC20Detailed';
+import { Transfer } from './types/ERC20Detailed/ERC20Detailed';
 import { CONDITIONAL_TOKENS_ADDRESS } from './utils/constants';
 import { updateOpenInterest } from './utils/global-utils';
 

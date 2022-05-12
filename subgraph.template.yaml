@@ -60,6 +60,25 @@ dataSources:
         - event: FixedProductMarketMakerCreation(indexed address,address,indexed address,indexed address,bytes32[],uint256)
           handler: handleFixedProductMarketMakerCreation
       file: ./src/FixedProductMarketMakerFactoryMapping.ts
+  - kind: ethereum/contract
+    name: ERC20Detailed
+    network: {{networkName}}
+    source:
+      address: '{{contracts.ERC20Detailed.address}}'
+      abi: ERC20Detailed
+      startBlock: {{contracts.ERC20Detailed.startBlock}}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.3
+      language: wasm/assemblyscript
+      entities: []
+      abis:
+        - name: ERC20Detailed
+          file: ./abis/ERC20Detailed.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleERC20Transfer
+      file: ./src/ERC20Mappings.ts
 templates:
   - name: FixedProductMarketMaker
     kind: ethereum/contract
@@ -94,8 +113,6 @@ templates:
           handler: handleSell
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handlePoolShareTransfer
-        - event: Transfer(indexed address,indexed address,uint256)
-          handler: handleERC20Transfer
       file: ./src/FixedProductMarketMakerMapping.ts
   - name: ERC20Detailed
     kind: ethereum/contract
@@ -106,12 +123,9 @@ templates:
       kind: ethereum/events
       apiVersion: 0.0.3
       language: wasm/assemblyscript
-      entities:
-        - Global
+      entities: []
       abis:
         - name: ERC20Detailed
           file: ./abis/ERC20Detailed.json
-      eventHandlers:
-        - event: Transfer(indexed address,indexed address,uint256)
-          handler: handleERC20Transfer
-      file: ./src/ERC20Mappings.ts
+    
+      file: ./src/empty.ts

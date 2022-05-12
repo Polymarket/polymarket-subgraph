@@ -20,6 +20,7 @@ import {
   updateFeeFields,
   calculatePrices,
   loadPoolMembership,
+  updateFPMMOpenInterest,
 } from './utils/fpmm-utils';
 import {
   updateMarketPositionFromLiquidityAdded,
@@ -30,7 +31,6 @@ import {
   AddressZero,
   bigOne,
   bigZero,
-  CONDITIONAL_TOKENS_ADDRESS,
   TRADE_TYPE_BUY,
   TRADE_TYPE_SELL,
 } from './utils/constants';
@@ -255,6 +255,11 @@ export function handleBuy(event: FPMMBuy): void {
 
   fpmm.tradesQuantity = increment(fpmm.tradesQuantity);
   fpmm.buysQuantity = increment(fpmm.buysQuantity);
+  updateFPMMOpenInterest(
+    fpmm as FixedProductMarketMaker,
+    event.params.investmentAmount,
+    TRADE_TYPE_BUY,
+  );
   fpmm.save();
 
   updateUserVolume(
@@ -333,6 +338,11 @@ export function handleSell(event: FPMMSell): void {
 
   fpmm.tradesQuantity = increment(fpmm.tradesQuantity);
   fpmm.sellsQuantity = increment(fpmm.sellsQuantity);
+  updateFPMMOpenInterest(
+    fpmm as FixedProductMarketMaker,
+    event.params.returnAmount,
+    TRADE_TYPE_SELL,
+  );
   fpmm.save();
 
   updateUserVolume(
@@ -375,27 +385,5 @@ export function handlePoolShareTransfer(event: Transfer): void {
     let toMembership = loadPoolMembership(fpmmAddress, toAddress);
     toMembership.amount = toMembership.amount.plus(sharesAmount);
     toMembership.save();
-  }
-}
-export function handleERC20Transfer(event: Transfer): void {
-  let fpmmAddress = event.address.toHexString();
-  let fromAddress = event.params.from.toHexString();
-  let toAddress = event.params.to.toHexString();
-  let amount = event.params.value;
-
-  if (toAddress == CONDITIONAL_TOKENS_ADDRESS) {
-    let fpmm = FixedProductMarketMaker.load(fpmmAddress);
-    if (fpmm) {
-      fpmm.openInterest = fpmm.openInterest.plus(amount);
-      fpmm.save();
-    }
-  }
-
-  if (fromAddress == CONDITIONAL_TOKENS_ADDRESS) {
-    let fpmm = FixedProductMarketMaker.load(fpmmAddress);
-    if (fpmm) {
-      fpmm.openInterest = fpmm.openInterest.minus(amount);
-      fpmm.save();
-    }
   }
 }

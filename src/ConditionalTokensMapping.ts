@@ -138,6 +138,11 @@ export function handlePayoutRedemption(event: PayoutRedemption): void {
     // This is not ideal as in theory we could have multiple market makers for the same condition
     // Given that this subgraph only tracks market makers deployed by Polymarket, this is acceptable for now
     updateMarketPositionsFromRedemption(marketMakers[i], event);
+    let fpmm = FixedProductMarketMaker.load(marketMakers[i]);
+    if (fpmm) {
+      fpmm.openInterest = fpmm.openInterest.minus(event.params.payout);
+      fpmm.save();
+    }
   }
 }
 
@@ -192,6 +197,6 @@ export function handleConditionResolution(event: ConditionResolution): void {
   condition.payoutNumerators = payoutNumerators;
   condition.payoutDenominator = payoutDenominator;
   condition.resolutionHash = event.transaction.hash;
-  
+
   condition.save();
 }

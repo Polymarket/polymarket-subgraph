@@ -101,3 +101,21 @@ export function updateFeeFields(
   fpmm.feeVolume = fpmm.feeVolume.plus(feeAmount);
   fpmm.scaledFeeVolume = fpmm.feeVolume.divDecimal(collateralScaleDec);
 }
+
+export function updateFPMMOpenInterest(
+  fpmm: FixedProductMarketMaker,
+  amount: BigInt,
+  tradeType: string,
+): void {
+  if (tradeType == TRADE_TYPE_BUY) {
+    fpmm.openInterest = fpmm.openInterest.plus(amount);
+  } else if (tradeType == TRADE_TYPE_SELL) {
+    fpmm.openInterest = fpmm.openInterest.minus(amount);
+  }
+}
+export function updateFPMMOpenInterestFromRedemption(
+  fpmm: FixedProductMarketMaker,
+  amount: BigInt,
+): void {
+  fpmm.openInterest = fpmm.openInterest.minus(amount);
+}
