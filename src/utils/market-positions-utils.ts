@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import { BigInt, ethereum, log } from '@graphprotocol/graph-ts';
+import { BigDecimal, BigInt, ethereum, log } from '@graphprotocol/graph-ts';
 import {
   FixedProductMarketMaker,
   MarketPosition,
@@ -100,11 +100,17 @@ export function updateMarketPositionFromTrade(event: ethereum.Event): void {
       transaction.outcomeTokensAmount,
     );
     position.valueSold = position.valueSold.plus(transaction.tradeAmount);
-    let averageSellPrice = position.valueSold.div(position.quantitySold);
-    let averagePricePaid = position.valueBought.div(position.quantityBought);
+    let averageSellPrice = position.valueSold
+      .toBigDecimal()
+      .div(position.quantitySold.toBigDecimal());
+    let averagePricePaid = position.valueBought
+      .toBigDecimal()
+      .div(position.quantityBought.toBigDecimal());
 
-    let positionProfit = averageSellPrice.minus(averagePricePaid);
-    updateUserProfit(transaction.user, positionProfit, transaction.timestamp);
+    let pnl = averageSellPrice
+      .minus(averagePricePaid)
+      .times(position.quantitySold.toBigDecimal());
+    updateUserProfit(transaction.user, pnl, transaction.timestamp);
 
     // feeAmount = returnAmount * (fee/(1-fee));
     let feeAmount = transaction.tradeAmount
@@ -191,6 +197,13 @@ export function updateMarketPositionsFromMerge(
       outcomeTokenPrices[outcomeIndex],
     );
     position.valueSold = position.valueSold.plus(mergeValue);
+    let averagePricePaid = position.valueBought
+      .toBigDecimal()
+      .div(position.quantityBought.toBigDecimal());
+    let pnl = BigDecimal.fromString('1')
+      .minus(averagePricePaid)
+      .times(event.params.amount.toBigDecimal());
+    updateUserProfit(userAddress, pnl, event.block.timestamp);
 
     updateNetPositionAndSave(position);
   }
@@ -244,6 +257,18 @@ export function updateMarketPositionsFromRedemption(
     let redemptionValue = position.netQuantity
       .times(numerator)
       .div(payoutDenominator);
+    let averageRedemptionPrice = redemptionValue
+      .toBigDecimal()
+      .div(position.netQuantity.toBigDecimal());
+    let averagePricePaid = position.valueBought
+      .toBigDecimal()
+      .div(position.quantityBought.toBigDecimal());
+
+    let pnl = averageRedemptionPrice
+      .minus(averagePricePaid)
+      .times(position.netQuantity.toBigDecimal());
+    if (pnl.ge(BigDecimal.fromString('0')))
+      updateUserProfit(userAddress, pnl, event.block.timestamp);
 
     // position gets zero'd out
     position.quantitySold = position.quantitySold.plus(position.netQuantity);

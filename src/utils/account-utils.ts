@@ -18,6 +18,7 @@ export function requireAccount(
     account.numTrades = bigZero;
     account.creationTimestamp = timestamp;
     account.lastSeenTimestamp = timestamp;
+    account.profit = bigZero.toBigDecimal();
     countNewTrader();
     account.save();
   }
@@ -71,14 +72,11 @@ export function updateUserVolume(
 
 export function updateUserProfit(
   accountAddress: string,
-  pnl: BigInt,
+  pnl: BigDecimal,
   timestamp: BigInt,
 ): void {
   let account = requireAccount(accountAddress, timestamp);
-  if (pnl > bigZero) {
-    account.profit = account.profit.plus(pnl);
-  } else {
-    account.profit = account.profit.minus(pnl);
-  }
+
+  account.profit = account.profit.plus(pnl);
   account.save();
 }

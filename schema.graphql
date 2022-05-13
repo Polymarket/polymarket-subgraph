@@ -48,7 +48,7 @@ type Account @entity {
   "Total number of trades performed by this user"
   numTrades: BigInt!
   "Realized profit from redemptions"
-  profit: BigInt!
+  profit: BigDecimal!
   "Profits by market"
   fpmmProfits: [MarketProfitPerAccount!] @derviedFrom(field: "account")
   "Total volume of this user's trades in USDC scaled by 10^6"
@@ -170,7 +170,7 @@ type FixedProductMarketMaker @entity {
   conditions: [Condition!] @derivedFrom(field: "fixedProductMarketMakers")
   "Percentage fee of trades taken by market maker. A 2% fee is represented as 2*10^16"
   fee: BigInt!
-
+ 
   "Number of trades of any kind against this market maker"
   tradesQuantity: BigInt!
   "Number of purchases of shares from this market maker"
@@ -218,6 +218,8 @@ type FixedProductMarketMaker @entity {
 
   "Addresses which are supplying liquidity to the market maker"
   poolMembers: [FpmmPoolMembership!] @derivedFrom(field: "pool")
+  "Profits from this market per account"
+  accountProfits: [MarketProfitPerAccount!]
 }
 
 type MarketPosition @entity {
@@ -323,7 +325,7 @@ type MarketProfitPerAccount @entity {
 	"Account which is trading/funding"
 	account: Account!
 	"Amount of Profit per market per account"
-	amount: BigInt!
+	amount: BigDecimal!
 }
 
 
