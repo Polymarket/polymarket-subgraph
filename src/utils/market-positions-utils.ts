@@ -262,24 +262,28 @@ export function updateMarketPositionsFromRedemption(
     let redemptionValue = position.netQuantity
       .times(numerator)
       .div(payoutDenominator);
-    let averageRedemptionPrice = redemptionValue
-      .toBigDecimal()
-      .div(position.netQuantity.toBigDecimal());
-    let averagePricePaid = position.valueBought
-      .toBigDecimal()
-      .div(position.quantityBought.toBigDecimal());
+    if (
+      position.netQuantity.gt(bigZero) &&
+      position.quantityBought.gt(bigZero)
+    ) {
+      let averageRedemptionPrice = redemptionValue
+        .toBigDecimal()
+        .div(position.netQuantity.toBigDecimal());
+      let averagePricePaid = position.valueBought
+        .toBigDecimal()
+        .div(position.quantityBought.toBigDecimal());
 
-    let pnl = averageRedemptionPrice
-      .minus(averagePricePaid)
-      .times(position.netQuantity.toBigDecimal());
-    if (pnl.ge(BigDecimal.fromString('0')))
-      updateUserProfit(
-        userAddress,
-        pnl,
-        event.block.timestamp,
-        position.market,
-      );
-
+      let pnl = averageRedemptionPrice
+        .minus(averagePricePaid)
+        .times(position.netQuantity.toBigDecimal());
+      if (pnl.ge(BigDecimal.fromString('0')))
+        updateUserProfit(
+          userAddress,
+          pnl,
+          event.block.timestamp,
+          position.market,
+        );
+    }
     // position gets zero'd out
     position.quantitySold = position.quantitySold.plus(position.netQuantity);
     position.valueSold = position.valueSold.plus(redemptionValue);
