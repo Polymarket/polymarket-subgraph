@@ -219,7 +219,9 @@ type FixedProductMarketMaker @entity {
   "Addresses which are supplying liquidity to the market maker"
   poolMembers: [FpmmPoolMembership!] @derivedFrom(field: "pool")
   "Profits from this market per account"
-  accountProfits: [MarketProfitPerAccount!]
+  accountProfits: [MarketProfitPerAccount!] @derivedFrom(field: "market")
+  "Market positions on this market maker"
+  marketPositions: [MarketPosition!] @derivedFrom(field: "market")
 }
 
 type MarketPosition @entity {

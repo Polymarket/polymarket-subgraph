@@ -3,6 +3,7 @@ import { BigDecimal, BigInt } from '@graphprotocol/graph-ts';
 import { Account } from '../types/schema';
 
 import { bigOne, bigZero } from './constants';
+import { loadMarketProfitPerAccount } from './fpmm-utils';
 import { countNewTrader } from './global-utils';
 
 export function requireAccount(
@@ -74,9 +75,14 @@ export function updateUserProfit(
   accountAddress: string,
   pnl: BigDecimal,
   timestamp: BigInt,
+  fpmmAddress: string,
 ): void {
   let account = requireAccount(accountAddress, timestamp);
 
   account.profit = account.profit.plus(pnl);
   account.save();
+  let fpmmProfit = loadMarketProfitPerAccount(fpmmAddress, accountAddress);
+  fpmmProfit.amount = fpmmProfit.amount.plus(pnl);
+  fpmmProfit.save();
+
 }

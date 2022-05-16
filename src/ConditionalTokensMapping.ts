@@ -13,9 +13,11 @@ import {
   Merge,
   Split,
   FixedProductMarketMaker,
+  MarketPosition,
 } from './types/schema';
 import { requireGlobal } from './utils/global-utils';
 import {
+  getMarketPosition,
   updateMarketPositionsFromMerge,
   updateMarketPositionsFromRedemption,
   updateMarketPositionsFromSplit,
@@ -23,7 +25,11 @@ import {
 import { partitionCheck } from './utils/conditional-utils';
 import { bigZero } from './utils/constants';
 import { getCollateralDetails } from './utils/collateralTokens';
-import { markAccountAsSeen, requireAccount } from './utils/account-utils';
+import {
+  markAccountAsSeen,
+  requireAccount,
+  updateUserProfit,
+} from './utils/account-utils';
 
 export function handlePositionSplit(event: PositionSplit): void {
   if (
@@ -192,6 +198,43 @@ export function handleConditionResolution(event: ConditionResolution): void {
   condition.payoutNumerators = payoutNumerators;
   condition.payoutDenominator = payoutDenominator;
   condition.resolutionHash = event.transaction.hash;
+  let marketMakers = condition.fixedProductMarketMakers;
+  for (let i = 0; i < marketMakers.length; i += 1) {
+    // This is not ideal as in theory we could have multiple market makers for the same condition
+    // Given that this subgraph only tracks market makers deployed by Polymarket, this is acceptable for now
+    let fpmm = FixedProductMarketMaker.load(marketMakers[i]);
+    if (fpmm) {
+      let marketPositions = fpmm.marketPositions;
+      if (marketPositions as Array<string>)
+        for (let j = 0; j < marketPositions!.length; j += 1) {
+          let pos = marketPositions![j];
+          let position = MarketPosition.load(pos);
+          if (position) {
+            let numerator = payoutNumerators[position.outcomeIndex.toI32()];
+            let redemptionValue = position.netQuantity
+              .times(numerator)
+              .div(payoutDenominator);
+            let averageRedemptionPrice = redemptionValue
+              .toBigDecimal()
+              .div(position.netQuantity.toBigDecimal());
+            let averagePricePaid = position.valueBought
+              .toBigDecimal()
+              .div(position.quantityBought.toBigDecimal());
+
+            let pnl = averageRedemptionPrice
+              .minus(averagePricePaid)
+              .times(position.netQuantity.toBigDecimal());
+            if (pnl.lt(BigDecimal.fromString('0')))
+              updateUserProfit(
+                position.user,
+                pnl,
+                event.block.timestamp,
+                position.market,
+              );
+          }
+        }
+    }
+  }
 
   condition.save();
 }

@@ -110,7 +110,12 @@ export function updateMarketPositionFromTrade(event: ethereum.Event): void {
     let pnl = averageSellPrice
       .minus(averagePricePaid)
       .times(position.quantitySold.toBigDecimal());
-    updateUserProfit(transaction.user, pnl, transaction.timestamp);
+    updateUserProfit(
+      transaction.user,
+      pnl,
+      transaction.timestamp,
+      transaction.market,
+    );
 
     // feeAmount = returnAmount * (fee/(1-fee));
     let feeAmount = transaction.tradeAmount
@@ -203,7 +208,7 @@ export function updateMarketPositionsFromMerge(
     let pnl = BigDecimal.fromString('1')
       .minus(averagePricePaid)
       .times(event.params.amount.toBigDecimal());
-    updateUserProfit(userAddress, pnl, event.block.timestamp);
+    updateUserProfit(userAddress, pnl, event.block.timestamp, position.market);
 
     updateNetPositionAndSave(position);
   }
@@ -268,7 +273,12 @@ export function updateMarketPositionsFromRedemption(
       .minus(averagePricePaid)
       .times(position.netQuantity.toBigDecimal());
     if (pnl.ge(BigDecimal.fromString('0')))
-      updateUserProfit(userAddress, pnl, event.block.timestamp);
+      updateUserProfit(
+        userAddress,
+        pnl,
+        event.block.timestamp,
+        position.market,
+      );
 
     // position gets zero'd out
     position.quantitySold = position.quantitySold.plus(position.netQuantity);
