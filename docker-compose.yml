@@ -31,5 +31,5 @@ services:
       postgres_pass: letmein
       postgres_db: postgres
       ipfs: 'ipfs:5001'
-      ethereum: "matic:https://polygon-mainnet.g.alchemy.com/v2/qnUki_B3TXm9I2qW0eQ2neiRGlH71bOG"
+       ethereum: "<network name>:<your rpc url>"
       RUST_BACKTRACE: 1
