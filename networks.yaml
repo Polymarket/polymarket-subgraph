@@ -22,7 +22,7 @@ matic:
     ERC20Detailed:
       address: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174"
       transactionHash: "0x51103659d8827d6d24732d1168de73390f4f387d58a8281944241657f1bc61d7"
-      startBlock: 5013591
+      startBlock: 4023686
   networkName: matic
 mumbai:
   contracts:
