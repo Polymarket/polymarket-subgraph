@@ -21,9 +21,13 @@ import {
   updateMarketPositionsFromSplit,
 } from './utils/market-positions-utils';
 import { partitionCheck } from './utils/conditional-utils';
-import { bigZero } from './utils/constants';
+import { bigZero, MERGE_SHARES, SPLIT_SHARES } from './utils/constants';
 import { getCollateralDetails } from './utils/collateralTokens';
 import { markAccountAsSeen, requireAccount } from './utils/account-utils';
+import {
+  updateFPMMOpenInterestFromRedemption,
+  updateFPMMOpenInterestFromSplitOrMerge,
+} from './utils/fpmm-utils';
 
 export function handlePositionSplit(event: PositionSplit): void {
   if (
@@ -65,6 +69,15 @@ export function handlePositionSplit(event: PositionSplit): void {
       // This is not ideal as in theory we could have multiple market makers for the same condition
       // Given that this subgraph only tracks market makers deployed by Polymarket, this is acceptable for now
       updateMarketPositionsFromSplit(marketMakers[i], event);
+      let fpmm = FixedProductMarketMaker.load(marketMakers[i]);
+      if (fpmm) {
+        updateFPMMOpenInterestFromSplitOrMerge(
+          fpmm as FixedProductMarketMaker,
+          event.params.amount,
+          SPLIT_SHARES,
+        );
+        fpmm.save();
+      }
     }
   }
 }
@@ -107,6 +120,15 @@ export function handlePositionsMerge(event: PositionsMerge): void {
     let marketMakers = condition.fixedProductMarketMakers;
     for (let i = 0; i < marketMakers.length; i += 1) {
       updateMarketPositionsFromMerge(marketMakers[i], event);
+      let fpmm = FixedProductMarketMaker.load(marketMakers[i]);
+      if (fpmm) {
+        updateFPMMOpenInterestFromSplitOrMerge(
+          fpmm as FixedProductMarketMaker,
+          event.params.amount,
+          MERGE_SHARES,
+        );
+        fpmm.save();
+      }
     }
   }
 }
@@ -140,7 +162,10 @@ export function handlePayoutRedemption(event: PayoutRedemption): void {
     updateMarketPositionsFromRedemption(marketMakers[i], event);
     let fpmm = FixedProductMarketMaker.load(marketMakers[i]);
     if (fpmm) {
-      fpmm.openInterest = fpmm.openInterest.minus(event.params.payout);
+      updateFPMMOpenInterestFromRedemption(
+        fpmm as FixedProductMarketMaker,
+        event.params.payout,
+      );
       fpmm.save();
     }
   }

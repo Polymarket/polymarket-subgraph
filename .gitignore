@@ -29,6 +29,7 @@ src/types/
 
 # built templates
 src/FixedProductMarketMakerFactoryMapping.ts
+docker-compose.yml
 
 # Jetbrains
 .idea/

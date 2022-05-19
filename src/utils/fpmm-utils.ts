@@ -2,7 +2,15 @@
 import { BigInt, BigDecimal } from '@graphprotocol/graph-ts';
 import { FixedProductMarketMaker, FpmmPoolMembership } from '../types/schema';
 import { timestampToDay } from './time';
-import { bigOne, bigZero, CONDITIONAL_TOKENS_ADDRESS, TRADE_TYPE_BUY, TRADE_TYPE_SELL } from './constants';
+import {
+  bigOne,
+  bigZero,
+  CONDITIONAL_TOKENS_ADDRESS,
+  MERGE_SHARES,
+  SPLIT_SHARES,
+  TRADE_TYPE_BUY,
+  TRADE_TYPE_SELL,
+} from './constants';
 
 export function loadPoolMembership(
   fpmmAddress: string,
@@ -102,17 +110,35 @@ export function updateFeeFields(
   fpmm.scaledFeeVolume = fpmm.feeVolume.divDecimal(collateralScaleDec);
 }
 
-export function updateFPMMOpenInterest(
+export function updateFPMMOpenInterestFromTrade(
   fpmm: FixedProductMarketMaker,
   amount: BigInt,
-  fromAddress: string,
-  toAddress: string,
+  tradeType: string,
 ): void {
-  if (toAddress == CONDITIONAL_TOKENS_ADDRESS) {
+  if (tradeType == TRADE_TYPE_BUY) {
     fpmm.openInterest = fpmm.openInterest.plus(amount);
-  } else if (fromAddress == CONDITIONAL_TOKENS_ADDRESS) {
+  } else if (tradeType == TRADE_TYPE_SELL) {
     fpmm.openInterest = fpmm.openInterest.minus(amount);
   }
+}
+
+export function updateFPMMOpenInterestFromSplitOrMerge(
+  fpmm: FixedProductMarketMaker,
+  amount: BigInt,
+  operation: string,
+): void {
+  if (operation == SPLIT_SHARES) {
+    fpmm.openInterest = fpmm.openInterest.plus(amount);
+  } else if (operation == MERGE_SHARES) {
+    fpmm.openInterest = fpmm.openInterest.minus(amount);
+  }
+}
+
+export function updateFPMMOpenInterestFromFundingAdded(
+  fpmm: FixedProductMarketMaker,
+  amount: BigInt,
+): void {
+  fpmm.openInterest = fpmm.openInterest.plus(amount);
 }
 export function updateFPMMOpenInterestFromRedemption(
   fpmm: FixedProductMarketMaker,

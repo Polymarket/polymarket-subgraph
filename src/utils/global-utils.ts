@@ -1,6 +1,6 @@
 import { BigDecimal, BigInt } from '@graphprotocol/graph-ts';
 import { Global } from '../types/schema';
-import { bigZero, TRADE_TYPE_BUY, TRADE_TYPE_SELL } from './constants';
+import { bigZero, CONDITIONAL_TOKENS_ADDRESS, TRADE_TYPE_BUY, TRADE_TYPE_SELL } from './constants';
 import { increment } from './maths';
 
 export function requireGlobal(): Global {
@@ -68,15 +68,17 @@ export function updateGlobalVolume(
   }
   global.save();
 }
+
 export function updateOpenInterest(
   amount: BigInt,
-  isTransferToCT: boolean,
+  toAddress: string,
+  fromAddress: string,
 ): void {
   let global = requireGlobal();
 
-  if (isTransferToCT) {
+  if (toAddress == CONDITIONAL_TOKENS_ADDRESS) {
     global.openInterest = global.openInterest.plus(amount);
-  } else {
+  } else if (fromAddress == CONDITIONAL_TOKENS_ADDRESS) {
     global.openInterest = global.openInterest.minus(amount);
   }
   global.save();

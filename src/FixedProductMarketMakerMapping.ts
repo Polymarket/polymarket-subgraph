@@ -20,7 +20,8 @@ import {
   updateFeeFields,
   calculatePrices,
   loadPoolMembership,
-  updateFPMMOpenInterest,
+  updateFPMMOpenInterestFromFundingAdded,
+  updateFPMMOpenInterestFromTrade,
 } from './utils/fpmm-utils';
 import {
   updateMarketPositionFromLiquidityAdded,
@@ -31,7 +32,6 @@ import {
   AddressZero,
   bigOne,
   bigZero,
-  CONDITIONAL_TOKENS_ADDRESS,
   TRADE_TYPE_BUY,
   TRADE_TYPE_SELL,
 } from './utils/constants';
@@ -133,6 +133,10 @@ export function handleFundingAdded(event: FPMMFundingAdded): void {
   let newAmounts = new Array<BigInt>(oldAmounts.length);
   let amountsProduct = bigOne;
   for (let i = 0; i < newAmounts.length; i += 1) {
+    updateFPMMOpenInterestFromFundingAdded(
+      fpmm as FixedProductMarketMaker,
+      amountsAdded[i],
+    );
     newAmounts[i] = oldAmounts[i].plus(amountsAdded[i]);
     amountsProduct = amountsProduct.times(newAmounts[i]);
   }
@@ -153,6 +157,7 @@ export function handleFundingAdded(event: FPMMFundingAdded): void {
   }
 
   fpmm.liquidityAddQuantity = increment(fpmm.liquidityAddQuantity);
+
   fpmm.save();
   markAccountAsSeen(event.params.funder.toHexString(), event.block.timestamp);
   recordFundingAddition(event);
@@ -256,6 +261,11 @@ export function handleBuy(event: FPMMBuy): void {
 
   fpmm.tradesQuantity = increment(fpmm.tradesQuantity);
   fpmm.buysQuantity = increment(fpmm.buysQuantity);
+  updateFPMMOpenInterestFromTrade(
+    fpmm as FixedProductMarketMaker,
+    investmentAmountMinusFees,
+    TRADE_TYPE_BUY,
+  );
   fpmm.save();
 
   updateUserVolume(
@@ -334,6 +344,11 @@ export function handleSell(event: FPMMSell): void {
 
   fpmm.tradesQuantity = increment(fpmm.tradesQuantity);
   fpmm.sellsQuantity = increment(fpmm.sellsQuantity);
+  updateFPMMOpenInterestFromTrade(
+    fpmm as FixedProductMarketMaker,
+    returnAmountPlusFees,
+    TRADE_TYPE_SELL,
+  );
   fpmm.save();
 
   updateUserVolume(
@@ -357,39 +372,24 @@ export function handleSell(event: FPMMSell): void {
   updateMarketPositionFromTrade(event);
 }
 
-export function handleERC20Transfer(event: Transfer): void {
+export function handlePoolShareTransfer(event: Transfer): void {
   let fpmmAddress = event.address.toHexString();
   let fromAddress = event.params.from.toHexString();
   let toAddress = event.params.to.toHexString();
-  let amount = event.params.value;
-  if (
-    fromAddress == CONDITIONAL_TOKENS_ADDRESS ||
-    toAddress == CONDITIONAL_TOKENS_ADDRESS
-  ) {
-    let fpmm = FixedProductMarketMaker.load(fpmmAddress);
-    if (fpmm) {
-      updateFPMMOpenInterest(
-        fpmm as FixedProductMarketMaker,
-        amount,
-        fromAddress,
-        toAddress,
-      );
-      fpmm.save();
-      return;
-    }
-  }
+  let sharesAmount = event.params.value;
+
   requireAccount(fromAddress, event.block.timestamp);
   requireAccount(toAddress, event.block.timestamp);
 
   if (fromAddress != AddressZero) {
     let fromMembership = loadPoolMembership(fpmmAddress, fromAddress);
-    fromMembership.amount = fromMembership.amount.minus(amount);
+    fromMembership.amount = fromMembership.amount.minus(sharesAmount);
     fromMembership.save();
   }
 
   if (toAddress != AddressZero) {
     let toMembership = loadPoolMembership(fpmmAddress, toAddress);
-    toMembership.amount = toMembership.amount.plus(amount);
+    toMembership.amount = toMembership.amount.plus(sharesAmount);
     toMembership.save();
   }
 }
