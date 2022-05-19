@@ -29,13 +29,13 @@ mumbai:
     ConditionalTokens:
       address: '0x7D8610E9567d2a6C9FBf66a5A13E9Ba8bb120d43'
       transactionHash: '0xb3ce795972a85754f8803d6b43408fc71f472733766236072a270b04ffbb937b'
-      startBlock: 26000000
+      startBlock: 3456411
     FixedProductMarketMakerFactory:
       address: '0x5a80a64c8ae0551b09c3df377b60953872c5aa7f'
       transactionHash: '0x994ccfecb4d13de47ff3775c9b63752e4c78ad8f66ea9cc272a3f623b9f10ec1'
-      startBlock: 26000000
+      startBlock: 3456411
     ERC20Detailed:
       address: "0x2E8DCfE708D44ae2e406a1c02DFE2Fa13012f961"
       transactionHash: "0x5c6560d0f835b540630329da74df5cf0c568dfeeb12bfa42f35eb359a4d16d3e"
-      startBlock: 26000000
+      startBlock: 3456411
   networkName: mumbai
