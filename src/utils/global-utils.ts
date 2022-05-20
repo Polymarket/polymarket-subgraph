@@ -1,6 +1,12 @@
 import { BigDecimal, BigInt } from '@graphprotocol/graph-ts';
 import { Global } from '../types/schema';
-import { bigZero, TRADE_TYPE_BUY, TRADE_TYPE_SELL } from './constants';
+import {
+  ADD_FUNDING,
+  bigZero,
+  REMOVE_FUNDING,
+  TRADE_TYPE_BUY,
+  TRADE_TYPE_SELL,
+} from './constants';
 import { increment } from './maths';
 
 export function requireGlobal(): Global {
@@ -26,6 +32,8 @@ export function requireGlobal(): Global {
     global.scaledCollateralBuyVolume = bigZero.toBigDecimal();
     global.collateralSellVolume = bigZero;
     global.scaledCollateralSellVolume = bigZero.toBigDecimal();
+    global.liquidity = bigZero;
+    global.scaledLiquidity = bigZero.toBigDecimal();
   }
   return global as Global;
 }
@@ -64,6 +72,23 @@ export function updateGlobalVolume(
     global.scaledCollateralSellVolume = global.collateralSellVolume.divDecimal(
       collateralScaleDec,
     );
+  }
+  global.save();
+}
+
+export function updateGlobalLiquidity(
+  amount: BigInt,
+  collateralScaleDec: BigDecimal,
+  transactionType: string,
+): void {
+  let global = requireGlobal();
+
+  if (transactionType == ADD_FUNDING) {
+    global.liquidity = global.liquidity.plus(amount);
+    global.scaledLiquidity = global.liquidity.divDecimal(collateralScaleDec);
+  } else if (transactionType == REMOVE_FUNDING) {
+    global.liquidity = global.liquidity.minus(amount);
+    global.scaledLiquidity = global.liquidity.divDecimal(collateralScaleDec);
   }
   global.save();
 }
