@@ -130,13 +130,14 @@ export function handleFundingAdded(event: FPMMFundingAdded): void {
   let amountsAdded = event.params.amountsAdded;
   let newAmounts = new Array<BigInt>(oldAmounts.length);
   let amountsProduct = bigOne;
-  let collateralScale = getCollateralScale(fpmm.collateralToken);
+
   for (let i = 0; i < newAmounts.length; i += 1) {
     newAmounts[i] = oldAmounts[i].plus(amountsAdded[i]);
     amountsProduct = amountsProduct.times(newAmounts[i]);
   }
   fpmm.outcomeTokenAmounts = newAmounts;
   let liquidityParameter = nthRoot(amountsProduct, newAmounts.length);
+  let collateralScale = getCollateralScale(fpmm.collateralToken);
 
   updateLiquidityFields(
     fpmm as FixedProductMarketMaker,
@@ -293,9 +294,6 @@ export function handleSell(event: FPMMSell): void {
 
   let oldAmounts = fpmm.outcomeTokenAmounts;
   let returnAmountPlusFees = event.params.returnAmount.plus(
-    event.params.feeAmount,
-  );
-  let returnAmountMinusFees = event.params.returnAmount.minus(
     event.params.feeAmount,
   );
 
