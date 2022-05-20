@@ -113,17 +113,14 @@ export function updateFPMMOpenInterestFromTrade(
   fpmm: FixedProductMarketMaker,
   amount: BigInt,
   tradeType: string,
+  collateralScaleDec: BigDecimal,
 ): void {
   if (tradeType == TRADE_TYPE_BUY) {
     fpmm.openInterest = fpmm.openInterest.plus(amount);
-    fpmm.scaledOpenInterest = fpmm.scaledOpenInterest.plus(
-      amount.toBigDecimal(),
-    );
+    fpmm.scaledOpenInterest = fpmm.openInterest.divDecimal(collateralScaleDec);
   } else if (tradeType == TRADE_TYPE_SELL) {
     fpmm.openInterest = fpmm.openInterest.minus(amount);
-    fpmm.scaledOpenInterest = fpmm.scaledOpenInterest.minus(
-      amount.toBigDecimal(),
-    );
+    fpmm.scaledOpenInterest = fpmm.openInterest.divDecimal(collateralScaleDec);
   }
 }
 
@@ -131,33 +128,30 @@ export function updateFPMMOpenInterestFromSplitOrMerge(
   fpmm: FixedProductMarketMaker,
   amount: BigInt,
   operation: string,
+  collateralScaleDec: BigDecimal,
 ): void {
   if (operation == SPLIT_SHARES) {
     fpmm.openInterest = fpmm.openInterest.plus(amount);
-    fpmm.scaledOpenInterest = fpmm.scaledOpenInterest.plus(
-      amount.toBigDecimal(),
-    );
+    fpmm.scaledOpenInterest = fpmm.openInterest.divDecimal(collateralScaleDec);
   } else if (operation == MERGE_SHARES) {
     fpmm.openInterest = fpmm.openInterest.minus(amount);
-    fpmm.scaledOpenInterest = fpmm.scaledOpenInterest.minus(
-      amount.toBigDecimal(),
-    );
+    fpmm.scaledOpenInterest = fpmm.openInterest.divDecimal(collateralScaleDec);
   }
 }
 
 export function updateFPMMOpenInterestFromFundingAdded(
   fpmm: FixedProductMarketMaker,
   amount: BigInt,
+  collateralScaleDec: BigDecimal,
 ): void {
   fpmm.openInterest = fpmm.openInterest.plus(amount);
-  fpmm.scaledOpenInterest = fpmm.scaledOpenInterest.plus(amount.toBigDecimal());
+  fpmm.scaledOpenInterest = fpmm.openInterest.divDecimal(collateralScaleDec);
 }
 export function updateFPMMOpenInterestFromRedemption(
   fpmm: FixedProductMarketMaker,
   amount: BigInt,
+  collateralScaleDec: BigDecimal,
 ): void {
   fpmm.openInterest = fpmm.openInterest.minus(amount);
-  fpmm.scaledOpenInterest = fpmm.scaledOpenInterest.minus(
-    amount.toBigDecimal(),
-  );
+  fpmm.scaledOpenInterest = fpmm.openInterest.divDecimal(collateralScaleDec);
 }

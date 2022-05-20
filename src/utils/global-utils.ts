@@ -81,6 +81,7 @@ export function updateGlobalVolume(
 export function updateGlobalOpenInterest(
   amount: BigInt,
   transactionType: string,
+  collateralScaleDec: BigDecimal,
 ): void {
   let global = requireGlobal();
 
@@ -90,8 +91,8 @@ export function updateGlobalOpenInterest(
     transactionType == ADD_FUNDING
   ) {
     global.openInterest = global.openInterest.plus(amount);
-    global.scaledOpenInterest = global.scaledOpenInterest.plus(
-      amount.toBigDecimal(),
+    global.scaledOpenInterest = global.openInterest.divDecimal(
+      collateralScaleDec,
     );
   } else if (
     transactionType == TRADE_TYPE_SELL ||
@@ -99,8 +100,8 @@ export function updateGlobalOpenInterest(
     transactionType == PAYOUT_REDEMPTION
   ) {
     global.openInterest = global.openInterest.minus(amount);
-    global.scaledOpenInterest = global.scaledOpenInterest.minus(
-      amount.toBigDecimal(),
+    global.scaledOpenInterest = global.openInterest.divDecimal(
+      collateralScaleDec,
     );
   }
   global.save();

@@ -136,18 +136,24 @@ export function handleFundingAdded(event: FPMMFundingAdded): void {
   let amountsAdded = event.params.amountsAdded;
   let newAmounts = new Array<BigInt>(oldAmounts.length);
   let amountsProduct = bigOne;
+  let collateralScale = getCollateralScale(fpmm.collateralToken);
   for (let i = 0; i < newAmounts.length; i += 1) {
     updateFPMMOpenInterestFromFundingAdded(
       fpmm as FixedProductMarketMaker,
       amountsAdded[i],
+      collateralScale.toBigDecimal(),
     );
-    updateGlobalOpenInterest(amountsAdded[i], ADD_FUNDING);
+    updateGlobalOpenInterest(
+      amountsAdded[i],
+      ADD_FUNDING,
+      collateralScale.toBigDecimal(),
+    );
     newAmounts[i] = oldAmounts[i].plus(amountsAdded[i]);
     amountsProduct = amountsProduct.times(newAmounts[i]);
   }
   fpmm.outcomeTokenAmounts = newAmounts;
   let liquidityParameter = nthRoot(amountsProduct, newAmounts.length);
-  let collateralScale = getCollateralScale(fpmm.collateralToken);
+
   updateLiquidityFields(
     fpmm as FixedProductMarketMaker,
     liquidityParameter,
@@ -270,10 +276,15 @@ export function handleBuy(event: FPMMBuy): void {
     fpmm as FixedProductMarketMaker,
     investmentAmountMinusFees,
     TRADE_TYPE_BUY,
+    collateralScaleDec,
   );
   fpmm.save();
 
-  updateGlobalOpenInterest(investmentAmountMinusFees, TRADE_TYPE_BUY);
+  updateGlobalOpenInterest(
+    investmentAmountMinusFees,
+    TRADE_TYPE_BUY,
+    collateralScaleDec,
+  );
 
   updateUserVolume(
     event.params.buyer.toHexString(),
@@ -358,10 +369,15 @@ export function handleSell(event: FPMMSell): void {
     fpmm as FixedProductMarketMaker,
     returnAmountMinusFees,
     TRADE_TYPE_SELL,
+    collateralScaleDec,
   );
   fpmm.save();
 
-  updateGlobalOpenInterest(returnAmountMinusFees, TRADE_TYPE_SELL);
+  updateGlobalOpenInterest(
+    returnAmountMinusFees,
+    TRADE_TYPE_SELL,
+    collateralScaleDec,
+  );
 
   updateUserVolume(
     event.params.seller.toHexString(),

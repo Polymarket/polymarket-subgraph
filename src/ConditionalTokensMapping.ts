@@ -27,7 +27,10 @@ import {
   PAYOUT_REDEMPTION,
   SPLIT_SHARES,
 } from './utils/constants';
-import { getCollateralDetails } from './utils/collateralTokens';
+import {
+  getCollateralDetails,
+  getCollateralScale,
+} from './utils/collateralTokens';
 import { markAccountAsSeen, requireAccount } from './utils/account-utils';
 import {
   updateFPMMOpenInterestFromRedemption,
@@ -76,15 +79,22 @@ export function handlePositionSplit(event: PositionSplit): void {
       updateMarketPositionsFromSplit(marketMakers[i], event);
       let fpmm = FixedProductMarketMaker.load(marketMakers[i]);
       if (fpmm) {
+        let collateralScale = getCollateralScale(fpmm.collateralToken);
+        let collateralScaleDec = collateralScale.toBigDecimal();
         updateFPMMOpenInterestFromSplitOrMerge(
           fpmm as FixedProductMarketMaker,
           event.params.amount,
           SPLIT_SHARES,
+          collateralScaleDec,
         );
         fpmm.save();
+        updateGlobalOpenInterest(
+          event.params.amount,
+          SPLIT_SHARES,
+          collateralScaleDec,
+        );
       }
     }
-    updateGlobalOpenInterest(event.params.amount, SPLIT_SHARES);
   }
 }
 export function handlePositionsMerge(event: PositionsMerge): void {
@@ -127,15 +137,22 @@ export function handlePositionsMerge(event: PositionsMerge): void {
       updateMarketPositionsFromMerge(marketMakers[i], event);
       let fpmm = FixedProductMarketMaker.load(marketMakers[i]);
       if (fpmm) {
+        let collateralScale = getCollateralScale(fpmm.collateralToken);
+        let collateralScaleDec = collateralScale.toBigDecimal();
         updateFPMMOpenInterestFromSplitOrMerge(
           fpmm as FixedProductMarketMaker,
           event.params.amount,
           MERGE_SHARES,
+          collateralScaleDec,
         );
         fpmm.save();
+        updateGlobalOpenInterest(
+          event.params.amount,
+          MERGE_SHARES,
+          collateralScaleDec,
+        );
       }
     }
-    updateGlobalOpenInterest(event.params.amount, MERGE_SHARES);
   }
 }
 
@@ -168,13 +185,21 @@ export function handlePayoutRedemption(event: PayoutRedemption): void {
     updateMarketPositionsFromRedemption(marketMakers[i], event);
     let fpmm = FixedProductMarketMaker.load(marketMakers[i]);
     if (fpmm) {
+      let collateralScale = getCollateralScale(fpmm.collateralToken);
+      let collateralScaleDec = collateralScale.toBigDecimal();
       updateFPMMOpenInterestFromRedemption(
         fpmm as FixedProductMarketMaker,
         event.params.payout,
+        collateralScaleDec,
       );
       fpmm.save();
+
+      updateGlobalOpenInterest(
+        event.params.payout,
+        PAYOUT_REDEMPTION,
+        collateralScaleDec,
+      );
     }
-    updateGlobalOpenInterest(event.params.payout, PAYOUT_REDEMPTION);
   }
 }
 
