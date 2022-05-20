@@ -30,13 +30,17 @@ import {
 } from './utils/market-positions-utils';
 import {
   AddressZero,
+  ADD_FUNDING,
   bigOne,
   bigZero,
   TRADE_TYPE_BUY,
   TRADE_TYPE_SELL,
 } from './utils/constants';
 import { getCollateralScale } from './utils/collateralTokens';
-import { updateGlobalVolume } from './utils/global-utils';
+import {
+  updateGlobalOpenInterest,
+  updateGlobalVolume,
+} from './utils/global-utils';
 import { increment, max } from './utils/maths';
 import {
   incrementAccountTrades,
@@ -137,6 +141,7 @@ export function handleFundingAdded(event: FPMMFundingAdded): void {
       fpmm as FixedProductMarketMaker,
       amountsAdded[i],
     );
+    updateGlobalOpenInterest(amountsAdded[i], ADD_FUNDING);
     newAmounts[i] = oldAmounts[i].plus(amountsAdded[i]);
     amountsProduct = amountsProduct.times(newAmounts[i]);
   }
@@ -268,6 +273,8 @@ export function handleBuy(event: FPMMBuy): void {
   );
   fpmm.save();
 
+  updateGlobalOpenInterest(investmentAmountMinusFees, TRADE_TYPE_BUY);
+
   updateUserVolume(
     event.params.buyer.toHexString(),
     event.params.investmentAmount,
@@ -350,6 +357,8 @@ export function handleSell(event: FPMMSell): void {
     TRADE_TYPE_SELL,
   );
   fpmm.save();
+
+  updateGlobalOpenInterest(returnAmountPlusFees, TRADE_TYPE_SELL);
 
   updateUserVolume(
     event.params.seller.toHexString(),

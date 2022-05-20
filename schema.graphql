@@ -34,9 +34,12 @@ type Global @entity {
   collateralSellVolume: BigInt!
   "Global volume of share sales in USDC scaled by 10^6"
   scaledCollateralSellVolume: BigDecimal!
-  "Global total locked value in the conditional tokens contract"
+  "Global total locked value in the conditional tokens contract in USDC base units"
   openInterest: BigInt!
+  "Global total locked value in the conditional tokens contract in  USDC scaled by 10^6"
+  scaledOpenInterest: BigDecimal!
 }
+
 
 type Account @entity {
   "User address"
@@ -218,9 +221,11 @@ type FixedProductMarketMaker @entity {
   "Addresses which are supplying liquidity to the market maker"
   poolMembers: [FpmmPoolMembership!] @derivedFrom(field: "pool")
 
-  "Total locked value in this market"
+  "Total locked value in this market in USDC base units"
   openInterest: BigInt!
-
+  
+  "Total locked value in this market inUSDC scaled by 10^6"
+  scaledOpenInterest: BigDecimal!
  
 }
 

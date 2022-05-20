@@ -5,7 +5,6 @@ import { timestampToDay } from './time';
 import {
   bigOne,
   bigZero,
-  CONDITIONAL_TOKENS_ADDRESS,
   MERGE_SHARES,
   SPLIT_SHARES,
   TRADE_TYPE_BUY,
@@ -117,8 +116,14 @@ export function updateFPMMOpenInterestFromTrade(
 ): void {
   if (tradeType == TRADE_TYPE_BUY) {
     fpmm.openInterest = fpmm.openInterest.plus(amount);
+    fpmm.scaledOpenInterest = fpmm.scaledOpenInterest.plus(
+      amount.toBigDecimal(),
+    );
   } else if (tradeType == TRADE_TYPE_SELL) {
     fpmm.openInterest = fpmm.openInterest.minus(amount);
+    fpmm.scaledOpenInterest = fpmm.scaledOpenInterest.minus(
+      amount.toBigDecimal(),
+    );
   }
 }
 
@@ -129,8 +134,14 @@ export function updateFPMMOpenInterestFromSplitOrMerge(
 ): void {
   if (operation == SPLIT_SHARES) {
     fpmm.openInterest = fpmm.openInterest.plus(amount);
+    fpmm.scaledOpenInterest = fpmm.scaledOpenInterest.plus(
+      amount.toBigDecimal(),
+    );
   } else if (operation == MERGE_SHARES) {
     fpmm.openInterest = fpmm.openInterest.minus(amount);
+    fpmm.scaledOpenInterest = fpmm.scaledOpenInterest.minus(
+      amount.toBigDecimal(),
+    );
   }
 }
 
@@ -139,10 +150,14 @@ export function updateFPMMOpenInterestFromFundingAdded(
   amount: BigInt,
 ): void {
   fpmm.openInterest = fpmm.openInterest.plus(amount);
+  fpmm.scaledOpenInterest = fpmm.scaledOpenInterest.plus(amount.toBigDecimal());
 }
 export function updateFPMMOpenInterestFromRedemption(
   fpmm: FixedProductMarketMaker,
   amount: BigInt,
 ): void {
   fpmm.openInterest = fpmm.openInterest.minus(amount);
+  fpmm.scaledOpenInterest = fpmm.scaledOpenInterest.minus(
+    amount.toBigDecimal(),
+  );
 }

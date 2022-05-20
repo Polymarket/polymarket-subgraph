@@ -47,6 +47,7 @@ function initialiseFPMM(
   fpmm.liquidityAddQuantity = bigZero;
   fpmm.liquidityRemoveQuantity = bigZero;
   fpmm.openInterest = bigZero;
+  fpmm.scaledOpenInterest = bigZero.toBigDecimal();
 
   return fpmm;
 }

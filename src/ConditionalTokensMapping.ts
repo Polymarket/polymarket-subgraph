@@ -14,14 +14,19 @@ import {
   Split,
   FixedProductMarketMaker,
 } from './types/schema';
-import { requireGlobal } from './utils/global-utils';
+import { requireGlobal, updateGlobalOpenInterest } from './utils/global-utils';
 import {
   updateMarketPositionsFromMerge,
   updateMarketPositionsFromRedemption,
   updateMarketPositionsFromSplit,
 } from './utils/market-positions-utils';
 import { partitionCheck } from './utils/conditional-utils';
-import { bigZero, MERGE_SHARES, SPLIT_SHARES } from './utils/constants';
+import {
+  bigZero,
+  MERGE_SHARES,
+  PAYOUT_REDEMPTION,
+  SPLIT_SHARES,
+} from './utils/constants';
 import { getCollateralDetails } from './utils/collateralTokens';
 import { markAccountAsSeen, requireAccount } from './utils/account-utils';
 import {
@@ -79,9 +84,9 @@ export function handlePositionSplit(event: PositionSplit): void {
         fpmm.save();
       }
     }
+    updateGlobalOpenInterest(event.params.amount, SPLIT_SHARES);
   }
 }
-
 export function handlePositionsMerge(event: PositionsMerge): void {
   if (
     FixedProductMarketMaker.load(event.params.stakeholder.toHexString()) != null
@@ -130,6 +135,7 @@ export function handlePositionsMerge(event: PositionsMerge): void {
         fpmm.save();
       }
     }
+    updateGlobalOpenInterest(event.params.amount, MERGE_SHARES);
   }
 }
 
@@ -168,6 +174,7 @@ export function handlePayoutRedemption(event: PayoutRedemption): void {
       );
       fpmm.save();
     }
+    updateGlobalOpenInterest(event.params.payout, PAYOUT_REDEMPTION);
   }
 }
 

@@ -1,6 +1,14 @@
 import { BigDecimal, BigInt } from '@graphprotocol/graph-ts';
 import { Global } from '../types/schema';
-import { bigZero, CONDITIONAL_TOKENS_ADDRESS, TRADE_TYPE_BUY, TRADE_TYPE_SELL } from './constants';
+import {
+  ADD_FUNDING,
+  bigZero,
+  MERGE_SHARES,
+  PAYOUT_REDEMPTION,
+  SPLIT_SHARES,
+  TRADE_TYPE_BUY,
+  TRADE_TYPE_SELL,
+} from './constants';
 import { increment } from './maths';
 
 export function requireGlobal(): Global {
@@ -27,6 +35,7 @@ export function requireGlobal(): Global {
     global.collateralSellVolume = bigZero;
     global.scaledCollateralSellVolume = bigZero.toBigDecimal();
     global.openInterest = bigZero;
+    global.scaledOpenInterest = bigZero.toBigDecimal();
   }
   return global as Global;
 }
@@ -69,17 +78,30 @@ export function updateGlobalVolume(
   global.save();
 }
 
-export function updateOpenInterest(
+export function updateGlobalOpenInterest(
   amount: BigInt,
-  toAddress: string,
-  fromAddress: string,
+  transactionType: string,
 ): void {
   let global = requireGlobal();
 
-  if (toAddress == CONDITIONAL_TOKENS_ADDRESS) {
+  if (
+    transactionType == TRADE_TYPE_BUY ||
+    transactionType == SPLIT_SHARES ||
+    transactionType == ADD_FUNDING
+  ) {
     global.openInterest = global.openInterest.plus(amount);
-  } else if (fromAddress == CONDITIONAL_TOKENS_ADDRESS) {
+    global.scaledOpenInterest = global.scaledOpenInterest.plus(
+      amount.toBigDecimal(),
+    );
+  } else if (
+    transactionType == TRADE_TYPE_SELL ||
+    transactionType == MERGE_SHARES ||
+    transactionType == PAYOUT_REDEMPTION
+  ) {
     global.openInterest = global.openInterest.minus(amount);
+    global.scaledOpenInterest = global.scaledOpenInterest.minus(
+      amount.toBigDecimal(),
+    );
   }
   global.save();
 }

@@ -9,3 +9,5 @@ export const TRADE_TYPE_BUY = 'Buy';
 export const TRADE_TYPE_SELL = 'Sell';
 export const SPLIT_SHARES = 'Split';
 export const MERGE_SHARES = 'Merge';
+export const ADD_FUNDING = 'Fund';
+export const PAYOUT_REDEMPTION = 'Redeem';
