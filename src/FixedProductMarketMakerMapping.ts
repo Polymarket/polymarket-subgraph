@@ -20,8 +20,6 @@ import {
   updateFeeFields,
   calculatePrices,
   loadPoolMembership,
-  updateFPMMOpenInterestFromFundingAdded,
-  updateFPMMOpenInterestFromTrade,
 } from './utils/fpmm-utils';
 import {
   updateMarketPositionFromLiquidityAdded,
@@ -30,17 +28,13 @@ import {
 } from './utils/market-positions-utils';
 import {
   AddressZero,
-  ADD_FUNDING,
   bigOne,
   bigZero,
   TRADE_TYPE_BUY,
   TRADE_TYPE_SELL,
 } from './utils/constants';
 import { getCollateralScale } from './utils/collateralTokens';
-import {
-  updateGlobalOpenInterest,
-  updateGlobalVolume,
-} from './utils/global-utils';
+import { updateGlobalVolume } from './utils/global-utils';
 import { increment, max } from './utils/maths';
 import {
   incrementAccountTrades,
@@ -138,16 +132,6 @@ export function handleFundingAdded(event: FPMMFundingAdded): void {
   let amountsProduct = bigOne;
   let collateralScale = getCollateralScale(fpmm.collateralToken);
   for (let i = 0; i < newAmounts.length; i += 1) {
-    updateFPMMOpenInterestFromFundingAdded(
-      fpmm as FixedProductMarketMaker,
-      amountsAdded[i],
-      collateralScale.toBigDecimal(),
-    );
-    updateGlobalOpenInterest(
-      amountsAdded[i],
-      ADD_FUNDING,
-      collateralScale.toBigDecimal(),
-    );
     newAmounts[i] = oldAmounts[i].plus(amountsAdded[i]);
     amountsProduct = amountsProduct.times(newAmounts[i]);
   }
@@ -272,19 +256,8 @@ export function handleBuy(event: FPMMBuy): void {
 
   fpmm.tradesQuantity = increment(fpmm.tradesQuantity);
   fpmm.buysQuantity = increment(fpmm.buysQuantity);
-  updateFPMMOpenInterestFromTrade(
-    fpmm as FixedProductMarketMaker,
-    investmentAmountMinusFees,
-    TRADE_TYPE_BUY,
-    collateralScaleDec,
-  );
-  fpmm.save();
 
-  updateGlobalOpenInterest(
-    investmentAmountMinusFees,
-    TRADE_TYPE_BUY,
-    collateralScaleDec,
-  );
+  fpmm.save();
 
   updateUserVolume(
     event.params.buyer.toHexString(),
@@ -365,19 +338,7 @@ export function handleSell(event: FPMMSell): void {
 
   fpmm.tradesQuantity = increment(fpmm.tradesQuantity);
   fpmm.sellsQuantity = increment(fpmm.sellsQuantity);
-  updateFPMMOpenInterestFromTrade(
-    fpmm as FixedProductMarketMaker,
-    returnAmountMinusFees,
-    TRADE_TYPE_SELL,
-    collateralScaleDec,
-  );
   fpmm.save();
-
-  updateGlobalOpenInterest(
-    returnAmountMinusFees,
-    TRADE_TYPE_SELL,
-    collateralScaleDec,
-  );
 
   updateUserVolume(
     event.params.seller.toHexString(),

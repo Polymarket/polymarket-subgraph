@@ -38,13 +38,26 @@ import {
 } from './utils/fpmm-utils';
 
 export function handlePositionSplit(event: PositionSplit): void {
-  if (
-    FixedProductMarketMaker.load(event.params.stakeholder.toHexString()) != null
-  ) {
-    // We don't track splits within the market makers
+  let fpmm = FixedProductMarketMaker.load(
+    event.params.stakeholder.toHexString(),
+  );
+  if (fpmm != null) {
+    let collateralScale = getCollateralScale(fpmm.collateralToken);
+    let collateralScaleDec = collateralScale.toBigDecimal();
+    updateFPMMOpenInterestFromSplitOrMerge(
+      fpmm as FixedProductMarketMaker,
+      event.params.amount,
+      SPLIT_SHARES,
+      collateralScaleDec,
+    );
+    fpmm.save();
+    updateGlobalOpenInterest(
+      event.params.amount,
+      SPLIT_SHARES,
+      collateralScaleDec,
+    );
     return;
   }
-
   getCollateralDetails(event.params.collateralToken);
   requireAccount(event.params.stakeholder.toHexString(), event.block.timestamp);
   markAccountAsSeen(
@@ -77,17 +90,17 @@ export function handlePositionSplit(event: PositionSplit): void {
       // This is not ideal as in theory we could have multiple market makers for the same condition
       // Given that this subgraph only tracks market makers deployed by Polymarket, this is acceptable for now
       updateMarketPositionsFromSplit(marketMakers[i], event);
-      let fpmm = FixedProductMarketMaker.load(marketMakers[i]);
-      if (fpmm) {
-        let collateralScale = getCollateralScale(fpmm.collateralToken);
+      let marketMaker = FixedProductMarketMaker.load(marketMakers[i]);
+      if (marketMaker) {
+        let collateralScale = getCollateralScale(marketMaker.collateralToken);
         let collateralScaleDec = collateralScale.toBigDecimal();
         updateFPMMOpenInterestFromSplitOrMerge(
-          fpmm as FixedProductMarketMaker,
+          marketMaker as FixedProductMarketMaker,
           event.params.amount,
           SPLIT_SHARES,
           collateralScaleDec,
         );
-        fpmm.save();
+        marketMaker.save();
         updateGlobalOpenInterest(
           event.params.amount,
           SPLIT_SHARES,
@@ -98,10 +111,24 @@ export function handlePositionSplit(event: PositionSplit): void {
   }
 }
 export function handlePositionsMerge(event: PositionsMerge): void {
-  if (
-    FixedProductMarketMaker.load(event.params.stakeholder.toHexString()) != null
-  ) {
-    // We don't track merges within the market makers
+  let fpmm = FixedProductMarketMaker.load(
+    event.params.stakeholder.toHexString(),
+  );
+  if (fpmm != null) {
+    let collateralScale = getCollateralScale(fpmm.collateralToken);
+    let collateralScaleDec = collateralScale.toBigDecimal();
+    updateFPMMOpenInterestFromSplitOrMerge(
+      fpmm as FixedProductMarketMaker,
+      event.params.amount,
+      MERGE_SHARES,
+      collateralScaleDec,
+    );
+    fpmm.save();
+    updateGlobalOpenInterest(
+      event.params.amount,
+      MERGE_SHARES,
+      collateralScaleDec,
+    );
     return;
   }
   requireAccount(event.params.stakeholder.toHexString(), event.block.timestamp);
@@ -135,17 +162,17 @@ export function handlePositionsMerge(event: PositionsMerge): void {
     let marketMakers = condition.fixedProductMarketMakers;
     for (let i = 0; i < marketMakers.length; i += 1) {
       updateMarketPositionsFromMerge(marketMakers[i], event);
-      let fpmm = FixedProductMarketMaker.load(marketMakers[i]);
-      if (fpmm) {
-        let collateralScale = getCollateralScale(fpmm.collateralToken);
+      let marketMaker = FixedProductMarketMaker.load(marketMakers[i]);
+      if (marketMaker) {
+        let collateralScale = getCollateralScale(marketMaker.collateralToken);
         let collateralScaleDec = collateralScale.toBigDecimal();
         updateFPMMOpenInterestFromSplitOrMerge(
-          fpmm as FixedProductMarketMaker,
+          marketMaker as FixedProductMarketMaker,
           event.params.amount,
           MERGE_SHARES,
           collateralScaleDec,
         );
-        fpmm.save();
+        marketMaker.save();
         updateGlobalOpenInterest(
           event.params.amount,
           MERGE_SHARES,

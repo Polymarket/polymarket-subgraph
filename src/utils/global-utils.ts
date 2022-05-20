@@ -1,7 +1,6 @@
 import { BigDecimal, BigInt } from '@graphprotocol/graph-ts';
 import { Global } from '../types/schema';
 import {
-  ADD_FUNDING,
   bigZero,
   MERGE_SHARES,
   PAYOUT_REDEMPTION,
@@ -85,17 +84,12 @@ export function updateGlobalOpenInterest(
 ): void {
   let global = requireGlobal();
 
-  if (
-    transactionType == TRADE_TYPE_BUY ||
-    transactionType == SPLIT_SHARES ||
-    transactionType == ADD_FUNDING
-  ) {
+  if (transactionType == SPLIT_SHARES) {
     global.openInterest = global.openInterest.plus(amount);
     global.scaledOpenInterest = global.openInterest.divDecimal(
       collateralScaleDec,
     );
   } else if (
-    transactionType == TRADE_TYPE_SELL ||
     transactionType == MERGE_SHARES ||
     transactionType == PAYOUT_REDEMPTION
   ) {

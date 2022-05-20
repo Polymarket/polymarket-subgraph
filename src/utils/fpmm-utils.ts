@@ -109,21 +109,6 @@ export function updateFeeFields(
   fpmm.scaledFeeVolume = fpmm.feeVolume.divDecimal(collateralScaleDec);
 }
 
-export function updateFPMMOpenInterestFromTrade(
-  fpmm: FixedProductMarketMaker,
-  amount: BigInt,
-  tradeType: string,
-  collateralScaleDec: BigDecimal,
-): void {
-  if (tradeType == TRADE_TYPE_BUY) {
-    fpmm.openInterest = fpmm.openInterest.plus(amount);
-    fpmm.scaledOpenInterest = fpmm.openInterest.divDecimal(collateralScaleDec);
-  } else if (tradeType == TRADE_TYPE_SELL) {
-    fpmm.openInterest = fpmm.openInterest.minus(amount);
-    fpmm.scaledOpenInterest = fpmm.openInterest.divDecimal(collateralScaleDec);
-  }
-}
-
 export function updateFPMMOpenInterestFromSplitOrMerge(
   fpmm: FixedProductMarketMaker,
   amount: BigInt,
@@ -139,14 +124,6 @@ export function updateFPMMOpenInterestFromSplitOrMerge(
   }
 }
 
-export function updateFPMMOpenInterestFromFundingAdded(
-  fpmm: FixedProductMarketMaker,
-  amount: BigInt,
-  collateralScaleDec: BigDecimal,
-): void {
-  fpmm.openInterest = fpmm.openInterest.plus(amount);
-  fpmm.scaledOpenInterest = fpmm.openInterest.divDecimal(collateralScaleDec);
-}
 export function updateFPMMOpenInterestFromRedemption(
   fpmm: FixedProductMarketMaker,
   amount: BigInt,
