@@ -311,6 +311,9 @@ export function handleSell(event: FPMMSell): void {
   let returnAmountPlusFees = event.params.returnAmount.plus(
     event.params.feeAmount,
   );
+  let returnAmountMinusFees = event.params.returnAmount.minus(
+    event.params.feeAmount,
+  );
 
   let outcomeIndex = event.params.outcomeIndex.toI32();
   let newAmounts = new Array<BigInt>(oldAmounts.length);
@@ -353,12 +356,12 @@ export function handleSell(event: FPMMSell): void {
   fpmm.sellsQuantity = increment(fpmm.sellsQuantity);
   updateFPMMOpenInterestFromTrade(
     fpmm as FixedProductMarketMaker,
-    returnAmountPlusFees,
+    returnAmountMinusFees,
     TRADE_TYPE_SELL,
   );
   fpmm.save();
 
-  updateGlobalOpenInterest(returnAmountPlusFees, TRADE_TYPE_SELL);
+  updateGlobalOpenInterest(returnAmountMinusFees, TRADE_TYPE_SELL);
 
   updateUserVolume(
     event.params.seller.toHexString(),

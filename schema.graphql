@@ -224,7 +224,7 @@ type FixedProductMarketMaker @entity {
   "Total locked value in this market in USDC base units"
   openInterest: BigInt!
   
-  "Total locked value in this market inUSDC scaled by 10^6"
+  "Total locked value in this market in USDC scaled by 10^6"
   scaledOpenInterest: BigDecimal!
  
 }

@@ -19,10 +19,6 @@ matic:
       address: '0x8B9805A2f595B6705e74F7310829f2d299D21522'
       transactionHash: '0x1af1b88e36bb0289f6e037e00d01b26bed997ce7a0406ebafce07dcf766ce7c6'
       startBlock: 4023693
-    ERC20Detailed:
-      address: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174"
-      transactionHash: "0x51103659d8827d6d24732d1168de73390f4f387d58a8281944241657f1bc61d7"
-      startBlock: 4023686
   networkName: matic
 mumbai:
   contracts:
@@ -33,9 +29,5 @@ mumbai:
     FixedProductMarketMakerFactory:
       address: '0x5a80a64c8ae0551b09c3df377b60953872c5aa7f'
       transactionHash: '0x994ccfecb4d13de47ff3775c9b63752e4c78ad8f66ea9cc272a3f623b9f10ec1'
-      startBlock: 3456411
-    ERC20Detailed:
-      address: "0x2E8DCfE708D44ae2e406a1c02DFE2Fa13012f961"
-      transactionHash: "0x5c6560d0f835b540630329da74df5cf0c568dfeeb12bfa42f35eb359a4d16d3e"
       startBlock: 3456411
   networkName: mumbai
