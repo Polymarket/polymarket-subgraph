@@ -34,6 +34,10 @@ type Global @entity {
   collateralSellVolume: BigInt!
   "Global volume of share sales in USDC scaled by 10^6"
   scaledCollateralSellVolume: BigDecimal!
+  "Liquidity across all markets in USDC base units"
+   liquidity: BigInt!
+  "Liquidity across all markets in USDC scaled by 10^6"
+  scaledLiquidity: BigDecimal!
 }
 
 type Account @entity {
