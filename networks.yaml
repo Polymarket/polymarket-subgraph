@@ -18,7 +18,7 @@ matic:
     FixedProductMarketMakerFactory:
       address: '0x8B9805A2f595B6705e74F7310829f2d299D21522'
       transactionHash: '0x1af1b88e36bb0289f6e037e00d01b26bed997ce7a0406ebafce07dcf766ce7c6'
-      startBlock: 4023693
+      startBlock: 3456423
   networkName: matic
 mumbai:
   contracts:
