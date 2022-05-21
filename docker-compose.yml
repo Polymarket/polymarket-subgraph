@@ -32,4 +32,4 @@ services:
       postgres_db: postgres
       ipfs: 'ipfs:5001'
       ethereum: 'development:http://ganache:8545'
-      RUST_BACKTRACE: 1
+      #RUST_BACKTRACE: 1
