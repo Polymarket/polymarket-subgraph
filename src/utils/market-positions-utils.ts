@@ -12,12 +12,15 @@ import {
   PayoutRedemption,
 } from '../types/ConditionalTokens/ConditionalTokens';
 import {
+  FPMMBuy,
   FPMMFundingAdded,
   FPMMFundingRemoved,
+  FPMMSell,
 } from '../types/templates/FixedProductMarketMaker/FixedProductMarketMaker';
-import { bigZero } from './constants';
+import { bigOne, bigZero } from './constants';
 import { max, timesBD } from './maths';
 import { updateUserProfit } from './account-utils';
+import { getCollateralScale } from './collateralTokens';
 
 /*
  * Returns the user's position for the given market and outcome
@@ -79,10 +82,12 @@ export function updateMarketPositionFromTrade(event: ethereum.Event): void {
     transaction.market,
     transaction.outcomeIndex,
   );
-
-  let fee = (FixedProductMarketMaker.load(
+  let fpmm = FixedProductMarketMaker.load(
     transaction.market,
-  ) as FixedProductMarketMaker).fee;
+  ) as FixedProductMarketMaker;
+  let fee = fpmm.fee;
+  let collateralScale = getCollateralScale(fpmm.collateralToken);
+  let collateralScaleDec = collateralScale.toBigDecimal();
 
   if (transaction.type == 'Buy') {
     position.quantityBought = position.quantityBought.plus(
@@ -100,19 +105,25 @@ export function updateMarketPositionFromTrade(event: ethereum.Event): void {
       transaction.outcomeTokensAmount,
     );
     position.valueSold = position.valueSold.plus(transaction.tradeAmount);
-    let averageSellPrice = position.valueSold
-      .toBigDecimal()
-      .div(position.quantitySold.toBigDecimal());
-    let averagePricePaid = position.valueBought
-      .toBigDecimal()
-      .div(position.quantityBought.toBigDecimal());
+    // let averageSellPrice = position.valueSold
+    //   .toBigDecimal()
+    //   .div(position.quantitySold.toBigDecimal());
+    // let averagePricePaid = position.valueBought
+    //   .toBigDecimal()
+    //   .div(position.quantityBought.toBigDecimal());
+    let averageSellPrice = (event as FPMMSell).params.returnAmount.div(
+      (event as FPMMSell).params.outcomeTokensSold,
+    );
+    let averagePricePaid = position.netValue.div(position.netQuantity);
 
     let pnl = averageSellPrice
       .minus(averagePricePaid)
-      .times(position.quantitySold.toBigDecimal());
+      .times(position.quantitySold)
+      .minus((event as FPMMSell).params.feeAmount);
     updateUserProfit(
       transaction.user,
       pnl,
+      collateralScaleDec,
       transaction.timestamp,
       transaction.market,
     );
@@ -182,6 +193,11 @@ export function updateMarketPositionsFromMerge(
     marketMakerAddress,
   ) as FixedProductMarketMaker;
   let outcomeTokenPrices = marketMaker.outcomeTokenPrices;
+  let collateralScale = getCollateralScale(marketMaker.collateralToken);
+  let collateralScaleDec = collateralScale.toBigDecimal();
+
+  // profit calculation = (1 - sum of avg price paid per outcome) * amount
+  let sumOfAvgPricesPaid = bigZero;
 
   for (
     let outcomeIndex = 0;
@@ -202,16 +218,23 @@ export function updateMarketPositionsFromMerge(
       outcomeTokenPrices[outcomeIndex],
     );
     position.valueSold = position.valueSold.plus(mergeValue);
-    let averagePricePaid = position.valueBought
-      .toBigDecimal()
-      .div(position.quantityBought.toBigDecimal());
-    let pnl = BigDecimal.fromString('1')
-      .minus(averagePricePaid)
-      .times(event.params.amount.toBigDecimal());
-    updateUserProfit(userAddress, pnl, event.block.timestamp, position.market);
+
+    // profit calculation
+    let averagePricePaid = position.netValue.div(position.netQuantity);
+    // add to running total of prices paid
+    sumOfAvgPricesPaid = sumOfAvgPricesPaid.plus(averagePricePaid);
 
     updateNetPositionAndSave(position);
   }
+  // complete profit calculation from merge and update profits per account and market
+  let pnl = bigOne.minus(sumOfAvgPricesPaid).times(event.params.amount);
+  updateUserProfit(
+    userAddress,
+    pnl,
+    collateralScaleDec,
+    event.block.timestamp,
+    marketMakerAddress,
+  );
 }
 
 /*
@@ -262,28 +285,7 @@ export function updateMarketPositionsFromRedemption(
     let redemptionValue = position.netQuantity
       .times(numerator)
       .div(payoutDenominator);
-    if (
-      position.netQuantity.gt(bigZero) &&
-      position.quantityBought.gt(bigZero)
-    ) {
-      let averageRedemptionPrice = redemptionValue
-        .toBigDecimal()
-        .div(position.netQuantity.toBigDecimal());
-      let averagePricePaid = position.valueBought
-        .toBigDecimal()
-        .div(position.quantityBought.toBigDecimal());
 
-      let pnl = averageRedemptionPrice
-        .minus(averagePricePaid)
-        .times(position.netQuantity.toBigDecimal());
-      if (pnl.ge(BigDecimal.fromString('0')))
-        updateUserProfit(
-          userAddress,
-          pnl,
-          event.block.timestamp,
-          position.market,
-        );
-    }
     // position gets zero'd out
     position.quantitySold = position.quantitySold.plus(position.netQuantity);
     position.valueSold = position.valueSold.plus(redemptionValue);

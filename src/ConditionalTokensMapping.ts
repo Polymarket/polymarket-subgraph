@@ -17,14 +17,16 @@ import {
 } from './types/schema';
 import { requireGlobal } from './utils/global-utils';
 import {
-  getMarketPosition,
   updateMarketPositionsFromMerge,
   updateMarketPositionsFromRedemption,
   updateMarketPositionsFromSplit,
 } from './utils/market-positions-utils';
 import { partitionCheck } from './utils/conditional-utils';
 import { bigZero } from './utils/constants';
-import { getCollateralDetails } from './utils/collateralTokens';
+import {
+  getCollateralDetails,
+  getCollateralScale,
+} from './utils/collateralTokens';
 import {
   markAccountAsSeen,
   requireAccount,
@@ -202,10 +204,15 @@ export function handleConditionResolution(event: ConditionResolution): void {
   for (let i = 0; i < marketMakers.length; i += 1) {
     // This is not ideal as in theory we could have multiple market makers for the same condition
     // Given that this subgraph only tracks market makers deployed by Polymarket, this is acceptable for now
-    let fpmm = FixedProductMarketMaker.load(marketMakers[i]);
+    let fpmm = FixedProductMarketMaker.load(
+      marketMakers[i],
+    ) as FixedProductMarketMaker;
+    let collateralScale = getCollateralScale(fpmm.collateralToken);
+    let collateralScaleDec = collateralScale.toBigDecimal();
+
     if (fpmm) {
       let marketPositions = fpmm.marketPositions;
-      if (marketPositions as Array<string>)
+      if (marketPositions as Array<string>) {
         for (let j = 0; j < marketPositions!.length; j += 1) {
           let pos = marketPositions![j];
           let position = MarketPosition.load(pos);
@@ -214,25 +221,26 @@ export function handleConditionResolution(event: ConditionResolution): void {
             let redemptionValue = position.netQuantity
               .times(numerator)
               .div(payoutDenominator);
-            let averageRedemptionPrice = redemptionValue
-              .toBigDecimal()
-              .div(position.netQuantity.toBigDecimal());
-            let averagePricePaid = position.valueBought
-              .toBigDecimal()
-              .div(position.quantityBought.toBigDecimal());
+            let averageRedemptionPrice = redemptionValue.div(
+              position.netQuantity,
+            );
+            let averagePricePaid = position.netValue.div(position.netQuantity);
 
             let pnl = averageRedemptionPrice
               .minus(averagePricePaid)
-              .times(position.netQuantity.toBigDecimal());
-            if (pnl.lt(BigDecimal.fromString('0')))
-              updateUserProfit(
-                position.user,
-                pnl,
-                event.block.timestamp,
-                position.market,
-              );
+              .times(position.netQuantity);
+            // don't allow losses to go unreported to market leaderboard
+            // this also reports profits even if unredeemed
+            updateUserProfit(
+              position.user,
+              pnl,
+              collateralScaleDec,
+              event.block.timestamp,
+              position.market,
+            );
           }
         }
+      }
     }
   }
 

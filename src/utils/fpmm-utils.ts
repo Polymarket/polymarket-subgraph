@@ -1,6 +1,10 @@
 /* eslint-disable no-param-reassign */
 import { BigInt, BigDecimal } from '@graphprotocol/graph-ts';
-import { FixedProductMarketMaker, FpmmPoolMembership, MarketProfitPerAccount } from '../types/schema';
+import {
+  FixedProductMarketMaker,
+  FpmmPoolMembership,
+  MarketProfitPerAccount,
+} from '../types/schema';
 import { timestampToDay } from './time';
 import { bigOne, bigZero, TRADE_TYPE_BUY, TRADE_TYPE_SELL } from './constants';
 
@@ -28,7 +32,8 @@ export function loadMarketProfitPerAccount(
     marketProfitPerAccount = new MarketProfitPerAccount(id);
     marketProfitPerAccount.account = userAddress;
     marketProfitPerAccount.market = fpmmAddress;
-    marketProfitPerAccount.amount = bigZero.toBigDecimal();
+    marketProfitPerAccount.profit = bigZero;
+    marketProfitPerAccount.scaledProfit = bigZero.toBigDecimal();
   }
   return marketProfitPerAccount as MarketProfitPerAccount;
 }
@@ -114,4 +119,3 @@ export function updateFeeFields(
   fpmm.feeVolume = fpmm.feeVolume.plus(feeAmount);
   fpmm.scaledFeeVolume = fpmm.feeVolume.divDecimal(collateralScaleDec);
 }
-

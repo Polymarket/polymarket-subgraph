@@ -19,7 +19,8 @@ export function requireAccount(
     account.numTrades = bigZero;
     account.creationTimestamp = timestamp;
     account.lastSeenTimestamp = timestamp;
-    account.profit = bigZero.toBigDecimal();
+    account.profit = bigZero;
+    account.scaledProfit = bigZero.toBigDecimal();
     countNewTrader();
     account.save();
   }
@@ -73,16 +74,17 @@ export function updateUserVolume(
 
 export function updateUserProfit(
   accountAddress: string,
-  pnl: BigDecimal,
+  pnl: BigInt,
+  collateralScaleDec: BigDecimal,
   timestamp: BigInt,
   fpmmAddress: string,
 ): void {
   let account = requireAccount(accountAddress, timestamp);
-
-  account.profit = account.profit.plus(pnl);
+  account.profit = account.profit.plus(pnl); // will subtract if a negative profit
+  account.scaledProfit = account.profit.divDecimal(collateralScaleDec);
   account.save();
   let fpmmProfit = loadMarketProfitPerAccount(fpmmAddress, accountAddress);
-  fpmmProfit.amount = fpmmProfit.amount.plus(pnl);
+  fpmmProfit.profit = fpmmProfit.profit.plus(pnl); // will subtract if a negative profit
+  fpmmProfit.scaledProfit = fpmmProfit.profit.divDecimal(collateralScaleDec);
   fpmmProfit.save();
-
 }
