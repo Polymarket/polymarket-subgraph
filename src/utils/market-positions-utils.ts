@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import { BigDecimal, BigInt, ethereum, log } from '@graphprotocol/graph-ts';
+import { BigInt, ethereum, log } from '@graphprotocol/graph-ts';
 import {
   FixedProductMarketMaker,
   MarketPosition,
@@ -12,7 +12,6 @@ import {
   PayoutRedemption,
 } from '../types/ConditionalTokens/ConditionalTokens';
 import {
-  FPMMBuy,
   FPMMFundingAdded,
   FPMMFundingRemoved,
   FPMMSell,
@@ -105,12 +104,7 @@ export function updateMarketPositionFromTrade(event: ethereum.Event): void {
       transaction.outcomeTokensAmount,
     );
     position.valueSold = position.valueSold.plus(transaction.tradeAmount);
-    // let averageSellPrice = position.valueSold
-    //   .toBigDecimal()
-    //   .div(position.quantitySold.toBigDecimal());
-    // let averagePricePaid = position.valueBought
-    //   .toBigDecimal()
-    //   .div(position.quantityBought.toBigDecimal());
+
     let averageSellPrice = (event as FPMMSell).params.returnAmount.div(
       (event as FPMMSell).params.outcomeTokensSold,
     );
