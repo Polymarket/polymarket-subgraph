@@ -16,7 +16,7 @@ import {
   FPMMFundingRemoved,
   FPMMSell,
 } from '../types/templates/FixedProductMarketMaker/FixedProductMarketMaker';
-import { ADD_FUNDING, bigZero, REMOVE_FUNDING, bigOne, bigZero } from './constants';
+import { ADD_FUNDING, bigZero, REMOVE_FUNDING, bigOne } from './constants';
 import { max, timesBD } from './maths';
 import { updateGlobalLiquidity } from './global-utils';
 import { getCollateralScale } from './collateralTokens';

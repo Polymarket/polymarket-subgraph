@@ -105,9 +105,9 @@ templates:
       kind: ethereum/events
       apiVersion: 0.0.3
       language: wasm/assemblyscript
-      entities: []
+      entities: [ ]
       abis:
         - name: ERC20Detailed
           file: ./abis/ERC20Detailed.json
-    
+
       file: ./src/empty.ts

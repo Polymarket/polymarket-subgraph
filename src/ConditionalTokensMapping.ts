@@ -22,7 +22,6 @@ import {
   updateMarketPositionsFromSplit,
 } from './utils/market-positions-utils';
 import { partitionCheck } from './utils/conditional-utils';
-import { bigZero } from './utils/constants';
 import {
   getCollateralDetails,
   getCollateralScale,
@@ -38,11 +37,7 @@ import {
   PAYOUT_REDEMPTION,
   SPLIT_SHARES,
 } from './utils/constants';
-import {
-  getCollateralDetails,
-  getCollateralScale,
-} from './utils/collateralTokens';
-import { markAccountAsSeen, requireAccount } from './utils/account-utils';
+
 import {
   updateFPMMOpenInterestFromRedemption,
   updateFPMMOpenInterestFromSplitOrMerge,
