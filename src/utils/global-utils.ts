@@ -4,9 +4,13 @@ import {
   ADD_FUNDING,
   bigZero,
   REMOVE_FUNDING,
+  MERGE_SHARES,
+  PAYOUT_REDEMPTION,
+  SPLIT_SHARES,
   TRADE_TYPE_BUY,
   TRADE_TYPE_SELL,
 } from './constants';
+
 import { increment } from './maths';
 
 export function requireGlobal(): Global {
@@ -34,6 +38,8 @@ export function requireGlobal(): Global {
     global.scaledCollateralSellVolume = bigZero.toBigDecimal();
     global.liquidity = bigZero;
     global.scaledLiquidity = bigZero.toBigDecimal();
+    global.openInterest = bigZero;
+    global.scaledOpenInterest = bigZero.toBigDecimal();
   }
   return global as Global;
 }
@@ -89,6 +95,30 @@ export function updateGlobalLiquidity(
   } else if (transactionType == REMOVE_FUNDING) {
     global.liquidity = global.liquidity.minus(amount);
     global.scaledLiquidity = global.liquidity.divDecimal(collateralScaleDec);
+  }
+  global.save();
+}
+
+export function updateGlobalOpenInterest(
+  amount: BigInt,
+  transactionType: string,
+  collateralScaleDec: BigDecimal,
+): void {
+  let global = requireGlobal();
+
+  if (transactionType == SPLIT_SHARES) {
+    global.openInterest = global.openInterest.plus(amount);
+    global.scaledOpenInterest = global.openInterest.divDecimal(
+      collateralScaleDec,
+    );
+  } else if (
+    transactionType == MERGE_SHARES ||
+    transactionType == PAYOUT_REDEMPTION
+  ) {
+    global.openInterest = global.openInterest.minus(amount);
+    global.scaledOpenInterest = global.openInterest.divDecimal(
+      collateralScaleDec,
+    );
   }
   global.save();
 }

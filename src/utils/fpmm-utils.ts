@@ -1,8 +1,19 @@
 /* eslint-disable no-param-reassign */
 import { BigInt, BigDecimal } from '@graphprotocol/graph-ts';
-import { FixedProductMarketMaker, FpmmPoolMembership } from '../types/schema';
+import {
+  FixedProductMarketMaker,
+  FpmmPoolMembership,
+  MarketProfitPerAccount,
+} from '../types/schema';
 import { timestampToDay } from './time';
-import { bigOne, bigZero, TRADE_TYPE_BUY, TRADE_TYPE_SELL } from './constants';
+import {
+  bigOne,
+  bigZero,
+  MERGE_SHARES,
+  SPLIT_SHARES,
+  TRADE_TYPE_BUY,
+  TRADE_TYPE_SELL,
+} from './constants';
 
 export function loadPoolMembership(
   fpmmAddress: string,
@@ -18,7 +29,21 @@ export function loadPoolMembership(
   }
   return poolMembership as FpmmPoolMembership;
 }
-
+export function loadMarketProfitPerAccount(
+  fpmmAddress: string,
+  userAddress: string,
+): MarketProfitPerAccount {
+  let id = fpmmAddress.concat(userAddress);
+  let marketProfitPerAccount = MarketProfitPerAccount.load(id);
+  if (marketProfitPerAccount == null) {
+    marketProfitPerAccount = new MarketProfitPerAccount(id);
+    marketProfitPerAccount.account = userAddress;
+    marketProfitPerAccount.market = fpmmAddress;
+    marketProfitPerAccount.profit = bigZero;
+    marketProfitPerAccount.scaledProfit = bigZero.toBigDecimal();
+  }
+  return marketProfitPerAccount as MarketProfitPerAccount;
+}
 /**
  * Computes the price of each outcome token given their holdings. Returns an array of numbers in the range [0, 1]
  * Credits to: https://github.com/protofire/gnosis-conditional-exchange
@@ -100,4 +125,28 @@ export function updateFeeFields(
 ): void {
   fpmm.feeVolume = fpmm.feeVolume.plus(feeAmount);
   fpmm.scaledFeeVolume = fpmm.feeVolume.divDecimal(collateralScaleDec);
+}
+
+export function updateFPMMOpenInterestFromSplitOrMerge(
+  fpmm: FixedProductMarketMaker,
+  amount: BigInt,
+  operation: string,
+  collateralScaleDec: BigDecimal,
+): void {
+  if (operation == SPLIT_SHARES) {
+    fpmm.openInterest = fpmm.openInterest.plus(amount);
+    fpmm.scaledOpenInterest = fpmm.openInterest.divDecimal(collateralScaleDec);
+  } else if (operation == MERGE_SHARES) {
+    fpmm.openInterest = fpmm.openInterest.minus(amount);
+    fpmm.scaledOpenInterest = fpmm.openInterest.divDecimal(collateralScaleDec);
+  }
+}
+
+export function updateFPMMOpenInterestFromRedemption(
+  fpmm: FixedProductMarketMaker,
+  amount: BigInt,
+  collateralScaleDec: BigDecimal,
+): void {
+  fpmm.openInterest = fpmm.openInterest.minus(amount);
+  fpmm.scaledOpenInterest = fpmm.openInterest.divDecimal(collateralScaleDec);
 }

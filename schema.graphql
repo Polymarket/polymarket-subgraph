@@ -38,35 +38,45 @@ type Global @entity {
    liquidity: BigInt!
   "Liquidity across all markets in USDC scaled by 10^6"
   scaledLiquidity: BigDecimal!
+   "Global total locked value in the conditional tokens contract in USDC base units"
+    openInterest: BigInt!
+    "Global total locked value in the conditional tokens contract in  USDC scaled by 10^6"
+    scaledOpenInterest: BigDecimal!
 }
 
 type Account @entity {
-  "User address"
-  id: ID!
-  "Timestamp at which account first interacted with Polymarket"
-  creationTimestamp: BigInt!
-  "Timestamp at which account most recently interacted with Polymarket"
-  lastSeenTimestamp: BigInt!
-  "Total volume of this user's trades in USDC base units"
-  collateralVolume: BigInt!
-  "Total number of trades performed by this user"
-  numTrades: BigInt!
-  "Total volume of this user's trades in USDC scaled by 10^6"
-  scaledCollateralVolume: BigDecimal!
-  "Timestamp of last Buy or Sell transaction"
-  lastTradedTimestamp: BigInt!
-  "Markets in which user has provided liquidity"
-  fpmmPoolMemberships: [FpmmPoolMembership!] @derivedFrom(field: "funder")
-  "Markets in which the user has taken a position on the outcome"
-  marketPositions: [MarketPosition!] @derivedFrom(field: "user")
-  "Purchases and sales of shares by the user"
-  transactions: [Transaction!] @derivedFrom(field: "user")
-  "Split of collateral / outcome tokens into multiple positions"
-  splits: [Split!] @derivedFrom(field: "stakeholder")
-  "Merge of more specific outcome tokens into collateral / more general outcome tokens"
-  merges: [Merge!] @derivedFrom(field: "stakeholder")
-  "Redemption of underlying collateral after a market has resolved"
-  redemptions: [Redemption!] @derivedFrom(field: "redeemer")
+    "User address"
+    id: ID!
+    "Timestamp at which account first interacted with Polymarket"
+    creationTimestamp: BigInt!
+    "Timestamp at which account most recently interacted with Polymarket"
+    lastSeenTimestamp: BigInt!
+    "Total volume of this user's trades in USDC base units"
+    collateralVolume: BigInt!
+    "Total number of trades performed by this user"
+    numTrades: BigInt!
+    "Realized profit in USDC from merges, sells, and for positions in resolved markets"
+    profit: BigInt!
+    "Realized profit in USDC scaled by 10^6"
+    scaledProfit: BigDecimal!
+    "Profits in USDC base units by market"
+    fpmmProfits: [MarketProfitPerAccount!] @derivedFrom(field: "account")
+    "Total volume of this user's trades in USDC scaled by 10^6"
+    scaledCollateralVolume: BigDecimal!
+    "Timestamp of last Buy or Sell transaction"
+    lastTradedTimestamp: BigInt!
+    "Markets in which user has provided liquidity"
+    fpmmPoolMemberships: [FpmmPoolMembership!] @derivedFrom(field: "funder")
+    "Markets in which the user has taken a position on the outcome"
+    marketPositions: [MarketPosition!] @derivedFrom(field: "user")
+    "Purchases and sales of shares by the user"
+    transactions: [Transaction!] @derivedFrom(field: "user")
+    "Split of collateral / outcome tokens into multiple positions"
+    splits: [Split!] @derivedFrom(field: "stakeholder")
+    "Merge of more specific outcome tokens into collateral / more general outcome tokens"
+    merges: [Merge!] @derivedFrom(field: "stakeholder")
+    "Redemption of underlying collateral after a market has resolved"
+    redemptions: [Redemption!] @derivedFrom(field: "redeemer")
 }
 
 type Collateral @entity {
@@ -216,8 +226,19 @@ type FixedProductMarketMaker @entity {
   "Number of shares for tokens in the market maker's reserves"
   totalSupply: BigInt!
 
-  "Addresses which are supplying liquidity to the market maker"
-  poolMembers: [FpmmPoolMembership!] @derivedFrom(field: "pool")
+    "Addresses which are supplying liquidity to the market maker"
+    poolMembers: [FpmmPoolMembership!] @derivedFrom(field: "pool")
+    "Profits from this market per account"
+    accountProfits: [MarketProfitPerAccount!] @derivedFrom(field: "market")
+    "Market positions on this market maker"
+    marketPositions: [MarketPosition!] @derivedFrom(field: "market")
+
+    "Total locked value in this market in USDC base units"
+    openInterest: BigInt!
+
+    "Total locked value in this market in USDC scaled by 10^6"
+    scaledOpenInterest: BigDecimal!
+
 }
 
 type MarketPosition @entity {
@@ -315,3 +336,17 @@ type FpmmPoolMembership @entity {
   "Amount of liquidity tokens owned by funder"
   amount: BigInt!
 }
+type MarketProfitPerAccount @entity {
+    "As market address + account address"
+    id: ID!
+    "Market to which funder is providing funding"
+    market: FixedProductMarketMaker!
+    "Account which is trading/funding"
+    account: Account!
+    "Profit in USDC base units per market per account"
+    profit: BigInt!
+    "Profit in USDC scaled by 10^6"
+    scaledProfit: BigDecimal!
+}
+
+

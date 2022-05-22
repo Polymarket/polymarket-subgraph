@@ -76,6 +76,7 @@ templates:
         - FpmmFundingAddition
         - FpmmFundingRemoval
         - FpmmPoolMembership
+        - MarketProfitPerAccount
         - Transaction
         - MarketPosition
       abis:
@@ -108,4 +109,5 @@ templates:
       abis:
         - name: ERC20Detailed
           file: ./abis/ERC20Detailed.json
+    
       file: ./src/empty.ts

@@ -13,8 +13,9 @@ import {
   Merge,
   Split,
   FixedProductMarketMaker,
+  MarketPosition,
 } from './types/schema';
-import { requireGlobal } from './utils/global-utils';
+import { requireGlobal, updateGlobalOpenInterest } from './utils/global-utils';
 import {
   updateMarketPositionsFromMerge,
   updateMarketPositionsFromRedemption,
@@ -22,14 +23,50 @@ import {
 } from './utils/market-positions-utils';
 import { partitionCheck } from './utils/conditional-utils';
 import { bigZero } from './utils/constants';
-import { getCollateralDetails } from './utils/collateralTokens';
+import {
+  getCollateralDetails,
+  getCollateralScale,
+} from './utils/collateralTokens';
+import {
+  markAccountAsSeen,
+  requireAccount,
+  updateUserProfit,
+} from './utils/account-utils';
+import {
+  bigZero,
+  MERGE_SHARES,
+  PAYOUT_REDEMPTION,
+  SPLIT_SHARES,
+} from './utils/constants';
+import {
+  getCollateralDetails,
+  getCollateralScale,
+} from './utils/collateralTokens';
 import { markAccountAsSeen, requireAccount } from './utils/account-utils';
+import {
+  updateFPMMOpenInterestFromRedemption,
+  updateFPMMOpenInterestFromSplitOrMerge,
+} from './utils/fpmm-utils';
 
 export function handlePositionSplit(event: PositionSplit): void {
-  if (
-    FixedProductMarketMaker.load(event.params.stakeholder.toHexString()) != null
-  ) {
-    // We don't track splits within the market makers
+  let fpmm = FixedProductMarketMaker.load(
+    event.params.stakeholder.toHexString(),
+  );
+  if (fpmm != null) {
+    let collateralScale = getCollateralScale(fpmm.collateralToken);
+    let collateralScaleDec = collateralScale.toBigDecimal();
+    updateFPMMOpenInterestFromSplitOrMerge(
+      fpmm as FixedProductMarketMaker,
+      event.params.amount,
+      SPLIT_SHARES,
+      collateralScaleDec,
+    );
+    fpmm.save();
+    updateGlobalOpenInterest(
+      event.params.amount,
+      SPLIT_SHARES,
+      collateralScaleDec,
+    );
     return;
   }
 
@@ -65,15 +102,46 @@ export function handlePositionSplit(event: PositionSplit): void {
       // This is not ideal as in theory we could have multiple market makers for the same condition
       // Given that this subgraph only tracks market makers deployed by Polymarket, this is acceptable for now
       updateMarketPositionsFromSplit(marketMakers[i], event);
+      let marketMaker = FixedProductMarketMaker.load(marketMakers[i]);
+      if (marketMaker) {
+        let collateralScale = getCollateralScale(marketMaker.collateralToken);
+        let collateralScaleDec = collateralScale.toBigDecimal();
+        updateFPMMOpenInterestFromSplitOrMerge(
+          marketMaker as FixedProductMarketMaker,
+          event.params.amount,
+          SPLIT_SHARES,
+          collateralScaleDec,
+        );
+        marketMaker.save();
+        updateGlobalOpenInterest(
+          event.params.amount,
+          SPLIT_SHARES,
+          collateralScaleDec,
+        );
+      }
     }
   }
 }
 
 export function handlePositionsMerge(event: PositionsMerge): void {
-  if (
-    FixedProductMarketMaker.load(event.params.stakeholder.toHexString()) != null
-  ) {
-    // We don't track merges within the market makers
+  let fpmm = FixedProductMarketMaker.load(
+    event.params.stakeholder.toHexString(),
+  );
+  if (fpmm != null) {
+    let collateralScale = getCollateralScale(fpmm.collateralToken);
+    let collateralScaleDec = collateralScale.toBigDecimal();
+    updateFPMMOpenInterestFromSplitOrMerge(
+      fpmm as FixedProductMarketMaker,
+      event.params.amount,
+      MERGE_SHARES,
+      collateralScaleDec,
+    );
+    fpmm.save();
+    updateGlobalOpenInterest(
+      event.params.amount,
+      MERGE_SHARES,
+      collateralScaleDec,
+    );
     return;
   }
   requireAccount(event.params.stakeholder.toHexString(), event.block.timestamp);
@@ -107,6 +175,23 @@ export function handlePositionsMerge(event: PositionsMerge): void {
     let marketMakers = condition.fixedProductMarketMakers;
     for (let i = 0; i < marketMakers.length; i += 1) {
       updateMarketPositionsFromMerge(marketMakers[i], event);
+      let marketMaker = FixedProductMarketMaker.load(marketMakers[i]);
+      if (marketMaker) {
+        let collateralScale = getCollateralScale(marketMaker.collateralToken);
+        let collateralScaleDec = collateralScale.toBigDecimal();
+        updateFPMMOpenInterestFromSplitOrMerge(
+          marketMaker as FixedProductMarketMaker,
+          event.params.amount,
+          MERGE_SHARES,
+          collateralScaleDec,
+        );
+        marketMaker.save();
+        updateGlobalOpenInterest(
+          event.params.amount,
+          MERGE_SHARES,
+          collateralScaleDec,
+        );
+      }
     }
   }
 }
@@ -138,6 +223,23 @@ export function handlePayoutRedemption(event: PayoutRedemption): void {
     // This is not ideal as in theory we could have multiple market makers for the same condition
     // Given that this subgraph only tracks market makers deployed by Polymarket, this is acceptable for now
     updateMarketPositionsFromRedemption(marketMakers[i], event);
+    let fpmm = FixedProductMarketMaker.load(marketMakers[i]);
+    if (fpmm) {
+      let collateralScale = getCollateralScale(fpmm.collateralToken);
+      let collateralScaleDec = collateralScale.toBigDecimal();
+      updateFPMMOpenInterestFromRedemption(
+        fpmm as FixedProductMarketMaker,
+        event.params.payout,
+        collateralScaleDec,
+      );
+      fpmm.save();
+
+      updateGlobalOpenInterest(
+        event.params.payout,
+        PAYOUT_REDEMPTION,
+        collateralScaleDec,
+      );
+    }
   }
 }
 
@@ -192,6 +294,49 @@ export function handleConditionResolution(event: ConditionResolution): void {
   condition.payoutNumerators = payoutNumerators;
   condition.payoutDenominator = payoutDenominator;
   condition.resolutionHash = event.transaction.hash;
-  
+  let marketMakers = condition.fixedProductMarketMakers;
+  for (let i = 0; i < marketMakers.length; i += 1) {
+    // This is not ideal as in theory we could have multiple market makers for the same condition
+    // Given that this subgraph only tracks market makers deployed by Polymarket, this is acceptable for now
+    let fpmm = FixedProductMarketMaker.load(
+      marketMakers[i],
+    ) as FixedProductMarketMaker;
+    let collateralScale = getCollateralScale(fpmm.collateralToken);
+    let collateralScaleDec = collateralScale.toBigDecimal();
+
+    if (fpmm) {
+      let marketPositions = fpmm.marketPositions;
+      if (marketPositions as Array<string>) {
+        for (let j = 0; j < marketPositions!.length; j += 1) {
+          let pos = marketPositions![j];
+          let position = MarketPosition.load(pos);
+          if (position) {
+            let numerator = payoutNumerators[position.outcomeIndex.toI32()];
+            let redemptionValue = position.netQuantity
+              .times(numerator)
+              .div(payoutDenominator);
+            let averageRedemptionPrice = redemptionValue.div(
+              position.netQuantity,
+            );
+            let averagePricePaid = position.netValue.div(position.netQuantity);
+
+            let pnl = averageRedemptionPrice
+              .minus(averagePricePaid)
+              .times(position.netQuantity);
+            // don't allow losses to go unreported to market leaderboard
+            // this also reports profits even if unredeemed
+            updateUserProfit(
+              position.user,
+              pnl,
+              collateralScaleDec,
+              event.block.timestamp,
+              position.market,
+            );
+          }
+        }
+      }
+    }
+  }
+
   condition.save();
 }
