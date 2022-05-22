@@ -16,10 +16,11 @@ import {
   FPMMFundingRemoved,
   FPMMSell,
 } from '../types/templates/FixedProductMarketMaker/FixedProductMarketMaker';
-import { bigOne, bigZero } from './constants';
+import { ADD_FUNDING, bigZero, REMOVE_FUNDING, bigOne, bigZero } from './constants';
 import { max, timesBD } from './maths';
-import { updateUserProfit } from './account-utils';
+import { updateGlobalLiquidity } from './global-utils';
 import { getCollateralScale } from './collateralTokens';
+import { updateUserProfit } from './account-utils';
 
 /*
  * Returns the user's position for the given market and outcome
@@ -300,9 +301,14 @@ export function updateMarketPositionFromLiquidityAdded(
   // therefore this is the amount of collateral that the user has split.
   let addedFunds = max(amountsAdded);
 
-  let outcomeTokenPrices = (FixedProductMarketMaker.load(
+  let fpmm = FixedProductMarketMaker.load(
     fpmmAddress,
-  ) as FixedProductMarketMaker).outcomeTokenPrices;
+  ) as FixedProductMarketMaker;
+
+  let outcomeTokenPrices = fpmm.outcomeTokenPrices;
+  let collateralScale = getCollateralScale(fpmm.collateralToken);
+  let collateralScaleDec = collateralScale.toBigDecimal();
+  updateGlobalLiquidity(addedFunds, collateralScaleDec, ADD_FUNDING);
 
   // Funder is refunded with any excess outcome tokens which can't go into the market maker.
   // This means we must update the funder's market position for each outcome.
@@ -341,11 +347,13 @@ export function updateMarketPositionFromLiquidityRemoved(
   let fpmmAddress = event.address.toHexString();
   let funder = event.params.funder.toHexString();
   let amountsRemoved = event.params.amountsRemoved;
-
-  let outcomeTokenPrices = (FixedProductMarketMaker.load(
+  let fpmm = FixedProductMarketMaker.load(
     fpmmAddress,
-  ) as FixedProductMarketMaker).outcomeTokenPrices;
+  ) as FixedProductMarketMaker;
 
+  let outcomeTokenPrices = fpmm.outcomeTokenPrices;
+  let collateralScale = getCollateralScale(fpmm.collateralToken);
+  let collateralScaleDec = collateralScale.toBigDecimal();
   // The funder is sent all of the outcome tokens for which they were providing liquidity
   // This means we must update the funder's market position for each outcome.
   for (
@@ -366,5 +374,6 @@ export function updateMarketPositionFromLiquidityRemoved(
     position.valueBought = position.valueBought.plus(removedValue);
 
     updateNetPositionAndSave(position);
+    updateGlobalLiquidity(removedValue, collateralScaleDec, REMOVE_FUNDING);
   }
 }
