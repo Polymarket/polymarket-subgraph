@@ -6,7 +6,14 @@ import {
   MarketProfitPerAccount,
 } from '../types/schema';
 import { timestampToDay } from './time';
-import { bigOne, bigZero, TRADE_TYPE_BUY, TRADE_TYPE_SELL } from './constants';
+import {
+  bigOne,
+  bigZero,
+  MERGE_SHARES,
+  SPLIT_SHARES,
+  TRADE_TYPE_BUY,
+  TRADE_TYPE_SELL,
+} from './constants';
 
 export function loadPoolMembership(
   fpmmAddress: string,
@@ -118,4 +125,28 @@ export function updateFeeFields(
 ): void {
   fpmm.feeVolume = fpmm.feeVolume.plus(feeAmount);
   fpmm.scaledFeeVolume = fpmm.feeVolume.divDecimal(collateralScaleDec);
+}
+
+export function updateFPMMOpenInterestFromSplitOrMerge(
+  fpmm: FixedProductMarketMaker,
+  amount: BigInt,
+  operation: string,
+  collateralScaleDec: BigDecimal,
+): void {
+  if (operation == SPLIT_SHARES) {
+    fpmm.openInterest = fpmm.openInterest.plus(amount);
+    fpmm.scaledOpenInterest = fpmm.openInterest.divDecimal(collateralScaleDec);
+  } else if (operation == MERGE_SHARES) {
+    fpmm.openInterest = fpmm.openInterest.minus(amount);
+    fpmm.scaledOpenInterest = fpmm.openInterest.divDecimal(collateralScaleDec);
+  }
+}
+
+export function updateFPMMOpenInterestFromRedemption(
+  fpmm: FixedProductMarketMaker,
+  amount: BigInt,
+  collateralScaleDec: BigDecimal,
+): void {
+  fpmm.openInterest = fpmm.openInterest.minus(amount);
+  fpmm.scaledOpenInterest = fpmm.openInterest.divDecimal(collateralScaleDec);
 }

@@ -130,6 +130,7 @@ export function handleFundingAdded(event: FPMMFundingAdded): void {
   let amountsAdded = event.params.amountsAdded;
   let newAmounts = new Array<BigInt>(oldAmounts.length);
   let amountsProduct = bigOne;
+
   for (let i = 0; i < newAmounts.length; i += 1) {
     newAmounts[i] = oldAmounts[i].plus(amountsAdded[i]);
     amountsProduct = amountsProduct.times(newAmounts[i]);
@@ -137,6 +138,7 @@ export function handleFundingAdded(event: FPMMFundingAdded): void {
   fpmm.outcomeTokenAmounts = newAmounts;
   let liquidityParameter = nthRoot(amountsProduct, newAmounts.length);
   let collateralScale = getCollateralScale(fpmm.collateralToken);
+
   updateLiquidityFields(
     fpmm as FixedProductMarketMaker,
     liquidityParameter,
@@ -151,6 +153,7 @@ export function handleFundingAdded(event: FPMMFundingAdded): void {
   }
 
   fpmm.liquidityAddQuantity = increment(fpmm.liquidityAddQuantity);
+
   fpmm.save();
   markAccountAsSeen(event.params.funder.toHexString(), event.block.timestamp);
   recordFundingAddition(event);
@@ -254,6 +257,7 @@ export function handleBuy(event: FPMMBuy): void {
 
   fpmm.tradesQuantity = increment(fpmm.tradesQuantity);
   fpmm.buysQuantity = increment(fpmm.buysQuantity);
+
   fpmm.save();
 
   updateUserVolume(

@@ -34,6 +34,10 @@ type Global @entity {
     collateralSellVolume: BigInt!
     "Global volume of share sales in USDC scaled by 10^6"
     scaledCollateralSellVolume: BigDecimal!
+    "Global total locked value in the conditional tokens contract in USDC base units"
+    openInterest: BigInt!
+    "Global total locked value in the conditional tokens contract in  USDC scaled by 10^6"
+    scaledOpenInterest: BigDecimal!
 }
 
 type Account @entity {
@@ -224,6 +228,13 @@ type FixedProductMarketMaker @entity {
     accountProfits: [MarketProfitPerAccount!] @derivedFrom(field: "market")
     "Market positions on this market maker"
     marketPositions: [MarketPosition!] @derivedFrom(field: "market")
+
+    "Total locked value in this market in USDC base units"
+    openInterest: BigInt!
+
+    "Total locked value in this market in USDC scaled by 10^6"
+    scaledOpenInterest: BigDecimal!
+
 }
 
 type MarketPosition @entity {
