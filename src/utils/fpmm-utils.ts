@@ -1,6 +1,10 @@
 /* eslint-disable no-param-reassign */
 import { BigInt, BigDecimal } from '@graphprotocol/graph-ts';
-import { FixedProductMarketMaker, FpmmPoolMembership } from '../types/schema';
+import {
+  FixedProductMarketMaker,
+  FpmmPoolMembership,
+  MarketProfitPerAccount,
+} from '../types/schema';
 import { timestampToDay } from './time';
 import {
   bigOne,
@@ -25,7 +29,21 @@ export function loadPoolMembership(
   }
   return poolMembership as FpmmPoolMembership;
 }
-
+export function loadMarketProfitPerAccount(
+  fpmmAddress: string,
+  userAddress: string,
+): MarketProfitPerAccount {
+  let id = fpmmAddress.concat(userAddress);
+  let marketProfitPerAccount = MarketProfitPerAccount.load(id);
+  if (marketProfitPerAccount == null) {
+    marketProfitPerAccount = new MarketProfitPerAccount(id);
+    marketProfitPerAccount.account = userAddress;
+    marketProfitPerAccount.market = fpmmAddress;
+    marketProfitPerAccount.profit = bigZero;
+    marketProfitPerAccount.scaledProfit = bigZero.toBigDecimal();
+  }
+  return marketProfitPerAccount as MarketProfitPerAccount;
+}
 /**
  * Computes the price of each outcome token given their holdings. Returns an array of numbers in the range [0, 1]
  * Credits to: https://github.com/protofire/gnosis-conditional-exchange

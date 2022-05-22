@@ -13,6 +13,7 @@ import {
   Merge,
   Split,
   FixedProductMarketMaker,
+  MarketPosition,
 } from './types/schema';
 import { requireGlobal, updateGlobalOpenInterest } from './utils/global-utils';
 import {
@@ -21,6 +22,16 @@ import {
   updateMarketPositionsFromSplit,
 } from './utils/market-positions-utils';
 import { partitionCheck } from './utils/conditional-utils';
+import { bigZero } from './utils/constants';
+import {
+  getCollateralDetails,
+  getCollateralScale,
+} from './utils/collateralTokens';
+import {
+  markAccountAsSeen,
+  requireAccount,
+  updateUserProfit,
+} from './utils/account-utils';
 import {
   bigZero,
   MERGE_SHARES,
@@ -58,6 +69,7 @@ export function handlePositionSplit(event: PositionSplit): void {
     );
     return;
   }
+
   getCollateralDetails(event.params.collateralToken);
   requireAccount(event.params.stakeholder.toHexString(), event.block.timestamp);
   markAccountAsSeen(
@@ -110,6 +122,7 @@ export function handlePositionSplit(event: PositionSplit): void {
     }
   }
 }
+
 export function handlePositionsMerge(event: PositionsMerge): void {
   let fpmm = FixedProductMarketMaker.load(
     event.params.stakeholder.toHexString(),
@@ -281,6 +294,49 @@ export function handleConditionResolution(event: ConditionResolution): void {
   condition.payoutNumerators = payoutNumerators;
   condition.payoutDenominator = payoutDenominator;
   condition.resolutionHash = event.transaction.hash;
+  let marketMakers = condition.fixedProductMarketMakers;
+  for (let i = 0; i < marketMakers.length; i += 1) {
+    // This is not ideal as in theory we could have multiple market makers for the same condition
+    // Given that this subgraph only tracks market makers deployed by Polymarket, this is acceptable for now
+    let fpmm = FixedProductMarketMaker.load(
+      marketMakers[i],
+    ) as FixedProductMarketMaker;
+    let collateralScale = getCollateralScale(fpmm.collateralToken);
+    let collateralScaleDec = collateralScale.toBigDecimal();
+
+    if (fpmm) {
+      let marketPositions = fpmm.marketPositions;
+      if (marketPositions as Array<string>) {
+        for (let j = 0; j < marketPositions!.length; j += 1) {
+          let pos = marketPositions![j];
+          let position = MarketPosition.load(pos);
+          if (position) {
+            let numerator = payoutNumerators[position.outcomeIndex.toI32()];
+            let redemptionValue = position.netQuantity
+              .times(numerator)
+              .div(payoutDenominator);
+            let averageRedemptionPrice = redemptionValue.div(
+              position.netQuantity,
+            );
+            let averagePricePaid = position.netValue.div(position.netQuantity);
+
+            let pnl = averageRedemptionPrice
+              .minus(averagePricePaid)
+              .times(position.netQuantity);
+            // don't allow losses to go unreported to market leaderboard
+            // this also reports profits even if unredeemed
+            updateUserProfit(
+              position.user,
+              pnl,
+              collateralScaleDec,
+              event.block.timestamp,
+              position.market,
+            );
+          }
+        }
+      }
+    }
+  }
 
   condition.save();
 }
