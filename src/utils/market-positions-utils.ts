@@ -218,10 +218,14 @@ export function updateMarketPositionsFromMerge(
     );
     position.valueSold = position.valueSold.plus(mergeValue);
 
-    // profit calculation
-    let averagePricePaid = position.netValue.div(position.netQuantity);
-    // add to running total of prices paid
-    sumOfAvgPricesPaid = sumOfAvgPricesPaid.plus(averagePricePaid);
+    // profit calculation only if netQuantity.gt(bigZero)
+    // this avoids a divide by zero error from this transaction
+    // https://polygonscan.com/tx/0xc6ab0ce453b64cfb2224e33df8b14a9f662532edf893a366f7c76093c8fb057b
+    if (position.netQuantity.gt(bigZero)) {
+      let averagePricePaid = position.netValue.div(position.netQuantity);
+      // add to running total of prices paid
+      sumOfAvgPricesPaid = sumOfAvgPricesPaid.plus(averagePricePaid);
+    }
 
     updateNetPositionAndSave(position);
   }
