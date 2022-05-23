@@ -105,23 +105,27 @@ export function updateMarketPositionFromTrade(event: ethereum.Event): void {
       transaction.outcomeTokensAmount,
     );
     position.valueSold = position.valueSold.plus(transaction.tradeAmount);
+    // ignore zero share sells at block 4518199
+    //    to avoid impact of this transaction which blocks subgraph syncing (0 share sell)
+    //    https://polygonscan.com/tx/0x86995a4d8e240dfa604fbc58e501560b90d1aeeb6e1be67d87e091bfde5cf116
+    if ((event as FPMMSell).params.outcomeTokensSold.gt(bigZero)) {
+      let averageSellPrice = (event as FPMMSell).params.returnAmount.div(
+        (event as FPMMSell).params.outcomeTokensSold,
+      );
+      let averagePricePaid = position.netValue.div(position.netQuantity);
 
-    let averageSellPrice = (event as FPMMSell).params.returnAmount.div(
-      (event as FPMMSell).params.outcomeTokensSold,
-    );
-    let averagePricePaid = position.netValue.div(position.netQuantity);
-
-    let pnl = averageSellPrice
-      .minus(averagePricePaid)
-      .times(position.quantitySold)
-      .minus((event as FPMMSell).params.feeAmount);
-    updateUserProfit(
-      transaction.user,
-      pnl,
-      collateralScaleDec,
-      transaction.timestamp,
-      transaction.market,
-    );
+      let pnl = averageSellPrice
+        .minus(averagePricePaid)
+        .times(position.quantitySold)
+        .minus((event as FPMMSell).params.feeAmount);
+      updateUserProfit(
+        transaction.user,
+        pnl,
+        collateralScaleDec,
+        transaction.timestamp,
+        transaction.market,
+      );
+    }
 
     // feeAmount = returnAmount * (fee/(1-fee));
     let feeAmount = transaction.tradeAmount

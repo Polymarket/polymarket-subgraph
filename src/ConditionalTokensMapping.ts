@@ -306,27 +306,32 @@ export function handleConditionResolution(event: ConditionResolution): void {
           let pos = marketPositions![j];
           let position = MarketPosition.load(pos);
           if (position) {
-            let numerator = payoutNumerators[position.outcomeIndex.toI32()];
-            let redemptionValue = position.netQuantity
-              .times(numerator)
-              .div(payoutDenominator);
-            let averageRedemptionPrice = redemptionValue.div(
-              position.netQuantity,
-            );
-            let averagePricePaid = position.netValue.div(position.netQuantity);
+            // avoid divide by zero for profit calculations
+            if (position.netQuantity.gt(bigZero)) {
+              let numerator = payoutNumerators[position.outcomeIndex.toI32()];
+              let redemptionValue = position.netQuantity
+                .times(numerator)
+                .div(payoutDenominator);
+              let averageRedemptionPrice = redemptionValue.div(
+                position.netQuantity,
+              );
+              let averagePricePaid = position.netValue.div(
+                position.netQuantity,
+              );
 
-            let pnl = averageRedemptionPrice
-              .minus(averagePricePaid)
-              .times(position.netQuantity);
-            // don't allow losses to go unreported to market leaderboard
-            // this also reports profits even if unredeemed
-            updateUserProfit(
-              position.user,
-              pnl,
-              collateralScaleDec,
-              event.block.timestamp,
-              position.market,
-            );
+              let pnl = averageRedemptionPrice
+                .minus(averagePricePaid)
+                .times(position.netQuantity);
+              // don't allow losses to go unreported to market leaderboard
+              // this also reports profits even if unredeemed
+              updateUserProfit(
+                position.user,
+                pnl,
+                collateralScaleDec,
+                event.block.timestamp,
+                position.market,
+              );
+            }
           }
         }
       }
