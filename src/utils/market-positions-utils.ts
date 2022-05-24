@@ -108,7 +108,12 @@ export function updateMarketPositionFromTrade(event: ethereum.Event): void {
     // ignore zero share sells at block 4518199
     //    to avoid impact of this transaction which blocks subgraph syncing (0 share sell)
     //    https://polygonscan.com/tx/0x86995a4d8e240dfa604fbc58e501560b90d1aeeb6e1be67d87e091bfde5cf116
-    if ((event as FPMMSell).params.outcomeTokensSold.gt(bigZero)) {
+    // also ignore zero net quantity causing error at block 9311227
+    //    https://polygonscan.com/tx/0x0595ed8cf4aad8946b6fc27d31a81b8047462624318619e0db7a09ec4cdbdab8
+    if (
+      (event as FPMMSell).params.outcomeTokensSold.gt(bigZero) &&
+      position.netQuantity.gt(bigZero)
+    ) {
       let averageSellPrice = (event as FPMMSell).params.returnAmount.div(
         (event as FPMMSell).params.outcomeTokensSold,
       );
