@@ -17,7 +17,7 @@
     "deploy:matic-backup": "SUBGRAPH=polymarket/polymarket-matic-backup NODE_URL=http://ec2-54-185-99-202.us-west-2.compute.amazonaws.com:8020/ yarn deploy:self",
     "deploy:matic-staging": "SUBGRAPH=TokenUnion/polymarket-matic-staging yarn deploy",
     "deploy:matic-trading": "SUBGRAPH=Polymarket/polymarket-matic-trading yarn deploy",
-    "deploy:matic-backup-two": "SUBGRAPH=Polymarket/matic-markets-6 yarn deploy",
+    "deploy:matic-backup-two": "SUBGRAPH=Polymarket/matic-markets-7 yarn deploy",
     "deploy:mumbai": "SUBGRAPH=TokenUnion/polymarket-mumbai yarn deploy",
     "codegen": "graph codegen --debug --output-dir src/types/",
     "prepare": "ts-node ./templatify.ts && yarn codegen",
