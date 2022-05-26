@@ -362,6 +362,8 @@ type FilledOrdersEvent @entity {
   makerAmountFilled: BigInt!
   "Taker amount filled"
   takerAmountFilled: BigInt!
+  "Fee paid"
+  fee: BigInt!
 }
 
 # LOP

@@ -82,7 +82,7 @@ dataSources:
         - name: ERC20Detailed
           file: ./abis/ERC20Detailed.json
       eventHandlers:
-        - event: FilledOrders(address,address,address,uint256,uint256,uint256,uint256)
+        - event: FilledOrders(address,address,address,uint256,uint256,uint256,uint256,uint256)
           handler: handleFilledOrders
       file: ./src/OrderExecutorV2Mapping.ts
   - kind: ethereum/contract

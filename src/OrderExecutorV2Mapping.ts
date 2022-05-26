@@ -32,6 +32,7 @@ function recordEvent(event: FilledOrders): string {
   filledOrderEvent.takerAssetID =  event.params.makerAssetID
   filledOrderEvent.makerAmountFilled = event.params.takerAmountFilled
   filledOrderEvent.takerAmountFilled = event.params.makerAmountFilled
+  filledOrderEvent.fee = event.params.fee
 
   filledOrderEvent.save()
 
