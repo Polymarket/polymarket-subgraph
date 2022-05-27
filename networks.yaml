@@ -28,13 +28,13 @@ matic:
       transactionHash: '0x1af1b88e36bb0289f6e037e00d01b26bed997ce7a0406ebafce07dcf766ce7c6'
       startBlock: 4023693
     LimitOrderProtocol:
-      address: ''
-      transactionHash: ''
-      startBlock: 0
+      address: '0x6D486b31b5c0f724828Aff07c88606b213B0D196'
+      transactionHash: '0x0270de062bac0cd693ba12b3b18d70830beb4e700c86a9faaa37c836da85ad3b'
+      startBlock: 28839595
     OrderExecutorV2:
-      address: ''
-      transactionHash: ''
-      startBlock: 0
+      address: '0x6b0ab7A1E65ea6AE9072f6c45B4261ACDfB30827'
+      transactionHash: '0x8cd97ae0013c4c00ae2c3c3804cad3e6040d64122c5c403980862edae1a70d3e'
+      startBlock: 28839608
   networkName: matic
 mumbai:
   contracts:
