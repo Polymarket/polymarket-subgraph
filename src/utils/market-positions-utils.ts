@@ -121,7 +121,7 @@ export function updateMarketPositionFromTrade(event: ethereum.Event): void {
 
       let pnl = averageSellPrice
         .minus(averagePricePaid)
-        .times(position.quantitySold)
+        .times((event as FPMMSell).params.outcomeTokensSold)
         .minus((event as FPMMSell).params.feeAmount);
       updateUserProfit(
         transaction.user,
