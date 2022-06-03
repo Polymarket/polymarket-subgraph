@@ -226,7 +226,9 @@ export function updateMarketPositionsFromMerge(
     // profit calculation only if netQuantity.gt(bigZero)
     // this avoids a divide by zero error from this transaction
     // https://polygonscan.com/tx/0xc6ab0ce453b64cfb2224e33df8b14a9f662532edf893a366f7c76093c8fb057b
-    if (position.netQuantity.gt(bigZero)) {
+    // and this 0 value merge
+    // https://polygonscan.com/tx/0xa2b00d6ef6e85735f4463e7644c298d86d5d4085f21692e4b7c70dee67d04ee7
+    if (position.netQuantity.gt(bigZero) && event.params.amount.gt(bigZero)) {
       let averagePricePaid = position.netValue.div(position.netQuantity);
       let currentPrice = mergeValue.div(event.params.amount); // keep this in BigInt instead of using outcomeTokenPrices[outcomeIndex] which is BigDecimal
       let pnl = currentPrice.minus(averagePricePaid).times(event.params.amount);
