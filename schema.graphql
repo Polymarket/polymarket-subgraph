@@ -342,8 +342,7 @@ type FilledOrderGlobal @entity {
   scaledCollateralSellVolume: BigDecimal!
 }
 
-# OrderExecutorV2
-
+# OrderExecutorV2 -> Event
 type FilledOrdersEvent @entity {
   "Transaction Hash"
   id: ID!
@@ -366,11 +365,12 @@ type FilledOrdersEvent @entity {
   fee: BigInt!
 }
 
-# LOP
-
+# LOP -> Event
 type OrderFilledEvent @entity {
-  "Transaction Hash"
+  "Order hash"
   id: ID!
+  "Transaction hash"
+  transactionHash: Bytes!
   "Timestamp at which filled occurred"
   timestamp: BigInt!
   orderHash: Bytes!
@@ -392,14 +392,16 @@ type OrderFilledEvent @entity {
 }
 
 type FilledOrder @entity {
-  "Transaction Hash"
+  "Order hash"
   id: ID!
+  "Transaction hash"
+  transactionHash: Bytes!
   "Timestamp at which transaction occurred"
   timestamp: BigInt!
   "Addresses of the maker and the taker"
   maker: Account!
   taker: Account!
-  "Order bytes"
+  "Order hash"
   orderHash: Bytes!
   "Market which transaction is interacting with"
   market: FilledOrderBook!
