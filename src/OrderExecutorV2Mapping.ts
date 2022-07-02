@@ -1,7 +1,6 @@
 import { BigDecimal, BigInt } from "@graphprotocol/graph-ts";
 import { FilledOrders } from "./types/OrderExecutorV2/OrderExecutorV2"; 
 import { FilledOrdersEvent } from "./types/schema";
-import { getCollateralScale } from './utils/collateralTokens';
 import { bigZero, TRADE_TYPE_LIMIT_BUY } from './utils/constants';
 import { getOrderPrice, getOrderSide, updateGlobalVolume } from './utils/order-book-utils';
 
@@ -22,7 +21,7 @@ FilledOrders - Will be used to calculate global volume
 */
 
 function recordEvent(event: FilledOrders): string {
-  const filledOrderEvent = new FilledOrdersEvent(event.transaction.hash.toHexString())
+  let filledOrderEvent = new FilledOrdersEvent(event.transaction.hash.toHexString())
   filledOrderEvent.timestamp = event.block.timestamp,
   filledOrderEvent.taker =  event.params.taker.toHexString()
   // swapping maker/taker: https://github.com/Polymarket/polymarket-subgraph/pull/16#issuecomment-1077927805
@@ -41,12 +40,12 @@ function recordEvent(event: FilledOrders): string {
 
 export function handleFilledOrders (event:FilledOrders):void {
   // swapping maker/taker: https://github.com/Polymarket/polymarket-subgraph/pull/16#issuecomment-1077927805
-  const makerAsset = event.params.takerAsset
-  const takerAsset = event.params.makerAsset
-  const makerAmountFilled = event.params.takerAmountFilled
-  const takerAmountFilled = event.params.makerAmountFilled
+  let makerAsset = event.params.takerAsset
+  let takerAsset = event.params.makerAsset
+  let makerAmountFilled = event.params.takerAmountFilled
+  let takerAmountFilled = event.params.makerAmountFilled
 
-  const side = getOrderSide(makerAsset)
+  let side = getOrderSide(makerAsset)
 
   let collateralAddress = ''
   let size = bigZero.toBigDecimal()
@@ -60,9 +59,8 @@ export function handleFilledOrders (event:FilledOrders):void {
     size = takerAmountFilled.toBigDecimal()
   }
 
-  const collateralScaleDec = new BigDecimal(BigInt.fromI32(10).pow(<u8>6))
-
-  const price = getOrderPrice(
+  let collateralScaleDec = new BigDecimal(BigInt.fromI32(10).pow(<u8>6))
+  let price = getOrderPrice(
     takerAmountFilled,
     makerAmountFilled,
     takerAsset,

@@ -135,8 +135,7 @@ export function updateGlobalVolume(
 }
 
 export function getOrderSide(makerAsset: Address): string {
-  const d = getTokenDecimals(makerAsset as Address)
-
+  let d = getTokenDecimals(makerAsset as Address)
   return d > 0 ? TRADE_TYPE_LIMIT_BUY : TRADE_TYPE_LIMIT_SELL
 }
 
@@ -158,9 +157,8 @@ export function getOrderPrice(
   let price = BigDecimal.fromString("0")
   let quoteAssetAmount = BigDecimal.fromString("0")
   let baseAssetAmount = BigDecimal.fromString("0")
-
-  const makerAmount = normalizeAmounts(makerAmountFilled, makerAsset)
-  const takerAmount = normalizeAmounts(takerAmountFilled, takerAsset)
+  let makerAmount = normalizeAmounts(makerAmountFilled, makerAsset)
+  let takerAmount = normalizeAmounts(takerAmountFilled, takerAsset)
 
   if (side == TRADE_TYPE_LIMIT_BUY) {
     quoteAssetAmount = makerAmount
@@ -179,14 +177,14 @@ export function getOrderPrice(
 
 function normalizeAmounts(amount: BigInt, address: Address): BigDecimal {
   let normalized = BigDecimal.fromString("0")
-  const amtDecimal = new BigDecimal(amount)
+  let amtDecimal = new BigDecimal(amount)
+  let collateralDecimals = getTokenDecimals(address)
 
-  const collateralDecimals = getTokenDecimals(address)
   if (collateralDecimals > 0){
-    const t = new BigDecimal(BigInt.fromI32(10).pow(<u8>collateralDecimals))
+    let t = new BigDecimal(BigInt.fromI32(10).pow(<u8>collateralDecimals))
     normalized = amtDecimal.div(t)
   } else {    
-    const t = new BigDecimal(BigInt.fromI32(10).pow(<u8>6))
+    let t = new BigDecimal(BigInt.fromI32(10).pow(<u8>6))
     normalized = amtDecimal.div(t)
   }
 
