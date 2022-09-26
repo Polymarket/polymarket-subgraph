@@ -13,22 +13,17 @@ import {
 } from './utils/order-book-utils';
 
 /*
+OrderFilled - used to calculate side, price and size data for each specific limit order
 event OrderFilled(
     bytes32 indexed orderHash,
     address indexed maker,
     address indexed taker,
-    address makerAsset,
     uint256 makerAssetId,
-    address takerAsset,
     uint256 takerAssetId,
-    uint256 makerAmountFilled, 
+    uint256 makerAmountFilled,
     uint256 takerAmountFilled,
-    uint256 remainingAmount
+    uint256 fee
 );
-*/
-
-/*
-OrderFilled - used to calculate side, price and size data for each specific limit order
 */
 
 function recordTx(event: OrderFilled, side: string, marketId: string): string {
@@ -67,8 +62,8 @@ function recordEvent(event: OrderFilled): string {
 
   let orderFilledEvent = new OrderFilledEvent(eventId);
   orderFilledEvent.transactionHash = event.transaction.hash;
-  (orderFilledEvent.timestamp = event.block.timestamp),
-    (orderFilledEvent.orderHash = event.params.orderHash);
+  orderFilledEvent.timestamp = event.block.timestamp;
+  orderFilledEvent.orderHash = event.params.orderHash;
   orderFilledEvent.maker = event.params.maker.toHexString();
   orderFilledEvent.taker = event.params.taker.toHexString();
   orderFilledEvent.makerAsset = event.params.makerAsset;
@@ -83,7 +78,7 @@ function recordEvent(event: OrderFilled): string {
   return eventId;
 }
 
-export function handleOrderFilled(event: OrderFilled): void {
+export function handleFill(event: OrderFilled): void {
   let maker = event.params.maker.toHexString();
   let taker = event.params.taker.toHexString();
   let makerAsset = event.params.makerAsset;
@@ -131,4 +126,18 @@ export function handleOrderFilled(event: OrderFilled): void {
 
   // persist order book
   orderBook.save();
+}
+
+/**
+event OrdersMatched(
+    bytes32 indexed takerOrderHash,
+    address indexed takerOrderMaker,
+    uint256 makerAssetId,
+    uint256 takerAssetId,
+    uint256 makerAmountFilled,
+    uint256 takerAmountFilled
+);
+*/
+export function handleMatch(event: OrdersMatched): void {
+  // TODO
 }

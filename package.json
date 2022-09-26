@@ -51,8 +51,6 @@
   },
   "homepage": "https://github.com/TokenUnion/polymarket-subgraph#readme",
   "devDependencies": {
-    "@gnosis.pm/conditional-tokens-contracts": "^1.0.3",
-    "@gnosis.pm/conditional-tokens-market-makers": "^1.8.1",
     "@graphprotocol/graph-cli": "^0.33.1",
     "@graphprotocol/graph-ts": "^0.27.0",
     "@types/fs-extra": "^9.0.13",
@@ -61,12 +59,10 @@
     "eslint-config-airbnb-typescript-prettier": "^5.0.0",
     "fs-extra": "^10.1.0",
     "handlebars": "^4.7.7",
+    "js-yaml": "^4.1.0",
+    "path": "^0.12.7",
     "prettier": "^2.7.1",
     "ts-node": "^9.1.1",
     "typescript": "^3.9.7"
-  },
-  "dependencies": {
-    "js-yaml": "^4.1.0",
-    "path": "^0.12.7"
   }
 }

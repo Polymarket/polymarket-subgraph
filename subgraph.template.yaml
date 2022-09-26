@@ -83,9 +83,9 @@ dataSources:
           file: ./abis/ERC20Detailed.json
       eventHandlers:
         - event: OrderFilled(indexed bytes32,indexed address,indexed address,uint256,uint256,uint256,uint256,uint256)
-          handler: handleOrderFilled
+          handler: handleFill
         - event: OrdersMatched(indexed bytes32,indexed address,uint256,uint256,uint256,uint256)
-          handler: handleOrdersMatched
+          handler: handleMatch
       file: ./src/ExchangeMapping.ts
 templates:
   - name: FixedProductMarketMaker
