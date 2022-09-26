@@ -13,7 +13,7 @@ dataSources:
       startBlock: {{contracts.ConditionalTokens.startBlock}}
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.3
+      apiVersion: 0.0.5
       language: wasm/assemblyscript
       entities:
         - Condition
@@ -47,7 +47,7 @@ dataSources:
       startBlock: {{contracts.FixedProductMarketMakerFactory.startBlock}}
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.3
+      apiVersion: 0.0.5
       language: wasm/assemblyscript
       entities:
         - FixedProductMarketMaker
@@ -69,7 +69,7 @@ dataSources:
       startBlock: {{contracts.OrderExecutorV2.startBlock}}
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.3
+      apiVersion: 0.0.5
       language: wasm/assemblyscript
       entities:
         - FilledOrderGlobal
@@ -94,7 +94,7 @@ dataSources:
       startBlock: {{contracts.LimitOrderProtocol.startBlock}}
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.3
+      apiVersion: 0.0.5
       language: wasm/assemblyscript
       entities:
         - FilledOrderGlobal
@@ -118,7 +118,7 @@ templates:
       abi: FixedProductMarketMaker
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.3
+      apiVersion: 0.0.5
       language: wasm/assemblyscript
       entities:
         - Account
@@ -152,7 +152,7 @@ templates:
       abi: ERC20Detailed
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.3
+      apiVersion: 0.0.5
       language: wasm/assemblyscript
       entities: []
       abis:

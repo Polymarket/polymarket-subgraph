@@ -4,7 +4,7 @@ import Handlebars = require('handlebars');
 import fs = require('fs-extra');
 import path = require('path');
 
-Handlebars.registerHelper('lowercase', function (str) {
+Handlebars.registerHelper('lowercase', function (str: any) {
   if (str && typeof str === 'string') {
     return str.toLowerCase();
   }
@@ -30,7 +30,7 @@ function getNetworkNameForSubgraph(): string | null {
   const networksFilePath = path.join(__dirname, 'networks.yaml');
   const networks = yaml.load(
     await fs.readFile(networksFilePath, { encoding: 'utf-8' }),
-  );
+  ) as any;
 
   const networkName = process.env.NETWORK_NAME || getNetworkNameForSubgraph();
   const network = { ...networks[networkName || ''], networkName };
