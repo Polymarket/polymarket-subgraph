@@ -315,8 +315,8 @@ type FpmmPoolMembership @entity {
 }
 
 
-
-type FilledOrderGlobal @entity {
+# Exchange: all trades aggregated
+type OrdersMatchedGlobal @entity {
   "ID is empty string, this is a singleton"
   id: ID!
 
@@ -342,8 +342,8 @@ type FilledOrderGlobal @entity {
   scaledCollateralSellVolume: BigDecimal!
 }
 
-# OrderExecutorV2 -> Event
-type FilledOrdersEvent @entity {
+# Exchange -> Matched Orders event
+type OrdersMatchedEvent @entity {
   "Transaction Hash"
   id: ID!
   "Timestamp at which filled occurred"
@@ -353,19 +353,17 @@ type FilledOrdersEvent @entity {
   "Address of the asset that the taker is giving away(for buy, it's the collateral, for sell it's the conditional)"
   makerAsset: Bytes!
   takerAsset: Bytes!
-  "Maker assetId"
+  "Maker asset Id"
   makerAssetID: BigInt!
-  "Taker assetId"
+  "Taker asset Id"
   takerAssetID: BigInt!
   "Maker amount filled"
   makerAmountFilled: BigInt!
   "Taker amount filled"
   takerAmountFilled: BigInt!
-  "Fee paid"
-  fee: BigInt!
 }
 
-# LOP -> Event
+# Exchange -> individual Order filled event
 type OrderFilledEvent @entity {
   "Transaction hash + Order hash"
   id: ID!
