@@ -74,8 +74,8 @@ dataSources:
       entities:
         - OrdersMatchedGlobal
         - OrdersMatchedEvent
-        - FilledOrder
-        - FilledOrderBook
+        - EnrichedOrderFilled
+        - Orderbook
       abis:
         - name: Exchange
           file: ./abis/Exchange.json
