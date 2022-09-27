@@ -315,6 +315,109 @@ type FpmmPoolMembership @entity {
 }
 
 
+# Exchange OrdersMatched event stored directly 
+type OrdersMatchedEvent @entity {
+  "Transaction Hash"
+  id: ID!
+  "Timestamp at which filled occurred"
+  timestamp: BigInt!
+  "Address of the person that placed the market order"
+  taker: Account!
+  "Address of the asset that the taker is giving away(for buy, it's the collateral, for sell it's the conditional)"
+  makerAsset: Bytes!
+  takerAsset: Bytes!
+  "Maker asset Id"
+  makerAssetID: BigInt!
+  "Taker asset Id"
+  takerAssetID: BigInt!
+  "Maker amount filled"
+  makerAmountFilled: BigInt!
+  "Taker amount filled"
+  takerAmountFilled: BigInt!
+}
+
+# Exchange OrderFilled event stored directly
+type OrderFilledEvent @entity {
+  "Transaction hash + Order hash"
+  id: ID!
+  "Transaction hash"
+  transactionHash: Bytes!
+  "Timestamp at which filled occurred"
+  timestamp: BigInt!
+  orderHash: Bytes!
+  "Addresses of the maker and the taker"
+  maker: Account!
+  taker: Account!
+  "Maker assetId"
+  makerAssetId: BigInt!
+  "Taker assetId"
+  takerAssetId: BigInt!
+  "Maker amount filled"
+  makerAmountFilled: BigInt!
+  "Taker amount filled"
+  takerAmountFilled: BigInt!
+  "Fee paid by the order maker"
+  fee: BigInt!
+}
+
+# Enriched OrderFilled event with price, size and side added
+type EnrichedOrderFilled @entity {
+  "Transaction hash + Order hash"
+  id: ID!
+  "Transaction hash"
+  transactionHash: Bytes!
+  "Timestamp at which transaction occurred"
+  timestamp: BigInt!
+  "Addresses of the maker and the taker"
+  maker: Account!
+  taker: Account!
+  "Order hash"
+  orderHash: Bytes!
+  "Market which transaction is interacting with"
+  market: Orderbook!
+  "Buy or Sell transaction"
+  side: TradeType!
+  "Amount of collateral in trade"
+  size: BigInt!
+  "Price of the conditional token"
+  price: BigDecimal!
+}
+
+# Collection of EnrichedOrderFilled trades
+type Orderbook @entity {
+  "Token Id"
+  id: ID!
+
+  "Buy orders"
+  buys: [EnrichedOrderFilled!]!
+  "Sell orders"
+  sells: [EnrichedOrderFilled!]!
+
+
+  "Number of trades of any kind against this order book"
+  tradesQuantity: BigInt!
+  "Number of purchases of shares from this order book"
+  buysQuantity: BigInt!
+  "Number of sales of shares to this order book"
+  sellsQuantity: BigInt!
+
+  "Market volume in terms of the underlying collateral value"
+  collateralVolume: BigInt!
+  "Volume scaled by the number of decimals of collateralToken"
+  scaledCollateralVolume: BigDecimal!
+  "Global volume of share purchases in USDC base units"
+  collateralBuyVolume: BigInt!
+  "Global volume of share purchases in USDC scaled by 10^6"
+  scaledCollateralBuyVolume: BigDecimal!
+  "Global volume of share sales in USDC base units"
+  collateralSellVolume: BigInt!
+  "Global volume of share sales in USDC scaled by 10^6"
+  scaledCollateralSellVolume: BigDecimal!
+
+  "Timestamp of last day during which someone made a trade"
+  lastActiveDay: BigInt!
+}
+
 # Exchange: all trades aggregated
 type OrdersMatchedGlobal @entity {
   "ID is empty string, this is a singleton"
@@ -340,107 +443,4 @@ type OrdersMatchedGlobal @entity {
   collateralSellVolume: BigDecimal!
   "Global volume of share sales in USDC scaled by 10^6"
   scaledCollateralSellVolume: BigDecimal!
-}
-
-# Exchange -> Matched Orders event
-type OrdersMatchedEvent @entity {
-  "Transaction Hash"
-  id: ID!
-  "Timestamp at which filled occurred"
-  timestamp: BigInt!
-  "Address of the person that placed the market order"
-  taker: Account!
-  "Address of the asset that the taker is giving away(for buy, it's the collateral, for sell it's the conditional)"
-  makerAsset: Bytes!
-  takerAsset: Bytes!
-  "Maker asset Id"
-  makerAssetID: BigInt!
-  "Taker asset Id"
-  takerAssetID: BigInt!
-  "Maker amount filled"
-  makerAmountFilled: BigInt!
-  "Taker amount filled"
-  takerAmountFilled: BigInt!
-}
-
-# Exchange -> individual Order filled event
-type OrderFilledEvent @entity {
-  "Transaction hash + Order hash"
-  id: ID!
-  "Transaction hash"
-  transactionHash: Bytes!
-  "Timestamp at which filled occurred"
-  timestamp: BigInt!
-  orderHash: Bytes!
-  "Addresses of the maker and the taker"
-  maker: Account!
-  taker: Account!
-  "Address of the asset that the taker is giving away(for buy, it's the collateral, for sell it's the conditional)"
-  makerAsset: Bytes!
-  takerAsset: Bytes!
-  "Maker assetId"
-  makerAssetID: BigInt!
-  "Taker assetId"
-  takerAssetID: BigInt!
-  "Maker amount filled"
-  makerAmountFilled: BigInt!
-  "Taker amount filled"
-  takerAmountFilled: BigInt!
-  remainingAmount: BigInt!
-}
-
-type FilledOrder @entity {
-  "Transaction hash + Order hash"
-  id: ID!
-  "Transaction hash"
-  transactionHash: Bytes!
-  "Timestamp at which transaction occurred"
-  timestamp: BigInt!
-  "Addresses of the maker and the taker"
-  maker: Account!
-  taker: Account!
-  "Order hash"
-  orderHash: Bytes!
-  "Market which transaction is interacting with"
-  market: FilledOrderBook!
-  "Buy or Sell transaction"
-  side: TradeType!
-  "Amount of collateral in trade"
-  size: BigInt!
-  "Price of the conditional token"
-  price: BigDecimal!
-}
-
-type FilledOrderBook @entity {
-  "Token Id"
-  id: ID!
-
-  "Buy orders"
-  buys: [FilledOrder!]!
-  "Sell orders"
-  sells: [FilledOrder!]!
-
-
-  "Number of trades of any kind against this order book"
-  tradesQuantity: BigInt!
-  "Number of purchases of shares from this order book"
-  buysQuantity: BigInt!
-  "Number of sales of shares to this order book"
-  sellsQuantity: BigInt!
-
-  "Market volume in terms of the underlying collateral value"
-  collateralVolume: BigInt!
-  "Volume scaled by the number of decimals of collateralToken"
-  scaledCollateralVolume: BigDecimal!
-  "Global volume of share purchases in USDC base units"
-  collateralBuyVolume: BigInt!
-  "Global volume of share purchases in USDC scaled by 10^6"
-  scaledCollateralBuyVolume: BigDecimal!
-  "Global volume of share sales in USDC base units"
-  collateralSellVolume: BigInt!
-  "Global volume of share sales in USDC scaled by 10^6"
-  scaledCollateralSellVolume: BigDecimal!
-
-  "Timestamp of last day during which someone made a trade"
-  lastActiveDay: BigInt!
 }
