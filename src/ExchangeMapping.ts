@@ -70,8 +70,8 @@ function recordOrderFilledEvent(event: OrderFilled): string {
   return eventId;
 }
 
-/*
-OrderFilled - used to calculate side, price and size data for each specific limit order
+/**
+ * Handles individual OrderFilled events
 event OrderFilled(
     bytes32 indexed orderHash,
     address indexed maker,
@@ -82,8 +82,8 @@ event OrderFilled(
     uint256 takerAmountFilled,
     uint256 fee
 );
-*/
-
+ * @param event 
+ */
 export function handleFill(event: OrderFilled): void {
   let maker = event.params.maker.toHexString();
   let taker = event.params.taker.toHexString();
@@ -147,6 +147,7 @@ function recordOrdersMatchedEvent(event: OrdersMatched): string {
 }
 
 /**
+* Handles the OrdersMatched event
 event OrdersMatched(
     bytes32 indexed takerOrderHash,
     address indexed takerOrderMaker,
@@ -155,7 +156,8 @@ event OrdersMatched(
     uint256 makerAmountFilled,
     uint256 takerAmountFilled
 );
-*/
+ * @param event 
+ */
 export function handleMatch(event: OrdersMatched): void {
   let makerAmountFilled = event.params.takerAmountFilled;
   let takerAmountFilled = event.params.makerAmountFilled;
