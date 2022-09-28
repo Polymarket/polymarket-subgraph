@@ -321,11 +321,6 @@ type OrdersMatchedEvent @entity {
   id: ID!
   "Timestamp at which filled occurred"
   timestamp: BigInt!
-  "Address of the person that placed the market order"
-  taker: Account!
-  "Address of the asset that the taker is giving away(for buy, it's the collateral, for sell it's the conditional)"
-  makerAsset: Bytes!
-  takerAsset: Bytes!
   "Maker asset Id"
   makerAssetID: BigInt!
   "Taker asset Id"

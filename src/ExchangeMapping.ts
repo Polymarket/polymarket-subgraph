@@ -98,9 +98,9 @@ export function handleFill(event: OrderFilled): void {
 
   let tokenId = '';
   if (side === TRADE_TYPE_LIMIT_BUY) {
-    tokenId = takerAssetId.toHexString();
+    tokenId = takerAssetId.toString();
   } else {
-    tokenId = makerAssetId.toHexString();
+    tokenId = makerAssetId.toString();
   }
 
   // record event
