@@ -208,14 +208,6 @@ export function updateMarketPositionsFromRedemption(
   let payoutNumerators = condition.payoutNumerators as BigInt[];
   let payoutDenominator = condition.payoutDenominator as BigInt;
 
-  if (payoutNumerators == null || payoutDenominator == null) {
-    log.error(
-      'Failed to update market positions: condition {} has not resolved',
-      [condition.id],
-    );
-    return;
-  }
-
   let indexSets = event.params.indexSets;
   for (let i = 0; i < indexSets.length; i += 1) {
     // Each element of indexSets is the decimal representation of the binary slot of the given outcome

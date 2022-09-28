@@ -169,13 +169,6 @@ export function handleConditionResolution(event: ConditionResolution): void {
   global.numClosedConditions += 1;
   global.save();
 
-  if (condition.resolutionTimestamp != null || condition.payouts != null) {
-    log.error('should not be able to resolve condition {} more than once', [
-      conditionId,
-    ]);
-    return;
-  }
-
   condition.resolutionTimestamp = event.block.timestamp;
 
   let payoutNumerators = event.params.payoutNumerators;
@@ -192,6 +185,6 @@ export function handleConditionResolution(event: ConditionResolution): void {
   condition.payoutNumerators = payoutNumerators;
   condition.payoutDenominator = payoutDenominator;
   condition.resolutionHash = event.transaction.hash;
-  
+
   condition.save();
 }
