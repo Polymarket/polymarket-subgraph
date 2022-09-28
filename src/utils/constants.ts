@@ -7,5 +7,3 @@ export const AddressZero = '0x0000000000000000000000000000000000000000';
 
 export const TRADE_TYPE_BUY = "Buy"
 export const TRADE_TYPE_SELL = "Sell"
-export const TRADE_TYPE_LIMIT_BUY = "Limit_Buy"
-export const TRADE_TYPE_LIMIT_SELL = "Limit_Sell"

@@ -278,8 +278,6 @@ type FpmmFundingRemoval @entity {
 enum TradeType {
   Buy
   Sell
-  Limit_Buy
-  Limit_Sell
 }
 
 type Transaction @entity {

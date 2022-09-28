@@ -7,7 +7,7 @@ import {
   OrdersMatchedEvent,
 } from './types/schema';
 import { markAccountAsSeen, updateUserVolume } from './utils/account-utils';
-import { bigZero, TRADE_TYPE_LIMIT_BUY } from './utils/constants';
+import { bigZero, TRADE_TYPE_BUY } from './utils/constants';
 import {
   getOrderPrice,
   getOrderSide,
@@ -36,7 +36,11 @@ function enrichOrder(
   enriched.orderHash = event.params.orderHash;
   enriched.market = marketId;
   enriched.side = side;
-  enriched.size = getOrderSize(event, side);
+  enriched.size = getOrderSize(
+    event.params.makerAmountFilled,
+    event.params.takerAmountFilled,
+    side,
+  );
   enriched.price = getOrderPrice(
     event.params.makerAmountFilled,
     event.params.takerAmountFilled,
@@ -92,12 +96,16 @@ export function handleFill(event: OrderFilled): void {
   let timestamp = event.block.timestamp;
 
   let side = getOrderSide(makerAssetId);
-  let size = getOrderSize(event, side);
+  let size = getOrderSize(
+    event.params.makerAmountFilled,
+    event.params.takerAmountFilled,
+    side,
+  );
 
   let collateralScaleDec = new BigDecimal(BigInt.fromI32(10).pow(<u8>6));
 
   let tokenId = '';
-  if (side === TRADE_TYPE_LIMIT_BUY) {
+  if (side === TRADE_TYPE_BUY) {
     tokenId = takerAssetId.toString();
   } else {
     tokenId = makerAssetId.toString();
@@ -162,20 +170,14 @@ export function handleMatch(event: OrdersMatched): void {
   let makerAmountFilled = event.params.takerAmountFilled;
   let takerAmountFilled = event.params.makerAmountFilled;
 
-  let side = getOrderSide(event.params.makerAssetId);
+  const side = getOrderSide(event.params.makerAssetId);
 
-  let size = bigZero.toBigDecimal();
-
-  if (side === TRADE_TYPE_LIMIT_BUY) {
-    size = makerAmountFilled.toBigDecimal();
-  } else {
-    size = takerAmountFilled.toBigDecimal();
-  }
-
+  const size = getOrderSize(makerAmountFilled, takerAmountFilled, side);
   const collateralScaleDec = new BigDecimal(BigInt.fromI32(10).pow(<u8>6));
 
   // record event
   recordOrdersMatchedEvent(event);
 
-  updateGlobalVolume(size, collateralScaleDec, side);
+  // update global volume
+  updateGlobalVolume(size.toBigDecimal(), collateralScaleDec, side);
 }
