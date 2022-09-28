@@ -28,7 +28,7 @@ function getNetworkNameForSubgraph(): string | null {
 (async (): Promise<void> => {
   console.log("Starting...");
   const networksFilePath = path.join(__dirname, 'networks.yaml');
-  const networks : any= yaml.load(
+  const networks: any = yaml.load(
     await fs.readFile(networksFilePath, { encoding: 'utf-8' }),
   );
 
