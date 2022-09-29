@@ -278,6 +278,8 @@ type FpmmFundingRemoval @entity {
 enum TradeType {
   Buy
   Sell
+  Limit_Sell
+  Limit_Buy
 }
 
 type Transaction @entity {
@@ -312,8 +314,7 @@ type FpmmPoolMembership @entity {
   amount: BigInt!
 }
 
-
-# Exchange OrdersMatched event stored directly 
+# Exchange OrdersMatched event stored directly
 type OrdersMatchedEvent @entity {
   "Transaction Hash"
   id: ID!
@@ -334,7 +335,7 @@ type OrderFilledEvent @entity {
   "Transaction hash + Order hash"
   id: ID!
   "Transaction hash"
-  transactionHash: Bytes!
+  transactionHash: Bytes
   "Timestamp at which filled occurred"
   timestamp: BigInt!
   orderHash: Bytes!
@@ -350,7 +351,7 @@ type OrderFilledEvent @entity {
   "Taker amount filled"
   takerAmountFilled: BigInt!
   "Fee paid by the order maker"
-  fee: BigInt!
+  fee: BigInt
 }
 
 # Enriched OrderFilled event with price, size and side added
@@ -385,7 +386,6 @@ type Orderbook @entity {
   buys: [EnrichedOrderFilled!]!
   "Sell orders"
   sells: [EnrichedOrderFilled!]!
-
 
   "Number of trades of any kind against this order book"
   tradesQuantity: BigInt!
