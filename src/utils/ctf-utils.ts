@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-types */
 import {
   Address,
-  log,
   crypto,
   BigInt,
   Bytes,
@@ -104,11 +103,6 @@ const calculateCollectionIds = (
       conditionIdBytes,
       BigInt.fromI32(i),
     );
-
-    log.info('LOG: CTFUtils Found collectionId: {}!', [
-      collectionId.toHexString(),
-    ]);
-
     collectionIds.push(collectionId);
   }
   return collectionIds;
@@ -127,11 +121,6 @@ export const calculatePositionIds = (
   collateral: string,
   outcomeSlotCount: number,
 ): string[] => {
-  log.info(
-    'LOG: CTFUtils: Calculating position ids for conditionId: {}, collateral: {}, outcomeSlotCount: {}',
-    [conditionId, collateral, outcomeSlotCount.toString()],
-  );
-
   const collectionIds: Bytes[] = calculateCollectionIds(
     conditionalTokenAddress,
     conditionId,
@@ -143,12 +132,8 @@ export const calculatePositionIds = (
     const collectionId = collectionIds[i];
     const positionIdByteArray = computePositionId(collateral, collectionId);
     const positionIdHex = positionIdByteArray.toHexString();
-    log.info('CTFUtils Generated PositionId Hex: {}', [positionIdHex]);
     const positionIdStr = hexToDecimalString(positionIdHex);
-    log.info('CTFUtils Generated PositionId str: {}', [positionIdStr]);
     positionIds.push(positionIdStr);
   }
-
-  log.info('LOG: CTFUtils PositionIds: {}!', [positionIds.toString()]);
   return positionIds;
 };
