@@ -125,7 +125,7 @@ export function updateGlobalVolume(
 }
 
 export function getOrderSide(makerAssetId: BigInt): string {
-  return makerAssetId.equals(BigInt.zero()) ? TRADE_TYPE_BUY : TRADE_TYPE_SELL;
+  return makerAssetId.equals(bigZero) ? TRADE_TYPE_BUY : TRADE_TYPE_SELL;
 }
 
 export function getOrderSize(

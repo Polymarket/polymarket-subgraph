@@ -162,8 +162,10 @@ type FixedProductMarketMaker @entity {
 
   "Token which is colleralising this market"
   collateralToken: Collateral!
+  "Conditional Token Address"
+  conditionalTokenAddress: String! 
   "Conditions which this market is trading against"
-  conditions: [Condition!] @derivedFrom(field: "fixedProductMarketMakers")
+  conditions: [String!]
   "Percentage fee of trades taken by market maker. A 2% fee is represented as 2*10^16"
   fee: BigInt!
 
@@ -219,7 +221,7 @@ type FixedProductMarketMaker @entity {
 type MarketPosition @entity {
   id: ID!
   "Market on which this position is on"
-  market: FixedProductMarketMaker!
+  market: String!
   "Address which holds this position"
   user: Account!
   "The outcome which this position is supporting"
@@ -366,7 +368,7 @@ type EnrichedOrderFilled @entity {
   taker: Account!
   "Order hash"
   orderHash: Bytes!
-  "Market which transaction is interacting with"
+  "Market/CTF Token ID which the transaction is interacting with"
   market: Orderbook!
   "Buy or Sell transaction"
   side: TradeType!
@@ -380,20 +382,16 @@ type EnrichedOrderFilled @entity {
 type Orderbook @entity {
   "Token Id"
   id: ID!
-
   "Buy orders"
   buys: [EnrichedOrderFilled!]!
   "Sell orders"
   sells: [EnrichedOrderFilled!]!
-
-
   "Number of trades of any kind against this order book"
   tradesQuantity: BigInt!
   "Number of purchases of shares from this order book"
   buysQuantity: BigInt!
   "Number of sales of shares to this order book"
   sellsQuantity: BigInt!
-
   "Market volume in terms of the underlying collateral value"
   collateralVolume: BigInt!
   "Volume scaled by the number of decimals of collateralToken"
@@ -406,7 +404,6 @@ type Orderbook @entity {
   collateralSellVolume: BigInt!
   "Global volume of share sales in USDC scaled by 10^6"
   scaledCollateralSellVolume: BigDecimal!
-
   "Timestamp of last day during which someone made a trade"
   lastActiveDay: BigInt!
 }

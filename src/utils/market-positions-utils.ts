@@ -1,5 +1,4 @@
-/* eslint-disable no-param-reassign */
-import { BigInt, ethereum, log } from '@graphprotocol/graph-ts';
+import { Address, BigInt, ethereum, log } from '@graphprotocol/graph-ts';
 import {
   FixedProductMarketMaker,
   MarketPosition,
@@ -17,9 +16,10 @@ import {
 } from '../types/templates/FixedProductMarketMaker/FixedProductMarketMaker';
 import { bigZero } from './constants';
 import { max, timesBD } from './maths';
+import { calculatePositionIds } from './ctf-utils';
 
 /*
- * Returns the user's position for the given market and outcome
+ * Returns the user's position for the given user and market(tokenId)
  * If no such position exists then a null position is generated
  */
 export function getMarketPosition(
@@ -27,6 +27,7 @@ export function getMarketPosition(
   market: string,
   outcomeIndex: BigInt,
 ): MarketPosition {
+  // let positionId = user + market; // user + market tokenID
   let positionId = user + market + outcomeIndex.toString();
   let position = MarketPosition.load(positionId);
   if (position == null) {
@@ -65,12 +66,61 @@ function updateNetPositionAndSave(position: MarketPosition): void {
 }
 
 export function updateMarketPositionFromTrade(event: ethereum.Event): void {
+  log.info('LOG: MarketPositionsUtils Txn hash: {}', [
+    event.transaction.hash.toHexString(),
+  ]);
+
   let transaction = Transaction.load(event.transaction.hash.toHexString());
   if (transaction == null) {
     log.error('Could not find a transaction with hash: {}', [
       event.transaction.hash.toString(),
     ]);
-    throw new Error('Could not find transaction with hash');
+    throw new Error(
+      `Could not find transaction with hash: ${event.transaction.hash.toString()}`,
+    );
+  }
+
+  const fpmm = FixedProductMarketMaker.load(
+    transaction.market,
+  ) as FixedProductMarketMaker;
+
+  const conditionalTokenAddress = fpmm.conditionalTokenAddress;
+  const conditions = fpmm.conditions;
+  const collateralToken = fpmm.collateralToken.toString();
+  const outcomeSlotCount = fpmm.outcomeSlotCount as number;
+  log.info('LOG: MarketPositionsUtils Collateral: {}', [collateralToken]);
+  log.info('LOG: MarketPositionsUtils OutcomeSlotCount: {}', [
+    outcomeSlotCount.toString(),
+  ]);
+
+  if (conditions == null) {
+    log.error('LOG: Could not find conditions on the FPMM: {}', [
+      transaction.market,
+    ]);
+    throw new Error(
+      `ERR: Could not find conditions on the FPMM: ${transaction.market.toString()}`,
+    );
+  }
+
+  log.info('LOG: MarketPositionsUtils for FPMM: {} Length: {}, {}', [
+    transaction.market,
+    conditions.length.toString(),
+    conditions[0].toString(),
+  ]);
+
+  // Calculate the market/tokenId from the conditionId and the outcome index
+  let market: string;
+  for (let i = 0; i < conditions.length; i++) {
+    const condition = conditions[i];
+    const positionIds: string[] = calculatePositionIds(
+      conditionalTokenAddress,
+      condition,
+      collateralToken,
+      outcomeSlotCount,
+    );
+
+    market = positionIds[transaction.outcomeIndex.toI32()];
+    log.info('LOG: MarketPositionsUtils, Market: {}', [market]);
   }
 
   let position = getMarketPosition(
@@ -79,9 +129,7 @@ export function updateMarketPositionFromTrade(event: ethereum.Event): void {
     transaction.outcomeIndex,
   );
 
-  let fee = (FixedProductMarketMaker.load(
-    transaction.market,
-  ) as FixedProductMarketMaker).fee;
+  let fee = fpmm.fee;
 
   if (transaction.type == 'Buy') {
     position.quantityBought = position.quantityBought.plus(
@@ -251,9 +299,9 @@ export function updateMarketPositionFromLiquidityAdded(
   // therefore this is the amount of collateral that the user has split.
   let addedFunds = max(amountsAdded);
 
-  let outcomeTokenPrices = (FixedProductMarketMaker.load(
-    fpmmAddress,
-  ) as FixedProductMarketMaker).outcomeTokenPrices;
+  let outcomeTokenPrices = (
+    FixedProductMarketMaker.load(fpmmAddress) as FixedProductMarketMaker
+  ).outcomeTokenPrices;
 
   // Funder is refunded with any excess outcome tokens which can't go into the market maker.
   // This means we must update the funder's market position for each outcome.
@@ -293,9 +341,9 @@ export function updateMarketPositionFromLiquidityRemoved(
   let funder = event.params.funder.toHexString();
   let amountsRemoved = event.params.amountsRemoved;
 
-  let outcomeTokenPrices = (FixedProductMarketMaker.load(
-    fpmmAddress,
-  ) as FixedProductMarketMaker).outcomeTokenPrices;
+  let outcomeTokenPrices = (
+    FixedProductMarketMaker.load(fpmmAddress) as FixedProductMarketMaker
+  ).outcomeTokenPrices;
 
   // The funder is sent all of the outcome tokens for which they were providing liquidity
   // This means we must update the funder's market position for each outcome.

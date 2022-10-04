@@ -79,8 +79,6 @@ dataSources:
       abis:
         - name: Exchange
           file: ./abis/Exchange.json
-        - name: ERC20Detailed
-          file: ./abis/ERC20Detailed.json
       eventHandlers:
         - event: OrderFilled(indexed bytes32,indexed address,indexed address,uint256,uint256,uint256,uint256,uint256)
           handler: handleFill
@@ -108,6 +106,8 @@ templates:
       abis:
         - name: FixedProductMarketMaker
           file: ./abis/FixedProductMarketMaker.json
+        - name: ConditionalTokens
+          file: ./abis/ConditionalTokens.json
         - name: ERC20Detailed
           file: ./abis/ERC20Detailed.json
       eventHandlers:
@@ -122,6 +122,20 @@ templates:
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handlePoolShareTransfer
       file: ./src/FixedProductMarketMakerMapping.ts
+  - name: ConditionalTokens
+    kind: ethereum/contract
+    network: {{networkName}}
+    source:
+      abi: ConditionalTokens
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities: []
+      abis:
+        - name: ConditionalTokens
+          file: ./abis/ConditionalTokens.json
+      file: ./src/empty.ts
   - name: ERC20Detailed
     kind: ethereum/contract
     network: {{networkName}}

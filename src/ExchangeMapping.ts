@@ -7,7 +7,7 @@ import {
   OrdersMatchedEvent,
 } from './types/schema';
 import { markAccountAsSeen, updateUserVolume } from './utils/account-utils';
-import { bigZero, TRADE_TYPE_BUY } from './utils/constants';
+import { TRADE_TYPE_BUY } from './utils/constants';
 import {
   getOrderPrice,
   getOrderSide,
