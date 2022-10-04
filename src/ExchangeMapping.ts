@@ -140,7 +140,6 @@ export function handleFill(event: OrderFilled): void {
   // Update market position
   updateMarketPositionFromOrderFilled(
     maker,
-    taker,
     tokenId,
     side,
     event.params.makerAmountFilled,
