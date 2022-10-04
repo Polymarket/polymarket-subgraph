@@ -333,7 +333,7 @@ export function updateMarketPositionsFromRedemption(
     for (let k = 0; k < conditions.length; k++) {
       market = getMarket(
         conditionalTokenAddress,
-        conditions[i],
+        conditions[k],
         collateralToken,
         outcomeSlotCount,
         outcomeIndex,
