@@ -220,12 +220,10 @@ type FixedProductMarketMaker @entity {
 
 type MarketPosition @entity {
   id: ID!
-  "Market on which this position is on"
+  "Market/tokenId on which this position is on"
   market: String!
   "Address which holds this position"
   user: Account!
-  "The outcome which this position is supporting"
-  outcomeIndex: BigInt!
   "Number of outcome shares that the user has ever bought"
   quantityBought: BigInt!
   "Number of outcome shares that the user has ever sold"

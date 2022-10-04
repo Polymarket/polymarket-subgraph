@@ -25,7 +25,6 @@ import { getMarket } from './ctf-utils';
 export function getMarketPosition(
   user: string,
   market: string,
-  outcomeIndex?: BigInt,
 ): MarketPosition {
   let positionId = user + market; // user + market tokenID
   let position = MarketPosition.load(positionId);
@@ -33,7 +32,6 @@ export function getMarketPosition(
     position = new MarketPosition(positionId);
     position.market = market;
     position.user = user;
-    position.outcomeIndex = outcomeIndex;
     position.quantityBought = bigZero;
     position.quantitySold = bigZero;
     position.netQuantity = bigZero;
@@ -56,8 +54,8 @@ function updateNetPositionAndSave(position: MarketPosition): void {
   //       to another address in order to sell them.
   if (position.netQuantity.lt(bigZero)) {
     log.error(
-      'Invalid position: user {} has negative netQuantity on outcome {} on market {}',
-      [position.user, position.outcomeIndex.toString(), position.market],
+      'Invalid position: user {} has negative netQuantity on market {}',
+      [position.user, position.market],
     );
   }
 
@@ -76,22 +74,18 @@ export function updateMarketPositionFromOrderFilled(
   fee: BigInt,
 ): void {
   // Create/Update market position for the maker
-  let marketPositionMaker = getMarketPosition(maker, tokenId);
+  let position = getMarketPosition(maker, tokenId);
+  let amountNetFees = takerAmountFilled.minus(fee);
 
   if (side == TRADE_TYPE_BUY) {
-    marketPositionMaker.quantityBought =
-      marketPositionMaker.quantityBought.plus(takerAmountFilled.minus(fee));
-    marketPositionMaker.valueBought =
-      marketPositionMaker.valueBought.plus(makerAmountFilled);
+    position.quantityBought = position.quantityBought.plus(amountNetFees);
+    position.valueBought = position.valueBought.plus(makerAmountFilled);
   } else {
-    marketPositionMaker.quantityBought =
-      marketPositionMaker.quantityBought.plus(makerAmountFilled);
-    marketPositionMaker.valueBought = marketPositionMaker.valueBought.plus(
-      takerAmountFilled.minus(fee),
-    );
+    position.quantitySold = position.quantitySold.plus(makerAmountFilled);
+    position.valueSold = position.valueSold.plus(amountNetFees);
   }
 
-  updateNetPositionAndSave(marketPositionMaker);
+  updateNetPositionAndSave(position);
 }
 
 export function updateMarketPositionFromTrade(event: ethereum.Event): void {
@@ -137,11 +131,7 @@ export function updateMarketPositionFromTrade(event: ethereum.Event): void {
     );
   }
 
-  let position = getMarketPosition(
-    transaction.user,
-    market,
-    transaction.outcomeIndex,
-  );
+  let position = getMarketPosition(transaction.user, market);
 
   let fee = fpmm.fee;
 
@@ -217,11 +207,7 @@ export function updateMarketPositionsFromSplit(
         outcomeIndex,
       );
     }
-    let position = getMarketPosition(
-      userAddress,
-      market,
-      BigInt.fromI32(outcomeIndex),
-    );
+    let position = getMarketPosition(userAddress, market);
     // Event emits the amount of collateral to be split as `amount`
     position.quantityBought = position.quantityBought.plus(event.params.amount);
 
@@ -283,11 +269,7 @@ export function updateMarketPositionsFromMerge(
       );
     }
 
-    let position = getMarketPosition(
-      userAddress,
-      market,
-      BigInt.fromI32(outcomeIndex),
-    );
+    let position = getMarketPosition(userAddress, market);
     // Event emits the amount of outcome tokens to be merged as `amount`
     position.quantitySold = position.quantitySold.plus(event.params.amount);
 
@@ -358,11 +340,7 @@ export function updateMarketPositionsFromRedemption(
       );
     }
 
-    let position = getMarketPosition(
-      userAddress,
-      market,
-      BigInt.fromI32(outcomeIndex),
-    );
+    let position = getMarketPosition(userAddress, market);
 
     // Redeeming a position is an all or nothing operation so use full balance for calculations
     let numerator = payoutNumerators[outcomeIndex];
@@ -430,11 +408,7 @@ export function updateMarketPositionFromLiquidityAdded(
       }
 
       // Only update positions which have changed
-      let position = getMarketPosition(
-        funder,
-        market,
-        BigInt.fromI32(outcomeIndex),
-      );
+      let position = getMarketPosition(funder, market);
 
       position.quantityBought = position.quantityBought.plus(refundedAmount);
 
@@ -490,11 +464,7 @@ export function updateMarketPositionFromLiquidityRemoved(
       );
     }
 
-    let position = getMarketPosition(
-      funder,
-      market,
-      BigInt.fromI32(outcomeIndex),
-    );
+    let position = getMarketPosition(funder, market);
 
     let amountRemoved = amountsRemoved[outcomeIndex];
     position.quantityBought = position.quantityBought.plus(amountRemoved);
