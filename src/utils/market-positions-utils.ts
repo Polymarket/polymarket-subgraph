@@ -28,7 +28,6 @@ export function getMarketPosition(
   outcomeIndex: BigInt,
 ): MarketPosition {
   let positionId = user + market; // user + market tokenID
-  log.info('LOG: getMarketPosition: PositionId: {}', [positionId]);
   let position = MarketPosition.load(positionId);
   if (position == null) {
     position = new MarketPosition(positionId);
@@ -66,10 +65,6 @@ function updateNetPositionAndSave(position: MarketPosition): void {
 }
 
 export function updateMarketPositionFromTrade(event: ethereum.Event): void {
-  log.info('LOG: MarketPositionsUtils Txn hash: {}', [
-    event.transaction.hash.toHexString(),
-  ]);
-
   let transaction = Transaction.load(event.transaction.hash.toHexString());
   if (transaction == null) {
     log.error('Could not find a transaction with hash: {}', [
@@ -192,8 +187,6 @@ export function updateMarketPositionsFromSplit(
         outcomeIndex,
       );
     }
-    log.info('LOG: FromSplit calculated Market: {}', [market]);
-
     let position = getMarketPosition(
       userAddress,
       market,
@@ -259,7 +252,6 @@ export function updateMarketPositionsFromMerge(
         outcomeIndex,
       );
     }
-    log.info('LOG: FromMerge calculated Market: {}', [market]);
 
     let position = getMarketPosition(
       userAddress,
@@ -335,7 +327,6 @@ export function updateMarketPositionsFromRedemption(
         outcomeIndex,
       );
     }
-    log.info('LOG: FromRedemption calculated Market: {}', [market]);
 
     let position = getMarketPosition(
       userAddress,
@@ -407,7 +398,6 @@ export function updateMarketPositionFromLiquidityAdded(
           outcomeIndex,
         );
       }
-      log.info('LOG: LiquidityAdded calculated Market: {}', [market]);
 
       // Only update positions which have changed
       let position = getMarketPosition(
@@ -469,7 +459,6 @@ export function updateMarketPositionFromLiquidityRemoved(
         outcomeIndex,
       );
     }
-    log.info('LOG: LiquidityRemoved calculated Market: {}', [market]);
 
     let position = getMarketPosition(
       funder,
