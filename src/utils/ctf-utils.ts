@@ -1,8 +1,18 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import { Address, log, crypto, BigInt, Bytes } from '@graphprotocol/graph-ts';
+import {
+  Address,
+  log,
+  crypto,
+  BigInt,
+  Bytes,
+  ByteArray,
+} from '@graphprotocol/graph-ts';
 import { ConditionalTokens } from '../types/ConditionalTokens/ConditionalTokens';
 
-const computePositionId = (collateral: string, collectionId: Bytes): Bytes => {
+const computePositionId = (
+  collateral: string,
+  collectionId: Bytes,
+): ByteArray => {
   let collateralToken = Address.fromHexString(collateral);
   let hashPayload = new Uint8Array(52);
   hashPayload.fill(0);
@@ -14,28 +24,65 @@ const computePositionId = (collateral: string, collectionId: Bytes): Bytes => {
   for (let i = 0; i < collectionId.length && i < 32; i++) {
     hashPayload[i + 20] = collectionId[i];
   }
-  return Bytes.fromByteArray(
-    crypto.keccak256(Bytes.fromUint8Array(hashPayload)),
-  );
+  return crypto.keccak256(Bytes.fromUint8Array(hashPayload));
 };
 
-// const buildHashPayloadForInitHash = (
-//   conditionId: string,
-//   indexSet: number,
-// ): Bytes => {
-//   let hashPayload = new Uint8Array(64);
-//   hashPayload.fill(0);
-//   let conditionIdBytes = Bytes.fromHexString(conditionId);
-//   let indexSetBytes = Bytes.fromBigInt(BigInt.fromString(`${indexSet}`));
-//   for (let i = 0; i < conditionIdBytes.length && i < 32; i++) {
-//     hashPayload[i] = conditionIdBytes[i];
-//   }
+/**
+ * Assemblyscript compatible hex to decimal string implementation
+ * Used due to bug in BigInt.toString
+ * @param hex
+ * @returns string
+ */
+const hexToDecimalString = (hex: string): string => {
+  function add(x: string, y: string): string {
+    let c = 0;
+    let r = [];
+    let zero = 0;
+    let one = 1;
+    let ten = 10;
 
-//   for (let i = 0; i < indexSetBytes.length && i < 32; i++) {
-//     hashPayload[i + 32] = indexSetBytes[i];
-//   }
-//   return hashPayload as Bytes;
-// };
+    let xArr = x.split('');
+    let yArr = y.split('');
+    let xNumArr: number[] = [];
+    let yNumArr: number[] = [];
+    for (let i = 0; i < xArr.length; i++) {
+      xNumArr.push(parseInt(xArr[i], 10));
+    }
+
+    for (let i = 0; i < yArr.length; i++) {
+      yNumArr.push(parseInt(yArr[i], 10));
+    }
+
+    while (xNumArr.length || yNumArr.length) {
+      const xVal: number = xNumArr.length > 0 ? xNumArr.pop() : zero;
+      const yVal: number = yNumArr.length > 0 ? yNumArr.pop() : zero;
+      let s = xVal + yVal + c;
+      let shift: u32 = <u32>(s < ten ? s : s - ten);
+      if (r.length == 0) {
+        r.push(shift);
+      } else {
+        r.unshift(shift);
+      }
+      c = s < ten ? zero : one;
+    }
+    if (c) r.unshift(c);
+    return r.join('');
+  }
+
+  let dec = '0';
+  let one = '1';
+  let maskArr: number[] = [8, 4, 2, 1];
+  const arr = hex.split('').slice(2); // rm 0x
+  for (let i = 0; i < arr.length; i++) {
+    let n = parseInt(arr[i], 16) as i32;
+    for (let j = 0; j < maskArr.length; j++) {
+      dec = add(dec, dec);
+      let mask = maskArr[j] as i32;
+      if (n & mask) dec = add(dec, one);
+    }
+  }
+  return dec;
+};
 
 const calculateCollectionIds = (
   conditionalTokenAddress: string,
@@ -94,15 +141,12 @@ export const calculatePositionIds = (
   const positionIds: string[] = [];
   for (let i = 0; i < collectionIds.length; i++) {
     const collectionId = collectionIds[i];
-    const positionIdBytes = computePositionId(collateral, collectionId);
-    const positionIdHex = positionIdBytes.toHexString();
-    log.info('LOG: CTFUtils Generated PositionId Hex: {}', [positionIdHex]);
-
-    log.info('LOG: CTFUtils Generated PositionId str: {}', [
-      parseInt(positionIdHex, 16).toString(10),
-    ]);
-
-    positionIds.push(parseInt(positionIdHex, 16).toString());
+    const positionIdByteArray = computePositionId(collateral, collectionId);
+    const positionIdHex = positionIdByteArray.toHexString();
+    log.info('CTFUtils Generated PositionId Hex: {}', [positionIdHex]);
+    const positionIdStr = hexToDecimalString(positionIdHex);
+    log.info('CTFUtils Generated PositionId str: {}', [positionIdStr]);
+    positionIds.push(positionIdStr);
   }
 
   log.info('LOG: CTFUtils PositionIds: {}!', [positionIds.toString()]);
