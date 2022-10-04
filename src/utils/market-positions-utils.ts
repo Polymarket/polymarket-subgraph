@@ -16,7 +16,7 @@ import {
 } from '../types/templates/FixedProductMarketMaker/FixedProductMarketMaker';
 import { bigZero } from './constants';
 import { max, timesBD } from './maths';
-import { calculatePositionIds } from './ctf-utils';
+import { getMarket } from './ctf-utils';
 
 /*
  * Returns the user's position for the given user and market(tokenId)
@@ -27,8 +27,8 @@ export function getMarketPosition(
   market: string,
   outcomeIndex: BigInt,
 ): MarketPosition {
-  // let positionId = user + market; // user + market tokenID
-  let positionId = user + market + outcomeIndex.toString();
+  let positionId = user + market; // user + market tokenID
+  log.info('LOG: getMarketPosition: PositionId: {}', [positionId]);
   let position = MarketPosition.load(positionId);
   if (position == null) {
     position = new MarketPosition(positionId);
@@ -88,10 +88,6 @@ export function updateMarketPositionFromTrade(event: ethereum.Event): void {
   const conditions = fpmm.conditions;
   const collateralToken = fpmm.collateralToken.toString();
   const outcomeSlotCount = fpmm.outcomeSlotCount as number;
-  log.info('LOG: MarketPositionsUtils Collateral: {}', [collateralToken]);
-  log.info('LOG: MarketPositionsUtils OutcomeSlotCount: {}', [
-    outcomeSlotCount.toString(),
-  ]);
 
   if (conditions == null) {
     log.error('LOG: Could not find conditions on the FPMM: {}', [
@@ -102,30 +98,23 @@ export function updateMarketPositionFromTrade(event: ethereum.Event): void {
     );
   }
 
-  log.info('LOG: MarketPositionsUtils for FPMM: {} Length: {}, {}', [
-    transaction.market,
-    conditions.length.toString(),
-    conditions[0].toString(),
-  ]);
-
   // Calculate the market/tokenId from the conditionId and the outcome index
+  // Note: this assumes a single conditionId and a zero parentCollectionId
   let market: string;
   for (let i = 0; i < conditions.length; i++) {
     const condition = conditions[i];
-    const positionIds: string[] = calculatePositionIds(
+    market = getMarket(
       conditionalTokenAddress,
       condition,
       collateralToken,
       outcomeSlotCount,
+      transaction.outcomeIndex.toI32(),
     );
-
-    market = positionIds[transaction.outcomeIndex.toI32()];
-    log.info('LOG: MarketPositionsUtils, Market: {}', [market]);
   }
 
   let position = getMarketPosition(
     transaction.user,
-    transaction.market,
+    market,
     transaction.outcomeIndex,
   );
 
@@ -173,15 +162,41 @@ export function updateMarketPositionsFromSplit(
     marketMakerAddress,
   ) as FixedProductMarketMaker;
   let outcomeTokenPrices = marketMaker.outcomeTokenPrices;
+  const conditionalTokenAddress = marketMaker.conditionalTokenAddress;
+  const conditions = marketMaker.conditions;
+  const collateralToken = marketMaker.collateralToken.toString();
+  const outcomeSlotCount = marketMaker.outcomeSlotCount as number;
+
+  if (conditions == null) {
+    log.error('LOG: Could not find conditions on the FPMM: {}', [
+      marketMakerAddress,
+    ]);
+    throw new Error(
+      `ERR: Could not find conditions on the FPMM: ${marketMakerAddress}`,
+    );
+  }
 
   for (
     let outcomeIndex = 0;
     outcomeIndex < outcomeTokenPrices.length;
     outcomeIndex += 1
   ) {
+    let market: string;
+    for (let i = 0; i < conditions.length; i++) {
+      const condition = conditions[i];
+      market = getMarket(
+        conditionalTokenAddress,
+        condition,
+        collateralToken,
+        outcomeSlotCount,
+        outcomeIndex,
+      );
+    }
+    log.info('LOG: FromSplit calculated Market: {}', [market]);
+
     let position = getMarketPosition(
       userAddress,
-      marketMakerAddress,
+      market,
       BigInt.fromI32(outcomeIndex),
     );
     // Event emits the amount of collateral to be split as `amount`
@@ -212,16 +227,43 @@ export function updateMarketPositionsFromMerge(
   let marketMaker = FixedProductMarketMaker.load(
     marketMakerAddress,
   ) as FixedProductMarketMaker;
+
   let outcomeTokenPrices = marketMaker.outcomeTokenPrices;
+  const conditionalTokenAddress = marketMaker.conditionalTokenAddress;
+  const conditions = marketMaker.conditions;
+  const collateralToken = marketMaker.collateralToken.toString();
+  const outcomeSlotCount = marketMaker.outcomeSlotCount as number;
+
+  if (conditions == null) {
+    log.error('LOG: Could not find conditions on the FPMM: {}', [
+      marketMakerAddress,
+    ]);
+    throw new Error(
+      `ERR: Could not find conditions on the FPMM: ${marketMakerAddress}`,
+    );
+  }
 
   for (
     let outcomeIndex = 0;
     outcomeIndex < outcomeTokenPrices.length;
     outcomeIndex += 1
   ) {
+    let market: string;
+    for (let i = 0; i < conditions.length; i++) {
+      const condition = conditions[i];
+      market = getMarket(
+        conditionalTokenAddress,
+        condition,
+        collateralToken,
+        outcomeSlotCount,
+        outcomeIndex,
+      );
+    }
+    log.info('LOG: FromMerge calculated Market: {}', [market]);
+
     let position = getMarketPosition(
       userAddress,
-      marketMakerAddress,
+      market,
       BigInt.fromI32(outcomeIndex),
     );
     // Event emits the amount of outcome tokens to be merged as `amount`
@@ -252,6 +294,23 @@ export function updateMarketPositionsFromRedemption(
   let condition = Condition.load(
     event.params.conditionId.toHexString(),
   ) as Condition;
+  let marketMaker = FixedProductMarketMaker.load(
+    marketMakerAddress,
+  ) as FixedProductMarketMaker;
+
+  const conditionalTokenAddress = marketMaker.conditionalTokenAddress;
+  const conditions = marketMaker.conditions;
+  const collateralToken = marketMaker.collateralToken.toString();
+  const outcomeSlotCount = marketMaker.outcomeSlotCount as number;
+
+  if (conditions == null) {
+    log.error('LOG: Could not find conditions on the FPMM: {}', [
+      marketMakerAddress,
+    ]);
+    throw new Error(
+      `ERR: Could not find conditions on the FPMM: ${marketMakerAddress}`,
+    );
+  }
 
   let payoutNumerators = condition.payoutNumerators as BigInt[];
   let payoutDenominator = condition.payoutDenominator as BigInt;
@@ -266,10 +325,21 @@ export function updateMarketPositionsFromRedemption(
     while (1 << outcomeIndex < indexSets[i].toI32()) {
       outcomeIndex += 1;
     }
+    let market: string;
+    for (let k = 0; k < conditions.length; k++) {
+      market = getMarket(
+        conditionalTokenAddress,
+        conditions[i],
+        collateralToken,
+        outcomeSlotCount,
+        outcomeIndex,
+      );
+    }
+    log.info('LOG: FromRedemption calculated Market: {}', [market]);
 
     let position = getMarketPosition(
       userAddress,
-      marketMakerAddress,
+      market,
       BigInt.fromI32(outcomeIndex),
     );
 
@@ -291,6 +361,9 @@ export function updateMarketPositionFromLiquidityAdded(
   event: FPMMFundingAdded,
 ): void {
   let fpmmAddress = event.address.toHexString();
+  const fpmm = FixedProductMarketMaker.load(
+    fpmmAddress,
+  ) as FixedProductMarketMaker;
   let funder = event.params.funder.toHexString();
   let amountsAdded = event.params.amountsAdded;
 
@@ -299,9 +372,18 @@ export function updateMarketPositionFromLiquidityAdded(
   // therefore this is the amount of collateral that the user has split.
   let addedFunds = max(amountsAdded);
 
-  let outcomeTokenPrices = (
-    FixedProductMarketMaker.load(fpmmAddress) as FixedProductMarketMaker
-  ).outcomeTokenPrices;
+  let outcomeTokenPrices = fpmm.outcomeTokenPrices;
+  const conditionalTokenAddress = fpmm.conditionalTokenAddress;
+  const conditions = fpmm.conditions;
+  const collateralToken = fpmm.collateralToken.toString();
+  const outcomeSlotCount = fpmm.outcomeSlotCount as number;
+
+  if (conditions == null) {
+    log.error('LOG: Could not find conditions on the FPMM: {}', [fpmmAddress]);
+    throw new Error(
+      `ERR: Could not find conditions on the FPMM: ${fpmmAddress}`,
+    );
+  }
 
   // Funder is refunded with any excess outcome tokens which can't go into the market maker.
   // This means we must update the funder's market position for each outcome.
@@ -314,10 +396,23 @@ export function updateMarketPositionFromLiquidityAdded(
     // Subtract this from the amount of collateral added to get the amount refunded to funder
     let refundedAmount: BigInt = addedFunds.minus(amountsAdded[outcomeIndex]);
     if (refundedAmount.gt(bigZero)) {
+      let market: string;
+      for (let i = 0; i < conditions.length; i++) {
+        const condition = conditions[i];
+        market = getMarket(
+          conditionalTokenAddress,
+          condition,
+          collateralToken,
+          outcomeSlotCount,
+          outcomeIndex,
+        );
+      }
+      log.info('LOG: LiquidityAdded calculated Market: {}', [market]);
+
       // Only update positions which have changed
       let position = getMarketPosition(
         funder,
-        fpmmAddress,
+        market,
         BigInt.fromI32(outcomeIndex),
       );
 
@@ -338,12 +433,24 @@ export function updateMarketPositionFromLiquidityRemoved(
   event: FPMMFundingRemoved,
 ): void {
   let fpmmAddress = event.address.toHexString();
+  const fpmm = FixedProductMarketMaker.load(
+    fpmmAddress,
+  ) as FixedProductMarketMaker;
   let funder = event.params.funder.toHexString();
   let amountsRemoved = event.params.amountsRemoved;
 
-  let outcomeTokenPrices = (
-    FixedProductMarketMaker.load(fpmmAddress) as FixedProductMarketMaker
-  ).outcomeTokenPrices;
+  let outcomeTokenPrices = fpmm.outcomeTokenPrices;
+  const conditionalTokenAddress = fpmm.conditionalTokenAddress;
+  const conditions = fpmm.conditions;
+  const collateralToken = fpmm.collateralToken.toString();
+  const outcomeSlotCount = fpmm.outcomeSlotCount as number;
+
+  if (conditions == null) {
+    log.error('LOG: Could not find conditions on the FPMM: {}', [fpmmAddress]);
+    throw new Error(
+      `ERR: Could not find conditions on the FPMM: ${fpmmAddress}`,
+    );
+  }
 
   // The funder is sent all of the outcome tokens for which they were providing liquidity
   // This means we must update the funder's market position for each outcome.
@@ -352,9 +459,21 @@ export function updateMarketPositionFromLiquidityRemoved(
     outcomeIndex < amountsRemoved.length;
     outcomeIndex += 1
   ) {
+    let market: string;
+    for (let i = 0; i < conditions.length; i++) {
+      market = getMarket(
+        conditionalTokenAddress,
+        conditions[i],
+        collateralToken,
+        outcomeSlotCount,
+        outcomeIndex,
+      );
+    }
+    log.info('LOG: LiquidityRemoved calculated Market: {}', [market]);
+
     let position = getMarketPosition(
       funder,
-      fpmmAddress,
+      market,
       BigInt.fromI32(outcomeIndex),
     );
 

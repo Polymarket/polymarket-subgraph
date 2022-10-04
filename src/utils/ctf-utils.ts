@@ -15,10 +15,12 @@ const computePositionId = (
   let collateralToken = Address.fromHexString(collateral);
   let hashPayload = new Uint8Array(52);
   hashPayload.fill(0);
+
   // 20 bytes for the token address
   for (let i = 0; i < collateralToken.length && i < 20; i++) {
     hashPayload[i] = collateralToken[i];
   }
+
   // 32 bytes for the collectionId
   for (let i = 0; i < collectionId.length && i < 32; i++) {
     hashPayload[i + 20] = collectionId[i];
@@ -136,4 +138,28 @@ export const calculatePositionIds = (
     positionIds.push(positionIdStr);
   }
   return positionIds;
+};
+
+/**
+ * Gets the CTF ERC1155 tokenId
+ * @param conditionalTokenAddress
+ * @param conditionId
+ * @param collateral
+ * @param outcomeSlotCount
+ * @param outcomeIndex
+ */
+export const getMarket = (
+  conditionalTokenAddress: string,
+  conditionId: string,
+  collateral: string,
+  outcomeSlotCount: number,
+  outcomeIndex: number,
+): string => {
+  const positionIds: string[] = calculatePositionIds(
+    conditionalTokenAddress,
+    conditionId,
+    collateral,
+    outcomeSlotCount,
+  );
+  return positionIds[outcomeIndex as i32];
 };
