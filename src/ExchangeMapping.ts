@@ -8,6 +8,7 @@ import {
 } from './types/schema';
 import { markAccountAsSeen, updateUserVolume } from './utils/account-utils';
 import { TRADE_TYPE_BUY } from './utils/constants';
+import { updateMarketPositionFromOrderFilled } from './utils/market-positions-utils';
 import {
   getOrderPrice,
   getOrderSide,
@@ -135,6 +136,17 @@ export function handleFill(event: OrderFilled): void {
   markAccountAsSeen(maker, timestamp);
 
   updateTradesQuantity(orderBook, side, orderId);
+
+  // Update market position
+  updateMarketPositionFromOrderFilled(
+    maker,
+    taker,
+    tokenId,
+    side,
+    event.params.makerAmountFilled,
+    event.params.takerAmountFilled,
+    event.params.fee,
+  );
 
   // persist order book
   orderBook.save();

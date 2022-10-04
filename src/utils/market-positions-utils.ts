@@ -14,7 +14,7 @@ import {
   FPMMFundingAdded,
   FPMMFundingRemoved,
 } from '../types/templates/FixedProductMarketMaker/FixedProductMarketMaker';
-import { bigZero } from './constants';
+import { bigZero, TRADE_TYPE_BUY } from './constants';
 import { max, timesBD } from './maths';
 import { getMarket } from './ctf-utils';
 
@@ -25,7 +25,7 @@ import { getMarket } from './ctf-utils';
 export function getMarketPosition(
   user: string,
   market: string,
-  outcomeIndex: BigInt,
+  outcomeIndex?: BigInt,
 ): MarketPosition {
   let positionId = user + market; // user + market tokenID
   let position = MarketPosition.load(positionId);
@@ -62,6 +62,51 @@ function updateNetPositionAndSave(position: MarketPosition): void {
   }
 
   position.save();
+}
+
+/**
+ * Update market position for both sides of the Order
+ */
+export function updateMarketPositionFromOrderFilled(
+  maker: string,
+  taker: string,
+  tokenId: string,
+  side: string,
+  makerAmountFilled: BigInt,
+  takerAmountFilled: BigInt,
+  fee: BigInt,
+): void {
+  // Create/Update market position for the maker and the taker
+  let marketPositionMaker = getMarketPosition(maker, tokenId);
+  let marketPositionTaker = getMarketPosition(taker, tokenId);
+
+  if (side == TRADE_TYPE_BUY) {
+    marketPositionMaker.quantityBought =
+      marketPositionMaker.quantityBought.plus(takerAmountFilled.minus(fee));
+    marketPositionMaker.valueBought =
+      marketPositionMaker.valueBought.plus(makerAmountFilled);
+
+    marketPositionTaker.quantitySold =
+      marketPositionTaker.quantitySold.plus(makerAmountFilled);
+    marketPositionTaker.valueSold = marketPositionTaker.valueSold.plus(
+      takerAmountFilled.minus(fee),
+    );
+  } else {
+    marketPositionMaker.quantityBought =
+      marketPositionMaker.quantityBought.plus(makerAmountFilled);
+    marketPositionMaker.valueBought = marketPositionMaker.valueBought.plus(
+      takerAmountFilled.minus(fee),
+    );
+
+    marketPositionTaker.quantitySold = marketPositionTaker.quantitySold.plus(
+      takerAmountFilled.minus(fee),
+    );
+    marketPositionTaker.valueSold =
+      marketPositionTaker.valueSold.plus(makerAmountFilled);
+  }
+
+  updateNetPositionAndSave(marketPositionMaker);
+  updateNetPositionAndSave(marketPositionTaker);
 }
 
 export function updateMarketPositionFromTrade(event: ethereum.Event): void {
