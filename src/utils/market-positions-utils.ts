@@ -63,7 +63,7 @@ function updateNetPositionAndSave(position: MarketPosition): void {
 }
 
 /**
- * Update market position for both sides of the Order
+ * Update market position for the maker
  */
 export function updateMarketPositionFromOrderFilled(
   maker: string,
