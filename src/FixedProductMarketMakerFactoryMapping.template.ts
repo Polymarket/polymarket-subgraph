@@ -73,6 +73,7 @@ export function handleFixedProductMarketMakerCreation(
   fixedProductMarketMaker.creator = event.params.creator;
   fixedProductMarketMaker.creationTimestamp = event.block.timestamp;
   fixedProductMarketMaker.creationTransactionHash = event.transaction.hash;
+  fixedProductMarketMaker.conditionalTokenAddress = conditionalTokensAddress;
 
   getCollateralDetails(event.params.collateralToken);
   fixedProductMarketMaker.collateralToken = event.params.collateralToken.toHexString();
