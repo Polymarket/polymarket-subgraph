@@ -165,7 +165,7 @@ type FixedProductMarketMaker @entity {
   "Conditional Token Address"
   conditionalTokenAddress: String! 
   "Conditions which this market is trading against"
-  conditions: [String!]
+  conditions: [String!]!
   "Percentage fee of trades taken by market maker. A 2% fee is represented as 2*10^16"
   fee: BigInt!
 

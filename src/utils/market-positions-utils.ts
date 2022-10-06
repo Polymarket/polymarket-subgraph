@@ -108,7 +108,7 @@ export function updateMarketPositionFromTrade(event: ethereum.Event): void {
   const collateralToken = fpmm.collateralToken.toString();
   const outcomeSlotCount = fpmm.outcomeSlotCount as number;
 
-  if (conditions == null) {
+  if (conditions == null || conditions.length == 0) {
     log.error('LOG: Could not find conditions on the FPMM: {}', [
       transaction.market,
     ]);
@@ -119,17 +119,14 @@ export function updateMarketPositionFromTrade(event: ethereum.Event): void {
 
   // Calculate the market/tokenId from the conditionId and the outcome index
   // Note: this assumes a single conditionId and a zero parentCollectionId
-  let market: string;
-  for (let i = 0; i < conditions.length; i++) {
-    const condition = conditions[i];
-    market = getMarket(
-      conditionalTokenAddress,
-      condition,
-      collateralToken,
-      outcomeSlotCount,
-      transaction.outcomeIndex.toI32(),
-    );
-  }
+  let condition = conditions[0];
+  const market = getMarket(
+    conditionalTokenAddress,
+    condition,
+    collateralToken,
+    outcomeSlotCount,
+    transaction.outcomeIndex.toI32(),
+  );
 
   let position = getMarketPosition(transaction.user, market);
 
