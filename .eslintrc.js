@@ -23,10 +23,5 @@ module.exports = {
     "prefer-template": "off",
     "eqeqeq": "off",
     "prefer-const": "off",
-    "no-restricted-syntax": "off",
-    "no-param-reassign": "off",
-    "no-underscore-dangle": "off",
-    "no-bitwise": "off",
-    "no-plusplus": "off"
   }
 }

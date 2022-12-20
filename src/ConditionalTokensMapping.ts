@@ -266,6 +266,13 @@ export function handleConditionResolution(event: ConditionResolution): void {
   global.numClosedConditions += 1;
   global.save();
 
+  if (condition.resolutionTimestamp != null || condition.payouts != null) {
+    log.error('should not be able to resolve condition {} more than once', [
+      conditionId,
+    ]);
+    return;
+  }
+
   condition.resolutionTimestamp = event.block.timestamp;
 
   let payoutNumerators = event.params.payoutNumerators;
@@ -282,6 +289,54 @@ export function handleConditionResolution(event: ConditionResolution): void {
   condition.payoutNumerators = payoutNumerators;
   condition.payoutDenominator = payoutDenominator;
   condition.resolutionHash = event.transaction.hash;
+  let marketMakers = condition.fixedProductMarketMakers;
+  for (let i = 0; i < marketMakers.length; i += 1) {
+    // This is not ideal as in theory we could have multiple market makers for the same condition
+    // Given that this subgraph only tracks market makers deployed by Polymarket, this is acceptable for now
+    let fpmm = FixedProductMarketMaker.load(
+      marketMakers[i],
+    ) as FixedProductMarketMaker;
+    let collateralScale = getCollateralScale(fpmm.collateralToken);
+    let collateralScaleDec = collateralScale.toBigDecimal();
+
+    if (fpmm) {
+      let marketPositions = fpmm.marketPositions;
+      if (marketPositions as Array<string>) {
+        for (let j = 0; j < marketPositions!.length; j += 1) {
+          let pos = marketPositions![j];
+          let position = MarketPosition.load(pos);
+          if (position) {
+            // avoid divide by zero for profit calculations
+            if (position.netQuantity.gt(bigZero)) {
+              let numerator = payoutNumerators[position.outcomeIndex.toI32()];
+              let redemptionValue = position.netQuantity
+                .times(numerator)
+                .div(payoutDenominator);
+              let averageRedemptionPrice = redemptionValue.div(
+                position.netQuantity,
+              );
+              let averagePricePaid = position.netValue.div(
+                position.netQuantity,
+              );
+
+              let pnl = averageRedemptionPrice
+                .minus(averagePricePaid)
+                .times(position.netQuantity);
+              // don't allow losses to go unreported to market leaderboard
+              // this also reports profits even if unredeemed
+              updateUserProfit(
+                position.user,
+                pnl,
+                collateralScaleDec,
+                event.block.timestamp,
+                position.market,
+              );
+            }
+          }
+        }
+      }
+    }
+  }
 
   condition.save();
 }

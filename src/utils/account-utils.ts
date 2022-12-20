@@ -65,8 +65,9 @@ export function updateUserVolume(
 ): void {
   let account = requireAccount(accountAddress, timestamp);
   account.collateralVolume = account.collateralVolume.plus(tradeAmount);
-  account.scaledCollateralVolume =
-    account.collateralVolume.divDecimal(collateralScaleDec);
+  account.scaledCollateralVolume = account.collateralVolume.divDecimal(
+    collateralScaleDec,
+  );
   account.lastTradedTimestamp = timestamp;
   account.save();
 }

@@ -16,7 +16,7 @@ function getTokenSymbol(collateralAddress: Address): string {
   return result.reverted ? '' : result.value;
 }
 
-export function getTokenDecimals(collateralAddress: Address): i32 {
+function getTokenDecimals(collateralAddress: Address): i32 {
   let collateralToken = ERC20Detailed.bind(collateralAddress);
   let result = collateralToken.try_decimals();
 

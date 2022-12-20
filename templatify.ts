@@ -1,7 +1,8 @@
-import * as yaml from 'js-yaml';
-import * as Handlebars from 'handlebars';
-import * as fs from 'fs-extra';
-import * as path from 'path';
+import yaml = require('js-yaml');
+
+import Handlebars = require('handlebars');
+import fs = require('fs-extra');
+import path = require('path');
 
 Handlebars.registerHelper('lowercase', function (str) {
   if (str && typeof str === 'string') {
@@ -26,14 +27,12 @@ function getNetworkNameForSubgraph(): string | null {
 }
 
 (async (): Promise<void> => {
-  console.log("Starting...");
   const networksFilePath = path.join(__dirname, 'networks.yaml');
-  const networks: any = yaml.load(
+  const networks = yaml.load(
     await fs.readFile(networksFilePath, { encoding: 'utf-8' }),
   );
 
   const networkName = process.env.NETWORK_NAME || getNetworkNameForSubgraph();
-  console.log(`Network: ${networkName}`);
   const network = { ...networks[networkName || ''], networkName };
 
   if (!networkName) {
