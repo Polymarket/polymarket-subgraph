@@ -50,6 +50,7 @@ export function loadMarketProfitPerAccount(
  */
 export function calculatePrices(outcomeTokenAmounts: BigInt[]): BigDecimal[] {
   let outcomePrices = new Array<BigDecimal>(outcomeTokenAmounts.length);
+  outcomePrices.fill(BigDecimal.zero());
 
   let totalTokensBalance = bigZero;
   let product = bigOne;

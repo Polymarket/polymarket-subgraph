@@ -8,7 +8,11 @@ mainnet:
       address: '0x4b4fb012298aceA6D5149be3f02cc252A88b755b'
       transactionHash: '0xc21edc19c4f4249f047cec4cb13052e4ce39446766f723b9a94b3748a433e9b6'
       startBlock: 9969340
-  networkName: mainnet
+    Exchange:
+      address: ''
+      transactionHash: ''
+      startBlock: 0
+    networkName: mainnet
 matic:
   contracts:
     ConditionalTokens:
@@ -19,6 +23,10 @@ matic:
       address: '0x8B9805A2f595B6705e74F7310829f2d299D21522'
       transactionHash: '0x1af1b88e36bb0289f6e037e00d01b26bed997ce7a0406ebafce07dcf766ce7c6'
       startBlock: 4023693
+    Exchange:
+      address: '0x4bFb41d5B3570DeFd03C39a9A4D8dE6Bd8B8982E'
+      transactionHash: '0x35423c49cb07c9ccecad9af20df52cccdeff0d46f833d438de8b02f2504aed22'
+      startBlock: 33605403
   networkName: matic
 mumbai:
   contracts:
@@ -30,4 +38,8 @@ mumbai:
       address: '0x5a80a64c8ae0551b09c3df377b60953872c5aa7f'
       transactionHash: '0x994ccfecb4d13de47ff3775c9b63752e4c78ad8f66ea9cc272a3f623b9f10ec1'
       startBlock: 3456423
+    Exchange:
+      address: '0x4bFb41d5B3570DeFd03C39a9A4D8dE6Bd8B8982E'
+      transactionHash: '0x4cf5ff4362abb630398f45b0ed26787e7b2524c53c4cc006641764f5f8267609'
+      startBlock: 28311804
   networkName: mumbai

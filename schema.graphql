@@ -164,105 +164,94 @@ type Redemption @entity {
 # Market Makers
 
 type FixedProductMarketMaker @entity {
-    "Market maker address"
-    id: ID!
+  "Market maker address"
+  id: ID!
 
-    "Address which deployed this market"
-    creator: Bytes!
-    "Time at which this market was deployed"
-    creationTimestamp: BigInt!
-    "Hash of deployment transactions"
-    creationTransactionHash: Bytes!
+  "Address which deployed this market"
+  creator: Bytes!
+  "Time at which this market was deployed"
+  creationTimestamp: BigInt!
+  "Hash of deployment transactions"
+  creationTransactionHash: Bytes!
 
-    "Token which is colleralising this market"
-    collateralToken: Collateral!
-    "Conditions which this market is trading against"
-    conditions: [Condition!] @derivedFrom(field: "fixedProductMarketMakers")
-    "Percentage fee of trades taken by market maker. A 2% fee is represented as 2*10^16"
-    fee: BigInt!
+  "Token which is colleralising this market"
+  collateralToken: Collateral!
+  "Conditional Token Address"
+  conditionalTokenAddress: String! 
+  "Conditions which this market is trading against"
+  conditions: [String!]!
+  "Percentage fee of trades taken by market maker. A 2% fee is represented as 2*10^16"
+  fee: BigInt!
 
-    "Number of trades of any kind against this market maker"
-    tradesQuantity: BigInt!
-    "Number of purchases of shares from this market maker"
-    buysQuantity: BigInt!
-    "Number of sales of shares to this market maker"
-    sellsQuantity: BigInt!
-    "Number of times liquidity has been added to this market maker"
-    liquidityAddQuantity: BigInt!
-    "Number of times liquidity has been removed from this market maker"
-    liquidityRemoveQuantity: BigInt!
+  "Number of trades of any kind against this market maker"
+  tradesQuantity: BigInt!
+  "Number of purchases of shares from this market maker"
+  buysQuantity: BigInt!
+  "Number of sales of shares to this market maker"
+  sellsQuantity: BigInt!
+  "Number of times liquidity has been added to this market maker"
+  liquidityAddQuantity: BigInt!
+  "Number of times liquidity has been removed from this market maker"
+  liquidityRemoveQuantity: BigInt!
 
-    "Market volume in terms of the underlying collateral value"
-    collateralVolume: BigInt!
-    "Volume scaled by the number of decimals of collateralToken"
-    scaledCollateralVolume: BigDecimal!
-    "Global volume of share purchases in USDC base units"
-    collateralBuyVolume: BigInt!
-    "Global volume of share purchases in USDC scaled by 10^6"
-    scaledCollateralBuyVolume: BigDecimal!
-    "Global volume of share sales in USDC base units"
-    collateralSellVolume: BigInt!
-    "Global volume of share sales in USDC scaled by 10^6"
-    scaledCollateralSellVolume: BigDecimal!
-    "Fees collected in terms of the underlying collateral value"
-    feeVolume: BigInt!
-    "Fees scaled by the number of decimals of collateralToken"
-    scaledFeeVolume: BigDecimal!
+  "Market volume in terms of the underlying collateral value"
+  collateralVolume: BigInt!
+  "Volume scaled by the number of decimals of collateralToken"
+  scaledCollateralVolume: BigDecimal!
+  "Global volume of share purchases in USDC base units"
+  collateralBuyVolume: BigInt!
+  "Global volume of share purchases in USDC scaled by 10^6"
+  scaledCollateralBuyVolume: BigDecimal!
+  "Global volume of share sales in USDC base units"
+  collateralSellVolume: BigInt!
+  "Global volume of share sales in USDC scaled by 10^6"
+  scaledCollateralSellVolume: BigDecimal!
+  "Fees collected in terms of the underlying collateral value"
+  feeVolume: BigInt!
+  "Fees scaled by the number of decimals of collateralToken"
+  scaledFeeVolume: BigDecimal!
 
-    "Constant product parameter k"
-    liquidityParameter: BigInt!
-    scaledLiquidityParameter: BigDecimal!
+  "Constant product parameter k"
+  liquidityParameter: BigInt!
+  scaledLiquidityParameter: BigDecimal!
 
-    "Balances of each outcome token held by the market maker"
-    outcomeTokenAmounts: [BigInt!]!
-    "Prices at which market maker values each outcome token"
-    outcomeTokenPrices: [BigDecimal!]!
-    "Number of outcomes which this market maker is trading"
-    outcomeSlotCount: Int
+  "Balances of each outcome token held by the market maker"
+  outcomeTokenAmounts: [BigInt!]!
+  "Prices at which market maker values each outcome token"
+  outcomeTokenPrices: [BigDecimal!]!
+  "Number of outcomes which this market maker is trading"
+  outcomeSlotCount: Int
 
-    "Timestamp of last day during which someone made a trade"
-    lastActiveDay: BigInt!
+  "Timestamp of last day during which someone made a trade"
+  lastActiveDay: BigInt!
 
-    "Number of shares for tokens in the market maker's reserves"
-    totalSupply: BigInt!
+  "Number of shares for tokens in the market maker's reserves"
+  totalSupply: BigInt!
 
-    "Addresses which are supplying liquidity to the market maker"
-    poolMembers: [FpmmPoolMembership!] @derivedFrom(field: "pool")
-    "Profits from this market per account"
-    accountProfits: [MarketProfitPerAccount!] @derivedFrom(field: "market")
-    "Market positions on this market maker"
-    marketPositions: [MarketPosition!] @derivedFrom(field: "market")
-
-    "Total locked value in this market in USDC base units"
-    openInterest: BigInt!
-
-    "Total locked value in this market in USDC scaled by 10^6"
-    scaledOpenInterest: BigDecimal!
-
+  "Addresses which are supplying liquidity to the market maker"
+  poolMembers: [FpmmPoolMembership!] @derivedFrom(field: "pool")
 }
 
 type MarketPosition @entity {
-    id: ID!
-    "Market on which this position is on"
-    market: FixedProductMarketMaker!
-    "Address which holds this position"
-    user: Account!
-    "The outcome which this position is supporting"
-    outcomeIndex: BigInt!
-    "Number of outcome shares that the user has ever bought"
-    quantityBought: BigInt!
-    "Number of outcome shares that the user has ever sold"
-    quantitySold: BigInt!
-    "Number of outcome shares that the user current has"
-    netQuantity: BigInt!
-    "Total value of outcome shares that the user has bought"
-    valueBought: BigInt!
-    "Total value of outcome shares that the user has sold"
-    valueSold: BigInt!
-    "Total value paid by the user to enter this position"
-    netValue: BigInt!
-    "Total amount of fees paid by user in relation to this position"
-    feesPaid: BigInt!
+  id: ID!
+  "Market/tokenId on which this position is on"
+  market: String!
+  "Address which holds this position"
+  user: Account!
+  "Number of outcome shares that the user has ever bought"
+  quantityBought: BigInt!
+  "Number of outcome shares that the user has ever sold"
+  quantitySold: BigInt!
+  "Number of outcome shares that the user current has"
+  netQuantity: BigInt!
+  "Total value of outcome shares that the user has bought"
+  valueBought: BigInt!
+  "Total value of outcome shares that the user has sold"
+  valueSold: BigInt!
+  "Total value paid by the user to enter this position"
+  netValue: BigInt!
+  "Total amount of fees paid by user in relation to this position"
+  feesPaid: BigInt!
 }
 
 # Market Actions
@@ -350,3 +339,122 @@ type MarketProfitPerAccount @entity {
 }
 
 
+# Exchange OrdersMatched event stored directly 
+type OrdersMatchedEvent @entity {
+  "Transaction Hash"
+  id: ID!
+  "Timestamp at which filled occurred"
+  timestamp: BigInt!
+  "Maker asset Id"
+  makerAssetID: BigInt!
+  "Taker asset Id"
+  takerAssetID: BigInt!
+  "Maker amount filled"
+  makerAmountFilled: BigInt!
+  "Taker amount filled"
+  takerAmountFilled: BigInt!
+}
+
+# Exchange OrderFilled event stored directly
+type OrderFilledEvent @entity {
+  "Transaction hash + Order hash"
+  id: ID!
+  "Transaction hash"
+  transactionHash: Bytes!
+  "Timestamp at which filled occurred"
+  timestamp: BigInt!
+  orderHash: Bytes!
+  "Addresses of the maker and the taker"
+  maker: Account!
+  taker: Account!
+  "Maker assetId"
+  makerAssetId: BigInt!
+  "Taker assetId"
+  takerAssetId: BigInt!
+  "Maker amount filled"
+  makerAmountFilled: BigInt!
+  "Taker amount filled"
+  takerAmountFilled: BigInt!
+  "Fee paid by the order maker"
+  fee: BigInt!
+}
+
+# Enriched OrderFilled event with price, size and side added
+type EnrichedOrderFilled @entity {
+  "Transaction hash + Order hash"
+  id: ID!
+  "Transaction hash"
+  transactionHash: Bytes!
+  "Timestamp at which transaction occurred"
+  timestamp: BigInt!
+  "Addresses of the maker and the taker"
+  maker: Account!
+  taker: Account!
+  "Order hash"
+  orderHash: Bytes!
+  "Market/CTF Token ID which the transaction is interacting with"
+  market: Orderbook!
+  "Buy or Sell transaction"
+  side: TradeType!
+  "Amount of collateral in trade"
+  size: BigInt!
+  "Price of the conditional token"
+  price: BigDecimal!
+}
+
+# Collection of EnrichedOrderFilled trades
+type Orderbook @entity {
+  "Token Id"
+  id: ID!
+  "Buy orders"
+  buys: [EnrichedOrderFilled!]!
+  "Sell orders"
+  sells: [EnrichedOrderFilled!]!
+  "Number of trades of any kind against this order book"
+  tradesQuantity: BigInt!
+  "Number of purchases of shares from this order book"
+  buysQuantity: BigInt!
+  "Number of sales of shares to this order book"
+  sellsQuantity: BigInt!
+  "Market volume in terms of the underlying collateral value"
+  collateralVolume: BigInt!
+  "Volume scaled by the number of decimals of collateralToken"
+  scaledCollateralVolume: BigDecimal!
+  "Global volume of share purchases in USDC base units"
+  collateralBuyVolume: BigInt!
+  "Global volume of share purchases in USDC scaled by 10^6"
+  scaledCollateralBuyVolume: BigDecimal!
+  "Global volume of share sales in USDC base units"
+  collateralSellVolume: BigInt!
+  "Global volume of share sales in USDC scaled by 10^6"
+  scaledCollateralSellVolume: BigDecimal!
+  "Timestamp of last day during which someone made a trade"
+  lastActiveDay: BigInt!
+}
+
+# Exchange: all trades aggregated
+type OrdersMatchedGlobal @entity {
+  "ID is empty string, this is a singleton"
+  id: ID!
+
+  "Number of trades of any kind for all order books"
+  tradesQuantity: BigInt!
+  "Number of purchases of shares from any order book"
+  buysQuantity: BigInt!
+  "Number of sales of shares to any order book"
+  sellsQuantity: BigInt!
+
+  "Global volume in USDC base units"
+  collateralVolume: BigDecimal!
+  "Global volume in USDC scaled by 10^6"
+  scaledCollateralVolume: BigDecimal!
+
+  "Global volume of share purchases in USDC base units"
+  collateralBuyVolume: BigDecimal!
+  "Global volume of share purchases in USDC scaled by 10^6"
+  scaledCollateralBuyVolume: BigDecimal!
+  "Global volume of share sales in USDC base units"
+  collateralSellVolume: BigDecimal!
+  "Global volume of share sales in USDC scaled by 10^6"
+  scaledCollateralSellVolume: BigDecimal!
+}
