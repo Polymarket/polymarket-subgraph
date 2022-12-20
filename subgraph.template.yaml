@@ -13,7 +13,7 @@ dataSources:
       startBlock: {{contracts.ConditionalTokens.startBlock}}
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.3
+      apiVersion: 0.0.5
       language: wasm/assemblyscript
       entities:
         - Condition
@@ -47,7 +47,7 @@ dataSources:
       startBlock: {{contracts.FixedProductMarketMakerFactory.startBlock}}
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.3
+      apiVersion: 0.0.5
       language: wasm/assemblyscript
       entities:
         - FixedProductMarketMaker
@@ -60,6 +60,31 @@ dataSources:
         - event: FixedProductMarketMakerCreation(indexed address,address,indexed address,indexed address,bytes32[],uint256)
           handler: handleFixedProductMarketMakerCreation
       file: ./src/FixedProductMarketMakerFactoryMapping.ts
+  - kind: ethereum/contract
+    name: Exchange
+    network: {{networkName}}
+    source:
+      address: '{{contracts.Exchange.address}}'
+      abi: Exchange
+      startBlock: {{contracts.Exchange.startBlock}}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - OrdersMatchedGlobal
+        - OrdersMatchedEvent
+        - EnrichedOrderFilled
+        - Orderbook
+      abis:
+        - name: Exchange
+          file: ./abis/Exchange.json
+      eventHandlers:
+        - event: OrderFilled(indexed bytes32,indexed address,indexed address,uint256,uint256,uint256,uint256,uint256)
+          handler: handleFill
+        - event: OrdersMatched(indexed bytes32,indexed address,uint256,uint256,uint256,uint256)
+          handler: handleMatch
+      file: ./src/ExchangeMapping.ts
 templates:
   - name: FixedProductMarketMaker
     kind: ethereum/contract
@@ -68,7 +93,7 @@ templates:
       abi: FixedProductMarketMaker
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.3
+      apiVersion: 0.0.5
       language: wasm/assemblyscript
       entities:
         - Account
@@ -82,6 +107,8 @@ templates:
       abis:
         - name: FixedProductMarketMaker
           file: ./abis/FixedProductMarketMaker.json
+        - name: ConditionalTokens
+          file: ./abis/ConditionalTokens.json
         - name: ERC20Detailed
           file: ./abis/ERC20Detailed.json
       eventHandlers:
@@ -96,6 +123,20 @@ templates:
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handlePoolShareTransfer
       file: ./src/FixedProductMarketMakerMapping.ts
+  - name: ConditionalTokens
+    kind: ethereum/contract
+    network: {{networkName}}
+    source:
+      abi: ConditionalTokens
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities: []
+      abis:
+        - name: ConditionalTokens
+          file: ./abis/ConditionalTokens.json
+      file: ./src/empty.ts
   - name: ERC20Detailed
     kind: ethereum/contract
     network: {{networkName}}
@@ -103,7 +144,7 @@ templates:
       abi: ERC20Detailed
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.3
+      apiVersion: 0.0.5
       language: wasm/assemblyscript
       entities: [ ]
       abis:
