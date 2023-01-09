@@ -73,6 +73,8 @@ export function handleFixedProductMarketMakerCreation(
   fixedProductMarketMaker.creator = event.params.creator;
   fixedProductMarketMaker.creationTimestamp = event.block.timestamp;
   fixedProductMarketMaker.creationTransactionHash = event.transaction.hash;
+  fixedProductMarketMaker.conditionalTokenAddress = conditionalTokensAddress;
+  fixedProductMarketMaker.conditions = [];
 
   getCollateralDetails(event.params.collateralToken);
   fixedProductMarketMaker.collateralToken = event.params.collateralToken.toHexString();
@@ -93,10 +95,11 @@ export function handleFixedProductMarketMakerCreation(
     }
 
     outcomeTokenCount *= condition.outcomeSlotCount;
-    condition.fixedProductMarketMakers = condition.fixedProductMarketMakers.concat(
-      [addressHexString],
-    );
+    condition.fixedProductMarketMakers =
+      condition.fixedProductMarketMakers.concat([addressHexString]);
     condition.save();
+
+    fixedProductMarketMaker.conditions = fixedProductMarketMaker.conditions.concat([conditionIdStr]);
   }
 
   fixedProductMarketMaker.outcomeSlotCount = outcomeTokenCount;
