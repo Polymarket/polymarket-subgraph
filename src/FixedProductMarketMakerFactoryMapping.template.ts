@@ -1,7 +1,7 @@
 import { BigInt, log, BigDecimal } from '@graphprotocol/graph-ts';
 
 import { FixedProductMarketMakerCreation } from './types/FixedProductMarketMakerFactory/FixedProductMarketMakerFactory';
-import { FixedProductMarketMaker, Condition } from './types/schema';
+import { FixedProductMarketMaker, Condition, MarketData } from './types/schema';
 import { FixedProductMarketMaker as FixedProductMarketMakerTemplate } from './types/templates';
 import { timestampToDay } from './utils/time';
 import { bigZero } from './utils/constants';
@@ -125,10 +125,15 @@ export function handleFixedProductMarketMakerCreation(
       outcomeTokenCount,
       outcomeIndex,
     );
+    let payouts = new Array<BigDecimal>(outcomeTokenCount);
+    payouts.fill(BigDecimal.zero());
 
     let marketData = new MarketData(tokenId);
     marketData.conditionId = condition;
     marketData.fpmmAddress = addressHexString;
+    marketData.payouts = payouts;
+
+    marketData.save();
   }
 
   FixedProductMarketMakerTemplate.create(address);

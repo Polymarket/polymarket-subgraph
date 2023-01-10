@@ -446,5 +446,5 @@ type MarketData @entity {
   ""
   priceFPMM: BigDecimal
   ""
-  payouts: [BigDecimal]
+  payouts: [BigDecimal!]
 }
