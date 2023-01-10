@@ -432,3 +432,19 @@ type OrdersMatchedGlobal @entity {
   "Global volume of share sales in USDC scaled by 10^6"
   scaledCollateralSellVolume: BigDecimal!
 }
+
+# TODO: MarketData 
+type MarketData @entity {
+  "TokenID of the CTF Asset"
+  id: ID!
+  ""
+  conditionId: String!
+	""
+  fpmmAddress: String
+  ""
+  priceOrderbook: BigDecimal
+  ""
+  priceFPMM: BigDecimal
+  ""
+  payouts: [BigDecimal]
+}
