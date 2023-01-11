@@ -218,10 +218,28 @@ type FixedProductMarketMaker @entity {
   poolMembers: [FpmmPoolMembership!] @derivedFrom(field: "pool")
 }
 
+# TODO: MarketData 
+type MarketData @entity {
+  "TokenID of the CTF Asset"
+  id: ID!
+  ""
+  conditionId: String!
+  ""
+  outcomeIndex: BigInt!
+	""
+  fpmm: FixedProductMarketMaker
+  ""
+  priceOrderbook: BigDecimal
+  ""
+  priceFPMM: BigDecimal
+  ""
+  payouts: [BigDecimal!]
+}
+
 type MarketPosition @entity {
   id: ID!
   "Market/tokenId on which this position is on"
-  market: String!
+  market: MarketData!
   "Address which holds this position"
   user: Account!
   "Number of outcome shares that the user has ever bought"
@@ -431,22 +449,4 @@ type OrdersMatchedGlobal @entity {
   collateralSellVolume: BigDecimal!
   "Global volume of share sales in USDC scaled by 10^6"
   scaledCollateralSellVolume: BigDecimal!
-}
-
-# TODO: MarketData 
-type MarketData @entity {
-  "TokenID of the CTF Asset"
-  id: ID!
-  ""
-  conditionId: String!
-  ""
-  outcomeIndex: BigInt!
-	""
-  fpmmAddress: String
-  ""
-  priceOrderbook: BigDecimal
-  ""
-  priceFPMM: BigDecimal
-  ""
-  payouts: [BigDecimal!]
 }

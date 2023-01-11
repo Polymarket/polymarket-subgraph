@@ -130,7 +130,7 @@ export function handleFixedProductMarketMakerCreation(
     let marketData = new MarketData(tokenId);
     marketData.conditionId = condition;
     marketData.outcomeIndex = BigInt.fromI32(outcomeIndex);
-    marketData.fpmmAddress = addressHexString;
+    marketData.fpmm = addressHexString;
     marketData.payouts = payouts;
 
     marketData.save();

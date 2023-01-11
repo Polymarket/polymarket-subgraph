@@ -1,4 +1,4 @@
-import { Address, BigInt, ethereum, log } from '@graphprotocol/graph-ts';
+import { BigInt, ethereum, log } from '@graphprotocol/graph-ts';
 import {
   FixedProductMarketMaker,
   MarketPosition,
