@@ -218,22 +218,18 @@ type FixedProductMarketMaker @entity {
   poolMembers: [FpmmPoolMembership!] @derivedFrom(field: "pool")
 }
 
-# TODO: MarketData 
+# Metadata for the market 
 type MarketData @entity {
   "TokenID of the CTF Asset"
   id: ID!
   ""
-  conditionId: String!
+  condition: Condition!
   ""
   outcomeIndex: BigInt!
 	""
   fpmm: FixedProductMarketMaker
   ""
   priceOrderbook: BigDecimal
-  ""
-  priceFPMM: BigDecimal
-  ""
-  payouts: [BigDecimal!]
 }
 
 type MarketPosition @entity {

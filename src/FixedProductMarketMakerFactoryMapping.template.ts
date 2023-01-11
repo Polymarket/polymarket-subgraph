@@ -124,14 +124,11 @@ export function handleFixedProductMarketMakerCreation(
       outcomeTokenCount,
       outcomeIndex,
     );
-    let payouts = new Array<BigDecimal>(outcomeTokenCount);
-    payouts.fill(BigDecimal.zero());
 
     let marketData = new MarketData(tokenId);
-    marketData.conditionId = condition;
+    marketData.condition = condition;
     marketData.outcomeIndex = BigInt.fromI32(outcomeIndex);
     marketData.fpmm = addressHexString;
-    marketData.payouts = payouts;
 
     marketData.save();
   }
