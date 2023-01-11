@@ -439,6 +439,8 @@ type MarketData @entity {
   id: ID!
   ""
   conditionId: String!
+  ""
+  outcomeIndex: BigInt!
 	""
   fpmmAddress: String
   ""

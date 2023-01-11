@@ -54,6 +54,8 @@ dataSources:
       abis:
         - name: FixedProductMarketMakerFactory
           file: ./abis/FixedProductMarketMakerFactory.json
+        - name: ConditionalTokens
+          file: ./abis/ConditionalTokens.json
         - name: ERC20Detailed
           file: ./abis/ERC20Detailed.json
       eventHandlers:

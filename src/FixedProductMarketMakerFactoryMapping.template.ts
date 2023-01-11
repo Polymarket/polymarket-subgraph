@@ -7,7 +7,6 @@ import { timestampToDay } from './utils/time';
 import { bigZero } from './utils/constants';
 import { getCollateralDetails } from './utils/collateralTokens';
 import { getMarket } from './utils/ctf-utils';
-import { FillCallMarketOrderFillDataOrderStruct } from './types/OrderExecutorV2/OrderExecutorV2';
 
 /**
  * Initialise all variables of fpmm which start at zero
@@ -110,7 +109,7 @@ export function handleFixedProductMarketMakerCreation(
   fixedProductMarketMaker = initialiseFPMM(fixedProductMarketMaker, event);
   fixedProductMarketMaker.save();
 
-  //  Create and save MarketData
+  //  Create MarketData on FPMM creation
   for (
     let outcomeIndex = 0;
     outcomeIndex < outcomeTokenCount;
@@ -130,6 +129,7 @@ export function handleFixedProductMarketMakerCreation(
 
     let marketData = new MarketData(tokenId);
     marketData.conditionId = condition;
+    marketData.outcomeIndex = BigInt.fromI32(outcomeIndex);
     marketData.fpmmAddress = addressHexString;
     marketData.payouts = payouts;
 
