@@ -109,7 +109,7 @@ export function handleFixedProductMarketMakerCreation(
   fixedProductMarketMaker = initialiseFPMM(fixedProductMarketMaker, event);
   fixedProductMarketMaker.save();
 
-  //  Create MarketData on FPMM creation
+  // Update MarketData with FPMM on FPMM creation
   for (
     let outcomeIndex = 0;
     outcomeIndex < outcomeTokenCount;
@@ -124,13 +124,11 @@ export function handleFixedProductMarketMakerCreation(
       outcomeTokenCount,
       outcomeIndex,
     );
-
-    let marketData = new MarketData(tokenId);
-    marketData.condition = condition;
-    marketData.outcomeIndex = BigInt.fromI32(outcomeIndex);
-    marketData.fpmm = addressHexString;
-
-    marketData.save();
+    let marketData = MarketData.load(tokenId);
+    if (marketData != null) {
+      marketData.fpmm = addressHexString;
+      marketData.save();
+    }
   }
 
   FixedProductMarketMakerTemplate.create(address);

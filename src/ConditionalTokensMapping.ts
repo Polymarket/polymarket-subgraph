@@ -1,4 +1,4 @@
-import { BigDecimal, log } from '@graphprotocol/graph-ts';
+import { BigDecimal, BigInt, log } from '@graphprotocol/graph-ts';
 
 import {
   ConditionPreparation,
@@ -13,6 +13,7 @@ import {
   Merge,
   Split,
   FixedProductMarketMaker,
+  MarketData,
 } from './types/schema';
 import { requireGlobal } from './utils/global-utils';
 import {
@@ -24,6 +25,9 @@ import { partitionCheck } from './utils/conditional-utils';
 import { bigZero } from './utils/constants';
 import { getCollateralDetails } from './utils/collateralTokens';
 import { markAccountAsSeen, requireAccount } from './utils/account-utils';
+import { dataSource } from '@graphprotocol/graph-ts';
+import { getCollateralAddress } from './utils/collateral-utils';
+import { getMarket } from './utils/ctf-utils';
 
 export function handlePositionSplit(event: PositionSplit): void {
   if (
@@ -152,8 +156,37 @@ export function handleConditionPreparation(event: ConditionPreparation): void {
   global.numOpenConditions += 1;
   global.save();
 
-  condition.outcomeSlotCount = event.params.outcomeSlotCount.toI32();
+  let outcomeTokenCount = event.params.outcomeSlotCount.toI32();
+  condition.outcomeSlotCount = outcomeTokenCount;
   condition.save();
+
+  // Create the market data entity on ConditionPreparation using fixed collateral token address
+
+  // Fetch hardcoded collateral token address
+  let collateralAddress: string = getCollateralAddress(dataSource.network());
+  let conditionId = event.params.conditionId.toHexString();
+  let conditionalTokenAddress = dataSource.address().toHexString();
+  if (collateralAddress != '') {
+    for (
+      let outcomeIndex = 0;
+      outcomeIndex < outcomeTokenCount;
+      outcomeIndex++
+    ) {
+      // Calculate the tokenId from the hardcoded collateral token address, as the collateral token is not present on preparation
+      let tokenId = getMarket(
+        conditionalTokenAddress,
+        conditionId,
+        collateralAddress,
+        outcomeTokenCount,
+        outcomeIndex,
+      );
+
+      let marketData = new MarketData(tokenId);
+      marketData.condition = conditionId;
+      marketData.outcomeIndex = BigInt.fromI32(outcomeIndex);
+      marketData.save();
+    }
+  }
 }
 
 export function handleConditionResolution(event: ConditionResolution): void {
@@ -185,6 +218,5 @@ export function handleConditionResolution(event: ConditionResolution): void {
   condition.payoutNumerators = payoutNumerators;
   condition.payoutDenominator = payoutDenominator;
   condition.resolutionHash = event.transaction.hash;
-
   condition.save();
 }
