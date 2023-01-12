@@ -220,15 +220,15 @@ type FixedProductMarketMaker @entity {
 
 # Metadata for the market 
 type MarketData @entity {
-  "TokenID of the CTF Asset"
+  "ERC1155 TokenID of the CTF Asset"
   id: ID!
-  ""
+  "Condition that the token is linked to"
   condition: Condition!
-  ""
+  "Outcome Index, may not be present if an FPMM is not created"
   outcomeIndex: BigInt
-	""
+	"The linked FixedProductMarketMaker"
   fpmm: FixedProductMarketMaker
-  ""
+  "The most recent onchain price of the asset"
   priceOrderbook: BigDecimal
 }
 
