@@ -229,8 +229,6 @@ type MarketData @entity {
 	""
   fpmm: FixedProductMarketMaker
   ""
-  priceFPMM: BigDecimal
-  ""
   priceOrderbook: BigDecimal
 }
 

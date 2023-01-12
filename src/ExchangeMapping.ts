@@ -1,5 +1,9 @@
 import { BigDecimal, BigInt } from '@graphprotocol/graph-ts';
-import { OrderFilled, OrdersMatched } from './types/Exchange/Exchange';
+import {
+  OrderFilled,
+  OrdersMatched,
+  TokenRegistered,
+} from './types/Exchange/Exchange';
 import {
   EnrichedOrderFilled,
   MarketData,
@@ -199,4 +203,26 @@ export function handleMatch(event: OrdersMatched): void {
 
   // update global volume
   updateGlobalVolume(size.toBigDecimal(), collateralScaleDec, side);
+}
+
+export function handleTokenRegistered(event: TokenRegistered): void {
+  // Create MarketData entity on token registration if it hasn't been created
+  // e.g if the tokens aren't associated with an FPMM
+  let token0Str = event.params.token0.toString();
+  let token1Str = event.params.token1.toString();
+  let condition = event.params.conditionId.toHexString();
+
+  let data0 = MarketData.load(token0Str);
+  if (data0 == null) {
+    data0 = new MarketData(token0Str);
+    data0.condition = condition;
+    data0.save();
+  }
+
+  let data1 = MarketData.load(token1Str);
+  if (data1 == null) {
+    data1 = new MarketData(token1Str);
+    data1.condition = condition;
+    data1.save();
+  }
 }

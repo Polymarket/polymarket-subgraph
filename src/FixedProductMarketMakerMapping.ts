@@ -44,8 +44,6 @@ import {
   requireAccount,
   updateUserVolume,
 } from './utils/account-utils';
-import { getMarket } from './utils/ctf-utils';
-import { updateMarketDataFromFPMMTrade } from './utils/market-data-utils';
 
 function recordBuy(event: FPMMBuy): void {
   let buy = new Transaction(event.transaction.hash.toHexString());
@@ -88,7 +86,7 @@ function recordFundingAddition(event: FPMMFundingAdded): void {
   // therefore this is the amount of collateral that the user has split.
   let addedFunds = max(amountsAdded);
 
-  let amountsRefunded = new Array<bigint>(amountsAdded.length);
+  let amountsRefunded = new Array<BigInt>(amountsAdded.length);
   for (
     let outcomeIndex = 0;
     outcomeIndex < amountsAdded.length;
@@ -132,7 +130,7 @@ export function handleFundingAdded(event: FPMMFundingAdded): void {
 
   let oldAmounts = fpmm.outcomeTokenAmounts;
   let amountsAdded = event.params.amountsAdded;
-  let newAmounts = new Array<bigint>(oldAmounts.length);
+  let newAmounts = new Array<BigInt>(oldAmounts.length);
   let amountsProduct = bigOne;
   for (let i = 0; i < newAmounts.length; i += 1) {
     newAmounts[i] = oldAmounts[i].plus(amountsAdded[i]);
@@ -174,7 +172,7 @@ export function handleFundingRemoved(event: FPMMFundingRemoved): void {
 
   let oldAmounts = fpmm.outcomeTokenAmounts;
   let amountsRemoved = event.params.amountsRemoved;
-  let newAmounts = new Array<bigint>(oldAmounts.length);
+  let newAmounts = new Array<BigInt>(oldAmounts.length);
   let amountsProduct = bigOne;
   for (let i = 0; i < newAmounts.length; i += 1) {
     newAmounts[i] = oldAmounts[i].minus(amountsRemoved[i]);
@@ -220,7 +218,7 @@ export function handleBuy(event: FPMMBuy): void {
 
   let outcomeIndex = event.params.outcomeIndex.toI32();
 
-  let newAmounts = new Array<bigint>(oldAmounts.length);
+  let newAmounts = new Array<BigInt>(oldAmounts.length);
   let amountsProduct = bigOne;
   for (let i = 0; i < newAmounts.length; i += 1) {
     if (i == outcomeIndex) {
@@ -279,9 +277,6 @@ export function handleBuy(event: FPMMBuy): void {
     TRADE_TYPE_BUY,
   );
   updateMarketPositionFromTrade(event);
-
-  // Update MarketData from Buy
-  updateMarketDataFromFPMMTrade(fpmm);
 }
 
 export function handleSell(event: FPMMSell): void {
@@ -301,7 +296,7 @@ export function handleSell(event: FPMMSell): void {
   );
 
   let outcomeIndex = event.params.outcomeIndex.toI32();
-  let newAmounts = new Array<bigint>(oldAmounts.length);
+  let newAmounts = new Array<BigInt>(oldAmounts.length);
   let amountsProduct = bigOne;
   for (let i = 0; i < newAmounts.length; i += 1) {
     if (i == outcomeIndex) {
@@ -360,9 +355,6 @@ export function handleSell(event: FPMMSell): void {
     TRADE_TYPE_SELL,
   );
   updateMarketPositionFromTrade(event);
-
-  // Update MarketData from Sell
-  updateMarketDataFromFPMMTrade(fpmm);
 }
 
 export function handlePoolShareTransfer(event: Transfer): void {

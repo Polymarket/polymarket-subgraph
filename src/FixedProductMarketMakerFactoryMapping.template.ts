@@ -116,6 +116,8 @@ export function handleFixedProductMarketMakerCreation(
     outcomeIndex += 1
   ) {
     let condition = fixedProductMarketMaker.conditions[0];
+    log.info('FPMM: CTF: {}', [conditionalTokensAddress]);
+    log.info('FPMM: Collateral Token: {}', [collateralToken]);
 
     let tokenId = getMarket(
       conditionalTokensAddress,
@@ -124,11 +126,21 @@ export function handleFixedProductMarketMakerCreation(
       outcomeTokenCount,
       outcomeIndex,
     );
+    log.info('FPMM: TokenId for outcomeIndex {}: {}', [
+      outcomeIndex.toString(),
+      tokenId,
+    ]);
+
+    // Create/update MarketData on FPMM Creation
     let marketData = MarketData.load(tokenId);
-    if (marketData != null) {
-      marketData.fpmm = addressHexString;
-      marketData.save();
+    if (marketData == null) {
+      marketData = new MarketData(tokenId);
+      marketData.condition = condition;
     }
+    // If the MarketData exists, update the outcomeIndex and FPMM address
+    marketData.outcomeIndex = BigInt.fromI32(outcomeIndex);
+    marketData.fpmm = addressHexString;
+    marketData.save();
   }
 
   FixedProductMarketMakerTemplate.create(address);

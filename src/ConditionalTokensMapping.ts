@@ -13,7 +13,6 @@ import {
   Merge,
   Split,
   FixedProductMarketMaker,
-  MarketData,
 } from './types/schema';
 import { requireGlobal } from './utils/global-utils';
 import {
@@ -159,34 +158,6 @@ export function handleConditionPreparation(event: ConditionPreparation): void {
   let outcomeTokenCount = event.params.outcomeSlotCount.toI32();
   condition.outcomeSlotCount = outcomeTokenCount;
   condition.save();
-
-  // Create the market data entity on ConditionPreparation using fixed collateral token address
-
-  // Fetch hardcoded collateral token address
-  let collateralAddress: string = getCollateralAddress(dataSource.network());
-  let conditionId = event.params.conditionId.toHexString();
-  let conditionalTokenAddress = dataSource.address().toHexString();
-  if (collateralAddress != '') {
-    for (
-      let outcomeIndex = 0;
-      outcomeIndex < outcomeTokenCount;
-      outcomeIndex++
-    ) {
-      // Calculate the tokenId from the hardcoded collateral token address, as the collateral token is not present on preparation
-      let tokenId = getMarket(
-        conditionalTokenAddress,
-        conditionId,
-        collateralAddress,
-        outcomeTokenCount,
-        outcomeIndex,
-      );
-
-      let marketData = new MarketData(tokenId);
-      marketData.condition = conditionId;
-      marketData.outcomeIndex = BigInt.fromI32(outcomeIndex);
-      marketData.save();
-    }
-  }
 }
 
 export function handleConditionResolution(event: ConditionResolution): void {
