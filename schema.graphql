@@ -225,7 +225,7 @@ type MarketData @entity {
   ""
   condition: Condition!
   ""
-  outcomeIndex: BigInt!
+  outcomeIndex: BigInt
 	""
   fpmm: FixedProductMarketMaker
   ""

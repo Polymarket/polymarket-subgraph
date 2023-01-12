@@ -1,4 +1,4 @@
-import { BigDecimal, BigInt, log } from '@graphprotocol/graph-ts';
+import { BigDecimal, log } from '@graphprotocol/graph-ts';
 
 import {
   ConditionPreparation,
@@ -24,9 +24,6 @@ import { partitionCheck } from './utils/conditional-utils';
 import { bigZero } from './utils/constants';
 import { getCollateralDetails } from './utils/collateralTokens';
 import { markAccountAsSeen, requireAccount } from './utils/account-utils';
-import { dataSource } from '@graphprotocol/graph-ts';
-import { getCollateralAddress } from './utils/collateral-utils';
-import { getMarket } from './utils/ctf-utils';
 
 export function handlePositionSplit(event: PositionSplit): void {
   if (
