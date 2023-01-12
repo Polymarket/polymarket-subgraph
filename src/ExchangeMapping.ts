@@ -142,7 +142,7 @@ export function handleFill(event: OrderFilled): void {
 
   updateTradesQuantity(orderBook, side, enriched.id);
 
-  // Update market data with order price
+  // Update market data with most recent orderbook price
   let marketData = MarketData.load(tokenId);
   if (marketData != null) {
     marketData.priceOrderbook = enriched.price;
