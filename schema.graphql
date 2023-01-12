@@ -226,7 +226,7 @@ type MarketData @entity {
   condition: Condition!
   "Outcome Index, may not be present if an FPMM is not created"
   outcomeIndex: BigInt
-	"The linked FixedProductMarketMaker"
+  "The linked FixedProductMarketMaker"
   fpmm: FixedProductMarketMaker
   "The most recent onchain price of the asset"
   priceOrderbook: BigDecimal
