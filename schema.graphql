@@ -228,7 +228,7 @@ type MarketData @entity {
   outcomeIndex: BigInt
   "The linked FixedProductMarketMaker"
   fpmm: FixedProductMarketMaker
-  "The most recent onchain price of the asset"
+  "The most recent onchain price of the asset on the orderbook"
   priceOrderbook: BigDecimal
 }
 
