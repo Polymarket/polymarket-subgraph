@@ -1,7 +1,12 @@
 import { BigDecimal, BigInt } from '@graphprotocol/graph-ts';
-import { OrderFilled, OrdersMatched } from './types/Exchange/Exchange';
+import {
+  OrderFilled,
+  OrdersMatched,
+  TokenRegistered,
+} from './types/Exchange/Exchange';
 import {
   EnrichedOrderFilled,
+  MarketData,
   Orderbook,
   OrderFilledEvent,
   OrdersMatchedEvent,
@@ -23,7 +28,7 @@ function enrichOrder(
   event: OrderFilled,
   side: string,
   marketId: string,
-): string {
+): EnrichedOrderFilled {
   let eventId =
     event.transaction.hash.toHexString() +
     '_' +
@@ -50,7 +55,7 @@ function enrichOrder(
 
   enriched.save();
 
-  return eventId;
+  return enriched;
 }
 
 function recordOrderFilledEvent(event: OrderFilled): string {
@@ -116,7 +121,7 @@ export function handleFill(event: OrderFilled): void {
   recordOrderFilledEvent(event);
 
   // Enrich and store the OrderFilled event
-  let orderId = enrichOrder(event, side, tokenId);
+  let enriched = enrichOrder(event, side, tokenId);
 
   // order book
   let orderBook: Orderbook = requireOrderBook(tokenId as string);
@@ -135,7 +140,14 @@ export function handleFill(event: OrderFilled): void {
   updateUserVolume(maker, size, collateralScaleDec, timestamp);
   markAccountAsSeen(maker, timestamp);
 
-  updateTradesQuantity(orderBook, side, orderId);
+  updateTradesQuantity(orderBook, side, enriched.id);
+
+  // Update market data with most recent orderbook price
+  let marketData = MarketData.load(tokenId);
+  if (marketData != null) {
+    marketData.priceOrderbook = enriched.price;
+    marketData.save();
+  }
 
   // Update market position
   updateMarketPositionFromOrderFilled(
@@ -191,4 +203,26 @@ export function handleMatch(event: OrdersMatched): void {
 
   // update global volume
   updateGlobalVolume(size.toBigDecimal(), collateralScaleDec, side);
+}
+
+export function handleTokenRegistered(event: TokenRegistered): void {
+  // Create MarketData entity on token registration if it hasn't been created
+  // e.g if the tokens aren't associated with an FPMM
+  let token0Str = event.params.token0.toString();
+  let token1Str = event.params.token1.toString();
+  let condition = event.params.conditionId.toHexString();
+
+  let data0 = MarketData.load(token0Str);
+  if (data0 == null) {
+    data0 = new MarketData(token0Str);
+    data0.condition = condition;
+    data0.save();
+  }
+
+  let data1 = MarketData.load(token1Str);
+  if (data1 == null) {
+    data1 = new MarketData(token1Str);
+    data1.condition = condition;
+    data1.save();
+  }
 }

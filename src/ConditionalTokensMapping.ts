@@ -152,7 +152,8 @@ export function handleConditionPreparation(event: ConditionPreparation): void {
   global.numOpenConditions += 1;
   global.save();
 
-  condition.outcomeSlotCount = event.params.outcomeSlotCount.toI32();
+  let outcomeTokenCount = event.params.outcomeSlotCount.toI32();
+  condition.outcomeSlotCount = outcomeTokenCount;
   condition.save();
 }
 
@@ -185,6 +186,5 @@ export function handleConditionResolution(event: ConditionResolution): void {
   condition.payoutNumerators = payoutNumerators;
   condition.payoutDenominator = payoutDenominator;
   condition.resolutionHash = event.transaction.hash;
-
   condition.save();
 }

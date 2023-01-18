@@ -218,10 +218,24 @@ type FixedProductMarketMaker @entity {
   poolMembers: [FpmmPoolMembership!] @derivedFrom(field: "pool")
 }
 
+# Metadata for the market 
+type MarketData @entity {
+  "ERC1155 TokenID of the CTF Asset"
+  id: ID!
+  "Condition that the token is linked to"
+  condition: Condition!
+  "Outcome Index, may not be present if an FPMM is not created"
+  outcomeIndex: BigInt
+  "The linked FixedProductMarketMaker"
+  fpmm: FixedProductMarketMaker
+  "The most recent onchain price of the asset on the orderbook"
+  priceOrderbook: BigDecimal
+}
+
 type MarketPosition @entity {
   id: ID!
   "Market/tokenId on which this position is on"
-  market: String!
+  market: MarketData!
   "Address which holds this position"
   user: Account!
   "Number of outcome shares that the user has ever bought"
