@@ -348,21 +348,21 @@ export function updateMarketPositionsFromMerge(
     );
     position.valueSold = position.valueSold.plus(mergeValue);
 
-    // Calculate PnL
-    sumOfAvgPricesPaid = sumOfAvgPricesPaid.plus(
-      position.netValue.div(position.netQuantity),
-    );
-
+    // Calculate profit
+    if (!(position.netValue.isZero() || position.netQuantity.isZero())) {
+      sumOfAvgPricesPaid = sumOfAvgPricesPaid.plus(
+        position.netValue.div(position.netQuantity),
+      );
+      let pnl = bigOne.minus(sumOfAvgPricesPaid).times(event.params.amount);
+      updateUserProfit(
+        userAddress,
+        pnl,
+        collateralScaleDec,
+        event.block.timestamp,
+        condition,
+      );
+    }
     updateNetPositionAndSave(position);
-
-    let pnl = bigOne.minus(sumOfAvgPricesPaid).times(event.params.amount);
-    updateUserProfit(
-      userAddress,
-      pnl,
-      collateralScaleDec,
-      event.block.timestamp,
-      condition,
-    );
   }
 }
 
@@ -387,7 +387,9 @@ export function updateMarketPositionsFromRedemption(
   const conditionalTokenAddress = marketMaker.conditionalTokenAddress;
   const conditions = marketMaker.conditions;
   const collateralToken = marketMaker.collateralToken.toString();
-  const collateralScaleDec = getCollateralScale(marketMaker.collateralToken).toBigDecimal();
+  const collateralScaleDec = getCollateralScale(
+    marketMaker.collateralToken,
+  ).toBigDecimal();
 
   const outcomeSlotCount = marketMaker.outcomeSlotCount as number;
 
