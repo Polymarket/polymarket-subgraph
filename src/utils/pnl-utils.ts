@@ -19,6 +19,21 @@ export function calculateProfit(
   return avgSellPrice.minus(avgBuyPrice).times(amountSold).minus(fee);
 }
 
+export function canCalculateProfit(
+  buyQuantity: BigInt,
+  buyCash: BigInt,
+  sellQuantity: BigInt,
+  sellCash: BigInt,
+): boolean {
+    // only calculates pnl if they are all non-zero
+  return !(
+    buyQuantity.isZero() ||
+    buyCash.isZero() ||
+    sellQuantity.isZero() ||
+    sellCash.isZero()
+  );
+}
+
 export function loadMarketProfit(
   conditionId: string,
   user: string,
