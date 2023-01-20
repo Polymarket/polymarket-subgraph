@@ -91,7 +91,18 @@ export function updateMarketPositionFromOrderFilled(
 
     // Calculate PnL if the trade is a sell
     let collateralScaleDec = new BigDecimal(BigInt.fromI32(10).pow(<u8>6));
+    if (position.netValue.isZero() || position.netQuantity.isZero()) {
+      log.info(
+        'pnl calc: orderFilled: zero netQuantity or netValue in position',
+        [],
+      );
+      return;
+    }
     let avgBuyPrice = position.netValue.div(position.netQuantity);
+    if (takerAmountNetFees.isZero() || makerAmountFilled.isZero()) {
+      log.info('pnl calc: orderFilled: zero maker or taker amount', []);
+      return;
+    }
     let avgSellPrice = takerAmountNetFees.div(makerAmountFilled);
 
     // Use the MarketData entity to fetch the conditionId given a registered tokenId
@@ -188,9 +199,19 @@ export function updateMarketPositionFromTrade(event: ethereum.Event): void {
 
     // avg sell price = cash received / amount of tokens sold
     const tokensSold = transaction.outcomeTokensAmount;
-    const avgSellPrice = transaction.tradeAmount.div(tokensSold);
+    const cashReceived = transaction.tradeAmount;
+    if (cashReceived.isZero() || tokensSold.isZero()) {
+      log.info('pnl calc: zero tokens sold or zero cash received', []);
+      return;
+    }
+    const avgSellPrice = cashReceived.div(tokensSold);
 
     // average buy price = total net cash given / total net tokens received
+    if (position.netValue.isZero() || position.netQuantity.isZero()) {
+      // ignore if netQuantity is zero meaning that somehow the user sold tokens without owning any
+      log.info('pnl calc: zero netQuantity or netValue in position', []);
+      return;
+    }
     const avgBuyPrice = position.netValue.div(position.netQuantity);
 
     const pnl = calculateProfit(
