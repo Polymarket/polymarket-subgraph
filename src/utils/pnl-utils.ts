@@ -10,7 +10,7 @@ import { bigZero } from './constants';
  * @param fee           - Fees paid
  * @returns
  */
-export function calculatePnL(
+export function calculateProfit(
   avgBuyPrice: BigInt,
   avgSellPrice: BigInt,
   amountSold: BigInt,

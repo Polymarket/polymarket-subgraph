@@ -1,9 +1,10 @@
-import { BigInt, ethereum, log } from '@graphprotocol/graph-ts';
+import { BigDecimal, BigInt, ethereum, log } from '@graphprotocol/graph-ts';
 import {
   FixedProductMarketMaker,
   MarketPosition,
   Transaction,
   Condition,
+  MarketData,
 } from '../types/schema';
 import {
   PositionsMerge,
@@ -14,9 +15,14 @@ import {
   FPMMFundingAdded,
   FPMMFundingRemoved,
 } from '../types/templates/FixedProductMarketMaker/FixedProductMarketMaker';
-import { bigZero, TRADE_TYPE_BUY } from './constants';
+import { bigOne, bigZero, TRADE_TYPE_BUY } from './constants';
 import { max, timesBD } from './maths';
 import { getMarket } from './ctf-utils';
+import { FPMMSell } from '../types/FixedProductMarketMakerFactory/FixedProductMarketMakerFactory';
+import { calculateProfit } from './pnl-utils';
+import { updateUserProfit } from './account-utils';
+import { getCollateralScale } from './collateralTokens';
+import { OrderFilled } from '../types/Exchange/Exchange';
 
 /*
  * Returns the user's position for the given user and market(tokenId)
@@ -63,19 +69,19 @@ function updateNetPositionAndSave(position: MarketPosition): void {
 }
 
 /**
- * Update market position for the maker
+ * Update market position for the maker upon Order filled
  */
 export function updateMarketPositionFromOrderFilled(
   maker: string,
   tokenId: string,
   side: string,
-  makerAmountFilled: BigInt,
-  takerAmountFilled: BigInt,
-  fee: BigInt,
+  event: OrderFilled,
 ): void {
   // Create/Update market position for the maker
   let position = getMarketPosition(maker, tokenId);
-  let takerAmountNetFees = takerAmountFilled.minus(fee);
+  let fee = event.params.fee;
+  let makerAmountFilled = event.params.makerAmountFilled;
+  let takerAmountNetFees = event.params.takerAmountFilled.minus(fee);
 
   if (side == TRADE_TYPE_BUY) {
     position.quantityBought = position.quantityBought.plus(takerAmountNetFees);
@@ -83,6 +89,30 @@ export function updateMarketPositionFromOrderFilled(
   } else {
     position.quantitySold = position.quantitySold.plus(makerAmountFilled);
     position.valueSold = position.valueSold.plus(takerAmountNetFees);
+
+    // Calculate PnL if the trade is a sell
+    let collateralScaleDec = new BigDecimal(BigInt.fromI32(10).pow(<u8>6));
+    let avgBuyPrice = position.netValue.div(position.netQuantity);
+    let avgSellPrice = takerAmountNetFees.div(makerAmountFilled);
+
+    // Use the MarketData entity to fetch the conditionId given a registered tokenId
+    let mktData = MarketData.load(tokenId);
+    if (mktData != null) {
+      let conditionId = mktData.condition;
+      let pnl = calculateProfit(
+        avgBuyPrice,
+        avgSellPrice,
+        makerAmountFilled,
+        fee,
+      );
+      updateUserProfit(
+        maker,
+        pnl,
+        collateralScaleDec,
+        event.block.timestamp,
+        conditionId,
+      );
+    }
   }
 
   updateNetPositionAndSave(position);
@@ -154,6 +184,31 @@ export function updateMarketPositionFromTrade(event: ethereum.Event): void {
       .times(fee)
       .div(BigInt.fromI32(10).pow(18).minus(fee));
     position.feesPaid = position.feesPaid.plus(feeAmount);
+
+    // Calculate PnL on each sell
+    let fpmmSell = event as FPMMSell;
+    const cashReceivedFromSale = fpmmSell.params.returnAmount;
+    const tokensSold = fpmmSell.params.outcomeTokensSold;
+
+    const avgSellPrice = cashReceivedFromSale.div(tokensSold);
+    const avgBuyPrice = position.netValue.div(position.netQuantity);
+
+    const pnl = calculateProfit(
+      avgBuyPrice,
+      avgSellPrice,
+      tokensSold,
+      fpmmSell.params.feeAmount,
+    );
+    const collateralScale = getCollateralScale(fpmm.collateralToken);
+    const collateralScaleDec = collateralScale.toBigDecimal();
+
+    updateUserProfit(
+      transaction.user,
+      pnl,
+      collateralScaleDec,
+      transaction.timestamp,
+      condition,
+    );
   }
 
   updateNetPositionAndSave(position);
@@ -237,6 +292,12 @@ export function updateMarketPositionsFromMerge(
   const collateralToken = marketMaker.collateralToken.toString();
   const outcomeSlotCount = marketMaker.outcomeSlotCount as number;
 
+  const collateralScale = getCollateralScale(marketMaker.collateralToken);
+  const collateralScaleDec = collateralScale.toBigDecimal();
+
+  // profit calculation = (1 - sum of avg price paid per outcome) * amount
+  let sumOfAvgPricesPaid = bigZero;
+
   if (conditions == null || conditions.length == 0) {
     log.error('LOG: Could not find conditions on the FPMM: {}', [
       marketMakerAddress,
@@ -245,13 +306,13 @@ export function updateMarketPositionsFromMerge(
       `ERR: Could not find conditions on the FPMM: ${marketMakerAddress}`,
     );
   }
+  const condition = conditions[0];
 
   for (
     let outcomeIndex = 0;
     outcomeIndex < outcomeTokenPrices.length;
     outcomeIndex += 1
   ) {
-    let condition = conditions[0];
     const market = getMarket(
       conditionalTokenAddress,
       condition,
@@ -271,7 +332,21 @@ export function updateMarketPositionsFromMerge(
     );
     position.valueSold = position.valueSold.plus(mergeValue);
 
+    // Calculate PnL
+    sumOfAvgPricesPaid = sumOfAvgPricesPaid.plus(
+      position.netValue.div(position.netQuantity),
+    );
+
     updateNetPositionAndSave(position);
+
+    let pnl = bigOne.minus(sumOfAvgPricesPaid).times(event.params.amount);
+    updateUserProfit(
+      userAddress,
+      pnl,
+      collateralScaleDec,
+      event.block.timestamp,
+      condition,
+    );
   }
 }
 

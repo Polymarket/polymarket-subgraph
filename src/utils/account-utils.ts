@@ -72,19 +72,19 @@ export function updateUserVolume(
 }
 
 export function updateUserProfit(
-  accountAddress: string,
+  user: string,
   pnl: BigInt,
   collateralScaleDec: BigDecimal,
   timestamp: BigInt,
   conditionId: string,
 ): void {
-  let account = requireAccount(accountAddress, timestamp);
+  let account = requireAccount(user, timestamp);
   // will subtract if a negative profit
   account.profit = account.profit.plus(pnl);
   account.scaledProfit = account.profit.divDecimal(collateralScaleDec);
   account.save();
 
-  let marketProfit = loadMarketProfit(conditionId, accountAddress);
+  let marketProfit = loadMarketProfit(conditionId, user);
   marketProfit.profit = marketProfit.profit.plus(pnl);
   marketProfit.scaledProfit =
     marketProfit.profit.divDecimal(collateralScaleDec);
