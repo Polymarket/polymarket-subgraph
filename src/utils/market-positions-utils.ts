@@ -18,7 +18,6 @@ import {
 import { bigOne, bigZero, TRADE_TYPE_BUY } from './constants';
 import { max, timesBD } from './maths';
 import { getMarket } from './ctf-utils';
-import { FPMMSell } from '../types/FixedProductMarketMakerFactory/FixedProductMarketMakerFactory';
 import { calculateProfit } from './pnl-utils';
 import { updateUserProfit } from './account-utils';
 import { getCollateralScale } from './collateralTokens';
@@ -186,18 +185,19 @@ export function updateMarketPositionFromTrade(event: ethereum.Event): void {
     position.feesPaid = position.feesPaid.plus(feeAmount);
 
     // Calculate PnL on each sell
-    let fpmmSell = event as FPMMSell;
-    const cashReceivedFromSale = fpmmSell.params.returnAmount;
-    const tokensSold = fpmmSell.params.outcomeTokensSold;
 
-    const avgSellPrice = cashReceivedFromSale.div(tokensSold);
+    // avg sell price = cash received / amount of tokens sold
+    const tokensSold = transaction.outcomeTokensAmount;
+    const avgSellPrice = transaction.tradeAmount.div(tokensSold);
+
+    // average buy price = total net cash given / total net tokens received
     const avgBuyPrice = position.netValue.div(position.netQuantity);
 
     const pnl = calculateProfit(
       avgBuyPrice,
       avgSellPrice,
       tokensSold,
-      fpmmSell.params.feeAmount,
+      transaction.feeAmount,
     );
     const collateralScale = getCollateralScale(fpmm.collateralToken);
     const collateralScaleDec = collateralScale.toBigDecimal();

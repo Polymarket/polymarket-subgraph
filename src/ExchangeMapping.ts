@@ -150,14 +150,7 @@ export function handleFill(event: OrderFilled): void {
   }
 
   // Update market position
-  updateMarketPositionFromOrderFilled(
-    maker,
-    tokenId,
-    side,
-    event.params.makerAmountFilled,
-    event.params.takerAmountFilled,
-    event.params.fee,
-  );
+  updateMarketPositionFromOrderFilled(maker, tokenId, side, event);
 
   // persist order book
   orderBook.save();
