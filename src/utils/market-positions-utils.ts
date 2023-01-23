@@ -18,7 +18,6 @@ import {
 import { bigOne, bigZero, TRADE_TYPE_BUY } from './constants';
 import { max, timesBD } from './maths';
 import { getMarket } from './ctf-utils';
-import { calculateProfit, canCalculateProfit } from './pnl-utils';
 import { updateUserProfit } from './account-utils';
 import { getCollateralScale } from './collateralTokens';
 import { OrderFilled } from '../types/Exchange/Exchange';
@@ -88,41 +87,21 @@ export function updateMarketPositionFromOrderFilled(
   } else {
     position.quantitySold = position.quantitySold.plus(makerAmountFilled);
     position.valueSold = position.valueSold.plus(takerAmountNetFees);
-
-    // Calculate PnL if the trade is a sell
-    let collateralScaleDec = new BigDecimal(BigInt.fromI32(10).pow(<u8>6));
-    if (
-      canCalculateProfit(
-        position.netQuantity,
-        position.netValue,
-        makerAmountFilled,
-        takerAmountNetFees,
-      )
-    ) {
-      let avgBuyPrice = position.netValue.div(position.netQuantity);
-      let avgSellPrice = takerAmountNetFees.div(makerAmountFilled);
-      // Use the MarketData entity to fetch the conditionId given a registered tokenId
-      let mktData = MarketData.load(tokenId);
-      if (mktData != null) {
-        let conditionId = mktData.condition;
-        let pnl = calculateProfit(
-          avgBuyPrice,
-          avgSellPrice,
-          makerAmountFilled,
-          fee,
-        );
-        updateUserProfit(
-          maker,
-          pnl,
-          collateralScaleDec,
-          event.block.timestamp,
-          conditionId,
-        );
-      }
-    }
   }
-
   updateNetPositionAndSave(position);
+
+  let collateralScaleDec = new BigDecimal(BigInt.fromI32(10).pow(<u8>6));
+  let mktData = MarketData.load(tokenId);
+  if (mktData != null) {
+    let pnl = position.netValue.neg();
+    updateUserProfit(
+      maker,
+      pnl,
+      collateralScaleDec,
+      event.block.timestamp,
+      mktData.condition,
+    );
+  }
 }
 
 export function updateMarketPositionFromTrade(event: ethereum.Event): void {
@@ -144,6 +123,8 @@ export function updateMarketPositionFromTrade(event: ethereum.Event): void {
   const conditions = fpmm.conditions;
   const collateralToken = fpmm.collateralToken.toString();
   const outcomeSlotCount = fpmm.outcomeSlotCount as number;
+  const collateralScale = getCollateralScale(fpmm.collateralToken);
+  const collateralScaleDec = collateralScale.toBigDecimal();
 
   if (conditions == null || conditions.length == 0) {
     log.error('LOG: Could not find conditions on the FPMM: {}', [
@@ -191,43 +172,22 @@ export function updateMarketPositionFromTrade(event: ethereum.Event): void {
       .times(fee)
       .div(BigInt.fromI32(10).pow(18).minus(fee));
     position.feesPaid = position.feesPaid.plus(feeAmount);
-
-    // Calculate PnL on each sell
-    const tokensSold = transaction.outcomeTokensAmount;
-    const cashReceived = transaction.tradeAmount;
-    if (
-      canCalculateProfit(
-        position.netQuantity,
-        position.netValue,
-        tokensSold,
-        cashReceived,
-      )
-    ) {
-      // avg sell price = cash received / amount of tokens sold
-      const avgSellPrice = cashReceived.div(tokensSold);
-      // average buy price = total net cash given / total net tokens received
-      const avgBuyPrice = position.netValue.div(position.netQuantity);
-
-      const pnl = calculateProfit(
-        avgBuyPrice,
-        avgSellPrice,
-        tokensSold,
-        transaction.feeAmount,
-      );
-      const collateralScale = getCollateralScale(fpmm.collateralToken);
-      const collateralScaleDec = collateralScale.toBigDecimal();
-
-      updateUserProfit(
-        transaction.user,
-        pnl,
-        collateralScaleDec,
-        transaction.timestamp,
-        condition,
-      );
-    }
   }
 
   updateNetPositionAndSave(position);
+
+  // On FPMM Trades, pnl is already implicitly calculated by netValue
+  // netValue: the amount of cash paid to enter a position
+  // If positive, the pnl is a loss, if negative, the pnl is a profit
+  // update pnl on both buys and sells
+  let pnl = position.netValue.minus(position.feesPaid).neg();
+  updateUserProfit(
+    transaction.user,
+    pnl,
+    collateralScaleDec,
+    transaction.timestamp,
+    condition,
+  );
 }
 
 /*
@@ -311,8 +271,8 @@ export function updateMarketPositionsFromMerge(
   const collateralScale = getCollateralScale(marketMaker.collateralToken);
   const collateralScaleDec = collateralScale.toBigDecimal();
 
-  // profit calculation = (1 - sum of avg price paid per outcome) * amount
-  let sumOfAvgPricesPaid = bigZero;
+  // profit calculation = (1 - sum of avg price buy price per outcome) * amount
+  let sumOfAvgBuyPrice = bigZero;
 
   if (conditions == null || conditions.length == 0) {
     log.error('LOG: Could not find conditions on the FPMM: {}', [
@@ -350,20 +310,26 @@ export function updateMarketPositionsFromMerge(
 
     // Calculate profit
     if (!(position.netValue.isZero() || position.netQuantity.isZero())) {
-      sumOfAvgPricesPaid = sumOfAvgPricesPaid.plus(
-        position.netValue.div(position.netQuantity),
-      );
-      let pnl = bigOne.minus(sumOfAvgPricesPaid).times(event.params.amount);
-      updateUserProfit(
-        userAddress,
-        pnl,
-        collateralScaleDec,
-        event.block.timestamp,
-        condition,
+      // Use valueBought and quantityBought to calculate average buy price
+      // as netValue includes sells and therefore can be negative
+      // sumOfAvgPricesPaid = sumOfAvgPricesPaid.plus(
+      //   position.netValue.div(position.netQuantity),
+      sumOfAvgBuyPrice = sumOfAvgBuyPrice.plus(
+        position.valueBought.div(position.quantityBought),
       );
     }
     updateNetPositionAndSave(position);
   }
+
+  // Calculate pnl
+  let pnl = bigOne.minus(sumOfAvgBuyPrice).times(event.params.amount);
+  updateUserProfit(
+    userAddress,
+    pnl,
+    collateralScaleDec,
+    event.block.timestamp,
+    condition,
+  );
 }
 
 /*
@@ -376,7 +342,7 @@ export function updateMarketPositionsFromRedemption(
   marketMakerAddress: string,
   event: PayoutRedemption,
 ): void {
-  let userAddress = event.params.redeemer.toHexString();
+  let redeemer = event.params.redeemer.toHexString();
   let condition = Condition.load(
     event.params.conditionId.toHexString(),
   ) as Condition;
@@ -424,7 +390,7 @@ export function updateMarketPositionsFromRedemption(
       outcomeIndex,
     );
 
-    let position = getMarketPosition(userAddress, market);
+    let position = getMarketPosition(redeemer, market);
 
     // Redeeming a position is an all or nothing operation so use full balance for calculations
     let numerator = payoutNumerators[outcomeIndex];
@@ -432,38 +398,14 @@ export function updateMarketPositionsFromRedemption(
       .times(numerator)
       .div(payoutDenominator);
 
-    // Calculate pnl
-    if (
-      canCalculateProfit(
-        position.netQuantity,
-        position.netValue,
-        position.netQuantity,
-        redemptionValue,
-      )
-    ) {
-      const avgBuyPrice = position.netValue.div(position.netQuantity);
-      const avgRedemptionPrice = redemptionValue.div(position.netQuantity);
-      log.info('pnl calc: redemption: avgBuyPrice, avgRedemptionPrice: ', [
-        avgBuyPrice.toString(),
-        avgRedemptionPrice.toString(),
-      ]);
-
-      const pnl = calculateProfit(
-        avgBuyPrice,
-        avgRedemptionPrice,
-        position.netQuantity,
-        bigZero,
-      );
-      log.info('pnl calc: redemption: pnl: ', [pnl.toString()]);
-
-      updateUserProfit(
-        userAddress,
-        pnl,
-        collateralScaleDec,
-        event.block.timestamp,
-        conditionId,
-      );
-    }
+    // For Redemptions, pnl is implicitly the cash received on redemption
+    updateUserProfit(
+      redeemer,
+      redemptionValue,
+      collateralScaleDec,
+      event.block.timestamp,
+      conditionId,
+    );
 
     // position gets zero'd out
     position.quantitySold = position.quantitySold.plus(position.netQuantity);
