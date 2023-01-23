@@ -1,7 +1,6 @@
 import { MarketProfit } from '../types/schema';
 import { bigZero } from './constants';
 
-
 export function loadMarketProfit(
   conditionId: string,
   user: string,
