@@ -458,9 +458,9 @@ type MarketProfit @entity {
   "Keyed on ConditionID + user"
   id: ID!
   "User address"
-	user: Account!
+  user: Account!
   "The ConditionID, used as the link between YES/NO tokens"
-	condition: Condition!
+  condition: Condition!
   "Profit in USDC base units per market per account"
   profit: BigInt!
   "Profit in USDC scaled by 10^6"
