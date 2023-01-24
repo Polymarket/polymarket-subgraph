@@ -63,6 +63,13 @@ type Account @entity {
   merges: [Merge!] @derivedFrom(field: "stakeholder")
   "Redemption of underlying collateral after a market has resolved"
   redemptions: [Redemption!] @derivedFrom(field: "redeemer")
+
+  "Profit generated from fpmm and orderbook trades, merges and redemptions"
+  profit: BigInt!
+  "Realized profit in USDC scaled by 10^6"
+  scaledProfit: BigDecimal!
+  "Profits in USDC base units by market"
+  marketProfits: [MarketProfit!] @derivedFrom(field: "user")
 }
 
 type Collateral @entity {
@@ -446,3 +453,17 @@ type OrdersMatchedGlobal @entity {
   "Global volume of share sales in USDC scaled by 10^6"
   scaledCollateralSellVolume: BigDecimal!
 }
+
+type MarketProfit @entity {
+  "Keyed on ConditionID + user"
+  id: ID!
+  "User address"
+  user: Account!
+  "The ConditionID, used as the link between YES/NO tokens"
+  condition: Condition!
+  "Profit in USDC base units per market per account"
+  profit: BigInt!
+  "Profit in USDC scaled by 10^6"
+  scaledProfit: BigDecimal!
+}
+

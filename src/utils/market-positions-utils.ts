@@ -1,9 +1,10 @@
-import { BigInt, ethereum, log } from '@graphprotocol/graph-ts';
+import { BigDecimal, BigInt, ethereum, log } from '@graphprotocol/graph-ts';
 import {
   FixedProductMarketMaker,
   MarketPosition,
   Transaction,
   Condition,
+  MarketData,
 } from '../types/schema';
 import {
   PositionsMerge,
@@ -14,9 +15,12 @@ import {
   FPMMFundingAdded,
   FPMMFundingRemoved,
 } from '../types/templates/FixedProductMarketMaker/FixedProductMarketMaker';
-import { bigZero, TRADE_TYPE_BUY } from './constants';
+import { bigOne, bigZero, TRADE_TYPE_BUY } from './constants';
 import { max, timesBD } from './maths';
 import { getMarket } from './ctf-utils';
+import { updateUserProfit } from './account-utils';
+import { getCollateralScale } from './collateralTokens';
+import { OrderFilled } from '../types/Exchange/Exchange';
 
 /*
  * Returns the user's position for the given user and market(tokenId)
@@ -63,28 +67,42 @@ function updateNetPositionAndSave(position: MarketPosition): void {
 }
 
 /**
- * Update market position for the maker
+ * Update market position for the maker upon Order filled
  */
 export function updateMarketPositionFromOrderFilled(
   maker: string,
   tokenId: string,
   side: string,
-  makerAmountFilled: BigInt,
-  takerAmountFilled: BigInt,
-  fee: BigInt,
+  event: OrderFilled,
 ): void {
   // Create/Update market position for the maker
   let position = getMarketPosition(maker, tokenId);
-  let takerAmountNetFees = takerAmountFilled.minus(fee);
+  let fee = event.params.fee;
+  let makerAmountFilled = event.params.makerAmountFilled;
+  let takerAmountNetFees = event.params.takerAmountFilled.minus(fee);
+  let profit = bigZero;
 
   if (side == TRADE_TYPE_BUY) {
     position.quantityBought = position.quantityBought.plus(takerAmountNetFees);
     position.valueBought = position.valueBought.plus(makerAmountFilled);
+    profit = makerAmountFilled.neg();
   } else {
     position.quantitySold = position.quantitySold.plus(makerAmountFilled);
     position.valueSold = position.valueSold.plus(takerAmountNetFees);
+    profit = takerAmountNetFees;
   }
 
+  let collateralScaleDec = new BigDecimal(BigInt.fromI32(10).pow(<u8>6));
+  let mktData = MarketData.load(tokenId);
+  if (mktData != null) {
+    updateUserProfit(
+      maker,
+      profit,
+      collateralScaleDec,
+      event.block.timestamp,
+      mktData.condition,
+    );
+  }
   updateNetPositionAndSave(position);
 }
 
@@ -107,6 +125,8 @@ export function updateMarketPositionFromTrade(event: ethereum.Event): void {
   const conditions = fpmm.conditions;
   const collateralToken = fpmm.collateralToken.toString();
   const outcomeSlotCount = fpmm.outcomeSlotCount as number;
+  const collateralScale = getCollateralScale(fpmm.collateralToken);
+  const collateralScaleDec = collateralScale.toBigDecimal();
 
   if (conditions == null || conditions.length == 0) {
     log.error('LOG: Could not find conditions on the FPMM: {}', [
@@ -131,18 +151,23 @@ export function updateMarketPositionFromTrade(event: ethereum.Event): void {
   let position = getMarketPosition(transaction.user, market);
 
   let fee = fpmm.fee;
+  // express the fee in terms of cash
+  let feeAmount = bigZero;
+  let profit = transaction.tradeAmount;
 
-  if (transaction.type == 'Buy') {
+  if (transaction.type == TRADE_TYPE_BUY) {
     position.quantityBought = position.quantityBought.plus(
       transaction.outcomeTokensAmount,
     );
     position.valueBought = position.valueBought.plus(transaction.tradeAmount);
 
     // feeAmount = investmentAmount * fee
-    let feeAmount = transaction.tradeAmount
+    feeAmount = transaction.tradeAmount
       .times(fee)
       .div(BigInt.fromI32(10).pow(18));
     position.feesPaid = position.feesPaid.plus(feeAmount);
+    // if buy, profit is negative
+    profit = profit.neg();
   } else {
     position.quantitySold = position.quantitySold.plus(
       transaction.outcomeTokensAmount,
@@ -150,11 +175,19 @@ export function updateMarketPositionFromTrade(event: ethereum.Event): void {
     position.valueSold = position.valueSold.plus(transaction.tradeAmount);
 
     // feeAmount = returnAmount * (fee/(1-fee));
-    let feeAmount = transaction.tradeAmount
+    feeAmount = transaction.tradeAmount
       .times(fee)
       .div(BigInt.fromI32(10).pow(18).minus(fee));
     position.feesPaid = position.feesPaid.plus(feeAmount);
   }
+
+  updateUserProfit(
+    transaction.user,
+    profit,
+    collateralScaleDec,
+    transaction.timestamp,
+    condition,
+  );
 
   updateNetPositionAndSave(position);
 }
@@ -205,13 +238,12 @@ export function updateMarketPositionsFromSplit(
     // Event emits the amount of collateral to be split as `amount`
     position.quantityBought = position.quantityBought.plus(event.params.amount);
 
-    // Distribute split value proportionately based on share value
+    // Distribute split value proportionately based on share value(according to the FPMM)
     let splitValue = timesBD(
       event.params.amount,
       outcomeTokenPrices[outcomeIndex],
     );
     position.valueBought = position.valueBought.plus(splitValue);
-
     updateNetPositionAndSave(position);
   }
 }
@@ -237,6 +269,12 @@ export function updateMarketPositionsFromMerge(
   const collateralToken = marketMaker.collateralToken.toString();
   const outcomeSlotCount = marketMaker.outcomeSlotCount as number;
 
+  const collateralScale = getCollateralScale(marketMaker.collateralToken);
+  const collateralScaleDec = collateralScale.toBigDecimal();
+
+  // profit calculation = (1 - sum of avg price buy price per outcome) * amount
+  let sumOfAvgBuyPrice = bigZero;
+
   if (conditions == null || conditions.length == 0) {
     log.error('LOG: Could not find conditions on the FPMM: {}', [
       marketMakerAddress,
@@ -245,13 +283,13 @@ export function updateMarketPositionsFromMerge(
       `ERR: Could not find conditions on the FPMM: ${marketMakerAddress}`,
     );
   }
+  const condition = conditions[0];
 
   for (
     let outcomeIndex = 0;
     outcomeIndex < outcomeTokenPrices.length;
     outcomeIndex += 1
   ) {
-    let condition = conditions[0];
     const market = getMarket(
       conditionalTokenAddress,
       condition,
@@ -271,8 +309,28 @@ export function updateMarketPositionsFromMerge(
     );
     position.valueSold = position.valueSold.plus(mergeValue);
 
+    // Calculate profit
+    if (!(position.netValue.isZero() || position.netQuantity.isZero())) {
+      // Use valueBought and quantityBought to calculate average buy price
+      // as netValue includes sells and therefore can be negative
+      // sumOfAvgPricesPaid = sumOfAvgPricesPaid.plus(
+      //   position.netValue.div(position.netQuantity),
+      sumOfAvgBuyPrice = sumOfAvgBuyPrice.plus(
+        position.valueBought.div(position.quantityBought),
+      );
+    }
     updateNetPositionAndSave(position);
   }
+
+  // Calculate pnl
+  let profit = bigOne.minus(sumOfAvgBuyPrice).times(event.params.amount);
+  updateUserProfit(
+    userAddress,
+    profit,
+    collateralScaleDec,
+    event.block.timestamp,
+    condition,
+  );
 }
 
 /*
@@ -285,7 +343,7 @@ export function updateMarketPositionsFromRedemption(
   marketMakerAddress: string,
   event: PayoutRedemption,
 ): void {
-  let userAddress = event.params.redeemer.toHexString();
+  let redeemer = event.params.redeemer.toHexString();
   let condition = Condition.load(
     event.params.conditionId.toHexString(),
   ) as Condition;
@@ -296,6 +354,10 @@ export function updateMarketPositionsFromRedemption(
   const conditionalTokenAddress = marketMaker.conditionalTokenAddress;
   const conditions = marketMaker.conditions;
   const collateralToken = marketMaker.collateralToken.toString();
+  const collateralScaleDec = getCollateralScale(
+    marketMaker.collateralToken,
+  ).toBigDecimal();
+
   const outcomeSlotCount = marketMaker.outcomeSlotCount as number;
 
   if (conditions == null || conditions.length == 0) {
@@ -311,6 +373,7 @@ export function updateMarketPositionsFromRedemption(
   let payoutDenominator = condition.payoutDenominator as BigInt;
 
   let indexSets = event.params.indexSets;
+  let conditionId = conditions[0];
   for (let i = 0; i < indexSets.length; i += 1) {
     // Each element of indexSets is the decimal representation of the binary slot of the given outcome
     // i.e. For a condition with 4 outcomes, ["1", "2", "4"] represents the first 3 slots as 0b0111
@@ -322,13 +385,13 @@ export function updateMarketPositionsFromRedemption(
     }
     const market = getMarket(
       conditionalTokenAddress,
-      conditions[0],
+      conditionId,
       collateralToken,
       outcomeSlotCount,
       outcomeIndex,
     );
 
-    let position = getMarketPosition(userAddress, market);
+    let position = getMarketPosition(redeemer, market);
 
     // Redeeming a position is an all or nothing operation so use full balance for calculations
     let numerator = payoutNumerators[outcomeIndex];
@@ -336,10 +399,17 @@ export function updateMarketPositionsFromRedemption(
       .times(numerator)
       .div(payoutDenominator);
 
+    updateUserProfit(
+      redeemer,
+      redemptionValue,
+      collateralScaleDec,
+      event.block.timestamp,
+      conditionId,
+    );
+
     // position gets zero'd out
     position.quantitySold = position.quantitySold.plus(position.netQuantity);
     position.valueSold = position.valueSold.plus(redemptionValue);
-
     updateNetPositionAndSave(position);
   }
 }
