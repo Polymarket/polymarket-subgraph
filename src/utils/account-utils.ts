@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import { BigDecimal, BigInt, log } from '@graphprotocol/graph-ts';
+import { BigDecimal, BigInt } from '@graphprotocol/graph-ts';
 import { Account } from '../types/schema';
 
 import { bigOne, bigZero } from './constants';
