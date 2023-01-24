@@ -85,7 +85,7 @@ export function updateMarketPositionFromOrderFilled(
   if (side == TRADE_TYPE_BUY) {
     position.quantityBought = position.quantityBought.plus(takerAmountNetFees);
     position.valueBought = position.valueBought.plus(makerAmountFilled);
-    profit = makerAmountFilled;
+    profit = makerAmountFilled.neg();
   } else {
     position.quantitySold = position.quantitySold.plus(makerAmountFilled);
     position.valueSold = position.valueSold.plus(takerAmountNetFees);
