@@ -80,19 +80,21 @@ export function updateMarketPositionFromOrderFilled(
   let fee = event.params.fee;
   let makerAmountFilled = event.params.makerAmountFilled;
   let takerAmountNetFees = event.params.takerAmountFilled.minus(fee);
+  let profit = bigZero;
 
   if (side == TRADE_TYPE_BUY) {
     position.quantityBought = position.quantityBought.plus(takerAmountNetFees);
     position.valueBought = position.valueBought.plus(makerAmountFilled);
+    profit = makerAmountFilled;
   } else {
     position.quantitySold = position.quantitySold.plus(makerAmountFilled);
     position.valueSold = position.valueSold.plus(takerAmountNetFees);
+    profit = takerAmountNetFees;
   }
 
   let collateralScaleDec = new BigDecimal(BigInt.fromI32(10).pow(<u8>6));
   let mktData = MarketData.load(tokenId);
   if (mktData != null) {
-    let profit = position.valueSold.minus(position.valueBought);
     updateUserProfit(
       maker,
       profit,
@@ -151,6 +153,7 @@ export function updateMarketPositionFromTrade(event: ethereum.Event): void {
   let fee = fpmm.fee;
   // express the fee in terms of cash
   let feeAmount = bigZero;
+  let profit = transaction.tradeAmount;
 
   if (transaction.type == TRADE_TYPE_BUY) {
     position.quantityBought = position.quantityBought.plus(
@@ -163,6 +166,8 @@ export function updateMarketPositionFromTrade(event: ethereum.Event): void {
       .times(fee)
       .div(BigInt.fromI32(10).pow(18));
     position.feesPaid = position.feesPaid.plus(feeAmount);
+    // if buy, profit is negative
+    profit = profit.neg();
   } else {
     position.quantitySold = position.quantitySold.plus(
       transaction.outcomeTokensAmount,
@@ -176,21 +181,6 @@ export function updateMarketPositionFromTrade(event: ethereum.Event): void {
     position.feesPaid = position.feesPaid.plus(feeAmount);
   }
 
-  let profit = position.valueSold.minus(position.valueBought).minus(feeAmount);
-  // TODO rm
-  if (
-    transaction.user == '0x5bc1242f3bb3f4f4f00b603ef6678431d4892dc9' &&
-    (market ==
-      '60869871469376321574904667328762911501870754872924453995477779862968218702336' ||
-      market ==
-        '53135072462907880191400140706440867753044989936304433583131786753949599718775')
-  ) {
-    log.info('Update on Market position on trade...', []);
-    log.info('profit: {}', [profit.toString()]);
-    log.info('netValue: {}', [position.netValue.toString()]);
-    log.info('netQuantity: {}', [position.netQuantity.toString()]);
-    log.info('feesPaid: {}', [position.feesPaid.toString()]);
-  }
   updateUserProfit(
     transaction.user,
     profit,
@@ -255,16 +245,6 @@ export function updateMarketPositionsFromSplit(
     );
     position.valueBought = position.valueBought.plus(splitValue);
     updateNetPositionAndSave(position);
-    if (
-      userAddress == '0x5bc1242f3bb3f4f4f00b603ef6678431d4892dc9' &&
-      market ==
-        '60869871469376321574904667328762911501870754872924453995477779862968218702336'
-    ) {
-      log.info('relevant positionSplit found!', []);
-      log.info('valueBought: {}', [position.valueBought.toString()]);
-      log.info('quantityBought: {}', [position.quantityBought.toString()]);
-      log.info('netValue: {}', [position.netValue.toString()]);
-    }
   }
 }
 
@@ -343,20 +323,10 @@ export function updateMarketPositionsFromMerge(
   }
 
   // Calculate pnl
-  let pnl = bigOne.minus(sumOfAvgBuyPrice).times(event.params.amount);
-  // TODO rm
-  if (
-    userAddress == '0x5bc1242f3bb3f4f4f00b603ef6678431d4892dc9' &&
-    condition ==
-      '0xe3b423dfad8c22ff75c9899c4e8176f628cf4ad4caa00481764d320e7415f7a9'
-  ) {
-    log.info('Updating on Merge...', []);
-    log.info('account pnl: {}', [pnl.toString()]);
-    log.info('sum of avg buy price: {}', [sumOfAvgBuyPrice.toString()]);
-  }
+  let profit = bigOne.minus(sumOfAvgBuyPrice).times(event.params.amount);
   updateUserProfit(
     userAddress,
-    pnl,
+    profit,
     collateralScaleDec,
     event.block.timestamp,
     condition,
@@ -429,15 +399,6 @@ export function updateMarketPositionsFromRedemption(
       .times(numerator)
       .div(payoutDenominator);
 
-    // TODO: rm For Redemptions, pnl is implicitly the cash received on redemption
-    if (
-      redeemer == '0x5bc1242f3bb3f4f4f00b603ef6678431d4892dc9' &&
-      conditionId ==
-        '0xe3b423dfad8c22ff75c9899c4e8176f628cf4ad4caa00481764d320e7415f7a9'
-    ) {
-      log.info('Update on Redemption position for specific user...', []);
-      log.info('pnl/redemptionValue: {}', [redemptionValue.toString()]);
-    }
     updateUserProfit(
       redeemer,
       redemptionValue,
