@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import { BigDecimal, BigInt } from '@graphprotocol/graph-ts';
+import { BigDecimal, BigInt, log } from '@graphprotocol/graph-ts';
 import { Account } from '../types/schema';
 
 import { bigOne, bigZero } from './constants';
@@ -89,4 +89,15 @@ export function updateUserProfit(
   marketProfit.scaledProfit =
     marketProfit.profit.divDecimal(collateralScaleDec);
   marketProfit.save();
+  // TODO rm
+  if (
+    user == '0x5bc1242f3bb3f4f4f00b603ef6678431d4892dc9' &&
+    conditionId ==
+      '0xe3b423dfad8c22ff75c9899c4e8176f628cf4ad4caa00481764d320e7415f7a9'
+  ) {
+    log.info('Updating User profit...', []);
+    log.info('pnl change: {}', [pnl.toString()]);
+    log.info('account profit: {}', [account.profit.toString()]);
+    log.info('market profit: {}', [marketProfit.profit.toString()]);
+  }
 }

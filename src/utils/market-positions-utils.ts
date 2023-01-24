@@ -88,20 +88,20 @@ export function updateMarketPositionFromOrderFilled(
     position.quantitySold = position.quantitySold.plus(makerAmountFilled);
     position.valueSold = position.valueSold.plus(takerAmountNetFees);
   }
-  updateNetPositionAndSave(position);
 
   let collateralScaleDec = new BigDecimal(BigInt.fromI32(10).pow(<u8>6));
   let mktData = MarketData.load(tokenId);
   if (mktData != null) {
-    let pnl = position.netValue.neg();
+    let profit = position.valueSold.minus(position.valueBought);
     updateUserProfit(
       maker,
-      pnl,
+      profit,
       collateralScaleDec,
       event.block.timestamp,
       mktData.condition,
     );
   }
+  updateNetPositionAndSave(position);
 }
 
 export function updateMarketPositionFromTrade(event: ethereum.Event): void {
@@ -149,15 +149,17 @@ export function updateMarketPositionFromTrade(event: ethereum.Event): void {
   let position = getMarketPosition(transaction.user, market);
 
   let fee = fpmm.fee;
+  // express the fee in terms of cash
+  let feeAmount = bigZero;
 
-  if (transaction.type == 'Buy') {
+  if (transaction.type == TRADE_TYPE_BUY) {
     position.quantityBought = position.quantityBought.plus(
       transaction.outcomeTokensAmount,
     );
     position.valueBought = position.valueBought.plus(transaction.tradeAmount);
 
     // feeAmount = investmentAmount * fee
-    let feeAmount = transaction.tradeAmount
+    feeAmount = transaction.tradeAmount
       .times(fee)
       .div(BigInt.fromI32(10).pow(18));
     position.feesPaid = position.feesPaid.plus(feeAmount);
@@ -168,26 +170,36 @@ export function updateMarketPositionFromTrade(event: ethereum.Event): void {
     position.valueSold = position.valueSold.plus(transaction.tradeAmount);
 
     // feeAmount = returnAmount * (fee/(1-fee));
-    let feeAmount = transaction.tradeAmount
+    feeAmount = transaction.tradeAmount
       .times(fee)
       .div(BigInt.fromI32(10).pow(18).minus(fee));
     position.feesPaid = position.feesPaid.plus(feeAmount);
   }
 
-  updateNetPositionAndSave(position);
-
-  // On FPMM Trades, pnl is already implicitly calculated by netValue
-  // netValue: the amount of cash paid to enter a position
-  // If positive, the pnl is a loss, if negative, the pnl is a profit
-  // update pnl on both buys and sells
-  let pnl = position.netValue.minus(position.feesPaid).neg();
+  let profit = position.valueSold.minus(position.valueBought).minus(feeAmount);
+  // TODO rm
+  if (
+    transaction.user == '0x5bc1242f3bb3f4f4f00b603ef6678431d4892dc9' &&
+    (market ==
+      '60869871469376321574904667328762911501870754872924453995477779862968218702336' ||
+      market ==
+        '53135072462907880191400140706440867753044989936304433583131786753949599718775')
+  ) {
+    log.info('Update on Market position on trade...', []);
+    log.info('profit: {}', [profit.toString()]);
+    log.info('netValue: {}', [position.netValue.toString()]);
+    log.info('netQuantity: {}', [position.netQuantity.toString()]);
+    log.info('feesPaid: {}', [position.feesPaid.toString()]);
+  }
   updateUserProfit(
     transaction.user,
-    pnl,
+    profit,
     collateralScaleDec,
     transaction.timestamp,
     condition,
   );
+
+  updateNetPositionAndSave(position);
 }
 
 /*
@@ -236,14 +248,23 @@ export function updateMarketPositionsFromSplit(
     // Event emits the amount of collateral to be split as `amount`
     position.quantityBought = position.quantityBought.plus(event.params.amount);
 
-    // Distribute split value proportionately based on share value
+    // Distribute split value proportionately based on share value(according to the FPMM)
     let splitValue = timesBD(
       event.params.amount,
       outcomeTokenPrices[outcomeIndex],
     );
     position.valueBought = position.valueBought.plus(splitValue);
-
     updateNetPositionAndSave(position);
+    if (
+      userAddress == '0x5bc1242f3bb3f4f4f00b603ef6678431d4892dc9' &&
+      market ==
+        '60869871469376321574904667328762911501870754872924453995477779862968218702336'
+    ) {
+      log.info('relevant positionSplit found!', []);
+      log.info('valueBought: {}', [position.valueBought.toString()]);
+      log.info('quantityBought: {}', [position.quantityBought.toString()]);
+      log.info('netValue: {}', [position.netValue.toString()]);
+    }
   }
 }
 
@@ -323,6 +344,16 @@ export function updateMarketPositionsFromMerge(
 
   // Calculate pnl
   let pnl = bigOne.minus(sumOfAvgBuyPrice).times(event.params.amount);
+  // TODO rm
+  if (
+    userAddress == '0x5bc1242f3bb3f4f4f00b603ef6678431d4892dc9' &&
+    condition ==
+      '0xe3b423dfad8c22ff75c9899c4e8176f628cf4ad4caa00481764d320e7415f7a9'
+  ) {
+    log.info('Updating on Merge...', []);
+    log.info('account pnl: {}', [pnl.toString()]);
+    log.info('sum of avg buy price: {}', [sumOfAvgBuyPrice.toString()]);
+  }
   updateUserProfit(
     userAddress,
     pnl,
@@ -398,7 +429,15 @@ export function updateMarketPositionsFromRedemption(
       .times(numerator)
       .div(payoutDenominator);
 
-    // For Redemptions, pnl is implicitly the cash received on redemption
+    // TODO: rm For Redemptions, pnl is implicitly the cash received on redemption
+    if (
+      redeemer == '0x5bc1242f3bb3f4f4f00b603ef6678431d4892dc9' &&
+      conditionId ==
+        '0xe3b423dfad8c22ff75c9899c4e8176f628cf4ad4caa00481764d320e7415f7a9'
+    ) {
+      log.info('Update on Redemption position for specific user...', []);
+      log.info('pnl/redemptionValue: {}', [redemptionValue.toString()]);
+    }
     updateUserProfit(
       redeemer,
       redemptionValue,

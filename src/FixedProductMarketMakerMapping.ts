@@ -274,6 +274,13 @@ export function handleBuy(event: FPMMBuy): void {
     collateralScaleDec,
     TRADE_TYPE_BUY,
   );
+  if (
+    event.params.buyer.toHexString() ==
+    '0x5bc1242f3bb3f4f4f00b603ef6678431d4892dc9'
+  ) {
+    log.info('handleBuy: ', []);
+    log.info('txn: {}', [event.transaction.hash.toHexString()]);
+  }
   updateMarketPositionFromTrade(event);
 }
 
@@ -352,6 +359,13 @@ export function handleSell(event: FPMMSell): void {
     collateralScaleDec,
     TRADE_TYPE_SELL,
   );
+  if (
+    event.params.seller.toHexString() ==
+    '0x5bc1242f3bb3f4f4f00b603ef6678431d4892dc9'
+  ) {
+    log.info('handleSell: ', []);
+    log.info('txn: {}', [event.transaction.hash.toHexString()]);
+  }
   updateMarketPositionFromTrade(event);
 }
 
