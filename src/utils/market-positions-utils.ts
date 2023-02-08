@@ -310,7 +310,7 @@ export function updateMarketPositionsFromMerge(
     position.valueSold = position.valueSold.plus(mergeValue);
 
     // Calculate profit
-    if (!(position.netValue.isZero() || position.netQuantity.isZero())) {
+    if (!(position.valueBought.isZero() || position.quantityBought.isZero())) {
       // Use valueBought and quantityBought to calculate average buy price
       // as netValue includes sells and therefore can be negative
       // sumOfAvgPricesPaid = sumOfAvgPricesPaid.plus(
@@ -323,14 +323,16 @@ export function updateMarketPositionsFromMerge(
   }
 
   // Calculate pnl
-  let profit = bigOne.minus(sumOfAvgBuyPrice).times(event.params.amount);
-  updateUserProfit(
-    userAddress,
-    profit,
-    collateralScaleDec,
-    event.block.timestamp,
-    condition,
-  );
+  if (!sumOfAvgBuyPrice.isZero()) {
+    let profit = bigOne.minus(sumOfAvgBuyPrice).times(event.params.amount);
+    updateUserProfit(
+      userAddress,
+      profit,
+      collateralScaleDec,
+      event.block.timestamp,
+      condition,
+    );
+  }
 }
 
 /*
@@ -344,9 +346,8 @@ export function updateMarketPositionsFromRedemption(
   event: PayoutRedemption,
 ): void {
   let redeemer = event.params.redeemer.toHexString();
-  let condition = Condition.load(
-    event.params.conditionId.toHexString(),
-  ) as Condition;
+  let conditionId = event.params.conditionId.toHexString();
+  let condition = Condition.load(conditionId) as Condition;
   let marketMaker = FixedProductMarketMaker.load(
     marketMakerAddress,
   ) as FixedProductMarketMaker;
@@ -373,7 +374,6 @@ export function updateMarketPositionsFromRedemption(
   let payoutDenominator = condition.payoutDenominator as BigInt;
 
   let indexSets = event.params.indexSets;
-  let conditionId = conditions[0];
   for (let i = 0; i < indexSets.length; i += 1) {
     // Each element of indexSets is the decimal representation of the binary slot of the given outcome
     // i.e. For a condition with 4 outcomes, ["1", "2", "4"] represents the first 3 slots as 0b0111
