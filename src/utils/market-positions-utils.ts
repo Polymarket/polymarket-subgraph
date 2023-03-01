@@ -181,13 +181,21 @@ export function updateMarketPositionFromTrade(event: ethereum.Event): void {
     position.feesPaid = position.feesPaid.plus(feeAmount);
   }
 
-  updateUserProfit(
-    transaction.user,
-    profit,
-    collateralScaleDec,
-    transaction.timestamp,
-    condition,
-  );
+  if (
+    collateralToken.toLowerCase() ===
+      '0x2791bca1f2de4661ed88a30c99a7a9449aa84174' ||
+    collateralToken.toLowerCase() ===
+      '0x2e8dcfe708d44ae2e406a1c02dfe2fa13012f961'
+  ) {
+    // Exclude non USDC collateral from profit calcs
+    updateUserProfit(
+      transaction.user,
+      profit,
+      collateralScaleDec,
+      transaction.timestamp,
+      condition,
+    );
+  }
 
   updateNetPositionAndSave(position);
 }
@@ -325,13 +333,21 @@ export function updateMarketPositionsFromMerge(
   // Calculate pnl
   if (!sumOfAvgBuyPrice.isZero()) {
     let profit = bigOne.minus(sumOfAvgBuyPrice).times(event.params.amount);
-    updateUserProfit(
-      userAddress,
-      profit,
-      collateralScaleDec,
-      event.block.timestamp,
-      condition,
-    );
+    if (
+      collateralToken.toLowerCase() ===
+        '0x2791bca1f2de4661ed88a30c99a7a9449aa84174' ||
+      collateralToken.toLowerCase() ===
+        '0x2e8dcfe708d44ae2e406a1c02dfe2fa13012f961'
+    ) {
+      // Exclude non USDC collateral from profit calcs
+      updateUserProfit(
+        userAddress,
+        profit,
+        collateralScaleDec,
+        event.block.timestamp,
+        condition,
+      );
+    }
   }
 }
 
@@ -399,13 +415,21 @@ export function updateMarketPositionsFromRedemption(
       .times(numerator)
       .div(payoutDenominator);
 
-    updateUserProfit(
-      redeemer,
-      redemptionValue,
-      collateralScaleDec,
-      event.block.timestamp,
-      conditionId,
-    );
+    if (
+      collateralToken.toLowerCase() ===
+        '0x2791bca1f2de4661ed88a30c99a7a9449aa84174' ||
+      collateralToken.toLowerCase() ===
+        '0x2e8dcfe708d44ae2e406a1c02dfe2fa13012f961'
+    ) {
+      // Exclude non USDC collateral from profit calcs
+      updateUserProfit(
+        redeemer,
+        redemptionValue,
+        collateralScaleDec,
+        event.block.timestamp,
+        conditionId,
+      );
+    }
 
     // position gets zero'd out
     position.quantitySold = position.quantitySold.plus(position.netQuantity);
