@@ -60,11 +60,19 @@ export function handlePositionSplit(event: PositionSplit): void {
 
   // If the user has split from collateral then we want to update their market position accordingly
   if (partitionCheck(split.partition, condition.outcomeSlotCount)) {
-    let marketMakers = condition.fixedProductMarketMakers;
-    for (let i = 0; i < marketMakers.length; i += 1) {
-      // This is not ideal as in theory we could have multiple market makers for the same condition
-      // Given that this subgraph only tracks market makers deployed by Polymarket, this is acceptable for now
-      updateMarketPositionsFromSplit(marketMakers[i], event);
+    // let marketMakers = condition.fixedProductMarketMakers;
+    // for (let i = 0; i < marketMakers.length; i += 1) {
+    //   // This is not ideal as in theory we could have multiple market makers for the same condition
+    //   // Given that this subgraph only tracks market makers deployed by Polymarket, this is acceptable for now
+    //   updateMarketPositionsFromSplit(marketMakers[i], event);
+    // }
+
+    // We explicitly only want to track one FPMM per condition
+    if (condition.fixedProductMarketMakers.length > 0) {
+      updateMarketPositionsFromSplit(
+        condition.fixedProductMarketMakers[0],
+        event,
+      );
     }
   }
 }
@@ -102,11 +110,18 @@ export function handlePositionsMerge(event: PositionsMerge): void {
 
   // If the user has merged a full set of outcome tokens then we want to update their market position accordingly
   if (partitionCheck(merge.partition, condition.outcomeSlotCount)) {
-    // This is not ideal as in theory we could have multiple market makers for the same condition
-    // Given that this subgraph only tracks market makers deployed by Polymarket, this is acceptable for now
-    let marketMakers = condition.fixedProductMarketMakers;
-    for (let i = 0; i < marketMakers.length; i += 1) {
-      updateMarketPositionsFromMerge(marketMakers[i], event);
+    // // This is not ideal as in theory we could have multiple market makers for the same condition
+    // // Given that this subgraph only tracks market makers deployed by Polymarket, this is acceptable for now
+    // let marketMakers = condition.fixedProductMarketMakers;
+    // for (let i = 0; i < marketMakers.length; i += 1) {
+    //   updateMarketPositionsFromMerge(marketMakers[i], event);
+    // }
+    // We explicitly only want to track one FPMM per condition
+    if (condition.fixedProductMarketMakers.length > 0) {
+      updateMarketPositionsFromMerge(
+        condition.fixedProductMarketMakers[0],
+        event,
+      );
     }
   }
 }
@@ -135,9 +150,16 @@ export function handlePayoutRedemption(event: PayoutRedemption): void {
 
   let marketMakers = condition.fixedProductMarketMakers;
   for (let i = 0; i < marketMakers.length; i += 1) {
-    // This is not ideal as in theory we could have multiple market makers for the same condition
-    // Given that this subgraph only tracks market makers deployed by Polymarket, this is acceptable for now
-    updateMarketPositionsFromRedemption(marketMakers[i], event);
+    // // This is not ideal as in theory we could have multiple market makers for the same condition
+    // // Given that this subgraph only tracks market makers deployed by Polymarket, this is acceptable for now
+    // updateMarketPositionsFromRedemption(marketMakers[i], event);
+    // We explicitly only want to track one FPMM per condition
+    if (condition.fixedProductMarketMakers.length > 0) {
+      updateMarketPositionsFromRedemption(
+        condition.fixedProductMarketMakers[0],
+        event,
+      );
+    }
   }
 }
 
