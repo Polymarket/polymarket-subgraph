@@ -26,7 +26,8 @@ export function min(array: BigInt[]): BigInt {
 }
 
 export function timesBD(a: BigInt, b: BigDecimal): BigInt {
-  return a.toBigDecimal().times(b).truncate(0).digits;
+  const c = a.toBigDecimal().times(b).truncate(0);
+  return BigInt.fromString(c.toString());
 }
 
 export function increment(a: BigInt): BigInt {
