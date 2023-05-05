@@ -1,5 +1,6 @@
 import { BigDecimal, BigInt } from '@graphprotocol/graph-ts';
 import {
+  FeeCharged,
   OrderFilled,
   OrdersMatched,
   TokenRegistered,
@@ -10,6 +11,7 @@ import {
   Orderbook,
   OrderFilledEvent,
   OrdersMatchedEvent,
+  FeeChargedEvent,
 } from './types/schema';
 import { markAccountAsSeen, updateUserVolume } from './utils/account-utils';
 import { TRADE_TYPE_BUY } from './utils/constants';
@@ -218,4 +220,14 @@ export function handleTokenRegistered(event: TokenRegistered): void {
     data1.condition = condition;
     data1.save();
   }
+}
+
+export function handleFeeCharged(event: FeeCharged): void {
+  let eventId =
+    event.transaction.hash.toHexString() + '_' + event.logIndex.toHexString();
+  let evt = new FeeChargedEvent(eventId);
+  evt.amount = event.params.amount;
+  evt.receiver = event.params.receiver.toHexString();
+  evt.tokenID = event.params.tokenId;
+  evt.save();
 }

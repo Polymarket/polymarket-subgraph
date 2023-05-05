@@ -90,6 +90,8 @@ dataSources:
           handler: handleMatch
         - event: TokenRegistered(indexed uint256,indexed uint256,indexed bytes32)
           handler: handleTokenRegistered
+        - event: FeeCharged(indexed address,uint256,uint256)
+          handler: handleFeeCharged
       file: ./src/ExchangeMapping.ts
 templates:
   - name: FixedProductMarketMaker

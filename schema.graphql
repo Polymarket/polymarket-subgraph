@@ -467,3 +467,14 @@ type MarketProfit @entity {
   scaledProfit: BigDecimal!
 }
 
+
+type FeeChargedEvent @entity {
+  "Keyed on transaction hash + log index"
+  id: ID!
+  "The address being charged fees"
+  receiver: Account!
+  "The token ID, zero for collateral"
+  tokenID: BigInt!
+  "The fee charged"
+  amount: BigInt!
+}
