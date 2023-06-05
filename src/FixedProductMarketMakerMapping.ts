@@ -193,6 +193,21 @@ export function handleFundingRemoved(event: FPMMFundingRemoved): void {
   }
 
   fpmm.liquidityRemoveQuantity = increment(fpmm.liquidityRemoveQuantity);
+  // Set lists to not null if any element is null
+  for (let i = 0; i < fpmm.outcomeSlotCount; i += 1) {
+    if (fpmm.outcomeTokenPrices[i] == null) {
+      fpmm.outcomeTokenPrices[i] = bigZero.toBigDecimal();
+    }
+    if (fpmm.outcomeTokenAmounts[i] == null) {
+      fpmm.outcomeTokenAmounts[i] = bigZero;
+    }
+    if (fpmm.poolMembers == null) {
+      fpmm.poolMembers = [];
+    }
+    if (fpmm.poolMembers[i] == null) {
+      fpmm.poolMembers = [AddressZero];
+    }
+  }
   fpmm.save();
   markAccountAsSeen(event.params.funder.toHexString(), event.block.timestamp);
   recordFundingRemoval(event);
