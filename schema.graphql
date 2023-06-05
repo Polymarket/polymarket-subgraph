@@ -52,17 +52,17 @@ type Account @entity {
   "Timestamp of last Buy or Sell transaction"
   lastTradedTimestamp: BigInt!
   "Markets in which user has provided liquidity"
-  fpmmPoolMemberships: [FpmmPoolMembership!] @derivedFrom(field: "funder")
+  fpmmPoolMemberships: [FpmmPoolMembership] @derivedFrom(field: "funder")
   "Markets in which the user has taken a position on the outcome"
-  marketPositions: [MarketPosition!] @derivedFrom(field: "user")
+  marketPositions: [MarketPosition] @derivedFrom(field: "user")
   "Purchases and sales of shares by the user"
-  transactions: [Transaction!] @derivedFrom(field: "user")
+  transactions: [Transaction] @derivedFrom(field: "user")
   "Split of collateral / outcome tokens into multiple positions"
-  splits: [Split!] @derivedFrom(field: "stakeholder")
+  splits: [Split] @derivedFrom(field: "stakeholder")
   "Merge of more specific outcome tokens into collateral / more general outcome tokens"
-  merges: [Merge!] @derivedFrom(field: "stakeholder")
+  merges: [Merge] @derivedFrom(field: "stakeholder")
   "Redemption of underlying collateral after a market has resolved"
-  redemptions: [Redemption!] @derivedFrom(field: "redeemer")
+  redemptions: [Redemption] @derivedFrom(field: "redeemer")
 }
 
 type Collateral @entity {
@@ -86,11 +86,11 @@ type Condition @entity {
   "Timestamp at which this condition was resolved"
   resolutionTimestamp: BigInt
   "Fraction of collateral assigned to each outcome"
-  payouts: [BigDecimal!]
-  payoutNumerators: [BigInt!]
+  payouts: [BigDecimal]
+  payoutNumerators: [BigInt]
   payoutDenominator: BigInt
   "Market makers which are trading on this condition"
-  fixedProductMarketMakers: [FixedProductMarketMaker!]!
+  fixedProductMarketMakers: [FixedProductMarketMaker]!
   "Hash of the resolution transaction"
   resolutionHash: Bytes
 }
@@ -107,7 +107,7 @@ type Split @entity {
   parentCollectionId: Bytes!
   "Condition on which split is occuring"
   condition: Condition!
-  partition: [BigInt!]!
+  partition: [BigInt]!
   "The amount of collateral/outcome tokens being split"
   amount: BigInt!
 }
@@ -124,7 +124,7 @@ type Merge @entity {
   parentCollectionId: Bytes!
   "Condition on which merge is occuring"
   condition: Condition!
-  partition: [BigInt!]!
+  partition: [BigInt]!
   "The amount of outcome tokens being merged"
   amount: BigInt!
 }
@@ -142,7 +142,7 @@ type Redemption @entity {
   "Condition on which redemption is occuring"
   condition: Condition!
   "Outcomes which are being redeemed"
-  indexSets: [BigInt!]!
+  indexSets: [BigInt]!
   "The amount of collateral being claimed"
   payout: BigInt!
 }
@@ -163,7 +163,7 @@ type FixedProductMarketMaker @entity {
   "Token which is colleralising this market"
   collateralToken: Collateral!
   "Conditions which this market is trading against"
-  conditions: [Condition!] @derivedFrom(field: "fixedProductMarketMakers")
+  conditions: [Condition] @derivedFrom(field: "fixedProductMarketMakers")
   "Percentage fee of trades taken by market maker. A 2% fee is represented as 2*10^16"
   fee: BigInt!
 
@@ -200,9 +200,9 @@ type FixedProductMarketMaker @entity {
   scaledLiquidityParameter: BigDecimal!
 
   "Balances of each outcome token held by the market maker"
-  outcomeTokenAmounts: [BigInt!]!
+  outcomeTokenAmounts: [BigInt]!
   "Prices at which market maker values each outcome token"
-  outcomeTokenPrices: [BigDecimal!]!
+  outcomeTokenPrices: [BigDecimal]!
   "Number of outcomes which this market maker is trading"
   outcomeSlotCount: Int
 
@@ -213,7 +213,7 @@ type FixedProductMarketMaker @entity {
   totalSupply: BigInt!
 
   "Addresses which are supplying liquidity to the market maker"
-  poolMembers: [FpmmPoolMembership!] @derivedFrom(field: "pool")
+  poolMembers: [FpmmPoolMembership] @derivedFrom(field: "pool")
 }
 
 type MarketPosition @entity {
@@ -252,9 +252,9 @@ type FpmmFundingAddition @entity {
   "Account adding funding"
   funder: Account!
   "Outcome tokens amounts added to FPMM"
-  amountsAdded: [BigInt!]!
+  amountsAdded: [BigInt]!
   "Outcome tokens amounts refunded to funder"
-  amountsRefunded: [BigInt!]!
+  amountsRefunded: [BigInt]!
   "Liquidity shares minted to funder"
   sharesMinted: BigInt!
 }
@@ -269,7 +269,7 @@ type FpmmFundingRemoval @entity {
   "Account removing funding"
   funder: Account!
   "Outcome tokens amounts removed from FPMM"
-  amountsRemoved: [BigInt!]!
+  amountsRemoved: [BigInt]!
   collateralRemoved: BigInt!
   "Liquidity shares burned by funder"
   sharesBurnt: BigInt!
