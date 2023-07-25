@@ -12,6 +12,10 @@ mainnet:
       address: ''
       transactionHash: ''
       startBlock: 0
+    NRExchange:
+      address: ''
+      transactionHash: ''
+      startBlock: 0
     networkName: mainnet
 matic:
   contracts:
@@ -27,6 +31,10 @@ matic:
       address: '0x4bFb41d5B3570DeFd03C39a9A4D8dE6Bd8B8982E'
       transactionHash: '0x35423c49cb07c9ccecad9af20df52cccdeff0d46f833d438de8b02f2504aed22'
       startBlock: 33605403
+    NRExchange:
+      address: '0x39f95ec3883F912b6E160F9686f1c9adf6106421'
+      transactionHash: '0x141e9b502d421349d4f18635a2bf31438c5a1abe29275851986c3b9d2f6ed55a'
+      startBlock: 45481530
   networkName: matic
 mumbai:
   contracts:
