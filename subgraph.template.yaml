@@ -6,11 +6,11 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: ConditionalTokens
-    network: { { networkName } }
+    network: {{ networkName }}
     source:
       address: '{{contracts.ConditionalTokens.address}}'
       abi: ConditionalTokens
-      startBlock: { { contracts.ConditionalTokens.startBlock } }
+      startBlock: {{ contracts.ConditionalTokens.startBlock }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -40,11 +40,11 @@ dataSources:
       file: ./src/ConditionalTokensMapping.ts
   - kind: ethereum/contract
     name: FixedProductMarketMakerFactory
-    network: { { networkName } }
+    network: {{ networkName }}
     source:
       address: '{{contracts.FixedProductMarketMakerFactory.address}}'
       abi: FixedProductMarketMakerFactory
-      startBlock: { { contracts.FixedProductMarketMakerFactory.startBlock } }
+      startBlock: {{ contracts.FixedProductMarketMakerFactory.startBlock }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -64,11 +64,11 @@ dataSources:
       file: ./src/FixedProductMarketMakerFactoryMapping.ts
   - kind: ethereum/contract
     name: Exchange
-    network: { { networkName } }
+    network: {{ networkName }}
     source:
       address: '{{contracts.Exchange.address}}'
       abi: Exchange
-      startBlock: { { contracts.Exchange.startBlock } }
+      startBlock: {{ contracts.Exchange.startBlock }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -92,12 +92,12 @@ dataSources:
           handler: handleTokenRegistered
       file: ./src/ExchangeMapping.ts
   - kind: ethereum/contract
-    name: NRExchange
-    network: { { networkName } }
+    name: NegRiskExchange
+    network: {{ networkName }}
     source:
-      address: '{{contracts.NRExchange.address}}'
+      address: '{{contracts.NegRiskExchange.address}}'
       abi: Exchange
-      startBlock: { { contracts.NRExchange.startBlock } }
+      startBlock: {{ contracts.NegRiskExchange.startBlock }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -123,7 +123,7 @@ dataSources:
 templates:
   - name: FixedProductMarketMaker
     kind: ethereum/contract
-    network: { { networkName } }
+    network: {{ networkName }}
     source:
       abi: FixedProductMarketMaker
     mapping:
@@ -161,7 +161,7 @@ templates:
       file: ./src/FixedProductMarketMakerMapping.ts
   - name: ConditionalTokens
     kind: ethereum/contract
-    network: { { networkName } }
+    network: {{ networkName }}
     source:
       abi: ConditionalTokens
     mapping:
@@ -175,7 +175,7 @@ templates:
       file: ./src/empty.ts
   - name: ERC20Detailed
     kind: ethereum/contract
-    network: { { networkName } }
+    network: {{ networkName }}
     source:
       abi: ERC20Detailed
     mapping:
