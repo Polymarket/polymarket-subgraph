@@ -4,6 +4,7 @@ services:
     image: postgres
     environment:
       POSTGRES_PASSWORD: letmein
+      POSTGRES_INITDB_ARGS: '-E UTF8 --locale=C'
 
   ipfs:
     image: ipfs/go-ipfs:v0.4.23
