@@ -1,4 +1,4 @@
-version: '3.7'
+version: '3.8'
 services:
   postgres:
     image: postgres
@@ -31,7 +31,4 @@ services:
       postgres_pass: letmein
       postgres_db: postgres
       ipfs: 'ipfs:5001'
-      # ethereum: 'development:http://ganache:8545'
       ethereum: 'matic:${MATIC_RPC_URL}'
-      #ethereum: 'mumbai:https://polygon-mumbai.g.alchemy.com/v2/<apy key>'
-      #RUST_BACKTRACE: 1
