@@ -10,6 +10,7 @@ MATIC_RPC_URL=
 
 ## Preparing `subgraph.yaml`
 
+Export an environment variable with `NETWORK_NAME` either 'matic' or 'mumbai'.
 To prepare the `subgraph.yaml` file, modify `networks.json` as appropriate and run
 
 ```bash
@@ -62,8 +63,10 @@ query tokenIdConditions {
 
 ## Goldsky
 
+Build the subgraph with `yarn build`, and deploy with:
+
 ```bash
-goldsky subgraph deploy positions-subgraph/<version> --path .
+goldsky subgraph deploy polymarket-subgraph/<version> --path .
 ```
 
 ## Running on an M1 Chip
