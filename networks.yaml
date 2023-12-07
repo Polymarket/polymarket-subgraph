@@ -51,7 +51,7 @@ mumbai:
       transactionHash: '0x4cf5ff4362abb630398f45b0ed26787e7b2524c53c4cc006641764f5f8267609'
       startBlock: 28311804
     NegRiskExchange:
-      address: '0xC5d563A36AE78145C45a50134d48A1215220f80a'
-      transactionHash: '0xa1adf06a551d9d74da2637987a9c8e4e33510828541eeca415be8ec0dbda3130'
-      startBlock: 42950042
+      address: '0x87d1A0DdB4C63a6301916F02090A51a7241571e4'
+      transactionHash: '0xbbf404aab8cb23f696aa50550fe3d80e52775bdabe3948b98f2c1b90e9b41172'
+      startBlock: 43225359
   networkName: mumbai

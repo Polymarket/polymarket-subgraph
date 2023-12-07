@@ -65,5 +65,8 @@
     "prettier": "^2.7.1",
     "ts-node": "^9.1.1",
     "typescript": "^3.9.7"
+  },
+  "dependencies": {
+    "@goldskycom/cli": "^7.4.0"
   }
 }

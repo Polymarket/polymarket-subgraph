@@ -230,6 +230,15 @@
     "@ethersproject/properties" "^5.7.0"
     "@ethersproject/strings" "^5.7.0"
 
+"@goldskycom/cli@^7.4.0":
+  version "7.4.0"
+  resolved "https://registry.yarnpkg.com/@goldskycom/cli/-/cli-7.4.0.tgz#2ea10be4a94e478c6e0546022c02dd0093ae5571"
+  integrity sha512-5MHNXOgCQTb857CeQ4N9Y2ThP3TJ5qBI2x93ZkzGLXwzUJ4wSA8HeWoEAbfqg/BW0HZS6s2+JPj6xXoIpsLthw==
+  dependencies:
+    cuid "^2.1.8"
+    parse-duration "^1.0.3"
+    readline-sync "^1.4.10"
+
 "@graphprotocol/graph-cli@^0.33.1":
   version "0.33.1"
   resolved "https://registry.npmjs.org/@graphprotocol/graph-cli/-/graph-cli-0.33.1.tgz#09c10f59005702fc4b3075dcfd80f4c96394bcf5"
@@ -1242,6 +1251,11 @@ cross-spawn@^7.0.0, cross-spawn@^7.0.2:
     path-key "^3.1.0"
     shebang-command "^2.0.0"
     which "^2.0.1"
+
+cuid@^2.1.8:
+  version "2.1.8"
+  resolved "https://registry.yarnpkg.com/cuid/-/cuid-2.1.8.tgz#cbb88f954171e0d5747606c0139fb65c5101eac0"
+  integrity sha512-xiEMER6E7TlTPnDxrM4eRiC6TRgjNX9xzEZ5U/Se2YJKr7Mq4pJn/2XEHjl3STcSh96GmkHPcBXLES8M29wyyg==
 
 damerau-levenshtein@^1.0.8:
   version "1.0.8"
@@ -3598,6 +3612,11 @@ parse-cache-control@^1.0.1:
   resolved "https://registry.npmjs.org/parse-cache-control/-/parse-cache-control-1.0.1.tgz#8eeab3e54fa56920fe16ba38f77fa21aacc2d74e"
   integrity sha512-60zvsJReQPX5/QP0Kzfd/VrpjScIQ7SHBW6bFCYfEP+fp0Eppr1SHhIO5nd1PjZtvclzSzES9D/p5nFJurwfWg==
 
+parse-duration@^1.0.3:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/parse-duration/-/parse-duration-1.1.0.tgz#5192084c5d8f2a3fd676d04a451dbd2e05a1819c"
+  integrity sha512-z6t9dvSJYaPoQq7quMzdEagSFtpGu+utzHqqxmpVWNNZRIXnvqyCvn9XsTdh7c/w0Bqmdz3RB3YnRaKtpRtEXQ==
+
 parse-json@^5.0.0:
   version "5.2.0"
   resolved "https://registry.npmjs.org/parse-json/-/parse-json-5.2.0.tgz#c76fc66dee54231c962b22bcc8a72cf2f99753cd"
@@ -3906,6 +3925,11 @@ readdirp@~3.5.0:
   integrity sha512-cMhu7c/8rdhkHXWsY+osBhfSy0JikwpHK/5+imo+LpeasTF8ouErHrlYkwT0++njiyuDvc7OFY5T3ukvZ8qmFQ==
   dependencies:
     picomatch "^2.2.1"
+
+readline-sync@^1.4.10:
+  version "1.4.10"
+  resolved "https://registry.yarnpkg.com/readline-sync/-/readline-sync-1.4.10.tgz#41df7fbb4b6312d673011594145705bf56d8873b"
+  integrity sha512-gNva8/6UAe8QYepIQH/jQ2qn91Qj0B9sYjMBBs3QOB8F2CXcKgLxQaJRP76sWVRQt+QU+8fAkCbCvjjMFu7Ycw==
 
 regenerator-runtime@^0.13.4:
   version "0.13.9"
