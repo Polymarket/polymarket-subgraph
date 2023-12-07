@@ -47,7 +47,7 @@ yarn deploy-local
 
 Access the GraphQL editor at:
 
-[`http://localhost:8000/subgraphs/name/positions-subgraph/graphql`](http://localhost:8000/subgraphs/name/positions-subgraph/graphql)
+[`http://localhost:8000/subgraphs/name/polymarket-subgraph/graphql`](http://localhost:8000/subgraphs/name/polymarket-subgraph/graphql)
 
 **Example query:**
 
