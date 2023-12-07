@@ -30,7 +30,7 @@ docker compose down
 ```
 
 ```bash
-sudo docker rm positions-subgraph_graph-node_1 && sudo docker rm positions-subgraph_ipfs_1 && sudo docker rm positions-subgraph_postgres_1 && sudo docker rm positions-subgraph_ganache_1
+sudo docker rm polymarket-subgraph_graph-node_1 && sudo docker rm polymarket-subgraph_ipfs_1 && sudo docker rm polymarket-subgraph_postgres_1 && sudo docker rm polymarket-subgraph_ganache_1
 ```
 
 ## Create and deploy subgraph
