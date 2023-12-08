@@ -70,8 +70,8 @@ function recordOrderFilledEvent(event: OrderFilled): string {
   orderFilledEvent.orderHash = event.params.orderHash;
   orderFilledEvent.maker = event.params.maker.toHexString();
   orderFilledEvent.taker = event.params.taker.toHexString();
-  orderFilledEvent.makerAssetId = event.params.makerAssetId;
-  orderFilledEvent.takerAssetId = event.params.takerAssetId;
+  orderFilledEvent.makerAssetId = event.params.makerAssetId.toString();
+  orderFilledEvent.takerAssetId = event.params.takerAssetId.toString();
   orderFilledEvent.makerAmountFilled = event.params.makerAmountFilled;
   orderFilledEvent.takerAmountFilled = event.params.takerAmountFilled;
   orderFilledEvent.fee = event.params.fee;
