@@ -52,6 +52,7 @@
   },
   "homepage": "https://github.com/TokenUnion/polymarket-subgraph#readme",
   "devDependencies": {
+    "@goldskycom/cli": "^7.4.0",
     "@graphprotocol/graph-cli": "^0.33.1",
     "@graphprotocol/graph-ts": "^0.27.0",
     "@types/fs-extra": "^9.0.13",
@@ -64,7 +65,6 @@
     "path": "^0.12.7",
     "prettier": "^2.7.1",
     "ts-node": "^9.1.1",
-    "typescript": "^3.9.7",
-    "@goldskycom/cli": "^7.4.0"
+    "typescript": "^3.9.7"
   }
 }

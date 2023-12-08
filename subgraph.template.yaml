@@ -1,6 +1,11 @@
 specVersion: 0.0.3
 description: Polymarket
 repository: https://github.com/TokenUnion/polymarket-subgraph
+features:
+  - grafting
+graft:
+  base: QmXJavsc3w5ALjsguxmJDxei2hAEYQNjzVkKC7GjHjQxz8 # polymarket-orderbook-resync/1.0.6
+  block: 50505491
 schema:
   file: ./schema.graphql
 dataSources:
