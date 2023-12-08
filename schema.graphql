@@ -363,9 +363,9 @@ type OrderFilledEvent @entity {
   maker: Account!
   taker: Account!
   "Maker assetId"
-  makerAssetId: BigInt!
+  makerAssetId: String!
   "Taker assetId"
-  takerAssetId: BigInt!
+  takerAssetId: String!
   "Maker amount filled"
   makerAmountFilled: BigInt!
   "Taker amount filled"
