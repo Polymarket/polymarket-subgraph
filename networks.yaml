@@ -12,6 +12,10 @@ mainnet:
       address: ''
       transactionHash: ''
       startBlock: 0
+    NegRiskExchange:
+      address: ''
+      transactionHash: ''
+      startBlock: 0
     networkName: mainnet
 matic:
   contracts:
@@ -27,6 +31,10 @@ matic:
       address: '0x4bFb41d5B3570DeFd03C39a9A4D8dE6Bd8B8982E'
       transactionHash: '0x35423c49cb07c9ccecad9af20df52cccdeff0d46f833d438de8b02f2504aed22'
       startBlock: 33605403
+    NegRiskExchange:
+      address: '0xC5d563A36AE78145C45a50134d48A1215220f80a'
+      transactionHash: '0x5935e680b186f72b6db932ce351dd6f0288b1e056ab8d0d307c5146606879369'
+      startBlock: 50505492
   networkName: matic
 mumbai:
   contracts:
@@ -42,4 +50,8 @@ mumbai:
       address: '0x4bFb41d5B3570DeFd03C39a9A4D8dE6Bd8B8982E'
       transactionHash: '0x4cf5ff4362abb630398f45b0ed26787e7b2524c53c4cc006641764f5f8267609'
       startBlock: 28311804
+    NegRiskExchange:
+      address: '0x87d1A0DdB4C63a6301916F02090A51a7241571e4'
+      transactionHash: '0xbbf404aab8cb23f696aa50550fe3d80e52775bdabe3948b98f2c1b90e9b41172'
+      startBlock: 43225359
   networkName: mumbai
