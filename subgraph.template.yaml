@@ -8,9 +8,10 @@ dataSources:
     name: ConditionalTokens
     network: {{ networkName }}
     source:
-      address: '{{contracts.ConditionalTokens.address}}'
+      address: '{{ contracts.ConditionalTokens.address }}'
       abi: ConditionalTokens
       startBlock: {{ contracts.ConditionalTokens.startBlock }}
+
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -42,7 +43,7 @@ dataSources:
     name: FixedProductMarketMakerFactory
     network: {{ networkName }}
     source:
-      address: '{{contracts.FixedProductMarketMakerFactory.address}}'
+      address: '{{ contracts.FixedProductMarketMakerFactory.address }}'
       abi: FixedProductMarketMakerFactory
       startBlock: {{ contracts.FixedProductMarketMakerFactory.startBlock }}
     mapping:
@@ -66,7 +67,7 @@ dataSources:
     name: Exchange
     network: {{ networkName }}
     source:
-      address: '{{contracts.Exchange.address}}'
+      address: '{{ contracts.Exchange.address }}'
       abi: Exchange
       startBlock: {{ contracts.Exchange.startBlock }}
     mapping:
@@ -95,7 +96,7 @@ dataSources:
     name: NegRiskExchange
     network: {{ networkName }}
     source:
-      address: '{{contracts.NegRiskExchange.address}}'
+      address: '{{ contracts.NegRiskExchange.address }}'
       abi: Exchange
       startBlock: {{ contracts.NegRiskExchange.startBlock }}
     mapping:
@@ -120,6 +121,35 @@ dataSources:
         - event: TokenRegistered(indexed uint256,indexed uint256,indexed bytes32)
           handler: handleTokenRegistered
       file: ./src/ExchangeMapping.ts
+  - kind: ethereum/contract
+    name: NegRiskAdapter
+    network: {{ networkName }}
+    source:
+      address: '{{ contracts.NegRiskAdapter.address }}'
+      abi: NegRiskAdapter
+      startBlock: {{ contracts.NegRiskAdapter.startBlock }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - PositionSplit
+        - PositionsMerge
+        - PositionsConverted
+        - PayoutRedemption
+      abis:
+        - name: NegRiskAdapter
+          file: ./abis/NegRiskAdapter.json
+      eventHandlers:
+        - event: PositionSplit(indexed address, indexed bytes32, uint256);
+          handler: handlePositionSplit
+        - event: PositionsMerge(indexed address, indexed bytes32, uint256);
+          handler: handlePositionsMerge
+        - event: PositionsConverted(indexed address, indexed bytes32, indexed uint256, uint256);
+          handler: handlePositionsConverted
+        - event: PayoutRedemption(indexed address, indexed bytes32, uint256[], uint256);
+          handler: handlePayoutRedemption
+      file: ./src/NegRiskAdapterMapping.ts
 templates:
   - name: FixedProductMarketMaker
     kind: ethereum/contract

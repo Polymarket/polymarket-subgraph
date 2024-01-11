@@ -35,6 +35,10 @@ matic:
       address: '0xC5d563A36AE78145C45a50134d48A1215220f80a'
       transactionHash: '0x5935e680b186f72b6db932ce351dd6f0288b1e056ab8d0d307c5146606879369'
       startBlock: 50505492
+    NegRiskAdapter:
+      address: '0xd91E80cF2E7be2e162c6513ceD06f1dD0dA35296'
+      transactionHash: '0x192214f14b05d4404271a8d54d633d840277ba7b96df853417eb3fce274af2b9'
+      startBlock: 50505403
   networkName: matic
 mumbai:
   contracts:

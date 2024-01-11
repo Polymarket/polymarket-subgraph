@@ -1,4 +1,4 @@
-import { BigDecimal, log } from '@graphprotocol/graph-ts';
+import { BigInt, BigDecimal, log } from '@graphprotocol/graph-ts';
 
 import {
   ConditionPreparation,
@@ -13,6 +13,7 @@ import {
   Merge,
   Split,
   FixedProductMarketMaker,
+  MarketData,
 } from './types/schema';
 import { requireGlobal } from './utils/global-utils';
 import {
@@ -24,6 +25,7 @@ import { partitionCheck } from './utils/conditional-utils';
 import { bigZero } from './utils/constants';
 import { getCollateralDetails } from './utils/collateralTokens';
 import { markAccountAsSeen, requireAccount } from './utils/account-utils';
+import { calculatePositionIds } from './utils/ctf-utils';
 
 export function handlePositionSplit(event: PositionSplit): void {
   if (
@@ -151,6 +153,28 @@ export function handleConditionPreparation(event: ConditionPreparation): void {
   global.numConditions += 1;
   global.numOpenConditions += 1;
   global.save();
+
+  // neg risk market data
+  // fix this contract
+  // there is only one neg risk oracle
+  // everything else can use the fpmm events processor
+  if (
+    condition.oracle.toHexString() ==
+    '{{lowercase contracts.NegativeRiskOperator.address}}'
+  ) {
+    const positionIds = calculatePositionIds(
+      '{{lowercase contracts.ConditionalTokens.address}}',
+      event.params.conditionId.toHexString(),
+      '{{lowercase contracts.WrappedCollateral.address}}',
+      2,
+    );
+
+    for (let i = 0; i < 2; i++) {
+      const marketData = new MarketData(positionIds[i]);
+      marketData.condition = event.params.conditionId.toHexString();
+      marketData.outcomeIndex = BigInt.fromI32(i);
+    }
+  }
 
   let outcomeTokenCount = event.params.outcomeSlotCount.toI32();
   condition.outcomeSlotCount = outcomeTokenCount;
