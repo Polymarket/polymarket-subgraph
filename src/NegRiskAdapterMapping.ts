@@ -21,7 +21,7 @@ import { getEventKey } from './utils/getEventKey';
 export function handlePositionSplit(event: PositionSplit): void {
   // - don't track splits from the NegRiskExchange
   if (
-    ['{{lowercase contracts.NegRiskExchange.address}}'].includes(
+    ['0xc5d563a36ae78145c45a50134d48a1215220f80a'].includes(
       event.params.stakeholder.toHexString(),
     )
   ) {
@@ -38,7 +38,7 @@ export function handlePositionSplit(event: PositionSplit): void {
 
   split.timestamp = event.block.timestamp;
   split.stakeholder = event.params.stakeholder.toHexString();
-  split.collateralToken = '{{lowercase contracts.USDC.address}}';
+  split.collateralToken = '0x2791bca1f2de4661ed88a30c99a7a9449aa84174';
   split.parentCollectionId = Bytes.fromI32(0);
   split.condition = event.params.conditionId.toHexString();
   split.partition = [BigInt.fromI32(1), BigInt.fromI32(2)];
@@ -50,7 +50,7 @@ export function handlePositionSplit(event: PositionSplit): void {
 export function handlePositionsMerge(event: PositionsMerge): void {
   // - don't track merges from the NegRiskExchange
   if (
-    ['{{lowercase contracts.NegRiskExchange.address}}'].includes(
+    ['0xc5d563a36ae78145c45a50134d48a1215220f80a'].includes(
       event.params.stakeholder.toHexString(),
     )
   ) {
@@ -67,7 +67,7 @@ export function handlePositionsMerge(event: PositionsMerge): void {
 
   merge.timestamp = event.block.timestamp;
   merge.stakeholder = event.params.stakeholder.toHexString();
-  merge.collateralToken = '{{lowercase contracts.USDC.address}}';
+  merge.collateralToken = '0x2791bca1f2de4661ed88a30c99a7a9449aa84174';
   merge.parentCollectionId = Bytes.fromI32(0);
   merge.condition = event.params.conditionId.toHexString();
   merge.partition = [BigInt.fromI32(1), BigInt.fromI32(2)];
@@ -109,7 +109,7 @@ export function handlePayoutRedemption(event: PayoutRedemption): void {
 
   redemption.timestamp = event.block.timestamp;
   redemption.redeemer = event.params.redeemer.toHexString();
-  redemption.collateralToken = '{{lowercase contracts.USDC.address}}';
+  redemption.collateralToken = '0x2791bca1f2de4661ed88a30c99a7a9449aa84174';
   redemption.parentCollectionId = Bytes.fromI32(0);
   redemption.condition = event.params.conditionId.toHexString();
   redemption.indexSets = [BigInt.fromI32(1), BigInt.fromI32(2)];
@@ -122,7 +122,7 @@ export function handleMarketPrepared(event: MarketPrepared): void {
   // ignore non-negRiskOperator events
   if (
     event.params.oracle.toHexString() !==
-    '{{lowercase contracts.NegRiskOperator.address}}'
+    '0x71523d0f655b41e805cec45b17163f528b59b820'
   ) {
     return;
   }

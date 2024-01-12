@@ -29,6 +29,8 @@ src/types/
 
 # built templates
 src/FixedProductMarketMakerFactoryMapping.ts
+src/ConditionalTokensMapping.ts
+src/NegRiskAdapterMapping.template.ts
 
 # Jetbrains
 .idea/
