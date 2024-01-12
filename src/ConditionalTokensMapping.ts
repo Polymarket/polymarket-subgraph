@@ -164,6 +164,9 @@ export function handleConditionPreparation(event: ConditionPreparation): void {
   condition.oracle = event.params.oracle;
   condition.questionId = event.params.questionId;
   condition.fixedProductMarketMakers = [];
+  condition.outcomeSlotCount = event.params.outcomeSlotCount.toI32();
+
+  condition.save();
 
   let global = requireGlobal();
   global.numConditions += 1;
@@ -171,9 +174,7 @@ export function handleConditionPreparation(event: ConditionPreparation): void {
   global.save();
 
   // neg risk market data
-  // fix this contract
-  // there is only one neg risk oracle
-  // everything else can use the fpmm events processor
+  // everything else uses the fpmm events processor
   if (
     condition.oracle.toHexString() ==
     '{{lowercase contracts.NegRiskAdapter.address}}'
@@ -189,12 +190,10 @@ export function handleConditionPreparation(event: ConditionPreparation): void {
       const marketData = new MarketData(positionIds[i]);
       marketData.condition = event.params.conditionId.toHexString();
       marketData.outcomeIndex = BigInt.fromI32(i);
+
+      marketData.save();
     }
   }
-
-  let outcomeTokenCount = event.params.outcomeSlotCount.toI32();
-  condition.outcomeSlotCount = outcomeTokenCount;
-  condition.save();
 }
 
 export function handleConditionResolution(event: ConditionResolution): void {
