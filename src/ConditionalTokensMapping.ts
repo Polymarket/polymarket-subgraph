@@ -25,19 +25,24 @@ import { bigZero } from './utils/constants';
 import { getCollateralDetails } from './utils/collateralTokens';
 import { markAccountAsSeen, requireAccount } from './utils/account-utils';
 import { calculatePositionIds } from './utils/ctf-utils';
+import { getEventKey } from './utils/getEventKey';
 
 export function handlePositionSplit(event: PositionSplit): void {
+  // - don't track splits within the market makers
   if (
     FixedProductMarketMaker.load(event.params.stakeholder.toHexString()) != null
   ) {
-    // We don't track splits within the market makers
     return;
   }
 
-  // we don't track splits from the neg risk adapter
+  // - don't track splits from the NegRiskAdapter
+  //   - these are handled in the NegRiskAdapterMapping
+  // - don't track splits from the CTFExchange
   if (
-    event.params.stakeholder.toHexString() ==
-    '{{lowercase contracts.NegativeRiskAdapter.address}}'
+    [
+      '{{lowercase contracts.NegRiskAdapter.address}}',
+      '{{lowercase contracts.Exchange.address}}',
+    ].includes(event.params.stakeholder.toHexString())
   ) {
     return;
   }
@@ -49,7 +54,8 @@ export function handlePositionSplit(event: PositionSplit): void {
     event.block.timestamp,
   );
 
-  let split = new Split(event.transaction.hash.toHexString());
+  let split = new Split(getEventKey(event));
+
   split.timestamp = event.block.timestamp;
   split.stakeholder = event.params.stakeholder.toHexString();
   split.collateralToken = event.params.collateralToken.toHexString();
@@ -57,6 +63,7 @@ export function handlePositionSplit(event: PositionSplit): void {
   split.condition = event.params.conditionId.toHexString();
   split.partition = event.params.partition;
   split.amount = event.params.amount;
+
   split.save();
 
   let condition = Condition.load(split.condition);
@@ -79,17 +86,21 @@ export function handlePositionSplit(event: PositionSplit): void {
 }
 
 export function handlePositionsMerge(event: PositionsMerge): void {
+  // - don't track merges within the market makers
   if (
     FixedProductMarketMaker.load(event.params.stakeholder.toHexString()) != null
   ) {
-    // We don't track merges within the market makers
     return;
   }
 
-  // we don't track merges from the neg risk adapter
+  // - don't track merges from the NegRiskAdapter
+  //   - these are handled in the NegRiskAdapterMapping
+  // - don't track merges from the CTFExchange
   if (
-    event.params.stakeholder.toHexString() ==
-    '{{lowercase contracts.NegativeRiskAdapter.address}}'
+    [
+      '{{lowercase contracts.NegRiskAdapter.address}}',
+      '{{lowercase contracts.Exchange.address}}',
+    ].includes(event.params.stakeholder.toHexString())
   ) {
     return;
   }
@@ -100,7 +111,8 @@ export function handlePositionsMerge(event: PositionsMerge): void {
     event.block.timestamp,
   );
 
-  let merge = new Merge(event.transaction.hash.toHexString());
+  let merge = new Merge(getEventKey(event));
+
   merge.timestamp = event.block.timestamp;
   merge.stakeholder = event.params.stakeholder.toHexString();
   merge.collateralToken = event.params.collateralToken.toHexString();
@@ -108,6 +120,7 @@ export function handlePositionsMerge(event: PositionsMerge): void {
   merge.condition = event.params.conditionId.toHexString();
   merge.partition = event.params.partition;
   merge.amount = event.params.amount;
+
   merge.save();
 
   let condition = Condition.load(merge.condition);
@@ -130,7 +143,8 @@ export function handlePositionsMerge(event: PositionsMerge): void {
 }
 
 export function handlePayoutRedemption(event: PayoutRedemption): void {
-  // we don't track redemptions from the neg risk adapter
+  // - don't track redemptions from the NegRiskAdapter
+  //   - these are handled in the NegRiskAdapterMapping
   if (
     event.params.redeemer.toHexString() ==
     '{{lowercase contracts.NegativeRiskAdapter.address}}'
@@ -141,7 +155,8 @@ export function handlePayoutRedemption(event: PayoutRedemption): void {
   requireAccount(event.params.redeemer.toHexString(), event.block.timestamp);
   markAccountAsSeen(event.params.redeemer.toHexString(), event.block.timestamp);
 
-  let redemption = new Redemption(event.transaction.hash.toHexString());
+  let redemption = new Redemption(getEventKey(event));
+
   redemption.timestamp = event.block.timestamp;
   redemption.redeemer = event.params.redeemer.toHexString();
   redemption.collateralToken = event.params.collateralToken.toHexString();
@@ -149,6 +164,7 @@ export function handlePayoutRedemption(event: PayoutRedemption): void {
   redemption.condition = event.params.conditionId.toHexString();
   redemption.indexSets = event.params.indexSets;
   redemption.payout = event.params.payout;
+
   redemption.save();
 
   let condition = Condition.load(redemption.condition);

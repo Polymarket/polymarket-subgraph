@@ -16,15 +16,26 @@ import {
   NegRiskEvent,
 } from './types/schema';
 import { markAccountAsSeen, requireAccount } from './utils/account-utils';
+import { getEventKey } from './utils/getEventKey';
 
 export function handlePositionSplit(event: PositionSplit): void {
+  // - don't track splits from the NegRiskExchange
+  if (
+    ['{{lowercase contracts.NegRiskExchange.address}}'].includes(
+      event.params.stakeholder.toHexString(),
+    )
+  ) {
+    return;
+  }
+
   requireAccount(event.params.stakeholder.toHexString(), event.block.timestamp);
   markAccountAsSeen(
     event.params.stakeholder.toHexString(),
     event.block.timestamp,
   );
 
-  const split = new Split(event.transaction.hash.toHexString());
+  const split = new Split(getEventKey(event));
+
   split.timestamp = event.block.timestamp;
   split.stakeholder = event.params.stakeholder.toHexString();
   split.collateralToken = '{{lowercase contracts.USDC.address}}';
@@ -37,13 +48,23 @@ export function handlePositionSplit(event: PositionSplit): void {
 }
 
 export function handlePositionsMerge(event: PositionsMerge): void {
+  // - don't track merges from the NegRiskExchange
+  if (
+    ['{{lowercase contracts.NegRiskExchange.address}}'].includes(
+      event.params.stakeholder.toHexString(),
+    )
+  ) {
+    return;
+  }
+
   requireAccount(event.params.stakeholder.toHexString(), event.block.timestamp);
   markAccountAsSeen(
     event.params.stakeholder.toHexString(),
     event.block.timestamp,
   );
 
-  const merge = new Merge(event.transaction.hash.toHexString());
+  const merge = new Merge(getEventKey(event));
+
   merge.timestamp = event.block.timestamp;
   merge.stakeholder = event.params.stakeholder.toHexString();
   merge.collateralToken = '{{lowercase contracts.USDC.address}}';
@@ -68,9 +89,8 @@ export function handlePositionsConverted(event: PositionsConverted): void {
     return;
   }
 
-  const conversion = new NegRiskConversion(
-    event.transaction.hash.toHexString(),
-  );
+  const conversion = new NegRiskConversion(getEventKey(event));
+
   conversion.timestamp = event.block.timestamp;
   conversion.stakeholder = event.params.stakeholder.toHexString();
   conversion.negRiskMarketId = event.params.marketId.toHexString();
@@ -85,7 +105,8 @@ export function handlePayoutRedemption(event: PayoutRedemption): void {
   requireAccount(event.params.redeemer.toHexString(), event.block.timestamp);
   markAccountAsSeen(event.params.redeemer.toHexString(), event.block.timestamp);
 
-  let redemption = new Redemption(event.transaction.hash.toHexString());
+  let redemption = new Redemption(getEventKey(event));
+
   redemption.timestamp = event.block.timestamp;
   redemption.redeemer = event.params.redeemer.toHexString();
   redemption.collateralToken = '{{lowercase contracts.USDC.address}}';
