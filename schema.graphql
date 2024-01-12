@@ -249,7 +249,7 @@ type FixedProductMarketMaker @entity {
   poolMembers: [FpmmPoolMembership!] @derivedFrom(field: "pool")
 }
 
-# Metadata for the market
+# Metadata for the market, keyed by poisitionId
 type MarketData @entity {
   "ERC1155 TokenID of the CTF Asset"
   id: ID!
