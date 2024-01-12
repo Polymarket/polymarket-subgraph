@@ -6,8 +6,15 @@ import {
   PositionsConverted,
   MarketPrepared,
   QuestionPrepared,
+  PayoutRedemption,
 } from './types/NegRiskAdapter/NegRiskAdapter';
-import { Merge, Split, NegRiskConversion, NegRiskEvent } from './types/schema';
+import {
+  Merge,
+  Split,
+  NegRiskConversion,
+  NegRiskEvent,
+  Redemption,
+} from './types/schema';
 import { markAccountAsSeen, requireAccount } from './utils/account-utils';
 
 export function handlePositionSplit(event: PositionSplit): void {
@@ -72,6 +79,22 @@ export function handlePositionsConverted(event: PositionsConverted): void {
   conversion.questionCount = negRiskEvent.questionCount;
 
   conversion.save();
+}
+
+export function handlePayoutRedemption(event: PayoutRedemption): void {
+  requireAccount(event.params.redeemer.toHexString(), event.block.timestamp);
+  markAccountAsSeen(event.params.redeemer.toHexString(), event.block.timestamp);
+
+  let redemption = new Redemption(event.transaction.hash.toHexString());
+  redemption.timestamp = event.block.timestamp;
+  redemption.redeemer = event.params.redeemer.toHexString();
+  redemption.collateralToken = '{{lowercase contracts.USDC.address}}';
+  redemption.parentCollectionId = ByteArray.fromI32(0);
+  redemption.condition = event.params.conditionId.toHexString();
+  redemption.indexSets = [BigInt.fromI32(1), BigInt.fromI32(2)];
+  redemption.payout = event.params.payout;
+
+  redemption.save();
 }
 
 export function handleMarketPrepared(event: MarketPrepared): void {
