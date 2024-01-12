@@ -1,17 +1,8 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import {
-  Address,
-  crypto,
-  BigInt,
-  Bytes,
-  ByteArray,
-} from '@graphprotocol/graph-ts';
+import { Address, crypto, BigInt, Bytes } from '@graphprotocol/graph-ts';
 import { ConditionalTokens } from '../types/ConditionalTokens/ConditionalTokens';
 
-const computePositionId = (
-  collateral: string,
-  collectionId: Bytes,
-): ByteArray => {
+const computePositionId = (collateral: string, collectionId: Bytes): BigInt => {
   let collateralToken = Address.fromHexString(collateral);
   let hashPayload = new Uint8Array(52);
   hashPayload.fill(0);
@@ -25,7 +16,9 @@ const computePositionId = (
   for (let i = 0; i < collectionId.length && i < 32; i++) {
     hashPayload[i + 20] = collectionId[i];
   }
-  return crypto.keccak256(Bytes.fromUint8Array(hashPayload));
+  return BigInt.fromByteArray(
+    crypto.keccak256(Bytes.fromUint8Array(hashPayload)),
+  );
 };
 
 /**
@@ -132,9 +125,8 @@ export const calculatePositionIds = (
   const positionIds: string[] = [];
   for (let i = 0; i < collectionIds.length; i++) {
     const collectionId = collectionIds[i];
-    const positionIdByteArray = computePositionId(collateral, collectionId);
-    const positionIdHex = positionIdByteArray.toHexString();
-    const positionIdStr = hexToDecimalString(positionIdHex);
+    const positionId = computePositionId(collateral, collectionId);
+    const positionIdStr = hexToDecimalString(positionId.toString());
     positionIds.push(positionIdStr);
   }
   return positionIds;

@@ -1,4 +1,4 @@
-import { BigInt, ByteArray } from '@graphprotocol/graph-ts';
+import { BigInt, Bytes } from '@graphprotocol/graph-ts';
 
 import {
   PositionSplit,
@@ -39,7 +39,7 @@ export function handlePositionSplit(event: PositionSplit): void {
   split.timestamp = event.block.timestamp;
   split.stakeholder = event.params.stakeholder.toHexString();
   split.collateralToken = '{{lowercase contracts.USDC.address}}';
-  split.parentCollectionId = ByteArray.fromI32(0);
+  split.parentCollectionId = Bytes.fromI32(0);
   split.condition = event.params.conditionId.toHexString();
   split.partition = [BigInt.fromI32(1), BigInt.fromI32(2)];
   split.amount = event.params.amount;
@@ -68,7 +68,7 @@ export function handlePositionsMerge(event: PositionsMerge): void {
   merge.timestamp = event.block.timestamp;
   merge.stakeholder = event.params.stakeholder.toHexString();
   merge.collateralToken = '{{lowercase contracts.USDC.address}}';
-  merge.parentCollectionId = ByteArray.fromI32(0);
+  merge.parentCollectionId = Bytes.fromI32(0);
   merge.condition = event.params.conditionId.toHexString();
   merge.partition = [BigInt.fromI32(1), BigInt.fromI32(2)];
   merge.amount = event.params.amount;
@@ -110,7 +110,7 @@ export function handlePayoutRedemption(event: PayoutRedemption): void {
   redemption.timestamp = event.block.timestamp;
   redemption.redeemer = event.params.redeemer.toHexString();
   redemption.collateralToken = '{{lowercase contracts.USDC.address}}';
-  redemption.parentCollectionId = ByteArray.fromI32(0);
+  redemption.parentCollectionId = Bytes.fromI32(0);
   redemption.condition = event.params.conditionId.toHexString();
   redemption.indexSets = [BigInt.fromI32(1), BigInt.fromI32(2)];
   redemption.payout = event.params.payout;
