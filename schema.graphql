@@ -163,12 +163,12 @@ type NegRiskConversion @entity {
   stakeholder: Account!
   "Neg Risk Market Id assigned to the event"
   negRiskMarketId: String!
-  "The number of questions at the time of conversion"
-  questionCount: Int!
   "The amount of each token being converted"
   amount: BigInt!
   "The index set of the outcome tokens being converted"
   indexSet: BigInt!
+  "The number of questions at the time of conversion"
+  questionCount: Int!
 }
 
 # Neg Risk Events/Markets

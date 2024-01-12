@@ -55,14 +55,21 @@ export function handlePositionsConverted(event: PositionsConverted): void {
     event.block.timestamp,
   );
 
+  const negRiskEvent = NegRiskEvent.load(event.params.marketId.toHexString());
+
+  if (negRiskEvent === null) {
+    return;
+  }
+
   const conversion = new NegRiskConversion(
     event.transaction.hash.toHexString(),
   );
   conversion.timestamp = event.block.timestamp;
   conversion.stakeholder = event.params.stakeholder.toHexString();
   conversion.negRiskMarketId = event.params.marketId.toHexString();
-  conversion.indexSet = event.params.indexSet;
   conversion.amount = event.params.amount;
+  conversion.indexSet = event.params.indexSet;
+  conversion.questionCount = negRiskEvent.questionCount;
 
   conversion.save();
 }
