@@ -11,9 +11,9 @@ import {
 import {
   Merge,
   Split,
+  Redemption,
   NegRiskConversion,
   NegRiskEvent,
-  Redemption,
 } from './types/schema';
 import { markAccountAsSeen, requireAccount } from './utils/account-utils';
 

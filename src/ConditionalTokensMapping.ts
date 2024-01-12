@@ -130,6 +130,14 @@ export function handlePositionsMerge(event: PositionsMerge): void {
 }
 
 export function handlePayoutRedemption(event: PayoutRedemption): void {
+  // we don't track redemptions from the neg risk adapter
+  if (
+    event.params.redeemer.toHexString() ==
+    '{{lowercase contracts.NegativeRiskAdapter.address}}'
+  ) {
+    return;
+  }
+
   requireAccount(event.params.redeemer.toHexString(), event.block.timestamp);
   markAccountAsSeen(event.params.redeemer.toHexString(), event.block.timestamp);
 
