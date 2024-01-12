@@ -11,7 +11,6 @@ dataSources:
       address: '{{ contracts.ConditionalTokens.address }}'
       abi: ConditionalTokens
       startBlock: {{ contracts.ConditionalTokens.startBlock }}
-
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
