@@ -1,93 +1,94 @@
-import { BigDecimal, log } from '@graphprotocol/graph-ts';
+import { BigInt, ByteArray } from '@graphprotocol/graph-ts';
 
 import {
   PositionSplit,
   PositionsMerge,
-  PositionResolved,
-} from './types/NegRiskAdapter';
+  PositionsConverted,
+  MarketPrepared,
+  QuestionPrepared,
+} from './types/NegRiskAdapter/NegRiskAdapter';
+import { Merge, Split, NegRiskConversion, NegRiskEvent } from './types/schema';
+import { markAccountAsSeen, requireAccount } from './utils/account-utils';
 
 export function handlePositionSplit(event: PositionSplit): void {
-  if (
-    FixedProductMarketMaker.load(event.params.stakeholder.toHexString()) != null
-  ) {
-    // We don't track splits within the market makers
-    return;
-  }
-
-  getCollateralDetails(event.params.collateralToken);
   requireAccount(event.params.stakeholder.toHexString(), event.block.timestamp);
   markAccountAsSeen(
     event.params.stakeholder.toHexString(),
     event.block.timestamp,
   );
 
-  let split = new Split(event.transaction.hash.toHexString());
+  const split = new Split(event.transaction.hash.toHexString());
   split.timestamp = event.block.timestamp;
   split.stakeholder = event.params.stakeholder.toHexString();
-  split.collateralToken = event.params.collateralToken.toHexString();
-  split.parentCollectionId = event.params.parentCollectionId;
+  split.collateralToken = '{{lowercase contracts.USDC.address}}';
+  split.parentCollectionId = ByteArray.fromI32(0);
   split.condition = event.params.conditionId.toHexString();
-  split.partition = event.params.partition;
+  split.partition = [BigInt.fromI32(1), BigInt.fromI32(2)];
   split.amount = event.params.amount;
+
   split.save();
-
-  let condition = Condition.load(split.condition);
-  if (condition == null) {
-    log.error('Failed to update market positions: condition {} not prepared', [
-      split.condition,
-    ]);
-    return;
-  }
-
-  // If the user has split from collateral then we want to update their market position accordingly
-  if (partitionCheck(split.partition, condition.outcomeSlotCount)) {
-    let marketMakers = condition.fixedProductMarketMakers;
-    for (let i = 0; i < marketMakers.length; i += 1) {
-      // This is not ideal as in theory we could have multiple market makers for the same condition
-      // Given that this subgraph only tracks market makers deployed by Polymarket, this is acceptable for now
-      updateMarketPositionsFromSplit(marketMakers[i], event);
-    }
-  }
 }
 
 export function handlePositionsMerge(event: PositionsMerge): void {
-  if (
-    FixedProductMarketMaker.load(event.params.stakeholder.toHexString()) != null
-  ) {
-    // We don't track merges within the market makers
-    return;
-  }
   requireAccount(event.params.stakeholder.toHexString(), event.block.timestamp);
   markAccountAsSeen(
     event.params.stakeholder.toHexString(),
     event.block.timestamp,
   );
 
-  let merge = new Merge(event.transaction.hash.toHexString());
+  const merge = new Merge(event.transaction.hash.toHexString());
   merge.timestamp = event.block.timestamp;
   merge.stakeholder = event.params.stakeholder.toHexString();
-  merge.collateralToken = event.params.collateralToken.toHexString();
-  merge.parentCollectionId = event.params.parentCollectionId;
+  merge.collateralToken = '{{lowercase contracts.USDC.address}}';
+  merge.parentCollectionId = ByteArray.fromI32(0);
   merge.condition = event.params.conditionId.toHexString();
-  merge.partition = event.params.partition;
+  merge.partition = [BigInt.fromI32(1), BigInt.fromI32(2)];
   merge.amount = event.params.amount;
-  merge.save();
 
-  let condition = Condition.load(merge.condition);
-  if (condition == null) {
-    log.error('Failed to update market positions: condition {} not prepared', [
-      merge.condition,
-    ]);
+  merge.save();
+}
+
+export function handlePositionsConverted(event: PositionsConverted): void {
+  requireAccount(event.params.stakeholder.toHexString(), event.block.timestamp);
+  markAccountAsSeen(
+    event.params.stakeholder.toHexString(),
+    event.block.timestamp,
+  );
+
+  const conversion = new NegRiskConversion(
+    event.transaction.hash.toHexString(),
+  );
+  conversion.timestamp = event.block.timestamp;
+  conversion.stakeholder = event.params.stakeholder.toHexString();
+  conversion.negRiskMarketId = event.params.marketId.toHexString();
+  conversion.indexSet = event.params.indexSet;
+  conversion.amount = event.params.amount;
+
+  conversion.save();
+}
+
+export function handleMarketPrepared(event: MarketPrepared): void {
+  // ignore non-negRiskOperator events
+  if (
+    event.params.oracle.toHexString() !==
+    '{{lowercase contracts.NegRiskOperator.address}}'
+  ) {
     return;
   }
 
-  // If the user has merged a full set of outcome tokens then we want to update their market position accordingly
-  if (partitionCheck(merge.partition, condition.outcomeSlotCount)) {
-    // This is not ideal as in theory we could have multiple market makers for the same condition
-    // Given that this subgraph only tracks market makers deployed by Polymarket, this is acceptable for now
-    let marketMakers = condition.fixedProductMarketMakers;
-    for (let i = 0; i < marketMakers.length; i += 1) {
-      updateMarketPositionsFromMerge(marketMakers[i], event);
-    }
+  let negRiskEvent = new NegRiskEvent(event.params.marketId.toHexString());
+  negRiskEvent.questionCount = 0;
+  negRiskEvent.save();
+}
+
+export function handleQuestionPrepared(event: QuestionPrepared): void {
+  let negRiskEvent = NegRiskEvent.load(event.params.marketId.toHexString());
+
+  // ignore non-negRiskOperator events
+  if (negRiskEvent === null) {
+    return;
   }
+
+  negRiskEvent.questionCount += 1;
+  negRiskEvent.save();
 }

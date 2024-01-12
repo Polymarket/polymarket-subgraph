@@ -154,8 +154,32 @@ type Redemption @entity {
   payout: BigInt!
 }
 
-# Market Makers
+type NegRiskConversion @entity {
+  "Transaction Hash"
+  id: ID!
+  "Timestamp at which conversion occurred"
+  timestamp: BigInt!
+  "Address which is performing this conversion"
+  stakeholder: Account!
+  "Neg Risk Market Id assigned to the event"
+  negRiskMarketId: String!
+  "The number of questions at the time of conversion"
+  questionCount: Int!
+  "The amount of each token being converted"
+  amount: BigInt!
+  "The index set of the outcome tokens being converted"
+  indexSet: BigInt!
+}
 
+# Neg Risk Events/Markets
+type NegRiskEvent @entity {
+  "negRiskMarketId"
+  id: ID!
+  "Question Count"
+  questionCount: Int!
+}
+
+# Market Makers
 type FixedProductMarketMaker @entity {
   "Market maker address"
   id: ID!

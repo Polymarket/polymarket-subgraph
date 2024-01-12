@@ -141,13 +141,13 @@ dataSources:
         - name: NegRiskAdapter
           file: ./abis/NegRiskAdapter.json
       eventHandlers:
-        - event: PositionSplit(indexed address, indexed bytes32, uint256);
+        - event: PositionSplit(indexed address,indexed bytes32,uint256)
           handler: handlePositionSplit
-        - event: PositionsMerge(indexed address, indexed bytes32, uint256);
+        - event: PositionsMerge(indexed address,indexed bytes32,uint256)
           handler: handlePositionsMerge
-        - event: PositionsConverted(indexed address, indexed bytes32, indexed uint256, uint256);
+        - event: PositionsConverted(indexed address,indexed bytes32,indexed uint256,uint256)
           handler: handlePositionsConverted
-        - event: PayoutRedemption(indexed address, indexed bytes32, uint256[], uint256);
+        - event: PayoutRedemption(indexed address,indexed bytes32,uint256[],uint256)
           handler: handlePayoutRedemption
       file: ./src/NegRiskAdapterMapping.ts
 templates:

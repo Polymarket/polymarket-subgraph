@@ -1,5 +1,4 @@
 import { BigInt, BigDecimal, log } from '@graphprotocol/graph-ts';
-
 import {
   ConditionPreparation,
   ConditionResolution,
@@ -32,6 +31,14 @@ export function handlePositionSplit(event: PositionSplit): void {
     FixedProductMarketMaker.load(event.params.stakeholder.toHexString()) != null
   ) {
     // We don't track splits within the market makers
+    return;
+  }
+
+  // we don't track splits from the neg risk adapter
+  if (
+    event.params.stakeholder.toHexString() ==
+    '{{lowercase contracts.NegativeRiskAdapter.address}}'
+  ) {
     return;
   }
 
@@ -78,6 +85,15 @@ export function handlePositionsMerge(event: PositionsMerge): void {
     // We don't track merges within the market makers
     return;
   }
+
+  // we don't track merges from the neg risk adapter
+  if (
+    event.params.stakeholder.toHexString() ==
+    '{{lowercase contracts.NegativeRiskAdapter.address}}'
+  ) {
+    return;
+  }
+
   requireAccount(event.params.stakeholder.toHexString(), event.block.timestamp);
   markAccountAsSeen(
     event.params.stakeholder.toHexString(),
@@ -160,12 +176,12 @@ export function handleConditionPreparation(event: ConditionPreparation): void {
   // everything else can use the fpmm events processor
   if (
     condition.oracle.toHexString() ==
-    '{{lowercase contracts.NegativeRiskOperator.address}}'
+    '{{lowercase contracts.NegRiskAdapter.address}}'
   ) {
     const positionIds = calculatePositionIds(
       '{{lowercase contracts.ConditionalTokens.address}}',
       event.params.conditionId.toHexString(),
-      '{{lowercase contracts.WrappedCollateral.address}}',
+      '{{lowercase contracts.NegRiskWrappedCollateral.address}}',
       2,
     );
 
