@@ -5,6 +5,7 @@ import {
   TokenRegistered,
 } from './types/Exchange/Exchange';
 import {
+  Condition,
   EnrichedOrderFilled,
   MarketData,
   Orderbook,
@@ -23,6 +24,7 @@ import {
   updateTradesQuantity,
   updateVolumes,
 } from './utils/order-book-utils';
+import { calculatePositionIds } from './utils/ctf-utils';
 
 function enrichOrder(
   event: OrderFilled,
@@ -198,24 +200,43 @@ export function handleMatch(event: OrdersMatched): void {
   updateGlobalVolume(size.toBigDecimal(), collateralScaleDec, side);
 }
 
-export function handleTokenRegistered(event: TokenRegistered): void {
-  // Create MarketData entity on token registration if it hasn't been created
-  // e.g if the tokens aren't associated with an FPMM
-  let token0Str = event.params.token0.toString();
-  let token1Str = event.params.token1.toString();
-  let condition = event.params.conditionId.toHexString();
+function getPositionIds(condition: Condition): string[] {
+  switch (condition.oracle.toHexString()) {
+    case '{{lowercase contracts.NegRiskAdapter.address}}':
+      return calculatePositionIds(
+        '{{lowercase contracts.ConditionalTokens.address}}',
+        condition.id,
+        '{{lowercase contracts.NegRiskWrappedCollateral.address}}',
+        2,
+      );
+    default:
+      return calculatePositionIds(
+        '{{lowercase contracts.ConditionalTokens.address}}',
+        condition.id,
+        '{{lowercase contracts.USDC.address}}',
+        2,
+      );
+  }
+}
 
-  let data0 = MarketData.load(token0Str);
-  if (data0 == null) {
-    data0 = new MarketData(token0Str);
-    data0.condition = condition;
-    data0.save();
+export function handleTokenRegistered(event: TokenRegistered): void {
+  const condition = Condition.load(event.params.conditionId.toHexString());
+
+  // there should be a registered condition
+  if (condition == null) {
+    return;
   }
 
-  let data1 = MarketData.load(token1Str);
-  if (data1 == null) {
-    data1 = new MarketData(token1Str);
-    data1.condition = condition;
-    data1.save();
+  const positionIds = getPositionIds(condition);
+
+  for (let i = 0; i < 2; i++) {
+    if (!MarketData.load(positionIds[i])) {
+      const marketData = new MarketData(positionIds[i]);
+
+      marketData.condition = event.params.conditionId.toHexString();
+      marketData.outcomeIndex = BigInt.fromI32(i);
+
+      marketData.save();
+    }
   }
 }

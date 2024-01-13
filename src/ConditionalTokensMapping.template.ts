@@ -147,7 +147,7 @@ export function handlePayoutRedemption(event: PayoutRedemption): void {
   //   - these are handled in the NegRiskAdapterMapping
   if (
     event.params.redeemer.toHexString() ==
-    '{{lowercase contracts.NegativeRiskAdapter.address}}'
+    '{{lowercase contracts.NegRiskAdapter.address}}'
   ) {
     return;
   }
@@ -185,6 +185,7 @@ export function handlePayoutRedemption(event: PayoutRedemption): void {
 
 export function handleConditionPreparation(event: ConditionPreparation): void {
   let condition = new Condition(event.params.conditionId.toHexString());
+
   condition.oracle = event.params.oracle;
   condition.questionId = event.params.questionId;
   condition.fixedProductMarketMakers = [];
@@ -196,28 +197,6 @@ export function handleConditionPreparation(event: ConditionPreparation): void {
   global.numConditions += 1;
   global.numOpenConditions += 1;
   global.save();
-
-  // neg risk market data
-  // everything else uses the fpmm events processor
-  if (
-    condition.oracle.toHexString() ==
-    '{{lowercase contracts.NegRiskAdapter.address}}'
-  ) {
-    const positionIds = calculatePositionIds(
-      '{{lowercase contracts.ConditionalTokens.address}}',
-      event.params.conditionId.toHexString(),
-      '{{lowercase contracts.NegRiskWrappedCollateral.address}}',
-      2,
-    );
-
-    for (let i = 0; i < 2; i++) {
-      const marketData = new MarketData(positionIds[i]);
-      marketData.condition = event.params.conditionId.toHexString();
-      marketData.outcomeIndex = BigInt.fromI32(i);
-
-      marketData.save();
-    }
-  }
 }
 
 export function handleConditionResolution(event: ConditionResolution): void {
