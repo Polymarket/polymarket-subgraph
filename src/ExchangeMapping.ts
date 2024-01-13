@@ -203,7 +203,7 @@ export function handleMatch(event: OrdersMatched): void {
 function getPositionIds(
   exchange: string,
   conditionId: string,
-): string[] | undefined {
+): string[] | null {
   switch (exchange) {
     case '{{lowercase contracts.Exchange.address}}':
       return calculatePositionIds(
@@ -220,7 +220,7 @@ function getPositionIds(
         2,
       );
     default:
-      return undefined;
+      return null;
   }
 }
 
@@ -234,7 +234,7 @@ export function handleTokenRegistered(event: TokenRegistered): void {
 
   const positionIds = getPositionIds(event.address.toHexString(), condition.id);
 
-  if (positionIds === undefined) {
+  if (positionIds === null) {
     return;
   }
 
