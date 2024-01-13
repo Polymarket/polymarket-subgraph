@@ -3,6 +3,16 @@ import * as Handlebars from 'handlebars';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
+const config = {
+  templates: [
+    'subgraph.yaml',
+    'src/FixedProductMarketMakerFactoryMapping.ts',
+    'src/ConditionalTokensMapping.ts',
+    'src/NegRiskAdapterMapping.ts',
+    'src/ExchangeMapping.ts',
+  ],
+};
+
 Handlebars.registerHelper('lowercase', function (str) {
   if (str && typeof str === 'string') {
     return str.toLowerCase();
@@ -43,12 +53,8 @@ function getNetworkNameForSubgraph(): string | null {
   }
 
   // eslint-disable-next-line no-restricted-syntax
-  for (const templatedFileDesc of [
-    ['subgraph', 'yaml'],
-    ['src/FixedProductMarketMakerFactoryMapping', 'ts'],
-    ['src/ConditionalTokensMapping', 'ts'],
-    ['src/NegRiskAdapterMapping', 'ts'],
-  ]) {
+  for (const templateFile of config.templates) {
+    const templatedFileDesc = templateFile.split('.');
     const template = fs
       .readFileSync(`${templatedFileDesc[0]}.template.${templatedFileDesc[1]}`)
       .toString();

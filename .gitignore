@@ -31,6 +31,7 @@ src/types/
 src/FixedProductMarketMakerFactoryMapping.ts
 src/ConditionalTokensMapping.ts
 src/NegRiskAdapterMapping.ts
+src/ExchangeMapping.ts
 
 # Jetbrains
 .idea/
