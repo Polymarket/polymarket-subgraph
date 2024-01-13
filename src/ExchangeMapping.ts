@@ -200,22 +200,27 @@ export function handleMatch(event: OrdersMatched): void {
   updateGlobalVolume(size.toBigDecimal(), collateralScaleDec, side);
 }
 
-function getPositionIds(condition: Condition): string[] {
-  switch (condition.oracle.toHexString()) {
-    case '{{lowercase contracts.NegRiskAdapter.address}}':
+function getPositionIds(
+  exchange: string,
+  conditionId: string,
+): string[] | undefined {
+  switch (exchange) {
+    case '{{lowercase contracts.Exchange.address}}':
       return calculatePositionIds(
         '{{lowercase contracts.ConditionalTokens.address}}',
-        condition.id,
+        conditionId,
+        '{{lowercase contracts.USDC.address}}',
+        2,
+      );
+    case '{{lowercase contracts.NegRiskExchange.address}}':
+      return calculatePositionIds(
+        '{{lowercase contracts.ConditionalTokens.address}}',
+        conditionId,
         '{{lowercase contracts.NegRiskWrappedCollateral.address}}',
         2,
       );
     default:
-      return calculatePositionIds(
-        '{{lowercase contracts.ConditionalTokens.address}}',
-        condition.id,
-        '{{lowercase contracts.USDC.address}}',
-        2,
-      );
+      return undefined;
   }
 }
 
@@ -223,11 +228,15 @@ export function handleTokenRegistered(event: TokenRegistered): void {
   const condition = Condition.load(event.params.conditionId.toHexString());
 
   // there should be a registered condition
-  if (condition == null) {
+  if (condition === null) {
     return;
   }
 
-  const positionIds = getPositionIds(condition);
+  const positionIds = getPositionIds(event.address.toHexString(), condition.id);
+
+  if (positionIds === undefined) {
+    return;
+  }
 
   for (let i = 0; i < 2; i++) {
     if (!MarketData.load(positionIds[i])) {
