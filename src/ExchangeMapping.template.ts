@@ -1,4 +1,4 @@
-import { BigDecimal, BigInt } from '@graphprotocol/graph-ts';
+import { Address, BigDecimal, BigInt } from '@graphprotocol/graph-ts';
 import {
   OrderFilled,
   OrdersMatched,
@@ -201,18 +201,22 @@ export function handleMatch(event: OrdersMatched): void {
 }
 
 function getPositionIds(
-  exchange: string,
+  exchange: Address,
   conditionId: string,
 ): string[] | null {
-  switch (exchange) {
-    case '{{lowercase contracts.Exchange.address}}':
+  switch (exchange.toU32()) {
+    case Address.fromHexString(
+      '{{lowercase contracts.Exchange.address}}',
+    ).toU32():
       return calculatePositionIds(
         '{{lowercase contracts.ConditionalTokens.address}}',
         conditionId,
         '{{lowercase contracts.USDC.address}}',
         2,
       );
-    case '{{lowercase contracts.NegRiskExchange.address}}':
+    case Address.fromHexString(
+      '{{lowercase contracts.NegRiskExchange.address}}',
+    ).toU32():
       return calculatePositionIds(
         '{{lowercase contracts.ConditionalTokens.address}}',
         conditionId,
@@ -232,7 +236,7 @@ export function handleTokenRegistered(event: TokenRegistered): void {
     return;
   }
 
-  const positionIds = getPositionIds(event.address.toHexString(), condition.id);
+  const positionIds = getPositionIds(event.address, condition.id);
 
   if (positionIds === null) {
     return;
