@@ -204,28 +204,21 @@ function getPositionIds(
   exchange: Address,
   conditionId: string,
 ): string[] | null {
-  switch (exchange.toU32()) {
-    case Address.fromHexString(
-      '{{lowercase contracts.Exchange.address}}',
-    ).toU32():
-      return calculatePositionIds(
-        '{{lowercase contracts.ConditionalTokens.address}}',
-        conditionId,
-        '{{lowercase contracts.USDC.address}}',
-        2,
-      );
-    case Address.fromHexString(
-      '{{lowercase contracts.NegRiskExchange.address}}',
-    ).toU32():
-      return calculatePositionIds(
-        '{{lowercase contracts.ConditionalTokens.address}}',
-        conditionId,
-        '{{lowercase contracts.NegRiskWrappedCollateral.address}}',
-        2,
-      );
-    default:
-      return null;
+  if (exchange.toHexString() === '{{lowercase contracts.Exchange.address}}') {
+    return calculatePositionIds(
+      '{{lowercase contracts.ConditionalTokens.address}}',
+      conditionId,
+      '{{lowercase contracts.USDC.address}}',
+      2,
+    );
   }
+
+  return calculatePositionIds(
+    '{{lowercase contracts.ConditionalTokens.address}}',
+    conditionId,
+    '{{lowercase contracts.NegRiskWrappedCollateral.address}}',
+    2,
+  );
 }
 
 export function handleTokenRegistered(event: TokenRegistered): void {
