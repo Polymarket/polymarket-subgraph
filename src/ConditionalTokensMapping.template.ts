@@ -1,4 +1,4 @@
-import { BigInt, BigDecimal, log } from '@graphprotocol/graph-ts';
+import { BigDecimal, log } from '@graphprotocol/graph-ts';
 import {
   ConditionPreparation,
   ConditionResolution,
@@ -12,7 +12,6 @@ import {
   Merge,
   Split,
   FixedProductMarketMaker,
-  MarketData,
 } from './types/schema';
 import { requireGlobal } from './utils/global-utils';
 import {
@@ -24,7 +23,6 @@ import { partitionCheck } from './utils/conditional-utils';
 import { bigZero } from './utils/constants';
 import { getCollateralDetails } from './utils/collateralTokens';
 import { markAccountAsSeen, requireAccount } from './utils/account-utils';
-import { calculatePositionIds } from './utils/ctf-utils';
 import { getEventKey } from './utils/getEventKey';
 
 export function handlePositionSplit(event: PositionSplit): void {

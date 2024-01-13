@@ -4,7 +4,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 
 const config = {
-  templates: [
+  templatedFiles: [
     'subgraph.yaml',
     'src/FixedProductMarketMakerFactoryMapping.ts',
     'src/ConditionalTokensMapping.ts',
@@ -53,8 +53,8 @@ function getNetworkNameForSubgraph(): string | null {
   }
 
   // eslint-disable-next-line no-restricted-syntax
-  for (const templateFile of config.templates) {
-    const templatedFileDesc = templateFile.split('.');
+  for (const templatedFile of config.templatedFiles) {
+    const templatedFileDesc = templatedFile.split('.');
     const template = fs
       .readFileSync(`${templatedFileDesc[0]}.template.${templatedFileDesc[1]}`)
       .toString();
