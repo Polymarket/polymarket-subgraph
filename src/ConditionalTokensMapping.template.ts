@@ -36,7 +36,7 @@ export function handlePositionSplit(event: PositionSplit): void {
   }
 
   // - don't track splits from the NegRiskAdapter
-  //   - these are handled in the NegRiskAdapterMapping
+  //   these are handled in the NegRiskAdapterMapping
   // - don't track splits from the CTFExchange
   if (
     [
@@ -94,7 +94,7 @@ export function handlePositionsMerge(event: PositionsMerge): void {
   }
 
   // - don't track merges from the NegRiskAdapter
-  //   - these are handled in the NegRiskAdapterMapping
+  //   these are handled in the NegRiskAdapterMapping
   // - don't track merges from the CTFExchange
   if (
     [
@@ -144,7 +144,7 @@ export function handlePositionsMerge(event: PositionsMerge): void {
 
 export function handlePayoutRedemption(event: PayoutRedemption): void {
   // - don't track redemptions from the NegRiskAdapter
-  //   - these are handled in the NegRiskAdapterMapping
+  //   these are handled in the NegRiskAdapterMapping
   if (
     event.params.redeemer.toHexString() ==
     '{{lowercase contracts.NegRiskAdapter.address}}'
