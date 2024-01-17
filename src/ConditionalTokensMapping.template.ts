@@ -1,4 +1,4 @@
-import { BigDecimal, log } from '@graphprotocol/graph-ts';
+import { BigDecimal, Bytes, log } from '@graphprotocol/graph-ts';
 import {
   ConditionPreparation,
   ConditionResolution,
@@ -24,6 +24,7 @@ import { bigZero } from './utils/constants';
 import { getCollateralDetails } from './utils/collateralTokens';
 import { markAccountAsSeen, requireAccount } from './utils/account-utils';
 import { getEventKey } from './utils/getEventKey';
+import { getCollectionId2 } from './utils/ctf-utils';
 
 export function handlePositionSplit(event: PositionSplit): void {
   // - don't track splits within the market makers
@@ -160,6 +161,9 @@ export function handlePayoutRedemption(event: PayoutRedemption): void {
   redemption.collateralToken = event.params.collateralToken.toHexString();
   redemption.parentCollectionId = event.params.parentCollectionId;
   redemption.condition = event.params.conditionId.toHexString();
+
+  // delete this
+  getCollectionId2(Bytes.fromHexString(redemption.condition), 1);
   redemption.indexSets = event.params.indexSets;
   redemption.payout = event.params.payout;
 

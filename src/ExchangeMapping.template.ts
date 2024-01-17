@@ -225,10 +225,13 @@ export function handleTokenRegistered(event: TokenRegistered): void {
   const condition = Condition.load(event.params.conditionId.toHexString());
 
   // there should be a registered condition
+  // this is picked up at ConditionPreparation
   if (condition === null) {
     return;
   }
 
+  // even though the tokenRegistered event has the positionIds
+  // we need to calculate ourselves to determine the outcome indices
   const positionIds = getPositionIds(event.address, condition.id);
 
   if (positionIds === null) {
