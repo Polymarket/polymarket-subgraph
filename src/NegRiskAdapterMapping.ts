@@ -114,7 +114,7 @@ export function handlePositionsConverted(event: PositionsConverted): void {
 
   conversion.save();
 
-  // handlePositionsConverted ?
+  // updateMarketPositionsFromConversion()?
 }
 
 export function handlePayoutRedemption(event: PayoutRedemption): void {
