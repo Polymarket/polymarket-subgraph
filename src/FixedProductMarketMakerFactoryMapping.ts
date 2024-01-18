@@ -124,7 +124,7 @@ export function handleFixedProductMarketMakerCreation(
     // NOTE: THESE ARE NOT NEG RISK MARKETS
     // (negRisk markets don't have fpmm's)
     let tokenId = computePositionId(
-      Address.fromHexString(USDC),
+      Address.fromString(USDC),
       Bytes.fromHexString(condition),
       outcomeIndex,
     );

@@ -154,7 +154,7 @@ export function handleFill(event: OrderFilled): void {
 
   // Update market position
   updateMarketPositionFromOrderFilled(
-    Address.fromHexString(maker),
+    Address.fromString(maker),
     BigInt.fromString(tokenId),
     side,
     event,

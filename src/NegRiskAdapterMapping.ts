@@ -18,6 +18,11 @@ import {
 import { markAccountAsSeen, requireAccount } from './utils/account-utils';
 import { getEventKey } from './utils/getEventKey';
 import { NEG_RISK_EXCHANGE, NEG_RISK_OPERATOR, USDC } from './constants';
+import {
+  updateMarketPositionsFromMerge,
+  updateMarketPositionsFromRedemption,
+  updateMarketPositionsFromSplit,
+} from './utils/market-positions-utils';
 
 export function handlePositionSplit(event: PositionSplit): void {
   // - don't track splits from the NegRiskExchange
@@ -42,6 +47,14 @@ export function handlePositionSplit(event: PositionSplit): void {
   split.amount = event.params.amount;
 
   split.save();
+
+  const negRisk = true;
+  updateMarketPositionsFromSplit(
+    event.params.conditionId,
+    event.params.stakeholder,
+    event.params.amount,
+    negRisk,
+  );
 }
 
 export function handlePositionsMerge(event: PositionsMerge): void {
@@ -67,6 +80,14 @@ export function handlePositionsMerge(event: PositionsMerge): void {
   merge.amount = event.params.amount;
 
   merge.save();
+
+  const negRisk = true;
+  updateMarketPositionsFromMerge(
+    event.params.conditionId,
+    event.params.stakeholder,
+    event.params.amount,
+    negRisk,
+  );
 }
 
 export function handlePositionsConverted(event: PositionsConverted): void {
@@ -92,6 +113,8 @@ export function handlePositionsConverted(event: PositionsConverted): void {
   conversion.questionCount = negRiskEvent.questionCount;
 
   conversion.save();
+
+  // handlePositionsConverted ?
 }
 
 export function handlePayoutRedemption(event: PayoutRedemption): void {
@@ -109,6 +132,16 @@ export function handlePayoutRedemption(event: PayoutRedemption): void {
   redemption.payout = event.params.payout;
 
   redemption.save();
+
+  const negRisk = true;
+  updateMarketPositionsFromRedemption(
+    event.params.conditionId,
+    event.params.redeemer,
+    [BigInt.fromI32(1), BigInt.fromI32(2)],
+    event.block.timestamp,
+    negRisk,
+    event.params.amounts,
+  );
 }
 
 export function handleMarketPrepared(event: MarketPrepared): void {

@@ -79,7 +79,12 @@ export function handlePositionSplit(event: PositionSplit): void {
       // This is not ideal as in theory we could have multiple market makers for the same condition
       // Given that this subgraph only tracks market makers deployed by Polymarket, this is acceptable for now
       const negRisk = false;
-      updateMarketPositionsFromSplit(event, negRisk);
+      updateMarketPositionsFromSplit(
+        event.params.conditionId,
+        event.params.stakeholder,
+        event.params.amount,
+        negRisk,
+      );
     }
   }
 }
@@ -136,7 +141,12 @@ export function handlePositionsMerge(event: PositionsMerge): void {
     let marketMakers = condition.fixedProductMarketMakers;
     for (let i = 0; i < marketMakers.length; i += 1) {
       const negRisk = false;
-      updateMarketPositionsFromMerge(event, negRisk);
+      updateMarketPositionsFromMerge(
+        event.params.conditionId,
+        event.params.stakeholder,
+        event.params.amount,
+        negRisk,
+      );
     }
   }
 }
@@ -176,7 +186,14 @@ export function handlePayoutRedemption(event: PayoutRedemption): void {
     // This is not ideal as in theory we could have multiple market makers for the same condition
     // Given that this subgraph only tracks market makers deployed by Polymarket, this is acceptable for now
     const negRisk = false;
-    updateMarketPositionsFromRedemption(event, negRisk);
+    updateMarketPositionsFromRedemption(
+      event.params.conditionId,
+      event.params.redeemer,
+      event.params.indexSets,
+      event.block.timestamp,
+      negRisk,
+      [],
+    );
   }
 }
 

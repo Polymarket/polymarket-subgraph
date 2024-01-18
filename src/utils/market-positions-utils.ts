@@ -1,10 +1,11 @@
-import { Address, BigDecimal, BigInt, log } from '@graphprotocol/graph-ts';
-import { MarketPosition, Condition, MarketData } from '../types/schema';
 import {
-  PositionsMerge,
-  PositionSplit,
-  PayoutRedemption,
-} from '../types/ConditionalTokens/ConditionalTokens';
+  Address,
+  BigDecimal,
+  BigInt,
+  Bytes,
+  log,
+} from '@graphprotocol/graph-ts';
+import { MarketPosition, Condition, MarketData } from '../types/schema';
 import { bigZero, TRADE_TYPE_BUY } from './constants';
 import { updateUserProfit } from './account-utils';
 import { OrderFilled } from '../types/Exchange/Exchange';
@@ -189,25 +190,18 @@ export function updateMarketPositionFromOrderFilled(
  * Updates a user's market position after manually splitting collateral
  */
 export function updateMarketPositionsFromSplit(
-  event: PositionSplit,
+  conditionId: Bytes,
+  stakeholder: Address,
+  amount: BigInt,
   negRisk: boolean,
 ): void {
   for (let outcomeIndex = 0; outcomeIndex < 2; outcomeIndex += 1) {
-    const positionId = getPositionId(
-      event.params.conditionId,
-      outcomeIndex,
-      negRisk,
-    );
+    const positionId = getPositionId(conditionId, outcomeIndex, negRisk);
 
-    const marketPosition = getMarketPosition(
-      event.params.stakeholder,
-      positionId,
-    );
+    const marketPosition = getMarketPosition(stakeholder, positionId);
 
     // Event emits the amount of collateral to be split as `amount`
-    marketPosition.quantityBought = marketPosition.quantityBought.plus(
-      event.params.amount,
-    );
+    marketPosition.quantityBought = marketPosition.quantityBought.plus(amount);
 
     updateNetPositionAndSave(marketPosition);
   }
@@ -217,25 +211,18 @@ export function updateMarketPositionsFromSplit(
  * Updates a user's market position after a merge
  */
 export function updateMarketPositionsFromMerge(
-  event: PositionsMerge,
+  conditionId: Bytes,
+  stakeholder: Address,
+  amount: BigInt,
   negRisk: boolean,
 ): void {
   for (let outcomeIndex = 0; outcomeIndex < 2; outcomeIndex += 1) {
-    const positionId = getPositionId(
-      event.params.conditionId,
-      outcomeIndex,
-      negRisk,
-    );
+    const positionId = getPositionId(conditionId, outcomeIndex, negRisk);
 
-    const marketPosition = getMarketPosition(
-      event.params.stakeholder,
-      positionId,
-    );
+    const marketPosition = getMarketPosition(stakeholder, positionId);
 
     // Event emits the amount of outcome tokens to be merged as `amount`
-    marketPosition.quantitySold = marketPosition.quantitySold.plus(
-      event.params.amount,
-    );
+    marketPosition.quantitySold = marketPosition.quantitySold.plus(amount);
 
     updateNetPositionAndSave(marketPosition);
   }
@@ -247,55 +234,54 @@ export function updateMarketPositionsFromMerge(
  */
 
 export function updateMarketPositionsFromRedemption(
-  event: PayoutRedemption,
+  conditionId: Bytes,
+  redeemer: Address,
+  indexSets: BigInt[],
+  timestamp: BigInt,
   negRisk: boolean,
+  amounts: BigInt[],
 ): void {
-  if (Condition.load(event.params.conditionId.toHexString()) == null) {
+  const condition = Condition.load(conditionId.toHexString());
+  if (condition === null) {
     return;
   }
 
-  const conditionId = event.params.conditionId.toHexString();
-  const condition = Condition.load(conditionId) as Condition;
   const payoutNumerators = condition.payoutNumerators as BigInt[];
   const payoutDenominator = condition.payoutDenominator as BigInt;
 
-  let indexSets = event.params.indexSets;
   for (let i = 0; i < indexSets.length; i += 1) {
     // Each element of indexSets is the decimal representation of the binary slot of the given outcome
     // i.e. For a condition with 4 outcomes, ["1", "2", "4"] represents the first 3 slots as 0b0111
     // We can get the relevant slot by shifting a bit until we hit the correct index, e.g. 4 = 1 << 3
     let outcomeIndex = 0;
+    // we assume that each indexSet is a power of 2
     // eslint-disable-next-line no-bitwise
     while (1 << outcomeIndex < indexSets[i].toI32()) {
       outcomeIndex += 1;
     }
-    const positionId = getPositionId(
-      event.params.conditionId,
-      outcomeIndex,
-      negRisk,
-    );
 
-    const marketPosition = getMarketPosition(event.params.redeemer, positionId);
+    const positionId = getPositionId(conditionId, outcomeIndex, negRisk);
 
-    // Redeeming a position is an all or nothing operation so use full balance for calculations
+    const marketPosition = getMarketPosition(redeemer, positionId);
+
+    // either the full amount of the token
+    // or, if neg risk, the specified amount
+    const quantity = negRisk ? amounts[i] : marketPosition.netQuantity;
+
     const numerator = payoutNumerators[outcomeIndex];
-    const redemptionValue = marketPosition.netQuantity
-      .times(numerator)
-      .div(payoutDenominator);
+    const redemptionValue = quantity.times(numerator).div(payoutDenominator);
 
     const collateralScaleDec = new BigDecimal(BigInt.fromI32(10).pow(<u8>6));
     updateUserProfit(
-      event.params.redeemer.toHexString(),
+      redeemer.toHexString(),
       redemptionValue,
       collateralScaleDec,
-      event.block.timestamp,
-      conditionId,
+      timestamp,
+      conditionId.toHexString(),
     );
 
     // position gets zero'd out
-    marketPosition.quantitySold = marketPosition.quantitySold.plus(
-      marketPosition.netQuantity,
-    );
+    marketPosition.quantitySold = marketPosition.quantitySold.plus(quantity);
     // position.valueSold = position.valueSold.plus(redemptionValue);
     updateNetPositionAndSave(marketPosition);
   }
