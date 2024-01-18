@@ -21,11 +21,7 @@ import { NEG_RISK_EXCHANGE, NEG_RISK_OPERATOR, USDC } from './constants';
 
 export function handlePositionSplit(event: PositionSplit): void {
   // - don't track splits from the NegRiskExchange
-  if (
-    [CONTRACT_ADDRESSES.NegRiskExchange].includes(
-      event.params.stakeholder.toHexString(),
-    )
-  ) {
+  if ([NEG_RISK_EXCHANGE].includes(event.params.stakeholder.toHexString())) {
     return;
   }
 
