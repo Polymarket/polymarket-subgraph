@@ -1,4 +1,10 @@
-import { BigInt, log, BigDecimal } from '@graphprotocol/graph-ts';
+import {
+  BigInt,
+  log,
+  BigDecimal,
+  Address,
+  Bytes,
+} from '@graphprotocol/graph-ts';
 
 import { FixedProductMarketMakerCreation } from './types/FixedProductMarketMakerFactory/FixedProductMarketMakerFactory';
 import { FixedProductMarketMaker, Condition, MarketData } from './types/schema';
@@ -6,7 +12,8 @@ import { FixedProductMarketMaker as FixedProductMarketMakerTemplate } from './ty
 import { timestampToDay } from './utils/time';
 import { bigZero } from './utils/constants';
 import { getCollateralDetails } from './utils/collateralTokens';
-import { getMarket } from './utils/ctf-utils';
+import { computePositionId } from './utils/ctf-utils';
+import { CONDITIONAL_TOKENS, USDC } from './constants';
 
 /**
  * Initialise all variables of fpmm which start at zero
@@ -58,10 +65,7 @@ export function handleFixedProductMarketMakerCreation(
   let addressHexString = address.toHexString();
   let conditionalTokensAddress = event.params.conditionalTokens.toHexString();
 
-  if (
-    conditionalTokensAddress !=
-    '{{lowercase contracts.ConditionalTokens.address}}'
-  ) {
+  if (conditionalTokensAddress !== CONDITIONAL_TOKENS) {
     log.info('cannot index market maker {}: using conditional tokens {}', [
       addressHexString,
       conditionalTokensAddress,
@@ -117,18 +121,18 @@ export function handleFixedProductMarketMakerCreation(
   ) {
     let condition = fixedProductMarketMaker.conditions[0];
 
-    let tokenId = getMarket(
-      conditionalTokensAddress,
-      condition,
-      collateralToken,
-      outcomeTokenCount,
+    // NOTE: THESE ARE NOT NEG RISK MARKETS
+    // (negRisk markets don't have fpmm's)
+    let tokenId = computePositionId(
+      Address.fromHexString(USDC),
+      Bytes.fromHexString(condition),
       outcomeIndex,
     );
 
     // Create/update MarketData on FPMM Creation
-    let marketData = MarketData.load(tokenId);
+    let marketData = MarketData.load(tokenId.toString());
     if (marketData == null) {
-      marketData = new MarketData(tokenId);
+      marketData = new MarketData(tokenId.toString());
       marketData.condition = condition;
     }
     // If the MarketData exists, update the outcomeIndex and FPMM address

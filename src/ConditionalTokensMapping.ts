@@ -1,4 +1,4 @@
-import { BigDecimal, Bytes, log } from '@graphprotocol/graph-ts';
+import { BigDecimal, log } from '@graphprotocol/graph-ts';
 import {
   ConditionPreparation,
   ConditionResolution,
@@ -24,7 +24,7 @@ import { bigZero } from './utils/constants';
 import { getCollateralDetails } from './utils/collateralTokens';
 import { markAccountAsSeen, requireAccount } from './utils/account-utils';
 import { getEventKey } from './utils/getEventKey';
-import { getCollectionId2 } from './utils/ctf-utils';
+import { EXCHANGE, NEG_RISK_ADAPTER } from './constants';
 
 export function handlePositionSplit(event: PositionSplit): void {
   // - don't track splits within the market makers
@@ -38,10 +38,9 @@ export function handlePositionSplit(event: PositionSplit): void {
   //   these are handled in the NegRiskAdapterMapping
   // - don't track splits from the CTFExchange
   if (
-    [
-      '{{lowercase contracts.NegRiskAdapter.address}}',
-      '{{lowercase contracts.Exchange.address}}',
-    ].includes(event.params.stakeholder.toHexString())
+    [NEG_RISK_ADAPTER, EXCHANGE].includes(
+      event.params.stakeholder.toHexString(),
+    )
   ) {
     return;
   }
@@ -79,7 +78,8 @@ export function handlePositionSplit(event: PositionSplit): void {
     for (let i = 0; i < marketMakers.length; i += 1) {
       // This is not ideal as in theory we could have multiple market makers for the same condition
       // Given that this subgraph only tracks market makers deployed by Polymarket, this is acceptable for now
-      updateMarketPositionsFromSplit(marketMakers[i], event);
+      const negRisk = false;
+      updateMarketPositionsFromSplit(event, negRisk);
     }
   }
 }
@@ -96,10 +96,9 @@ export function handlePositionsMerge(event: PositionsMerge): void {
   //   these are handled in the NegRiskAdapterMapping
   // - don't track merges from the CTFExchange
   if (
-    [
-      '{{lowercase contracts.NegRiskAdapter.address}}',
-      '{{lowercase contracts.Exchange.address}}',
-    ].includes(event.params.stakeholder.toHexString())
+    [NEG_RISK_ADAPTER, EXCHANGE].includes(
+      event.params.stakeholder.toHexString(),
+    )
   ) {
     return;
   }
@@ -136,7 +135,8 @@ export function handlePositionsMerge(event: PositionsMerge): void {
     // Given that this subgraph only tracks market makers deployed by Polymarket, this is acceptable for now
     let marketMakers = condition.fixedProductMarketMakers;
     for (let i = 0; i < marketMakers.length; i += 1) {
-      updateMarketPositionsFromMerge(marketMakers[i], event);
+      const negRisk = false;
+      updateMarketPositionsFromMerge(event, negRisk);
     }
   }
 }
@@ -144,10 +144,7 @@ export function handlePositionsMerge(event: PositionsMerge): void {
 export function handlePayoutRedemption(event: PayoutRedemption): void {
   // - don't track redemptions from the NegRiskAdapter
   //   these are handled in the NegRiskAdapterMapping
-  if (
-    event.params.redeemer.toHexString() ==
-    '{{lowercase contracts.NegRiskAdapter.address}}'
-  ) {
+  if (event.params.redeemer.toHexString() == NEG_RISK_ADAPTER) {
     return;
   }
 
@@ -161,9 +158,6 @@ export function handlePayoutRedemption(event: PayoutRedemption): void {
   redemption.collateralToken = event.params.collateralToken.toHexString();
   redemption.parentCollectionId = event.params.parentCollectionId;
   redemption.condition = event.params.conditionId.toHexString();
-
-  // delete this
-  getCollectionId2(Bytes.fromHexString(redemption.condition), 1);
   redemption.indexSets = event.params.indexSets;
   redemption.payout = event.params.payout;
 
@@ -181,17 +175,23 @@ export function handlePayoutRedemption(event: PayoutRedemption): void {
   for (let i = 0; i < marketMakers.length; i += 1) {
     // This is not ideal as in theory we could have multiple market makers for the same condition
     // Given that this subgraph only tracks market makers deployed by Polymarket, this is acceptable for now
-    updateMarketPositionsFromRedemption(marketMakers[i], event);
+    const negRisk = false;
+    updateMarketPositionsFromRedemption(event, negRisk);
   }
 }
 
 export function handleConditionPreparation(event: ConditionPreparation): void {
+  // we don't handle conditions with more than 2 outcomes
+  if (event.params.outcomeSlotCount.toI32() !== 2) {
+    return;
+  }
+
   let condition = new Condition(event.params.conditionId.toHexString());
 
   condition.oracle = event.params.oracle;
   condition.questionId = event.params.questionId;
   condition.fixedProductMarketMakers = [];
-  condition.outcomeSlotCount = event.params.outcomeSlotCount.toI32();
+  condition.outcomeSlotCount = 2;
 
   condition.save();
 

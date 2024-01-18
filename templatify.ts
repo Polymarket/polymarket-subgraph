@@ -4,13 +4,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 
 const config = {
-  templatedFiles: [
-    'subgraph.yaml',
-    'src/FixedProductMarketMakerFactoryMapping.ts',
-    'src/ConditionalTokensMapping.ts',
-    'src/NegRiskAdapterMapping.ts',
-    'src/ExchangeMapping.ts',
-  ],
+  templatedFiles: ['subgraph.yaml', 'src/constants.ts'],
 };
 
 Handlebars.registerHelper('lowercase', function (str) {

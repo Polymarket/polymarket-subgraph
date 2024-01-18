@@ -21,11 +21,11 @@ import {
   calculatePrices,
   loadPoolMembership,
 } from './utils/fpmm-utils';
-import {
-  updateMarketPositionFromLiquidityAdded,
-  updateMarketPositionFromLiquidityRemoved,
-  updateMarketPositionFromTrade,
-} from './utils/market-positions-utils';
+// import {
+//   updateMarketPositionFromLiquidityAdded,
+//   updateMarketPositionFromLiquidityRemoved,
+//   updateMarketPositionFromTrade,
+// } from './utils/market-positions-utils';
 import {
   AddressZero,
   bigOne,
@@ -154,7 +154,7 @@ export function handleFundingAdded(event: FPMMFundingAdded): void {
   fpmm.save();
   markAccountAsSeen(event.params.funder.toHexString(), event.block.timestamp);
   recordFundingAddition(event);
-  updateMarketPositionFromLiquidityAdded(event);
+  // updateMarketPositionFromLiquidityAdded(event);
 }
 
 export function handleFundingRemoved(event: FPMMFundingRemoved): void {
@@ -196,7 +196,7 @@ export function handleFundingRemoved(event: FPMMFundingRemoved): void {
   fpmm.save();
   markAccountAsSeen(event.params.funder.toHexString(), event.block.timestamp);
   recordFundingRemoval(event);
-  updateMarketPositionFromLiquidityRemoved(event);
+  // updateMarketPositionFromLiquidityRemoved(event);
 }
 
 export function handleBuy(event: FPMMBuy): void {
@@ -274,7 +274,7 @@ export function handleBuy(event: FPMMBuy): void {
     collateralScaleDec,
     TRADE_TYPE_BUY,
   );
-  updateMarketPositionFromTrade(event);
+  // updateMarketPositionFromTrade(event);
 }
 
 export function handleSell(event: FPMMSell): void {
@@ -352,7 +352,7 @@ export function handleSell(event: FPMMSell): void {
     collateralScaleDec,
     TRADE_TYPE_SELL,
   );
-  updateMarketPositionFromTrade(event);
+  // updateMarketPositionFromTrade(event);
 }
 
 export function handlePoolShareTransfer(event: Transfer): void {

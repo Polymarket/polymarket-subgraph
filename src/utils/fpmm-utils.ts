@@ -66,20 +66,17 @@ export function updateVolumes(
   }
 
   fpmm.collateralVolume = fpmm.collateralVolume.plus(tradeSize);
-  fpmm.scaledCollateralVolume = fpmm.collateralVolume.divDecimal(
-    collateralScaleDec,
-  );
+  fpmm.scaledCollateralVolume =
+    fpmm.collateralVolume.divDecimal(collateralScaleDec);
 
   if (tradeType == TRADE_TYPE_BUY) {
     fpmm.collateralBuyVolume = fpmm.collateralBuyVolume.plus(tradeSize);
-    fpmm.scaledCollateralBuyVolume = fpmm.collateralBuyVolume.divDecimal(
-      collateralScaleDec,
-    );
+    fpmm.scaledCollateralBuyVolume =
+      fpmm.collateralBuyVolume.divDecimal(collateralScaleDec);
   } else if (tradeType == TRADE_TYPE_SELL) {
     fpmm.collateralSellVolume = fpmm.collateralSellVolume.plus(tradeSize);
-    fpmm.scaledCollateralSellVolume = fpmm.collateralSellVolume.divDecimal(
-      collateralScaleDec,
-    );
+    fpmm.scaledCollateralSellVolume =
+      fpmm.collateralSellVolume.divDecimal(collateralScaleDec);
   }
 }
 
@@ -89,9 +86,8 @@ export function updateLiquidityFields(
   collateralScale: BigDecimal,
 ): void {
   fpmm.liquidityParameter = liquidityParameter;
-  fpmm.scaledLiquidityParameter = liquidityParameter.divDecimal(
-    collateralScale,
-  );
+  fpmm.scaledLiquidityParameter =
+    liquidityParameter.divDecimal(collateralScale);
 }
 
 export function updateFeeFields(

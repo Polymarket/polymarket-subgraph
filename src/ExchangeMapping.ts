@@ -1,4 +1,4 @@
-import { Address, BigDecimal, BigInt } from '@graphprotocol/graph-ts';
+import { Address, BigDecimal, BigInt, Bytes } from '@graphprotocol/graph-ts';
 import {
   OrderFilled,
   OrdersMatched,
@@ -24,7 +24,8 @@ import {
   updateTradesQuantity,
   updateVolumes,
 } from './utils/order-book-utils';
-import { calculatePositionIds } from './utils/ctf-utils';
+import { getPositionId } from './utils/getPositionId';
+import { NEG_RISK_EXCHANGE } from './constants';
 
 function enrichOrder(
   event: OrderFilled,
@@ -152,7 +153,12 @@ export function handleFill(event: OrderFilled): void {
   }
 
   // Update market position
-  updateMarketPositionFromOrderFilled(maker, tokenId, side, event);
+  updateMarketPositionFromOrderFilled(
+    Address.fromHexString(maker),
+    BigInt.fromString(tokenId),
+    side,
+    event,
+  );
 
   // persist order book
   orderBook.save();
@@ -200,27 +206,6 @@ export function handleMatch(event: OrdersMatched): void {
   updateGlobalVolume(size.toBigDecimal(), collateralScaleDec, side);
 }
 
-function getPositionIds(
-  exchange: Address,
-  conditionId: string,
-): string[] | null {
-  if (exchange.toHexString() === '{{lowercase contracts.Exchange.address}}') {
-    return calculatePositionIds(
-      '{{lowercase contracts.ConditionalTokens.address}}',
-      conditionId,
-      '{{lowercase contracts.USDC.address}}',
-      2,
-    );
-  }
-
-  return calculatePositionIds(
-    '{{lowercase contracts.ConditionalTokens.address}}',
-    conditionId,
-    '{{lowercase contracts.NegRiskWrappedCollateral.address}}',
-    2,
-  );
-}
-
 export function handleTokenRegistered(event: TokenRegistered): void {
   const condition = Condition.load(event.params.conditionId.toHexString());
 
@@ -230,20 +215,20 @@ export function handleTokenRegistered(event: TokenRegistered): void {
     return;
   }
 
-  // even though the tokenRegistered event has the positionIds
-  // we need to calculate ourselves to determine the outcome indices
-  const positionIds = getPositionIds(event.address, condition.id);
+  for (let outcomeIndex = 0; outcomeIndex < 2; outcomeIndex++) {
+    // compute the position id
+    const negRisk = event.address.toHexString() === NEG_RISK_EXCHANGE;
+    const positionId = getPositionId(
+      Bytes.fromHexString(condition.id),
+      outcomeIndex,
+      negRisk,
+    ).toString();
 
-  if (positionIds === null) {
-    return;
-  }
-
-  for (let i = 0; i < 2; i++) {
-    if (!MarketData.load(positionIds[i])) {
-      const marketData = new MarketData(positionIds[i]);
+    if (!MarketData.load(positionId)) {
+      const marketData = new MarketData(positionId);
 
       marketData.condition = event.params.conditionId.toHexString();
-      marketData.outcomeIndex = BigInt.fromI32(i);
+      marketData.outcomeIndex = BigInt.fromI32(outcomeIndex);
 
       marketData.save();
     }

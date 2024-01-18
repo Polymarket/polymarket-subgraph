@@ -17,11 +17,12 @@ import {
 } from './types/schema';
 import { markAccountAsSeen, requireAccount } from './utils/account-utils';
 import { getEventKey } from './utils/getEventKey';
+import { NEG_RISK_EXCHANGE, NEG_RISK_OPERATOR, USDC } from './constants';
 
 export function handlePositionSplit(event: PositionSplit): void {
   // - don't track splits from the NegRiskExchange
   if (
-    ['{{lowercase contracts.NegRiskExchange.address}}'].includes(
+    [CONTRACT_ADDRESSES.NegRiskExchange].includes(
       event.params.stakeholder.toHexString(),
     )
   ) {
@@ -38,7 +39,7 @@ export function handlePositionSplit(event: PositionSplit): void {
 
   split.timestamp = event.block.timestamp;
   split.stakeholder = event.params.stakeholder.toHexString();
-  split.collateralToken = '{{lowercase contracts.USDC.address}}';
+  split.collateralToken = USDC;
   split.parentCollectionId = Bytes.fromI32(0);
   split.condition = event.params.conditionId.toHexString();
   split.partition = [BigInt.fromI32(1), BigInt.fromI32(2)];
@@ -49,11 +50,7 @@ export function handlePositionSplit(event: PositionSplit): void {
 
 export function handlePositionsMerge(event: PositionsMerge): void {
   // - don't track merges from the NegRiskExchange
-  if (
-    ['{{lowercase contracts.NegRiskExchange.address}}'].includes(
-      event.params.stakeholder.toHexString(),
-    )
-  ) {
+  if ([NEG_RISK_EXCHANGE].includes(event.params.stakeholder.toHexString())) {
     return;
   }
 
@@ -67,7 +64,7 @@ export function handlePositionsMerge(event: PositionsMerge): void {
 
   merge.timestamp = event.block.timestamp;
   merge.stakeholder = event.params.stakeholder.toHexString();
-  merge.collateralToken = '{{lowercase contracts.USDC.address}}';
+  merge.collateralToken = USDC;
   merge.parentCollectionId = Bytes.fromI32(0);
   merge.condition = event.params.conditionId.toHexString();
   merge.partition = [BigInt.fromI32(1), BigInt.fromI32(2)];
@@ -109,7 +106,7 @@ export function handlePayoutRedemption(event: PayoutRedemption): void {
 
   redemption.timestamp = event.block.timestamp;
   redemption.redeemer = event.params.redeemer.toHexString();
-  redemption.collateralToken = '{{lowercase contracts.USDC.address}}';
+  redemption.collateralToken = USDC;
   redemption.parentCollectionId = Bytes.fromI32(0);
   redemption.condition = event.params.conditionId.toHexString();
   redemption.indexSets = [BigInt.fromI32(1), BigInt.fromI32(2)];
@@ -120,10 +117,7 @@ export function handlePayoutRedemption(event: PayoutRedemption): void {
 
 export function handleMarketPrepared(event: MarketPrepared): void {
   // ignore non-negRiskOperator events
-  if (
-    event.params.oracle.toHexString() !==
-    '{{lowercase contracts.NegRiskOperator.address}}'
-  ) {
+  if (event.params.oracle.toHexString() !== NEG_RISK_OPERATOR) {
     return;
   }
 
