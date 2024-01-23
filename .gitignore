@@ -34,3 +34,6 @@ src/constants.ts
 tests/.latest.json
 tests/.bin/
 tests/.docker/
+
+**/.bin/
+**/.docker/
