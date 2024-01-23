@@ -1,4 +1,4 @@
-import { BigInt } from '@graphprotocol/graph-ts';
+import { BigInt, log } from '@graphprotocol/graph-ts';
 
 import {
   PositionSplit,
@@ -8,7 +8,7 @@ import {
   QuestionPrepared,
   PayoutRedemption,
 } from './types/NegRiskAdapter/NegRiskAdapter';
-import { NegRiskEvent } from './types/schema';
+import { Condition, NegRiskEvent, UserPosition } from './types/schema';
 import { computePositionId } from './utils/ctf-utils';
 
 import {
@@ -21,6 +21,7 @@ import {
 import { getNegRiskPositionId } from './utils/getNegRiskPositionId';
 import { updateUserPositionWithBuy } from './utils/updateUserPositionWithBuy';
 import { updateUserPositionWithSell } from './utils/updateUserPositionWithSell';
+import { getUserPositionEntityId } from './utils/getUserPositionEntityId';
 
 // SPLIT
 export function handlePositionSplit(event: PositionSplit): void {
@@ -76,6 +77,7 @@ export function handlePositionsMerge(event: PositionsMerge): void {
   }
 }
 
+// CONVERT
 export function handlePositionsConverted(event: PositionsConverted): void {
   const negRiskEvent = NegRiskEvent.load(event.params.marketId.toHexString());
 
@@ -129,37 +131,62 @@ export function handlePositionsConverted(event: PositionsConverted): void {
   }
 }
 
-// need to track payouts from the CTF
+// REDEEM
 export function handlePayoutRedemption(event: PayoutRedemption): void {
-  requireAccount(event.params.redeemer.toHexString(), event.block.timestamp);
-  markAccountAsSeen(event.params.redeemer.toHexString(), event.block.timestamp);
+  const conditionId = event.params.conditionId;
+  let condition = Condition.load(conditionId.toHexString());
 
-  let redemption = new Redemption(getEventKey(event));
+  if (condition == null) {
+    log.error('Failed to update market positions: condition {} not prepared', [
+      conditionId.toHexString(),
+    ]);
+    return;
+  }
 
-  redemption.timestamp = event.block.timestamp;
-  redemption.redeemer = event.params.redeemer.toHexString();
-  redemption.collateralToken = USDC;
-  redemption.parentCollectionId = Bytes.fromI32(0);
-  redemption.condition = event.params.conditionId.toHexString();
-  redemption.indexSets = [BigInt.fromI32(1), BigInt.fromI32(2)];
-  redemption.payout = event.params.payout;
+  if (condition.payoutDenominator == BigInt.zero()) {
+    log.error('Failed to update market positions: payoutDenominator is 0', []);
+    return;
+  }
 
-  redemption.save();
+  const payoutNumerators = condition.payoutNumerators;
+  const payoutDenominator = condition.payoutDenominator;
 
-  const negRisk = true;
-  updateMarketPositionsFromRedemption(
-    event.params.conditionId,
-    event.params.redeemer,
-    [BigInt.fromI32(1), BigInt.fromI32(2)],
-    event.block.timestamp,
-    negRisk,
-    event.params.amounts,
-  );
+  for (let outcomeIndex = 0; outcomeIndex < 2; outcomeIndex++) {
+    const positionId = computePositionId(
+      NEG_RISK_WRAPPED_COLLATERAL,
+      conditionId,
+      outcomeIndex,
+    );
+
+    const userPosition = UserPosition.load(
+      getUserPositionEntityId(event.params.redeemer, positionId),
+    );
+
+    if (userPosition === null) {
+      return;
+    }
+
+    const amount = event.params.amounts[outcomeIndex];
+    const price = payoutNumerators[outcomeIndex]
+      .times(COLLATERAL_SCALE)
+      .div(payoutDenominator);
+    updateUserPositionWithSell(
+      event.params.redeemer,
+      positionId,
+      price,
+      amount,
+    );
+  }
 }
 
+// MARKET PREPARED
 export function handleMarketPrepared(event: MarketPrepared): void {
   // ignore non-negRiskOperator events
-  if (event.params.oracle.toHexString() !== NEG_RISK_OPERATOR) {
+  if (
+    [NEG_RISK_OPERATOR.toHexString()].includes(
+      event.params.oracle.toHexString(),
+    )
+  ) {
     return;
   }
 
@@ -168,6 +195,7 @@ export function handleMarketPrepared(event: MarketPrepared): void {
   negRiskEvent.save();
 }
 
+// QUESTION PREPARED
 export function handleQuestionPrepared(event: QuestionPrepared): void {
   let negRiskEvent = NegRiskEvent.load(event.params.marketId.toHexString());
 

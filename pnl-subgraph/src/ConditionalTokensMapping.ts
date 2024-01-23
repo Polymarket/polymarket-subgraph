@@ -18,6 +18,7 @@ import { updateUserPositionWithBuy } from './utils/updateUserPositionWithBuy';
 import { Condition, UserPosition } from './types/schema';
 import { getUserPositionEntityId } from './utils/getUserPositionEntityId';
 
+// SPLIT
 export function handlePositionSplit(event: PositionSplit): void {
   // - don't track splits from the NegRiskAdapter
   //   these are handled in the NegRiskAdapterMapping
@@ -46,6 +47,7 @@ export function handlePositionSplit(event: PositionSplit): void {
   }
 }
 
+// MERGE
 export function handlePositionsMerge(event: PositionsMerge): void {
   // - don't track merges from the NegRiskAdapter
   //   these are handled in the NegRiskAdapterMapping
@@ -74,6 +76,7 @@ export function handlePositionsMerge(event: PositionsMerge): void {
   }
 }
 
+// REDEEM
 export function handlePayoutRedemption(event: PayoutRedemption): void {
   // - don't track redemptions from the NegRiskAdapter
   //   these are handled in the NegRiskAdapterMapping
