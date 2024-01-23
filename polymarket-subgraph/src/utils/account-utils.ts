@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable no-param-reassign */
+
 import { BigDecimal, BigInt } from '@graphprotocol/graph-ts';
 import { Account } from '../types/schema';
 

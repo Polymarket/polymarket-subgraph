@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/ban-types */
+
 import { Bytes, BigInt, Address } from '@graphprotocol/graph-ts';
 import { computePositionId } from './ctf-utils';
 import { USDC, NEG_RISK_WRAPPED_COLLATERAL } from '../constants';

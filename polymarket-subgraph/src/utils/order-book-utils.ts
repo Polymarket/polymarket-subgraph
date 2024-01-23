@@ -1,8 +1,12 @@
+/* eslint-disable @typescript-eslint/ban-types */
+
 import { BigDecimal, BigInt } from '@graphprotocol/graph-ts';
 import { Orderbook, OrdersMatchedGlobal } from '../types/schema';
 import { bigZero, TRADE_TYPE_BUY, TRADE_TYPE_SELL } from './constants';
 import { increment } from './maths';
 import { timestampToDay } from './time';
+
+declare type u8 = number;
 
 export function requireOrderBook(tokenId: string): Orderbook {
   let orderBook = Orderbook.load(tokenId);

@@ -23,7 +23,7 @@ import { partitionCheck } from './utils/conditional-utils';
 import { bigZero } from './utils/constants';
 import { getCollateralDetails } from './utils/collateralTokens';
 import { markAccountAsSeen, requireAccount } from './utils/account-utils';
-import { getEventKey } from './utils/getEventKey';
+import { getEventKey } from '../../pnl-subgraph/src/utils/getEventKey';
 import { EXCHANGE, NEG_RISK_ADAPTER } from './constants';
 
 export function handlePositionSplit(event: PositionSplit): void {
