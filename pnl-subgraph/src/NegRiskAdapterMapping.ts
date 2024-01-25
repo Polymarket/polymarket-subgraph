@@ -25,6 +25,13 @@ import { loadCondition } from './utils/loadCondition';
 
 // SPLIT
 export function handlePositionSplit(event: PositionSplit): void {
+  const conditionId = event.params.conditionId;
+  const condition = loadCondition(conditionId);
+  if (condition == null) {
+    // ignore
+    return;
+  }
+
   // - don't track splits from the NegRiskExchange
   if (
     [NEG_RISK_EXCHANGE.toHexString()].includes(
@@ -55,6 +62,13 @@ export function handlePositionSplit(event: PositionSplit): void {
 
 // MERGE
 export function handlePositionsMerge(event: PositionsMerge): void {
+  const conditionId = event.params.conditionId;
+  const condition = loadCondition(conditionId);
+  if (condition == null) {
+    // ignore
+    return;
+  }
+
   // - don't track merges from the NegRiskExchange
   if (
     [NEG_RISK_EXCHANGE.toHexString()].includes(
@@ -86,8 +100,8 @@ export function handlePositionsMerge(event: PositionsMerge): void {
 // CONVERT
 export function handlePositionsConverted(event: PositionsConverted): void {
   const negRiskEvent = NegRiskEvent.load(event.params.marketId.toHexString());
-
   if (negRiskEvent === null) {
+    // ignore
     return;
   }
 
@@ -192,17 +206,16 @@ export function handleMarketPrepared(event: MarketPrepared): void {
     return;
   }
 
-  let negRiskEvent = new NegRiskEvent(event.params.marketId.toHexString());
+  const negRiskEvent = new NegRiskEvent(event.params.marketId.toHexString());
   negRiskEvent.questionCount = 0;
   negRiskEvent.save();
 }
 
 // QUESTION PREPARED
 export function handleQuestionPrepared(event: QuestionPrepared): void {
-  let negRiskEvent = NegRiskEvent.load(event.params.marketId.toHexString());
-
-  // ignore non-negRiskOperator events
+  const negRiskEvent = NegRiskEvent.load(event.params.marketId.toHexString());
   if (negRiskEvent === null) {
+    // ignore non-negRiskOperator events
     return;
   }
 

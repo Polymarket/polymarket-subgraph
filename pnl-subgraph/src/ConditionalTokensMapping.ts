@@ -26,6 +26,13 @@ import { loadCondition } from './utils/loadCondition';
 
 // SPLIT
 export function handlePositionSplit(event: PositionSplit): void {
+  const conditionId = event.params.conditionId;
+  const condition = loadCondition(conditionId);
+  if (condition == null) {
+    // ignore
+    return;
+  }
+
   // - don't track splits from the NegRiskAdapter
   //   these are handled in the NegRiskAdapterMapping
   // - don't track splits from the CTFExchange
@@ -58,6 +65,13 @@ export function handlePositionSplit(event: PositionSplit): void {
 
 // MERGE
 export function handlePositionsMerge(event: PositionsMerge): void {
+  const conditionId = event.params.conditionId;
+  const condition = loadCondition(conditionId);
+  if (condition == null) {
+    // ignore
+    return;
+  }
+
   // - don't track merges from the NegRiskAdapter
   //   these are handled in the NegRiskAdapterMapping
   // - don't track merges from the CTFExchange
@@ -90,6 +104,13 @@ export function handlePositionsMerge(event: PositionsMerge): void {
 
 // REDEEM
 export function handlePayoutRedemption(event: PayoutRedemption): void {
+  const conditionId = event.params.conditionId;
+  const condition = loadCondition(conditionId);
+  if (condition == null) {
+    // ignore
+    return;
+  }
+
   // - don't track redemptions from the NegRiskAdapter
   //   these are handled in the NegRiskAdapterMapping
   if (
@@ -97,13 +118,6 @@ export function handlePayoutRedemption(event: PayoutRedemption): void {
       event.params.redeemer.toHexString(),
     )
   ) {
-    return;
-  }
-
-  const conditionId = event.params.conditionId;
-  const condition = loadCondition(conditionId);
-  if (condition == null) {
-    // ignore
     return;
   }
 
