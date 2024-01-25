@@ -18,7 +18,7 @@ event OrderFilled(
     uint256 takerAmountFilled,
     uint256 fee
 );
- * @param event 
+ * @param event
  */
 export function handleOrderFilled(event: OrderFilled): void {
   const order = parseOrderFilled(event);

@@ -12,11 +12,18 @@ const updateUserPositionWithSell = (
   price: BigInt,
   amount: BigInt,
 ): void => {
-  let userPosition = loadOrCreateUserPosition(user, positionId);
+  const userPosition = loadOrCreateUserPosition(user, positionId);
+
+  // use userPosition amount if the amount is greater than the userPosition amount
+  // that means the user obtained tokens outside of what we track
+  // and we don't want to give them PnL for the extra
+  const adjustedAmount = amount.gt(userPosition.amount)
+    ? userPosition.amount
+    : amount;
 
   // realizedPnl changes by
   // d = amount * (price - avgPrice)
-  const deltaPnL = amount
+  const deltaPnL = adjustedAmount
     .times(price.minus(userPosition.avgPrice))
     .div(COLLATERAL_SCALE);
 
@@ -24,8 +31,7 @@ const updateUserPositionWithSell = (
   userPosition.realizedPnl = userPosition.realizedPnl.plus(deltaPnL);
 
   // update amount
-  userPosition.amount = userPosition.amount.minus(amount);
-
+  userPosition.amount = userPosition.amount.minus(adjustedAmount);
   userPosition.save();
 };
 

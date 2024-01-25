@@ -3,7 +3,7 @@
 import { Address, BigInt } from '@graphprotocol/graph-ts';
 
 const getUserPositionEntityId = (user: Address, positionId: BigInt): string => {
-  return `${user.toHexString()}-${positionId.toHexString().padStart(66, '0')}`;
+  return `${user.toHexString()}-${positionId.toString()}`;
 };
 
 export { getUserPositionEntityId };

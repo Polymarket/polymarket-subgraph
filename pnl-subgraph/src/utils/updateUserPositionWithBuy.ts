@@ -6,11 +6,11 @@ import { loadOrCreateUserPosition } from './loadOrCreateUserPosition';
 
 const updateUserPositionWithBuy = (
   user: Address,
-  tokenId: BigInt,
+  positionId: BigInt,
   price: BigInt,
   amount: BigInt,
 ): void => {
-  const userPosition = loadOrCreateUserPosition(user, tokenId);
+  const userPosition = loadOrCreateUserPosition(user, positionId);
 
   // update average price
   // avgPrice = (avgPrice * userAmount + price * buyAmount)
@@ -21,7 +21,6 @@ const updateUserPositionWithBuy = (
       .plus(price.times(amount));
     const denominator = userPosition.amount.plus(amount);
     userPosition.avgPrice = numerator.div(denominator);
-
     // update amount
     userPosition.amount = userPosition.amount.plus(amount);
     // update total bought

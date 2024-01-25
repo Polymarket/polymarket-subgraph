@@ -8,9 +8,9 @@ import { getUserPositionEntityId } from '../../../common';
 
 const loadOrCreateUserPosition = (
   user: Address,
-  tokenId: BigInt,
+  positionId: BigInt,
 ): UserPosition => {
-  const userPositionEntityId = getUserPositionEntityId(user, tokenId);
+  const userPositionEntityId = getUserPositionEntityId(user, positionId);
   let userPosition = UserPosition.load(userPositionEntityId);
   if (userPosition == null) {
     userPosition = new UserPosition(userPositionEntityId);
