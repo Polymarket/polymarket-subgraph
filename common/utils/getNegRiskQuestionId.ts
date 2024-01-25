@@ -1,8 +1,12 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+
 import { Bytes } from '@graphprotocol/graph-ts';
 
-declare type u8 = number;
-
-const getNegRiskQuestionId = (marketId: Bytes, questionIndex: u8): Bytes => {
+const getNegRiskQuestionId = (
+  marketId: Bytes,
+  // @ts-ignore
+  questionIndex: u8,
+): Bytes => {
   // slice off the last two hex chars of the marketId and apped with questionIndex in hex padded to two chars
   const questionId = new Bytes(32);
 

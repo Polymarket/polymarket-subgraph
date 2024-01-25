@@ -13,8 +13,6 @@ import { updateUserProfit } from './account-utils';
 import { OrderFilled } from '../types/Exchange/Exchange';
 import { getPositionId } from './getPositionId';
 
-declare type u8 = number;
-
 /*
  * Returns the user's position for the given user and market(tokenId)
  * If no such position exists then a null position is generated

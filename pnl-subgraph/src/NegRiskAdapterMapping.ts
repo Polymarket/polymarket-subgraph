@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+
 import { BigInt, log } from '@graphprotocol/graph-ts';
 
 import { updateUserPositionWithBuy } from './utils/updateUserPositionWithBuy';
@@ -10,19 +12,16 @@ import {
   QuestionPrepared,
   PayoutRedemption,
 } from './types/NegRiskAdapter/NegRiskAdapter';
-import { Condition, NegRiskEvent, UserPosition } from './types/schema';
+import { NegRiskEvent } from './types/schema';
 
-import {
-  computePositionId,
-  getNegRiskPositionId,
-  getUserPositionEntityId,
-} from '../../common';
+import { computePositionId, getNegRiskPositionId } from '../../common';
 import {
   COLLATERAL_SCALE,
   NEG_RISK_EXCHANGE,
   NEG_RISK_OPERATOR,
   NEG_RISK_WRAPPED_COLLATERAL,
 } from '../../common/constants';
+import { loadCondition } from './utils/loadCondition';
 
 // SPLIT
 export function handlePositionSplit(event: PositionSplit): void {
@@ -36,7 +35,10 @@ export function handlePositionSplit(event: PositionSplit): void {
   }
 
   const SELL_PRICE = COLLATERAL_SCALE.div(BigInt.fromI32(2));
-  for (let outcomeIndex = 0; outcomeIndex < 2; outcomeIndex++) {
+
+  // @ts-ignore
+  let outcomeIndex: u8 = 0;
+  for (; outcomeIndex < 2; outcomeIndex++) {
     const positionId = computePositionId(
       NEG_RISK_WRAPPED_COLLATERAL,
       event.params.conditionId,
@@ -63,7 +65,10 @@ export function handlePositionsMerge(event: PositionsMerge): void {
   }
 
   const BUY_PRICE = COLLATERAL_SCALE.div(BigInt.fromI32(2));
-  for (let outcomeIndex = 0; outcomeIndex < 2; outcomeIndex++) {
+
+  // @ts-ignore
+  let outcomeIndex: u8 = 0;
+  for (; outcomeIndex < 2; outcomeIndex++) {
     const positionId = computePositionId(
       NEG_RISK_WRAPPED_COLLATERAL,
       event.params.conditionId,
@@ -86,15 +91,20 @@ export function handlePositionsConverted(event: PositionsConverted): void {
     return;
   }
 
-  const questionCount = negRiskEvent.questionCount;
+  // @ts-ignore
+  const questionCount = <u32>negRiskEvent.questionCount;
   const YES_PRICE = COLLATERAL_SCALE.div(BigInt.fromI32(questionCount));
   const NO_PRICE = COLLATERAL_SCALE.minus(YES_PRICE);
-  const YES_INDEX = 0;
-  const NO_INDEX = 1;
+  // @ts-ignore
+  const YES_INDEX: u8 = 0;
+  // @ts-ignore
+  const NO_INDEX: u8 = 1;
 
   const indexSet = event.params.indexSet;
-  // let indexSetSize = 0;
-  for (let questionIndex = 0; questionIndex < questionCount; questionIndex++) {
+
+  // @ts-ignore
+  let questionIndex: u8 = 0;
+  for (; questionIndex < questionCount; questionIndex++) {
     indexSet
       .bitAnd(BigInt.fromI32(1).leftShift(questionIndex))
       .gt(BigInt.zero());
@@ -135,12 +145,9 @@ export function handlePositionsConverted(event: PositionsConverted): void {
 // REDEEM
 export function handlePayoutRedemption(event: PayoutRedemption): void {
   const conditionId = event.params.conditionId;
-  let condition = Condition.load(conditionId.toHexString());
-
+  const condition = loadCondition(conditionId);
   if (condition == null) {
-    log.error('Failed to update market positions: condition {} not prepared', [
-      conditionId.toHexString(),
-    ]);
+    // ignore
     return;
   }
 
@@ -152,20 +159,14 @@ export function handlePayoutRedemption(event: PayoutRedemption): void {
   const payoutNumerators = condition.payoutNumerators;
   const payoutDenominator = condition.payoutDenominator;
 
-  for (let outcomeIndex = 0; outcomeIndex < 2; outcomeIndex++) {
+  // @ts-ignore
+  let outcomeIndex: u8 = 0;
+  for (; outcomeIndex < 2; outcomeIndex++) {
     const positionId = computePositionId(
       NEG_RISK_WRAPPED_COLLATERAL,
       conditionId,
       outcomeIndex,
     );
-
-    const userPosition = UserPosition.load(
-      getUserPositionEntityId(event.params.redeemer, positionId),
-    );
-
-    if (userPosition === null) {
-      return;
-    }
 
     const amount = event.params.amounts[outcomeIndex];
     const price = payoutNumerators[outcomeIndex]

@@ -8,7 +8,7 @@
     "build": "graph build --help",
     "create-local": "graph create --node http://localhost:8020/ TokenUnion/polymarket",
     "remove-local": "graph remove --node http://localhost:8020/ TokenUnion/polymarket",
-    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 TokenUnion/polymarket",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 TokenUnion/polymarket ./pnl-subgraph/subgraph.yaml",
     "deploy": "graph deploy $SUBGRAPH --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/ --access-token $ACCESS_TOKEN",
     "create": "graph create $SUBGRAPH --node $NODE_URL",
     "create:self-hosted": "graph create --node $NODE_URL $SUBGRAPH",
@@ -31,7 +31,10 @@
     "publish-graph:matic-backup-two": "yarn prepare:matic && yarn deploy:matic-backup-two",
     "publish-graph:mumbai": "yarn prepare:mumbai && yarn deploy:mumbai",
     "test": "RUST_BACKTRACE=full graph test",
-    "pnl-subgraph:codegen": "./pnl-subgraph/bash/codegen.sh",
+    "pnl-subgraph:codegen": "yarn graph codegen ./pnl-subgraph/subgraph.yaml --debug --output-dir ./pnl-subgraph/src/types",
+    "pnl-subgraph:build": "yarn graph build ./pnl-subgraph/subgraph.yaml",
+    "pnl-subgraph:create-local": "graph create --node http://localhost:8020/ pnl-subgraph",
+    "pnl-subgraph:deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 pnl-subgraph ./pnl-subgraph/subgraph.yaml",
     "polymarket-subgraph:codegen": "./polymarket-subgraph/bash/codegen.sh"
   },
   "repository": {

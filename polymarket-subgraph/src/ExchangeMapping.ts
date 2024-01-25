@@ -27,8 +27,6 @@ import {
 import { getPositionId } from './utils/getPositionId';
 import { NEG_RISK_EXCHANGE } from './constants';
 
-declare type u8 = number;
-
 function enrichOrder(
   event: OrderFilled,
   side: string,

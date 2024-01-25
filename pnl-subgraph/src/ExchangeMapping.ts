@@ -1,14 +1,10 @@
-import { BigInt } from '@graphprotocol/graph-ts';
-
-import { updateUserPositionWithBuy } from './utils/updateUserPositionWithBuy';
-import { updateUserPositionWithSell } from './utils/updateUserPositionWithSell';
 import { OrderFilled } from './types/Exchange/Exchange';
 
-import {
-  COLLATERAL_SCALE,
-  TRADE_TYPE_BUY,
-  TRADE_TYPE_SELL,
-} from '../../common/constants';
+import { parseOrderFilled } from './utils/parseOrderFilled';
+import { updateUserPositionWithBuy } from './utils/updateUserPositionWithBuy';
+import { updateUserPositionWithSell } from './utils/updateUserPositionWithSell';
+
+import { COLLATERAL_SCALE } from '../../common/constants';
 
 /**
  * Handles individual OrderFilled events
@@ -25,25 +21,21 @@ event OrderFilled(
  * @param event 
  */
 export function handleOrderFilled(event: OrderFilled): void {
-  const side = event.params.makerAssetId.equals(BigInt.zero())
-    ? TRADE_TYPE_BUY
-    : TRADE_TYPE_SELL;
-  const [buyer, seller] =
-    side === TRADE_TYPE_BUY
-      ? [event.params.maker, event.params.taker]
-      : [event.params.taker, event.params.maker];
-  const [baseAmount, quoteAmount] =
-    side === TRADE_TYPE_BUY
-      ? [event.params.takerAmountFilled, event.params.makerAmountFilled]
-      : [event.params.makerAmountFilled, event.params.takerAmountFilled];
-  const positionId =
-    side === TRADE_TYPE_BUY
-      ? event.params.takerAssetId
-      : event.params.makerAssetId;
+  const order = parseOrderFilled(event);
 
   // dollars per share
-  const price = quoteAmount.times(COLLATERAL_SCALE).div(baseAmount);
+  const price = order.quoteAmount.times(COLLATERAL_SCALE).div(order.baseAmount);
 
-  updateUserPositionWithBuy(buyer, positionId, price, baseAmount);
-  updateUserPositionWithSell(seller, positionId, price, baseAmount);
+  updateUserPositionWithBuy(
+    order.buyer,
+    order.positionId,
+    price,
+    order.baseAmount,
+  );
+  updateUserPositionWithSell(
+    order.seller,
+    order.positionId,
+    price,
+    order.baseAmount,
+  );
 }

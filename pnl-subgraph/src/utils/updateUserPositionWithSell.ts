@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
 import { Address, BigInt } from '@graphprotocol/graph-ts';
-import { UserPosition } from '../types/schema';
-import { getUserPositionEntityId } from '../../../common/utils/getUserPositionEntityId';
-import { COLLATERAL_SCALE } from '../constants';
+
+import { loadOrCreateUserPosition } from './loadOrCreateUserPosition';
+
+import { COLLATERAL_SCALE } from '../../../common/constants';
 
 const updateUserPositionWithSell = (
   user: Address,
@@ -11,12 +12,7 @@ const updateUserPositionWithSell = (
   price: BigInt,
   amount: BigInt,
 ): void => {
-  const userPositionEntityId = getUserPositionEntityId(user, positionId);
-  let userPosition = UserPosition.load(userPositionEntityId);
-
-  if (userPosition === null) {
-    userPosition = new UserPosition(userPositionEntityId);
-  }
+  let userPosition = loadOrCreateUserPosition(user, positionId);
 
   // realizedPnl changes by
   // d = amount * (price - avgPrice)
