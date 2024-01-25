@@ -37,3 +37,6 @@ tests/.docker/
 
 **/.bin/
 **/.docker/
+**/.latest.json
+
+common/constants.ts

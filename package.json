@@ -1,11 +1,11 @@
 {
-  "name": "polymarket-subgraph",
+  "name": "polymarket-subgraph-common",
   "version": "1.0.0",
-  "description": "Subgraph for Polymarket",
+  "description": "Common utils for polymarket subgraphs",
   "main": "index.js",
   "scripts": {
     "auth": "graph auth https://api.thegraph.com/deploy/",
-    "build": "graph build",
+    "build": "graph build --help",
     "create-local": "graph create --node http://localhost:8020/ TokenUnion/polymarket",
     "remove-local": "graph remove --node http://localhost:8020/ TokenUnion/polymarket",
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 TokenUnion/polymarket",
@@ -30,7 +30,9 @@
     "publish-graph:matic-trading": "yarn prepare:matic && yarn deploy:matic-trading",
     "publish-graph:matic-backup-two": "yarn prepare:matic && yarn deploy:matic-backup-two",
     "publish-graph:mumbai": "yarn prepare:mumbai && yarn deploy:mumbai",
-    "test": "graph test -d"
+    "test": "RUST_BACKTRACE=full graph test",
+    "pnl-subgraph:codegen": "./pnl-subgraph/bash/codegen.sh",
+    "polymarket-subgraph:codegen": "./polymarket-subgraph/bash/codegen.sh"
   },
   "repository": {
     "type": "git",

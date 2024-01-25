@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/ban-types */
 
 import { Bytes, BigInt } from '@graphprotocol/graph-ts';
@@ -6,7 +7,8 @@ import { USDC, NEG_RISK_WRAPPED_COLLATERAL } from '../constants';
 
 const getPositionId = (
   conditionId: Bytes,
-  outcomeIndex: number,
+  // @ts-ignore
+  outcomeIndex: u8,
   negRisk: boolean,
 ): BigInt => {
   // if its the standard exchange, use USDC

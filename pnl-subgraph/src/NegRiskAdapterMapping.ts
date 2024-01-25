@@ -1,5 +1,7 @@
 import { BigInt, log } from '@graphprotocol/graph-ts';
 
+import { updateUserPositionWithBuy } from './utils/updateUserPositionWithBuy';
+import { updateUserPositionWithSell } from './utils/updateUserPositionWithSell';
 import {
   PositionSplit,
   PositionsMerge,
@@ -9,19 +11,18 @@ import {
   PayoutRedemption,
 } from './types/NegRiskAdapter/NegRiskAdapter';
 import { Condition, NegRiskEvent, UserPosition } from './types/schema';
-import { computePositionId } from './utils/ctf-utils';
 
+import {
+  computePositionId,
+  getNegRiskPositionId,
+  getUserPositionEntityId,
+} from '../../common';
 import {
   COLLATERAL_SCALE,
   NEG_RISK_EXCHANGE,
   NEG_RISK_OPERATOR,
   NEG_RISK_WRAPPED_COLLATERAL,
-} from './constants';
-
-import { getNegRiskPositionId } from './utils/getNegRiskPositionId';
-import { updateUserPositionWithBuy } from './utils/updateUserPositionWithBuy';
-import { updateUserPositionWithSell } from './utils/updateUserPositionWithSell';
-import { getUserPositionEntityId } from './utils/getUserPositionEntityId';
+} from '../../common/constants';
 
 // SPLIT
 export function handlePositionSplit(event: PositionSplit): void {

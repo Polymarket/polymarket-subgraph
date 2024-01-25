@@ -2,7 +2,7 @@
 
 import { Address, BigInt } from '@graphprotocol/graph-ts';
 import { UserPosition } from '../types/schema';
-import { getUserPositionEntityId } from './getUserPositionEntityId';
+import { getUserPositionEntityId } from '../../../common/utils/getUserPositionEntityId';
 
 const updateUserPositionWithBuy = (
   user: Address,

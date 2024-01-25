@@ -1,8 +1,14 @@
 import { BigInt } from '@graphprotocol/graph-ts';
-import { OrderFilled } from './types/Exchange/Exchange';
-import { COLLATERAL_SCALE, TRADE_TYPE_BUY, TRADE_TYPE_SELL } from './constants';
+
 import { updateUserPositionWithBuy } from './utils/updateUserPositionWithBuy';
 import { updateUserPositionWithSell } from './utils/updateUserPositionWithSell';
+import { OrderFilled } from './types/Exchange/Exchange';
+
+import {
+  COLLATERAL_SCALE,
+  TRADE_TYPE_BUY,
+  TRADE_TYPE_SELL,
+} from '../../common/constants';
 
 /**
  * Handles individual OrderFilled events

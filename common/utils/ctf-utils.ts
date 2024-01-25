@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/ban-types */
+
 import {
   Address,
   crypto,
@@ -6,8 +8,6 @@ import {
   Bytes,
   ByteArray,
 } from '@graphprotocol/graph-ts';
-
-declare type u32 = number;
 
 const P = BigInt.fromString(
   '21888242871839275222246405745257275088696311157297823662689037894645226208583',
@@ -52,7 +52,8 @@ const legendreSymbol = (a: BigInt): BigInt =>
 
 const computeCollectionId = (
   conditionId: Bytes,
-  outcomeIndex: number,
+  // @ts-ignore
+  outcomeIndex: u8,
 ): Bytes => {
   const hashPayload = new Uint8Array(64);
   hashPayload.fill(0x00);
@@ -62,7 +63,7 @@ const computeCollectionId = (
     hashPayload[i] = conditionId[i];
   }
   // second 32 bytes is index set
-  hashPayload[63] = 0x01 << (<u32>outcomeIndex);
+  hashPayload[63] = BigInt.fromI32(1).leftShift(outcomeIndex).toI32();
 
   let hashResult = crypto.keccak256(Bytes.fromUint8Array(hashPayload));
 
@@ -127,10 +128,11 @@ const computePositionIdFromCollectionId = (
 const computePositionId = (
   collateral: Address,
   conditionId: Bytes,
-  outcomeIndex: number,
+  // @ts-ignore
+  outcomeIndex: u8,
 ): BigInt => {
   const collectionId = computeCollectionId(conditionId, outcomeIndex);
   return computePositionIdFromCollectionId(collateral, collectionId);
 };
 
-export { computePositionId };
+export { computePositionId, computeCollectionId };

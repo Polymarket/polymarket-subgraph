@@ -16,7 +16,7 @@ import {
   NegRiskEvent,
 } from './types/schema';
 import { markAccountAsSeen, requireAccount } from './utils/account-utils';
-import { getEventKey } from '../../pnl-subgraph/src/utils/getEventKey';
+import { getEventKey } from '../../common/utils/getEventKey';
 import { NEG_RISK_EXCHANGE, NEG_RISK_OPERATOR, USDC } from './constants';
 import {
   updateMarketPositionsFromMerge,

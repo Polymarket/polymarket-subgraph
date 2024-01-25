@@ -1,6 +1,6 @@
 import { assert, describe, test } from 'matchstick-as/assembly/index';
 import { Bytes } from '@graphprotocol/graph-ts';
-import { getPositionId } from '../src/utils/getPositionId';
+import { getPositionId } from '../common/utils/getPositionId';
 
 describe('getPositionId', () => {
   test('It should compute the positionId for standard markets', () => {

@@ -1,0 +1,2 @@
+# matchstick expects a schema, so we have a minimal one here
+scalar Test

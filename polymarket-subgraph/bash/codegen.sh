@@ -7,4 +7,4 @@ DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 
 cd "$DIR/.." || exit
 
-yarn graph codegen ./pnl-subgraph/subgraph.yaml --debug --output-dir ./pnl-subgraph/src/types
+yarn graph codegen ./polymarket-subgraph/subgraph.yaml --debug --output-dir ./polymarket-subgraph/src/types

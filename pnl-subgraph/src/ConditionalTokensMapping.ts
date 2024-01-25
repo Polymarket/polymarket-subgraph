@@ -1,4 +1,7 @@
 import { BigInt, log } from '@graphprotocol/graph-ts';
+
+import { updateUserPositionWithSell } from './utils/updateUserPositionWithSell';
+import { updateUserPositionWithBuy } from './utils/updateUserPositionWithBuy';
 import {
   ConditionPreparation,
   ConditionResolution,
@@ -6,17 +9,15 @@ import {
   PositionsMerge,
   PayoutRedemption,
 } from './types/ConditionalTokens/ConditionalTokens';
+import { Condition, UserPosition } from './types/schema';
+
+import { computePositionId, getUserPositionEntityId } from '../../common';
 import {
   COLLATERAL_SCALE,
   EXCHANGE,
   NEG_RISK_ADAPTER,
   USDC,
-} from './constants';
-import { computePositionId } from './utils/ctf-utils';
-import { updateUserPositionWithSell } from './utils/updateUserPositionWithSell';
-import { updateUserPositionWithBuy } from './utils/updateUserPositionWithBuy';
-import { Condition, UserPosition } from './types/schema';
-import { getUserPositionEntityId } from './utils/getUserPositionEntityId';
+} from '../../common/constants';
 
 // SPLIT
 export function handlePositionSplit(event: PositionSplit): void {

@@ -1,6 +1,6 @@
 import { assert, describe, test } from 'matchstick-as/assembly/index';
 import { Bytes } from '@graphprotocol/graph-ts';
-import { computeCollectionId } from '../src/utils/ctf-utils';
+import { computeCollectionId } from '../common/utils/ctf-utils';
 
 describe('getCollectionId', () => {
   test('It should compute the collectionId', () => {

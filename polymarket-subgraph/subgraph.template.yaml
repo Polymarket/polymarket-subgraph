@@ -23,9 +23,9 @@ dataSources:
         - Redemption
       abis:
         - name: ConditionalTokens
-          file: ./abis/ConditionalTokens.json
+          file: ../abis/ConditionalTokens.json
         - name: ERC20Detailed
-          file: ./abis/ERC20Detailed.json
+          file: ../abis/ERC20Detailed.json
       eventHandlers:
         - event: ConditionPreparation(indexed bytes32,indexed address,indexed bytes32,uint256)
           handler: handleConditionPreparation
@@ -53,11 +53,11 @@ dataSources:
         - FixedProductMarketMaker
       abis:
         - name: FixedProductMarketMakerFactory
-          file: ./abis/FixedProductMarketMakerFactory.json
+          file: ../abis/FixedProductMarketMakerFactory.json
         - name: ConditionalTokens
-          file: ./abis/ConditionalTokens.json
+          file: ../abis/ConditionalTokens.json
         - name: ERC20Detailed
-          file: ./abis/ERC20Detailed.json
+          file: ../abis/ERC20Detailed.json
       eventHandlers:
         - event: FixedProductMarketMakerCreation(indexed address,address,indexed address,indexed address,bytes32[],uint256)
           handler: handleFixedProductMarketMakerCreation
@@ -82,7 +82,7 @@ dataSources:
         - MarketProfit
       abis:
         - name: Exchange
-          file: ./abis/Exchange.json
+          file: ../abis/Exchange.json
       eventHandlers:
         - event: OrderFilled(indexed bytes32,indexed address,indexed address,uint256,uint256,uint256,uint256,uint256)
           handler: handleFill
@@ -111,7 +111,7 @@ dataSources:
         - MarketProfit
       abis:
         - name: Exchange
-          file: ./abis/Exchange.json
+          file: ../abis/Exchange.json
       eventHandlers:
         - event: OrderFilled(indexed bytes32,indexed address,indexed address,uint256,uint256,uint256,uint256,uint256)
           handler: handleFill
@@ -138,7 +138,7 @@ dataSources:
         - PayoutRedemption
       abis:
         - name: NegRiskAdapter
-          file: ./abis/NegRiskAdapter.json
+          file: ../abis/NegRiskAdapter.json
       eventHandlers:
         - event: PositionSplit(indexed address,indexed bytes32,uint256)
           handler: handlePositionSplit
@@ -171,11 +171,11 @@ templates:
         - MarketProfit
       abis:
         - name: FixedProductMarketMaker
-          file: ./abis/FixedProductMarketMaker.json
+          file: ../abis/FixedProductMarketMaker.json
         - name: ConditionalTokens
-          file: ./abis/ConditionalTokens.json
+          file: ../abis/ConditionalTokens.json
         - name: ERC20Detailed
-          file: ./abis/ERC20Detailed.json
+          file: ../abis/ERC20Detailed.json
       eventHandlers:
         - event: FPMMFundingAdded(indexed address,uint256[],uint256)
           handler: handleFundingAdded
@@ -200,7 +200,7 @@ templates:
       entities: []
       abis:
         - name: ConditionalTokens
-          file: ./abis/ConditionalTokens.json
+          file: ../abis/ConditionalTokens.json
       file: ./src/empty.ts
   - name: ERC20Detailed
     kind: ethereum/contract
@@ -214,5 +214,5 @@ templates:
       entities: []
       abis:
         - name: ERC20Detailed
-          file: ./abis/ERC20Detailed.json
+          file: ../abis/ERC20Detailed.json
       file: ./src/empty.ts

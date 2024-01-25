@@ -1,0 +1,5 @@
+specVersion: 0.0.4
+description: Polymarket
+repository: https://github.com/TokenUnion/polymarket-subgraph
+schema:
+  file: ./.test_schema.graphql
