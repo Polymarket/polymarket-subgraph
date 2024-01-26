@@ -41,7 +41,7 @@ export function handlePositionSplit(event: PositionSplit): void {
     return;
   }
 
-  const SELL_PRICE = COLLATERAL_SCALE.div(BigInt.fromI32(2));
+  const BUY_PRICE = COLLATERAL_SCALE.div(BigInt.fromI32(2));
 
   // @ts-ignore
   let outcomeIndex: u8 = 0;
@@ -51,10 +51,10 @@ export function handlePositionSplit(event: PositionSplit): void {
       event.params.conditionId,
       outcomeIndex,
     );
-    updateUserPositionWithSell(
+    updateUserPositionWithBuy(
       event.params.stakeholder,
       positionId,
-      SELL_PRICE,
+      BUY_PRICE,
       event.params.amount,
     );
   }
@@ -78,7 +78,7 @@ export function handlePositionsMerge(event: PositionsMerge): void {
     return;
   }
 
-  const BUY_PRICE = COLLATERAL_SCALE.div(BigInt.fromI32(2));
+  const SELL_PRICE = COLLATERAL_SCALE.div(BigInt.fromI32(2));
 
   // @ts-ignore
   let outcomeIndex: u8 = 0;
@@ -88,10 +88,10 @@ export function handlePositionsMerge(event: PositionsMerge): void {
       event.params.conditionId,
       outcomeIndex,
     );
-    updateUserPositionWithBuy(
+    updateUserPositionWithSell(
       event.params.stakeholder,
       positionId,
-      BUY_PRICE,
+      SELL_PRICE,
       event.params.amount,
     );
   }
@@ -119,20 +119,20 @@ export function handlePositionsConverted(event: PositionsConverted): void {
   // @ts-ignore
   let questionIndex: u8 = 0;
   for (; questionIndex < questionCount; questionIndex++) {
-    indexSet
-      .bitAnd(BigInt.fromI32(1).leftShift(questionIndex))
-      .gt(BigInt.zero());
-
-    if (indexSet.bitAnd(BigInt.fromI32(1)).gt(BigInt.zero())) {
+    if (
+      indexSet
+        .bitAnd(BigInt.fromI32(1).leftShift(questionIndex))
+        .gt(BigInt.zero())
+    ) {
       // if the indexSet contains this index
-      // then the user spends NO tokens
+      // then the user sells NO tokens
 
       const positionId = getNegRiskPositionId(
         event.params.marketId,
         questionIndex,
         NO_INDEX,
       );
-      updateUserPositionWithBuy(
+      updateUserPositionWithSell(
         event.params.stakeholder,
         positionId,
         NO_PRICE,
@@ -140,13 +140,13 @@ export function handlePositionsConverted(event: PositionsConverted): void {
       );
     } else {
       // if the index set does NOT contain this index
-      // then the user receives YES tokens
+      // then the user buys YES tokens
       const positionId = getNegRiskPositionId(
         event.params.marketId,
         questionIndex,
         YES_INDEX,
       );
-      updateUserPositionWithSell(
+      updateUserPositionWithBuy(
         event.params.stakeholder,
         positionId,
         YES_PRICE,

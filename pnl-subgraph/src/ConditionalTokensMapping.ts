@@ -44,7 +44,7 @@ export function handlePositionSplit(event: PositionSplit): void {
     return;
   }
 
-  const SELL_PRICE = COLLATERAL_SCALE.div(BigInt.fromI32(2));
+  const BUY_PRICE = COLLATERAL_SCALE.div(BigInt.fromI32(2));
   // @ts-ignore
   let outcomeIndex: u8 = 0;
   for (; outcomeIndex < 2; outcomeIndex++) {
@@ -54,10 +54,10 @@ export function handlePositionSplit(event: PositionSplit): void {
       outcomeIndex,
     );
 
-    updateUserPositionWithSell(
+    updateUserPositionWithBuy(
       event.params.stakeholder,
       positionId,
-      SELL_PRICE,
+      BUY_PRICE,
       event.params.amount,
     );
   }
@@ -83,7 +83,7 @@ export function handlePositionsMerge(event: PositionsMerge): void {
     return;
   }
 
-  const BUY_PRICE = COLLATERAL_SCALE.div(BigInt.fromI32(2));
+  const SELL_PRICE = COLLATERAL_SCALE.div(BigInt.fromI32(2));
   // @ts-ignore
   let outcomeIndex: u8 = 0;
   for (; outcomeIndex < 2; outcomeIndex++) {
@@ -93,10 +93,10 @@ export function handlePositionsMerge(event: PositionsMerge): void {
       outcomeIndex,
     );
 
-    updateUserPositionWithBuy(
+    updateUserPositionWithSell(
       event.params.stakeholder,
       positionId,
-      BUY_PRICE,
+      SELL_PRICE,
       event.params.amount,
     );
   }
@@ -139,6 +139,7 @@ export function handlePayoutRedemption(event: PayoutRedemption): void {
       positionId,
     );
 
+    // the user redeem's their entire amount
     const amount = userPosition.amount;
     const price = payoutNumerators[outcomeIndex]
       .times(COLLATERAL_SCALE)

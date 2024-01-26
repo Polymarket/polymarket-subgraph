@@ -4,12 +4,12 @@ import { Address, BigInt } from '@graphprotocol/graph-ts';
 
 import { OrderFilled } from '../types/Exchange/Exchange';
 
-import { TRADE_TYPE_BUY, TRADE_TYPE_SELL } from '../../../common/constants';
+import { TradeType } from '../../../common/constants';
 
 class Order {
-  buyer: Address;
+  account: Address;
 
-  seller: Address;
+  side: TradeType;
 
   baseAmount: BigInt;
 
@@ -18,22 +18,23 @@ class Order {
   positionId: BigInt;
 }
 
+// the taker is always the exchange!
 const parseOrderFilled = (event: OrderFilled): Order => {
   const side = event.params.makerAssetId.equals(BigInt.zero())
-    ? TRADE_TYPE_BUY
-    : TRADE_TYPE_SELL;
+    ? TradeType.BUY
+    : TradeType.SELL;
 
-  return side === TRADE_TYPE_BUY
+  return side === TradeType.BUY
     ? {
-        buyer: event.params.maker,
-        seller: event.params.taker,
+        account: event.params.maker,
+        side: TradeType.BUY,
         baseAmount: event.params.takerAmountFilled,
         quoteAmount: event.params.makerAmountFilled,
         positionId: event.params.takerAssetId,
       }
     : {
-        buyer: event.params.taker,
-        seller: event.params.maker,
+        account: event.params.maker,
+        side: TradeType.SELL,
         baseAmount: event.params.makerAmountFilled,
         quoteAmount: event.params.takerAmountFilled,
         positionId: event.params.makerAssetId,
