@@ -143,6 +143,7 @@ export function getOrderSize(
 
 function normalizeAmounts(amount: BigInt): BigDecimal {
   let amtDecimal = new BigDecimal(amount);
+  // @ts-expect-error Cannot find name 'u8'.
   let t = new BigDecimal(BigInt.fromI32(10).pow(<u8>6));
   return amtDecimal.div(t);
 }

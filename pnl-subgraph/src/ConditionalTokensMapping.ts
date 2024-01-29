@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-
 import { BigInt, log } from '@graphprotocol/graph-ts';
 
 import {
@@ -45,7 +43,7 @@ export function handlePositionSplit(event: PositionSplit): void {
   }
 
   const BUY_PRICE = COLLATERAL_SCALE.div(BigInt.fromI32(2));
-  // @ts-ignore
+  // @ts-expect-error Cannot find name 'u8'.
   let outcomeIndex: u8 = 0;
   for (; outcomeIndex < 2; outcomeIndex++) {
     const positionId = computePositionId(
@@ -84,7 +82,7 @@ export function handlePositionsMerge(event: PositionsMerge): void {
   }
 
   const SELL_PRICE = COLLATERAL_SCALE.div(BigInt.fromI32(2));
-  // @ts-ignore
+  // @ts-expect-error Cannot find name 'u8'.
   let outcomeIndex: u8 = 0;
   for (; outcomeIndex < 2; outcomeIndex++) {
     const positionId = computePositionId(
@@ -129,7 +127,7 @@ export function handlePayoutRedemption(event: PayoutRedemption): void {
   const payoutNumerators = condition.payoutNumerators;
   const payoutDenominator = condition.payoutDenominator;
 
-  // @ts-ignore
+  // @ts-expect-error Cannot find name 'u8'.
   let outcomeIndex: u8 = 0;
   for (; outcomeIndex < 2; outcomeIndex++) {
     const positionId = computePositionId(USDC, conditionId, outcomeIndex);

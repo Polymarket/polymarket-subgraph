@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-
 import { BigInt, log } from '@graphprotocol/graph-ts';
 
 import { updateUserPositionWithBuy } from './utils/updateUserPositionWithBuy';
@@ -43,7 +41,7 @@ export function handlePositionSplit(event: PositionSplit): void {
 
   const BUY_PRICE = COLLATERAL_SCALE.div(BigInt.fromI32(2));
 
-  // @ts-ignore
+  // @ts-expect-error Cannot find name 'u8'.
   let outcomeIndex: u8 = 0;
   for (; outcomeIndex < 2; outcomeIndex++) {
     const positionId = computePositionId(
@@ -80,7 +78,7 @@ export function handlePositionsMerge(event: PositionsMerge): void {
 
   const SELL_PRICE = COLLATERAL_SCALE.div(BigInt.fromI32(2));
 
-  // @ts-ignore
+  // @ts-expect-error Cannot find name 'u8'.
   let outcomeIndex: u8 = 0;
   for (; outcomeIndex < 2; outcomeIndex++) {
     const positionId = computePositionId(
@@ -105,18 +103,18 @@ export function handlePositionsConverted(event: PositionsConverted): void {
     return;
   }
 
-  // @ts-ignore
+  // @ts-expect-error Cannot find name 'u8'.
   const questionCount = <u32>negRiskEvent.questionCount;
   const YES_PRICE = COLLATERAL_SCALE.div(BigInt.fromI32(questionCount));
   const NO_PRICE = COLLATERAL_SCALE.minus(YES_PRICE);
-  // @ts-ignore
+  // @ts-expect-error Cannot find name 'u8'.
   const YES_INDEX: u8 = 0;
-  // @ts-ignore
+  // @ts-expect-error Cannot find name 'u8'.
   const NO_INDEX: u8 = 1;
 
   const indexSet = event.params.indexSet;
 
-  // @ts-ignore
+  // @ts-expect-error Cannot find name 'u8'.
   let questionIndex: u8 = 0;
   for (; questionIndex < questionCount; questionIndex++) {
     if (
@@ -173,7 +171,7 @@ export function handlePayoutRedemption(event: PayoutRedemption): void {
   const payoutNumerators = condition.payoutNumerators;
   const payoutDenominator = condition.payoutDenominator;
 
-  // @ts-ignore
+  // @ts-expect-error Cannot find name 'u8'.
   let outcomeIndex: u8 = 0;
   for (; outcomeIndex < 2; outcomeIndex++) {
     const positionId = computePositionId(

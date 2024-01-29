@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/ban-types */
 
 import { Bytes, BigInt } from '@graphprotocol/graph-ts';
@@ -7,7 +6,7 @@ import { USDC, NEG_RISK_WRAPPED_COLLATERAL } from '../constants';
 
 const getPositionId = (
   conditionId: Bytes,
-  // @ts-ignore
+  // @ts-expect-error Cannot find name 'u8'.
   outcomeIndex: u8,
   negRisk: boolean,
 ): BigInt => {

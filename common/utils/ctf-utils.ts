@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/ban-types */
 
 import {
@@ -52,7 +51,7 @@ const legendreSymbol = (a: BigInt): BigInt =>
 
 const computeCollectionId = (
   conditionId: Bytes,
-  // @ts-ignore
+  // @ts-expect-error Cannot find name 'u8'.
   outcomeIndex: u8,
 ): Bytes => {
   const hashPayload = new Uint8Array(64);
@@ -128,7 +127,7 @@ const computePositionIdFromCollectionId = (
 const computePositionId = (
   collateral: Address,
   conditionId: Bytes,
-  // @ts-ignore
+  // @ts-expect-error Cannot find name 'u8'.
   outcomeIndex: u8,
 ): BigInt => {
   const collectionId = computeCollectionId(conditionId, outcomeIndex);

@@ -1,25 +1,16 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
-import {
-  Address,
-  BigDecimal,
-  BigInt,
-  Bytes,
-  ethereum,
-  log,
-} from '@graphprotocol/graph-ts';
+import { Address, BigInt, Bytes, log } from '@graphprotocol/graph-ts';
 import {
   MarketPosition,
   Condition,
   MarketData,
-  Transaction,
   FixedProductMarketMaker,
 } from '../types/schema';
 import { bigZero, TRADE_TYPE_BUY } from './constants';
 import { updateUserProfit } from './account-utils';
 import { OrderFilled } from '../types/Exchange/Exchange';
 import { getPositionId } from './getPositionId';
-import { getCollateralScale } from './collateralTokens';
 import {
   FPMMBuy,
   FPMMFundingAdded,
@@ -27,13 +18,6 @@ import {
   FPMMSell,
 } from '../types/FixedProductMarketMakerFactory/FixedProductMarketMakerFactory';
 import { max, timesBD } from './maths';
-import {
-  COLLATERAL_SCALE,
-  CONDITIONAL_TOKENS,
-  TradeType,
-  USDC,
-} from '../../../common/constants';
-
 /*
  * Returns the user's position for the given user and market(tokenId)
  * If no such position exists then a null position is generated
@@ -105,13 +89,11 @@ export function updateMarketPositionFromOrderFilled(
     profit = takerAmountNetFees;
   }
 
-  let collateralScaleDec = new BigDecimal(BigInt.fromI32(10).pow(<u8>6));
   let mktData = MarketData.load(tokenId.toString());
   if (mktData != null) {
     updateUserProfit(
       maker.toHexString(),
       profit,
-      collateralScaleDec,
       event.block.timestamp,
       mktData.condition,
     );
@@ -181,47 +163,6 @@ export function updateMarketPositionFromFPMMSell(
     profit,
     event.block.timestamp,
     conditionId,
-  );
-
-  updateNetPositionAndSave(marketPosition);
-}
-
-export function updateMarketPositionFromTrade(
-  user: Address,
-  outcomeIndex: u8,
-  // fpmm: FixedProductMarketMaker,
-  feeAmount: BigInt,
-  tradeAmount: BigInt,
-  outcomeTokensAmount: BigInt,
-  conditionId: Bytes,
-  type: string,
-  timestamp: BigInt,
-) {
-  const negRisk = false;
-  const positionId = getPositionId(conditionId, outcomeIndex, negRisk);
-  const marketPosition = getMarketPosition(user, positionId);
-
-  let profit = tradeAmount;
-
-  if (type == TRADE_TYPE_BUY) {
-    marketPosition.quantityBought =
-      marketPosition.quantityBought.plus(outcomeTokensAmount);
-    marketPosition.valueBought = marketPosition.valueBought.plus(tradeAmount);
-    marketPosition.feesPaid = marketPosition.feesPaid.plus(feeAmount);
-    // if buy, profit is negative
-    profit = profit.neg();
-  } else {
-    marketPosition.quantitySold =
-      marketPosition.quantitySold.plus(outcomeTokensAmount);
-    marketPosition.valueSold = marketPosition.valueSold.plus(tradeAmount);
-    marketPosition.feesPaid = marketPosition.feesPaid.plus(feeAmount);
-  }
-
-  updateUserProfit(
-    user.toHexString(),
-    profit,
-    timestamp,
-    conditionId.toHexString(),
   );
 
   updateNetPositionAndSave(marketPosition);
@@ -311,13 +252,11 @@ export function updateMarketPositionsFromRedemption(
     const numerator = payoutNumerators[outcomeIndex];
     const redemptionValue = quantity.times(numerator).div(payoutDenominator);
 
-    const collateralScaleDec = new BigDecimal(BigInt.fromI32(10).pow(<u8>6));
     updateUserProfit(
       redeemer.toHexString(),
       redemptionValue,
-      collateralScaleDec,
       timestamp,
-      conditionId.toHexString(),
+      condition.id,
     );
 
     // position gets zero'd out
@@ -330,10 +269,6 @@ export function updateMarketPositionsFromRedemption(
 export function updateMarketPositionFromLiquidityAdded(
   event: FPMMFundingAdded,
 ): void {
-  let fpmmAddress = event.address.toHexString();
-  const fpmm = FixedProductMarketMaker.load(
-    fpmmAddress,
-  ) as FixedProductMarketMaker;
   let funder = event.params.funder.toHexString();
   let amountsAdded = event.params.amountsAdded;
 
@@ -342,18 +277,21 @@ export function updateMarketPositionFromLiquidityAdded(
   // therefore this is the amount of collateral that the user has split.
   let addedFunds = max(amountsAdded);
 
-  let outcomeTokenPrices = fpmm.outcomeTokenPrices;
-  const conditionalTokenAddress = fpmm.conditionalTokenAddress;
-  const conditions = fpmm.conditions;
-  const collateralToken = fpmm.collateralToken.toString();
-  const outcomeSlotCount = fpmm.outcomeSlotCount as number;
-
-  if (conditions == null || conditions.length == 0) {
+  const fpmmAddress = event.address.toHexString();
+  const fpmm = FixedProductMarketMaker.load(fpmmAddress);
+  if (fpmm == null) {
+    log.error('Error: could not find FPMM {}', [fpmmAddress]);
+    return;
+  }
+  if (fpmm.conditions == null || fpmm.conditions.length == 0) {
     log.error('LOG: Could not find conditions on the FPMM: {}', [fpmmAddress]);
     throw new Error(
       `ERR: Could not find conditions on the FPMM: ${fpmmAddress}`,
     );
   }
+
+  const conditionId = fpmm.conditions[0];
+  const outcomeTokenPrices = fpmm.outcomeTokenPrices;
 
   // Funder is refunded with any excess outcome tokens which can't go into the market maker.
   // This means we must update the funder's market position for each outcome.
@@ -366,27 +304,29 @@ export function updateMarketPositionFromLiquidityAdded(
     // Subtract this from the amount of collateral added to get the amount refunded to funder
     let refundedAmount: BigInt = addedFunds.minus(amountsAdded[outcomeIndex]);
     if (refundedAmount.gt(bigZero)) {
-      const condition = conditions[0];
-      const market = getMarket(
-        conditionalTokenAddress,
-        condition,
-        collateralToken,
-        outcomeSlotCount,
+      // Only update positions which have changed
+
+      const negRisk = false;
+      const positionId = getPositionId(
+        Bytes.fromHexString(conditionId),
         outcomeIndex,
+        negRisk,
+      );
+      const marketPosition = getMarketPosition(
+        Address.fromHexString(funder),
+        positionId,
       );
 
-      // Only update positions which have changed
-      let position = getMarketPosition(funder, market);
-
-      position.quantityBought = position.quantityBought.plus(refundedAmount);
+      marketPosition.quantityBought =
+        marketPosition.quantityBought.plus(refundedAmount);
 
       let refundValue = timesBD(
         refundedAmount,
         outcomeTokenPrices[outcomeIndex],
       );
-      position.valueBought = position.valueBought.plus(refundValue);
+      marketPosition.valueBought = marketPosition.valueBought.plus(refundValue);
 
-      updateNetPositionAndSave(position);
+      updateNetPositionAndSave(marketPosition);
     }
   }
 }
@@ -394,25 +334,24 @@ export function updateMarketPositionFromLiquidityAdded(
 export function updateMarketPositionFromLiquidityRemoved(
   event: FPMMFundingRemoved,
 ): void {
-  let fpmmAddress = event.address.toHexString();
-  const fpmm = FixedProductMarketMaker.load(
-    fpmmAddress,
-  ) as FixedProductMarketMaker;
   let funder = event.params.funder.toHexString();
   let amountsRemoved = event.params.amountsRemoved;
 
-  let outcomeTokenPrices = fpmm.outcomeTokenPrices;
-  const conditionalTokenAddress = fpmm.conditionalTokenAddress;
-  const conditions = fpmm.conditions;
-  const collateralToken = fpmm.collateralToken.toString();
-  const outcomeSlotCount = fpmm.outcomeSlotCount as number;
-
-  if (conditions == null || conditions.length == 0) {
+  const fpmmAddress = event.address.toHexString();
+  const fpmm = FixedProductMarketMaker.load(fpmmAddress);
+  if (fpmm == null) {
+    log.error('Error: could not find FPMM {}', [fpmmAddress]);
+    return;
+  }
+  if (fpmm.conditions == null || fpmm.conditions.length == 0) {
     log.error('LOG: Could not find conditions on the FPMM: {}', [fpmmAddress]);
     throw new Error(
       `ERR: Could not find conditions on the FPMM: ${fpmmAddress}`,
     );
   }
+
+  const conditionId = fpmm.conditions[0];
+  const outcomeTokenPrices = fpmm.outcomeTokenPrices;
 
   // The funder is sent all of the outcome tokens for which they were providing liquidity
   // This means we must update the funder's market position for each outcome.
@@ -421,23 +360,27 @@ export function updateMarketPositionFromLiquidityRemoved(
     outcomeIndex < amountsRemoved.length;
     outcomeIndex += 1
   ) {
-    let condition = conditions[0];
-    const market: string = getMarket(
-      conditionalTokenAddress,
-      condition,
-      collateralToken,
-      outcomeSlotCount,
+    const negRisk = false;
+    const positionId = getPositionId(
+      Bytes.fromHexString(conditionId),
       outcomeIndex,
+      negRisk,
+    );
+    const marketPosition = getMarketPosition(
+      Address.fromHexString(funder),
+      positionId,
     );
 
-    let position = getMarketPosition(funder, market);
+    const amountRemoved = amountsRemoved[outcomeIndex];
+    marketPosition.quantityBought =
+      marketPosition.quantityBought.plus(amountRemoved);
 
-    let amountRemoved = amountsRemoved[outcomeIndex];
-    position.quantityBought = position.quantityBought.plus(amountRemoved);
+    const removedValue = timesBD(
+      amountRemoved,
+      outcomeTokenPrices[outcomeIndex],
+    );
+    marketPosition.valueBought = marketPosition.valueBought.plus(removedValue);
 
-    let removedValue = timesBD(amountRemoved, outcomeTokenPrices[outcomeIndex]);
-    position.valueBought = position.valueBought.plus(removedValue);
-
-    updateNetPositionAndSave(position);
+    updateNetPositionAndSave(marketPosition);
   }
 }

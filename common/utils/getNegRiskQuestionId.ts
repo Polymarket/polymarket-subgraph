@@ -1,10 +1,8 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-
 import { Bytes } from '@graphprotocol/graph-ts';
 
 const getNegRiskQuestionId = (
   marketId: Bytes,
-  // @ts-ignore
+  // @ts-expect-error Cannot find name 'u8'.
   questionIndex: u8,
 ): Bytes => {
   // slice off the last two hex chars of the marketId and apped with questionIndex in hex padded to two chars

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/ban-types */
 
 import { BigInt, Bytes } from '@graphprotocol/graph-ts';
@@ -9,9 +8,9 @@ import { computePositionId } from './ctf-utils';
 
 const getNegRiskPositionId = (
   negRiskMarketId: Bytes,
-  // @ts-ignore
+  // @ts-expect-error Cannot find name 'u8'.
   questionIndex: u8,
-  // @ts-ignore
+  // @ts-expect-error Cannot find name 'u8'.
   outcomeIndex: u8, // 0 is YES, 1 is NO
 ): BigInt => {
   const questionId = getNegRiskQuestionId(negRiskMarketId, questionIndex);
