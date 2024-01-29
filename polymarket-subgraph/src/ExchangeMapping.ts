@@ -111,6 +111,7 @@ export function handleFill(event: OrderFilled): void {
     side,
   );
 
+  // @ts-expect-error Cannot find name 'u8'.
   let collateralScaleDec = new BigDecimal(BigInt.fromI32(10).pow(<u8>6));
 
   let tokenId = '';
@@ -197,6 +198,7 @@ export function handleMatch(event: OrdersMatched): void {
   const side = getOrderSide(event.params.makerAssetId);
 
   const size = getOrderSize(makerAmountFilled, takerAmountFilled, side);
+  // @ts-expect-error Cannot find name 'u8'.
   const collateralScaleDec = new BigDecimal(BigInt.fromI32(10).pow(<u8>6));
 
   // record event

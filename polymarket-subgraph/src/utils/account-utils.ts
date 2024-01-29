@@ -7,6 +7,7 @@ import { Account } from '../types/schema';
 import { bigOne, bigZero } from './constants';
 import { countNewTrader } from './global-utils';
 import { loadMarketProfit } from './pnl-utils';
+import { COLLATERAL_SCALE } from '../../../common/constants';
 
 export function requireAccount(
   accountAddress: string,
@@ -73,22 +74,23 @@ export function updateUserVolume(
   account.save();
 }
 
+const COLLATERAL_SCALE_DEC = COLLATERAL_SCALE.toBigDecimal();
 export function updateUserProfit(
   user: string,
   pnl: BigInt,
-  collateralScaleDec: BigDecimal,
   timestamp: BigInt,
   conditionId: string,
 ): void {
   let account = requireAccount(user, timestamp);
   // will subtract if a negative profit
   account.profit = account.profit.plus(pnl);
-  account.scaledProfit = account.profit.divDecimal(collateralScaleDec);
+
+  account.scaledProfit = account.profit.divDecimal(COLLATERAL_SCALE_DEC);
   account.save();
 
   let marketProfit = loadMarketProfit(conditionId, user);
   marketProfit.profit = marketProfit.profit.plus(pnl);
   marketProfit.scaledProfit =
-    marketProfit.profit.divDecimal(collateralScaleDec);
+    marketProfit.profit.divDecimal(COLLATERAL_SCALE_DEC);
   marketProfit.save();
 }

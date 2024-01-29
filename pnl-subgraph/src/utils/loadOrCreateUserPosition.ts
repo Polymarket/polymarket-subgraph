@@ -8,12 +8,14 @@ import { getUserPositionEntityId } from '../../../common';
 
 const loadOrCreateUserPosition = (
   user: Address,
-  positionId: BigInt,
+  tokenId: BigInt,
 ): UserPosition => {
-  const userPositionEntityId = getUserPositionEntityId(user, positionId);
+  const userPositionEntityId = getUserPositionEntityId(user, tokenId);
   let userPosition = UserPosition.load(userPositionEntityId);
   if (userPosition == null) {
     userPosition = new UserPosition(userPositionEntityId);
+    userPosition.user = user;
+    userPosition.tokenId = tokenId;
     userPosition.avgPrice = BigInt.zero();
     userPosition.amount = BigInt.zero();
     userPosition.realizedPnl = BigInt.zero();

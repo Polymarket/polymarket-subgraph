@@ -325,27 +325,6 @@ enum TradeType {
   Sell
 }
 
-type Transaction @entity {
-  "Transaction Hash"
-  id: ID!
-  "Buy or Sell transaction"
-  type: TradeType!
-  "Timestamp at which transaction occurred"
-  timestamp: BigInt!
-  "Market which transaction is interacting with"
-  market: FixedProductMarketMaker!
-  "Account performing transaction"
-  user: Account!
-  "Amount of collateral in trade"
-  tradeAmount: BigInt!
-  "Amount of collateral paid in fees"
-  feeAmount: BigInt!
-  "Index of outcome token being bought or sold"
-  outcomeIndex: BigInt!
-  "Amount of outcome tokens being bought or sold"
-  outcomeTokensAmount: BigInt!
-}
-
 type FpmmPoolMembership @entity {
   "funder address + pool address"
   id: ID!

@@ -22,8 +22,10 @@ const NEG_RISK_OPERATOR = Address.fromString(
 );
 const COLLATERAL_SCALE = BigInt.fromI32(10).pow(6);
 
-const TRADE_TYPE_BUY = 'Buy';
-const TRADE_TYPE_SELL = 'Sell';
+enum TradeType {
+  BUY = 0,
+  SELL = 1,
+}
 
 export {
   COLLATERAL_SCALE,
@@ -34,6 +36,5 @@ export {
   NEG_RISK_OPERATOR,
   NEG_RISK_WRAPPED_COLLATERAL,
   USDC,
-  TRADE_TYPE_BUY,
-  TRADE_TYPE_SELL,
+  TradeType,
 };

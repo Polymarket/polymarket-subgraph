@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/ban-types */
+
 import { BigInt, log } from '@graphprotocol/graph-ts';
 
 import {
   FixedProductMarketMaker,
   FpmmFundingAddition,
   FpmmFundingRemoval,
-  Transaction,
 } from './types/schema';
 import {
   FPMMFundingAdded,
@@ -21,11 +22,13 @@ import {
   calculatePrices,
   loadPoolMembership,
 } from './utils/fpmm-utils';
-// import {
-//   updateMarketPositionFromLiquidityAdded,
-//   updateMarketPositionFromLiquidityRemoved,
-//   updateMarketPositionFromTrade,
-// } from './utils/market-positions-utils';
+import {
+  updateMarketPositionFromFPMMBuy,
+  updateMarketPositionFromFPMMSell,
+  updateMarketPositionFromLiquidityAdded,
+  updateMarketPositionFromLiquidityRemoved,
+} from './utils/market-positions-utils';
+
 import {
   AddressZero,
   bigOne,
@@ -43,31 +46,31 @@ import {
   updateUserVolume,
 } from './utils/account-utils';
 
-function recordBuy(event: FPMMBuy): void {
-  let buy = new Transaction(event.transaction.hash.toHexString());
-  buy.type = TRADE_TYPE_BUY;
-  buy.timestamp = event.block.timestamp;
-  buy.market = event.address.toHexString();
-  buy.user = event.params.buyer.toHexString();
-  buy.tradeAmount = event.params.investmentAmount;
-  buy.feeAmount = event.params.feeAmount;
-  buy.outcomeIndex = event.params.outcomeIndex;
-  buy.outcomeTokensAmount = event.params.outcomeTokensBought;
-  buy.save();
-}
+// function recordBuy(event: FPMMBuy): void {
+//   let buy = new Transaction(event.transaction.hash.toHexString());
+//   buy.type = TRADE_TYPE_BUY;
+//   buy.timestamp = event.block.timestamp;
+//   buy.market = event.address.toHexString();
+//   buy.user = event.params.buyer.toHexString();
+//   buy.tradeAmount = event.params.investmentAmount;
+//   buy.feeAmount = event.params.feeAmount;
+//   buy.outcomeIndex = event.params.outcomeIndex;
+//   buy.outcomeTokensAmount = event.params.outcomeTokensBought;
+//   buy.save();
+// }
 
-function recordSell(event: FPMMSell): void {
-  let sell = new Transaction(event.transaction.hash.toHexString());
-  sell.type = TRADE_TYPE_SELL;
-  sell.timestamp = event.block.timestamp;
-  sell.market = event.address.toHexString();
-  sell.user = event.params.seller.toHexString();
-  sell.tradeAmount = event.params.returnAmount;
-  sell.feeAmount = event.params.feeAmount;
-  sell.outcomeIndex = event.params.outcomeIndex;
-  sell.outcomeTokensAmount = event.params.outcomeTokensSold;
-  sell.save();
-}
+// function recordSell(event: FPMMSell): void {
+//   let sell = new Transaction(event.transaction.hash.toHexString());
+//   sell.type = TRADE_TYPE_SELL;
+//   sell.timestamp = event.block.timestamp;
+//   sell.market = event.address.toHexString();
+//   sell.user = event.params.seller.toHexString();
+//   sell.tradeAmount = event.params.returnAmount;
+//   sell.feeAmount = event.params.feeAmount;
+//   sell.outcomeIndex = event.params.outcomeIndex;
+//   sell.outcomeTokensAmount = event.params.outcomeTokensSold;
+//   sell.save();
+// }
 
 function recordFundingAddition(event: FPMMFundingAdded): void {
   let fpmmFundingAdded = new FpmmFundingAddition(
@@ -154,7 +157,7 @@ export function handleFundingAdded(event: FPMMFundingAdded): void {
   fpmm.save();
   markAccountAsSeen(event.params.funder.toHexString(), event.block.timestamp);
   recordFundingAddition(event);
-  // updateMarketPositionFromLiquidityAdded(event);
+  updateMarketPositionFromLiquidityAdded(event);
 }
 
 export function handleFundingRemoved(event: FPMMFundingRemoved): void {
@@ -196,7 +199,7 @@ export function handleFundingRemoved(event: FPMMFundingRemoved): void {
   fpmm.save();
   markAccountAsSeen(event.params.funder.toHexString(), event.block.timestamp);
   recordFundingRemoval(event);
-  // updateMarketPositionFromLiquidityRemoved(event);
+  updateMarketPositionFromLiquidityRemoved(event);
 }
 
 export function handleBuy(event: FPMMBuy): void {
@@ -228,17 +231,24 @@ export function handleBuy(event: FPMMBuy): void {
     }
     amountsProduct = amountsProduct.times(newAmounts[i]);
   }
+
+  // UPDATE FPMM AMOUNTS
   fpmm.outcomeTokenAmounts = newAmounts;
+  // UPDATE FPMM PRICES FROM NEW AMOUNTS
   fpmm.outcomeTokenPrices = calculatePrices(newAmounts);
+
+  // CONSTANT (?)
   let liquidityParameter = nthRoot(amountsProduct, newAmounts.length);
   let collateralScale = getCollateralScale(fpmm.collateralToken);
   let collateralScaleDec = collateralScale.toBigDecimal();
+  // UPDATE LIQ FIELDS
   updateLiquidityFields(
     fpmm as FixedProductMarketMaker,
     liquidityParameter,
     collateralScaleDec,
   );
 
+  // UPDATE VOLUMES
   updateVolumes(
     fpmm as FixedProductMarketMaker,
     event.block.timestamp,
@@ -246,35 +256,44 @@ export function handleBuy(event: FPMMBuy): void {
     collateralScaleDec,
     TRADE_TYPE_BUY,
   );
+
+  // UPDATE FEE FIELDS
   updateFeeFields(
     fpmm as FixedProductMarketMaker,
     event.params.feeAmount,
     collateralScaleDec,
   );
 
+  // SAVE FPMM
   fpmm.tradesQuantity = increment(fpmm.tradesQuantity);
   fpmm.buysQuantity = increment(fpmm.buysQuantity);
   fpmm.save();
 
+  // UPDATE USER VOLUME
   updateUserVolume(
     event.params.buyer.toHexString(),
     event.params.investmentAmount,
     collateralScaleDec,
     event.block.timestamp,
   );
+  // MARK ACCOUNT AS SEEN
   markAccountAsSeen(event.params.buyer.toHexString(), event.block.timestamp);
   incrementAccountTrades(
     event.params.buyer.toHexString(),
     event.block.timestamp,
   );
-  recordBuy(event);
+
+  // UPDATE GLOBAL VOLUME
   updateGlobalVolume(
     event.params.investmentAmount,
     event.params.feeAmount,
     collateralScaleDec,
     TRADE_TYPE_BUY,
   );
-  // updateMarketPositionFromTrade(event);
+
+  // UPDATE MARKET POSITION
+  const conditionId = fpmm.conditions[0];
+  updateMarketPositionFromFPMMBuy(event, conditionId);
 }
 
 export function handleSell(event: FPMMSell): void {
@@ -345,14 +364,16 @@ export function handleSell(event: FPMMSell): void {
     event.params.seller.toHexString(),
     event.block.timestamp,
   );
-  recordSell(event);
+
   updateGlobalVolume(
     event.params.returnAmount,
     event.params.feeAmount,
     collateralScaleDec,
     TRADE_TYPE_SELL,
   );
-  // updateMarketPositionFromTrade(event);
+
+  const conditionId = fpmm.conditions[0];
+  updateMarketPositionFromFPMMSell(event, conditionId);
 }
 
 export function handlePoolShareTransfer(event: Transfer): void {

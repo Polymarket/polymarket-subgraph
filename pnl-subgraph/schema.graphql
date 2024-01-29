@@ -2,6 +2,10 @@
 type UserPosition @entity {
   "User Address + Token ID"
   id: ID!
+  "User Address"
+  user: Bytes!
+  "Token ID"
+  tokenId: BigInt!
   "amount of token the user holds"
   amount: BigInt!
   "the avg price the user bought the token"

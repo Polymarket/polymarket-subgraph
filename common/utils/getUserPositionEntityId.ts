@@ -2,8 +2,8 @@
 
 import { Address, BigInt } from '@graphprotocol/graph-ts';
 
-const getUserPositionEntityId = (user: Address, positionId: BigInt): string => {
-  return `${user.toHexString()}-${positionId.toString()}`;
+const getUserPositionEntityId = (user: Address, tokenId: BigInt): string => {
+  return `${user.toHexString()}-${tokenId.toString()}`;
 };
 
 export { getUserPositionEntityId };
