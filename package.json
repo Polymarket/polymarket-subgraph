@@ -30,7 +30,7 @@
     "publish-graph:matic-trading": "yarn prepare:matic && yarn deploy:matic-trading",
     "publish-graph:matic-backup-two": "yarn prepare:matic && yarn deploy:matic-backup-two",
     "publish-graph:mumbai": "yarn prepare:mumbai && yarn deploy:mumbai",
-    "test": "RUST_BACKTRACE=full graph test",
+    "test": "RUST_BACKTRACE=full graph test -d",
     "pnl-subgraph:codegen": "yarn graph codegen ./pnl-subgraph/subgraph.yaml --debug --output-dir ./pnl-subgraph/src/types",
     "pnl-subgraph:build": "yarn graph build ./pnl-subgraph/subgraph.yaml",
     "pnl-subgraph:create-local": "graph create --node http://localhost:8020/ pnl-subgraph",
