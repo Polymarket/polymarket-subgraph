@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable no-param-reassign */
 
-import { BigDecimal, BigInt } from '@graphprotocol/graph-ts';
+import { BigInt } from '@graphprotocol/graph-ts';
 import { Account } from '../types/schema';
 
 import { bigOne, bigZero } from './constants';
 import { countNewTrader } from './global-utils';
 import { loadMarketProfit } from './pnl-utils';
-import { COLLATERAL_SCALE } from '../../../common/constants';
+import { COLLATERAL_SCALE_DEC } from '../../../common/constants';
 
 export function requireAccount(
   accountAddress: string,
@@ -63,18 +63,16 @@ export function incrementAccountTrades(
 export function updateUserVolume(
   accountAddress: string,
   tradeAmount: BigInt,
-  collateralScaleDec: BigDecimal,
   timestamp: BigInt,
 ): void {
   let account = requireAccount(accountAddress, timestamp);
   account.collateralVolume = account.collateralVolume.plus(tradeAmount);
   account.scaledCollateralVolume =
-    account.collateralVolume.divDecimal(collateralScaleDec);
+    account.collateralVolume.divDecimal(COLLATERAL_SCALE_DEC);
   account.lastTradedTimestamp = timestamp;
   account.save();
 }
 
-const COLLATERAL_SCALE_DEC = COLLATERAL_SCALE.toBigDecimal();
 export function updateUserProfit(
   user: string,
   pnl: BigInt,

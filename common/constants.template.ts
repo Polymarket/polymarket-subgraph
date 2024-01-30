@@ -10,7 +10,6 @@ const NEG_RISK_WRAPPED_COLLATERAL = Address.fromString(
 const NEG_RISK_ADAPTER = Address.fromString(
   '{{ contracts.NegRiskAdapter.address }}',
 );
-
 const EXCHANGE = Address.fromString(
   '{{ contracts.Exchange.address }}', //
 );
@@ -21,6 +20,7 @@ const NEG_RISK_OPERATOR = Address.fromString(
   '{{ contracts.NegRiskOperator.address }}',
 );
 const COLLATERAL_SCALE = BigInt.fromI32(10).pow(6);
+const COLLATERAL_SCALE_DEC = COLLATERAL_SCALE.toBigDecimal();
 
 enum TradeType {
   BUY = 0,
@@ -29,6 +29,7 @@ enum TradeType {
 
 export {
   COLLATERAL_SCALE,
+  COLLATERAL_SCALE_DEC,
   CONDITIONAL_TOKENS,
   EXCHANGE,
   NEG_RISK_ADAPTER,

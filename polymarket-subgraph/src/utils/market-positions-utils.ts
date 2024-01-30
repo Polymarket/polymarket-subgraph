@@ -12,11 +12,11 @@ import { updateUserProfit } from './account-utils';
 import { OrderFilled } from '../types/Exchange/Exchange';
 import { getPositionId } from './getPositionId';
 import {
-  FPMMBuy,
   FPMMFundingAdded,
   FPMMFundingRemoved,
+  FPMMBuy,
   FPMMSell,
-} from '../types/FixedProductMarketMakerFactory/FixedProductMarketMakerFactory';
+} from '../types/templates/FixedProductMarketMaker/FixedProductMarketMaker';
 import { max, timesBD } from './maths';
 /*
  * Returns the user's position for the given user and market(tokenId)
@@ -104,7 +104,7 @@ export function updateMarketPositionFromOrderFilled(
 export function updateMarketPositionFromFPMMBuy(
   event: FPMMBuy,
   conditionId: string,
-) {
+): void {
   const negRisk = false;
   const positionId = getPositionId(
     Bytes.fromHexString(conditionId),
@@ -138,7 +138,7 @@ export function updateMarketPositionFromFPMMBuy(
 export function updateMarketPositionFromFPMMSell(
   event: FPMMSell,
   conditionId: string,
-) {
+): void {
   const negRisk = false;
   const positionId = getPositionId(
     Bytes.fromHexString(conditionId),
@@ -313,7 +313,7 @@ export function updateMarketPositionFromLiquidityAdded(
         negRisk,
       );
       const marketPosition = getMarketPosition(
-        Address.fromHexString(funder),
+        Address.fromString(funder),
         positionId,
       );
 
@@ -367,7 +367,7 @@ export function updateMarketPositionFromLiquidityRemoved(
       negRisk,
     );
     const marketPosition = getMarketPosition(
-      Address.fromHexString(funder),
+      Address.fromString(funder),
       positionId,
     );
 

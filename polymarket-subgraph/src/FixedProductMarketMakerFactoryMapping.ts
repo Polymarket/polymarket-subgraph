@@ -13,7 +13,6 @@ import { FixedProductMarketMaker, Condition, MarketData } from './types/schema';
 import { FixedProductMarketMaker as FixedProductMarketMakerTemplate } from './types/templates';
 import { timestampToDay } from './utils/time';
 import { bigZero } from './utils/constants';
-import { getCollateralDetails } from './utils/collateralTokens';
 import { computePositionId } from './utils/ctf-utils';
 import { CONDITIONAL_TOKENS, USDC } from './constants';
 
@@ -82,7 +81,6 @@ export function handleFixedProductMarketMakerCreation(
   fixedProductMarketMaker.conditionalTokenAddress = conditionalTokensAddress;
   fixedProductMarketMaker.conditions = [];
 
-  getCollateralDetails(event.params.collateralToken);
   let collateralToken = event.params.collateralToken.toHexString();
   fixedProductMarketMaker.collateralToken = collateralToken;
   fixedProductMarketMaker.fee = event.params.fee;

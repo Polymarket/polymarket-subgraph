@@ -5,6 +5,7 @@ import { Orderbook, OrdersMatchedGlobal } from '../types/schema';
 import { bigZero, TRADE_TYPE_BUY, TRADE_TYPE_SELL } from './constants';
 import { increment } from './maths';
 import { timestampToDay } from './time';
+import { COLLATERAL_SCALE_DEC } from '../../../common/constants';
 
 export function requireOrderBook(tokenId: string): Orderbook {
   let orderBook = Orderbook.load(tokenId);
@@ -56,7 +57,6 @@ export function updateVolumes(
   orderBook: Orderbook,
   timestamp: BigInt,
   tradeSize: BigInt,
-  collateralScaleDec: BigDecimal,
   tradeType: string,
 ): void {
   let currentDay = timestampToDay(timestamp);
@@ -67,18 +67,18 @@ export function updateVolumes(
 
   orderBook.collateralVolume = orderBook.collateralVolume.plus(tradeSize);
   orderBook.scaledCollateralVolume =
-    orderBook.collateralVolume.divDecimal(collateralScaleDec);
+    orderBook.collateralVolume.divDecimal(COLLATERAL_SCALE_DEC);
 
   if (tradeType === TRADE_TYPE_BUY) {
     orderBook.collateralBuyVolume =
       orderBook.collateralBuyVolume.plus(tradeSize);
     orderBook.scaledCollateralBuyVolume =
-      orderBook.collateralBuyVolume.divDecimal(collateralScaleDec);
+      orderBook.collateralBuyVolume.divDecimal(COLLATERAL_SCALE_DEC);
   } else if (tradeType === TRADE_TYPE_SELL) {
     orderBook.collateralSellVolume =
       orderBook.collateralSellVolume.plus(tradeSize);
     orderBook.scaledCollateralSellVolume =
-      orderBook.collateralSellVolume.divDecimal(collateralScaleDec);
+      orderBook.collateralSellVolume.divDecimal(COLLATERAL_SCALE_DEC);
   }
 }
 
@@ -104,24 +104,23 @@ export function updateTradesQuantity(
 
 export function updateGlobalVolume(
   tradeAmount: BigDecimal,
-  collateralScaleDec: BigDecimal,
   tradeType: string,
 ): void {
   let global = requireGlobal();
   global.collateralVolume = global.collateralVolume.plus(tradeAmount);
   global.scaledCollateralVolume =
-    global.collateralVolume.div(collateralScaleDec);
+    global.collateralVolume.div(COLLATERAL_SCALE_DEC);
   global.tradesQuantity = increment(global.tradesQuantity);
   if (tradeType === TRADE_TYPE_BUY) {
     global.buysQuantity = increment(global.buysQuantity);
     global.collateralBuyVolume = global.collateralBuyVolume.plus(tradeAmount);
     global.scaledCollateralBuyVolume =
-      global.collateralBuyVolume.div(collateralScaleDec);
+      global.collateralBuyVolume.div(COLLATERAL_SCALE_DEC);
   } else if (tradeType === TRADE_TYPE_SELL) {
     global.sellsQuantity = increment(global.sellsQuantity);
     global.collateralSellVolume = global.collateralSellVolume.plus(tradeAmount);
     global.scaledCollateralSellVolume =
-      global.collateralSellVolume.div(collateralScaleDec);
+      global.collateralSellVolume.div(COLLATERAL_SCALE_DEC);
   }
   global.save();
 }

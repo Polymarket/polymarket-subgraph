@@ -55,8 +55,8 @@ type Account @entity {
   fpmmPoolMemberships: [FpmmPoolMembership!] @derivedFrom(field: "funder")
   "Markets in which the user has taken a position on the outcome"
   marketPositions: [MarketPosition!] @derivedFrom(field: "user")
-  "Purchases and sales of shares by the user"
-  transactions: [Transaction!] @derivedFrom(field: "user")
+  # "Purchases and sales of shares by the user"
+  # transactions: [Transaction!] @derivedFrom(field: "user")
   "Split of collateral / outcome tokens into multiple positions"
   splits: [Split!] @derivedFrom(field: "stakeholder")
   "Merge of more specific outcome tokens into collateral / more general outcome tokens"
@@ -70,14 +70,6 @@ type Account @entity {
   scaledProfit: BigDecimal!
   "Profits in USDC base units by market"
   marketProfits: [MarketProfit!] @derivedFrom(field: "user")
-}
-
-type Collateral @entity {
-  "Token address"
-  id: ID!
-  name: String!
-  symbol: String!
-  decimals: Int!
 }
 
 # Conditional Tokens
@@ -110,7 +102,7 @@ type Split @entity {
   "Address which is performing this split"
   stakeholder: Account!
   "Token which is collateralising positions being split"
-  collateralToken: Collateral!
+  collateralToken: String!
   parentCollectionId: Bytes!
   "Condition on which split is occuring"
   condition: Condition!
@@ -127,7 +119,7 @@ type Merge @entity {
   "Address which is performing this merge"
   stakeholder: Account!
   "Token which is collateralising positions being merged"
-  collateralToken: Collateral!
+  collateralToken: String!
   parentCollectionId: Bytes!
   "Condition on which merge is occuring"
   condition: Condition!
@@ -144,7 +136,7 @@ type Redemption @entity {
   "Address which is redeeming these outcomes"
   redeemer: Account!
   "Token which is being claimed in return for outcome tokens"
-  collateralToken: Collateral!
+  collateralToken: String!
   parentCollectionId: Bytes!
   "Condition on which redemption is occuring"
   condition: Condition!
@@ -192,7 +184,7 @@ type FixedProductMarketMaker @entity {
   creationTransactionHash: Bytes!
 
   "Token which is colleralising this market"
-  collateralToken: Collateral!
+  collateralToken: String!
   "Conditional Token Address"
   conditionalTokenAddress: String!
   "Conditions which this market is trading against"

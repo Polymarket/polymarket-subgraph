@@ -19,9 +19,7 @@ import {
   updateMarketPositionsFromRedemption,
   updateMarketPositionsFromSplit,
 } from './utils/market-positions-utils';
-import { partitionCheck } from './utils/conditional-utils';
 import { bigZero } from './utils/constants';
-import { getCollateralDetails } from './utils/collateralTokens';
 import { markAccountAsSeen, requireAccount } from './utils/account-utils';
 import { getEventKey } from '../../common/utils/getEventKey';
 import { EXCHANGE, NEG_RISK_ADAPTER } from './constants';
@@ -45,15 +43,23 @@ export function handlePositionSplit(event: PositionSplit): void {
     return;
   }
 
-  getCollateralDetails(event.params.collateralToken);
+  // skip unrecognized conditions
+  const conditionId = event.params.conditionId.toHexString();
+  const condition = Condition.load(event.params.conditionId.toHexString());
+  if (condition == null) {
+    log.error('Failed to update market positions: condition {} not prepared', [
+      conditionId,
+    ]);
+    return;
+  }
+
   requireAccount(event.params.stakeholder.toHexString(), event.block.timestamp);
   markAccountAsSeen(
     event.params.stakeholder.toHexString(),
     event.block.timestamp,
   );
 
-  let split = new Split(getEventKey(event));
-
+  const split = new Split(getEventKey(event));
   split.timestamp = event.block.timestamp;
   split.stakeholder = event.params.stakeholder.toHexString();
   split.collateralToken = event.params.collateralToken.toHexString();
@@ -61,32 +67,16 @@ export function handlePositionSplit(event: PositionSplit): void {
   split.condition = event.params.conditionId.toHexString();
   split.partition = event.params.partition;
   split.amount = event.params.amount;
-
   split.save();
 
-  let condition = Condition.load(split.condition);
-  if (condition == null) {
-    log.error('Failed to update market positions: condition {} not prepared', [
-      split.condition,
-    ]);
-    return;
-  }
-
-  // If the user has split from collateral then we want to update their market position accordingly
-  if (partitionCheck(split.partition, condition.outcomeSlotCount)) {
-    let marketMakers = condition.fixedProductMarketMakers;
-    for (let i = 0; i < marketMakers.length; i += 1) {
-      // This is not ideal as in theory we could have multiple market makers for the same condition
-      // Given that this subgraph only tracks market makers deployed by Polymarket, this is acceptable for now
-      const negRisk = false;
-      updateMarketPositionsFromSplit(
-        event.params.conditionId,
-        event.params.stakeholder,
-        event.params.amount,
-        negRisk,
-      );
-    }
-  }
+  // negRisk splits must come through the negRiskAdapter
+  const negRisk = false;
+  updateMarketPositionsFromSplit(
+    event.params.conditionId,
+    event.params.stakeholder,
+    event.params.amount,
+    negRisk,
+  );
 }
 
 export function handlePositionsMerge(event: PositionsMerge): void {
@@ -108,14 +98,23 @@ export function handlePositionsMerge(event: PositionsMerge): void {
     return;
   }
 
+  // skip unrecognized conditions
+  const conditionId = event.params.conditionId.toHexString();
+  const condition = Condition.load(event.params.conditionId.toHexString());
+  if (condition == null) {
+    log.error('Failed to update market positions: condition {} not prepared', [
+      conditionId,
+    ]);
+    return;
+  }
+
   requireAccount(event.params.stakeholder.toHexString(), event.block.timestamp);
   markAccountAsSeen(
     event.params.stakeholder.toHexString(),
     event.block.timestamp,
   );
 
-  let merge = new Merge(getEventKey(event));
-
+  const merge = new Merge(getEventKey(event));
   merge.timestamp = event.block.timestamp;
   merge.stakeholder = event.params.stakeholder.toHexString();
   merge.collateralToken = event.params.collateralToken.toHexString();
@@ -123,32 +122,16 @@ export function handlePositionsMerge(event: PositionsMerge): void {
   merge.condition = event.params.conditionId.toHexString();
   merge.partition = event.params.partition;
   merge.amount = event.params.amount;
-
   merge.save();
 
-  let condition = Condition.load(merge.condition);
-  if (condition == null) {
-    log.error('Failed to update market positions: condition {} not prepared', [
-      merge.condition,
-    ]);
-    return;
-  }
-
-  // If the user has merged a full set of outcome tokens then we want to update their market position accordingly
-  if (partitionCheck(merge.partition, condition.outcomeSlotCount)) {
-    // This is not ideal as in theory we could have multiple market makers for the same condition
-    // Given that this subgraph only tracks market makers deployed by Polymarket, this is acceptable for now
-    let marketMakers = condition.fixedProductMarketMakers;
-    for (let i = 0; i < marketMakers.length; i += 1) {
-      const negRisk = false;
-      updateMarketPositionsFromMerge(
-        event.params.conditionId,
-        event.params.stakeholder,
-        event.params.amount,
-        negRisk,
-      );
-    }
-  }
+  // negRisk merges must come through the negRiskAdapter
+  const negRisk = false;
+  updateMarketPositionsFromMerge(
+    event.params.conditionId,
+    event.params.stakeholder,
+    event.params.amount,
+    negRisk,
+  );
 }
 
 export function handlePayoutRedemption(event: PayoutRedemption): void {
@@ -158,11 +141,20 @@ export function handlePayoutRedemption(event: PayoutRedemption): void {
     return;
   }
 
+  // skip unrecognized conditions
+  const conditionId = event.params.conditionId.toHexString();
+  const condition = Condition.load(event.params.conditionId.toHexString());
+  if (condition == null) {
+    log.error('Failed to update market positions: condition {} not prepared', [
+      conditionId,
+    ]);
+    return;
+  }
+
   requireAccount(event.params.redeemer.toHexString(), event.block.timestamp);
   markAccountAsSeen(event.params.redeemer.toHexString(), event.block.timestamp);
 
-  let redemption = new Redemption(getEventKey(event));
-
+  const redemption = new Redemption(getEventKey(event));
   redemption.timestamp = event.block.timestamp;
   redemption.redeemer = event.params.redeemer.toHexString();
   redemption.collateralToken = event.params.collateralToken.toHexString();
@@ -170,31 +162,18 @@ export function handlePayoutRedemption(event: PayoutRedemption): void {
   redemption.condition = event.params.conditionId.toHexString();
   redemption.indexSets = event.params.indexSets;
   redemption.payout = event.params.payout;
-
   redemption.save();
 
-  let condition = Condition.load(redemption.condition);
-  if (condition == null) {
-    log.error('Failed to update market positions: condition {} not prepared', [
-      redemption.condition,
-    ]);
-    return;
-  }
-
-  let marketMakers = condition.fixedProductMarketMakers;
-  for (let i = 0; i < marketMakers.length; i += 1) {
-    // This is not ideal as in theory we could have multiple market makers for the same condition
-    // Given that this subgraph only tracks market makers deployed by Polymarket, this is acceptable for now
-    const negRisk = false;
-    updateMarketPositionsFromRedemption(
-      event.params.conditionId,
-      event.params.redeemer,
-      event.params.indexSets,
-      event.block.timestamp,
-      negRisk,
-      [],
-    );
-  }
+  // negRisk redemptions must come through the negRiskAdapter
+  const negRisk = false;
+  updateMarketPositionsFromRedemption(
+    event.params.conditionId,
+    event.params.redeemer,
+    event.params.indexSets,
+    event.block.timestamp,
+    negRisk,
+    [],
+  );
 }
 
 export function handleConditionPreparation(event: ConditionPreparation): void {
@@ -203,16 +182,15 @@ export function handleConditionPreparation(event: ConditionPreparation): void {
     return;
   }
 
-  let condition = new Condition(event.params.conditionId.toHexString());
-
+  // new condition
+  const condition = new Condition(event.params.conditionId.toHexString());
   condition.oracle = event.params.oracle;
   condition.questionId = event.params.questionId;
   condition.fixedProductMarketMakers = [];
   condition.outcomeSlotCount = 2;
-
   condition.save();
 
-  let global = requireGlobal();
+  const global = requireGlobal();
   global.numConditions += 1;
   global.numOpenConditions += 1;
   global.save();

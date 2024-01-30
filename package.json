@@ -35,7 +35,10 @@
     "pnl-subgraph:build": "yarn graph build ./pnl-subgraph/subgraph.yaml",
     "pnl-subgraph:create-local": "graph create --node http://localhost:8020/ pnl-subgraph",
     "pnl-subgraph:deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 pnl-subgraph ./pnl-subgraph/subgraph.yaml",
-    "polymarket-subgraph:codegen": "./polymarket-subgraph/bash/codegen.sh"
+    "polymarket-subgraph:codegen": "yarn graph codegen ./polymarket-subgraph/subgraph.yaml --debug --output-dir ./polymarket-subgraph/src/types",
+    "polymarket-subgraph:build": "yarn graph build ./polymarket-subgraph/subgraph.yaml",
+    "polymarket-subgraph:create-local": "graph create --node http://localhost:8020/ polymarket-subgraph",
+    "polymarket-subgraph:deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 polymarket-subgraph ./polymarket-subgraph/subgraph.yaml"
   },
   "repository": {
     "type": "git",

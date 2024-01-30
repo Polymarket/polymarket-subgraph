@@ -1,4 +1,4 @@
-import { Address, BigDecimal, BigInt, Bytes } from '@graphprotocol/graph-ts';
+import { Address, BigInt, Bytes } from '@graphprotocol/graph-ts';
 import {
   OrderFilled,
   OrdersMatched,
@@ -111,9 +111,6 @@ export function handleFill(event: OrderFilled): void {
     side,
   );
 
-  // @ts-expect-error Cannot find name 'u8'.
-  let collateralScaleDec = new BigDecimal(BigInt.fromI32(10).pow(<u8>6));
-
   let tokenId = '';
   if (side === TRADE_TYPE_BUY) {
     tokenId = takerAssetId.toString();
@@ -130,18 +127,12 @@ export function handleFill(event: OrderFilled): void {
   // order book
   let orderBook: Orderbook = requireOrderBook(tokenId as string);
 
-  updateVolumes(
-    orderBook as Orderbook,
-    timestamp,
-    size,
-    collateralScaleDec,
-    side,
-  );
+  updateVolumes(orderBook as Orderbook, timestamp, size, side);
 
-  updateUserVolume(taker, size, collateralScaleDec, timestamp);
+  updateUserVolume(taker, size, timestamp);
   markAccountAsSeen(taker, timestamp);
 
-  updateUserVolume(maker, size, collateralScaleDec, timestamp);
+  updateUserVolume(maker, size, timestamp);
   markAccountAsSeen(maker, timestamp);
 
   updateTradesQuantity(orderBook, side, enriched.id);
@@ -196,16 +187,13 @@ export function handleMatch(event: OrdersMatched): void {
   let takerAmountFilled = event.params.makerAmountFilled;
 
   const side = getOrderSide(event.params.makerAssetId);
-
   const size = getOrderSize(makerAmountFilled, takerAmountFilled, side);
-  // @ts-expect-error Cannot find name 'u8'.
-  const collateralScaleDec = new BigDecimal(BigInt.fromI32(10).pow(<u8>6));
 
   // record event
   recordOrdersMatchedEvent(event);
 
   // update global volume
-  updateGlobalVolume(size.toBigDecimal(), collateralScaleDec, side);
+  updateGlobalVolume(size.toBigDecimal(), side);
 }
 
 export function handleTokenRegistered(event: TokenRegistered): void {
