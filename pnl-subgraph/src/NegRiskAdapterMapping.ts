@@ -196,11 +196,7 @@ export function handlePayoutRedemption(event: PayoutRedemption): void {
 // MARKET PREPARED
 export function handleMarketPrepared(event: MarketPrepared): void {
   // ignore non-negRiskOperator events
-  if (
-    [NEG_RISK_OPERATOR.toHexString()].includes(
-      event.params.oracle.toHexString(),
-    )
-  ) {
+  if (NEG_RISK_OPERATOR.toHexString() !== event.params.oracle.toHexString()) {
     return;
   }
 

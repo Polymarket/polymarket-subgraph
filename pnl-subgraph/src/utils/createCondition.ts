@@ -4,7 +4,6 @@ import { Condition } from '../types/schema';
 
 const createCondition = (conditionId: Bytes): Condition => {
   let condition = Condition.load(conditionId.toHexString());
-
   if (condition != null) {
     log.error('Condition already exists: {}', [conditionId.toHexString()]);
     throw new Error('Condition already exists');

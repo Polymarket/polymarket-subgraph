@@ -4,7 +4,11 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 
 const config = {
-  templatedFiles: ['polymarket-subgraph/subgraph.yaml', 'common/constants.ts'],
+  templatedFiles: [
+    'activity-subgraph/subgraph.yaml',
+    'polymarket-subgraph/subgraph.yaml',
+    'common/constants.ts',
+  ],
 };
 
 Handlebars.registerHelper('lowercase', function (str) {
