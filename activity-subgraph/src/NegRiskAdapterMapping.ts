@@ -16,7 +16,7 @@ import {
   NegRiskEvent,
 } from './types/schema';
 import { getEventKey } from '../../common/utils/getEventKey';
-import { NEG_RISK_EXCHANGE, NEG_RISK_OPERATOR } from '../../common/constants';
+import { NEG_RISK_EXCHANGE } from '../../common/constants';
 
 export function handlePositionSplit(event: PositionSplit): void {
   // - don't track splits from the NegRiskExchange
@@ -81,11 +81,6 @@ export function handlePayoutRedemption(event: PayoutRedemption): void {
 }
 
 export function handleMarketPrepared(event: MarketPrepared): void {
-  // ignore non-negRiskOperator events
-  if (event.params.oracle.toHexString() !== NEG_RISK_OPERATOR.toHexString()) {
-    return;
-  }
-
   const negRiskEvent = new NegRiskEvent(event.params.marketId.toHexString());
   negRiskEvent.questionCount = 0;
   negRiskEvent.save();

@@ -11,15 +11,14 @@ import {
   PayoutRedemption,
 } from './types/NegRiskAdapter/NegRiskAdapter';
 import { NegRiskEvent } from './types/schema';
+import { loadCondition } from './utils/loadCondition';
 
 import { computePositionId, getNegRiskPositionId } from '../../common';
 import {
   COLLATERAL_SCALE,
   NEG_RISK_EXCHANGE,
-  NEG_RISK_OPERATOR,
   NEG_RISK_WRAPPED_COLLATERAL,
 } from '../../common/constants';
-import { loadCondition } from './utils/loadCondition';
 
 // SPLIT
 export function handlePositionSplit(event: PositionSplit): void {
@@ -103,7 +102,7 @@ export function handlePositionsConverted(event: PositionsConverted): void {
     return;
   }
 
-  // @ts-expect-error Cannot find name 'u8'.
+  // @ts-expect-error Cannot find name 'u32'.
   const questionCount = <u32>negRiskEvent.questionCount;
   const YES_PRICE = COLLATERAL_SCALE.div(BigInt.fromI32(questionCount));
   const NO_PRICE = COLLATERAL_SCALE.minus(YES_PRICE);
@@ -195,11 +194,6 @@ export function handlePayoutRedemption(event: PayoutRedemption): void {
 
 // MARKET PREPARED
 export function handleMarketPrepared(event: MarketPrepared): void {
-  // ignore non-negRiskOperator events
-  if (NEG_RISK_OPERATOR.toHexString() !== event.params.oracle.toHexString()) {
-    return;
-  }
-
   const negRiskEvent = new NegRiskEvent(event.params.marketId.toHexString());
   negRiskEvent.questionCount = 0;
   negRiskEvent.save();
@@ -209,7 +203,6 @@ export function handleMarketPrepared(event: MarketPrepared): void {
 export function handleQuestionPrepared(event: QuestionPrepared): void {
   const negRiskEvent = NegRiskEvent.load(event.params.marketId.toHexString());
   if (negRiskEvent === null) {
-    // ignore non-negRiskOperator events
     return;
   }
 
