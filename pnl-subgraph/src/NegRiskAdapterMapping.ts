@@ -97,7 +97,7 @@ export function handlePositionsMerge(event: PositionsMerge): void {
 // CONVERT
 export function handlePositionsConverted(event: PositionsConverted): void {
   const negRiskEvent = NegRiskEvent.load(event.params.marketId.toHexString());
-  if (negRiskEvent === null) {
+  if (negRiskEvent == null) {
     // ignore
     return;
   }
@@ -116,6 +116,16 @@ export function handlePositionsConverted(event: PositionsConverted): void {
   // @ts-expect-error Cannot find name 'u8'.
   let questionIndex: u8 = 0;
   for (; questionIndex < questionCount; questionIndex++) {
+    //
+    // check if indexSet AND (1 << questionIndex) > 0
+    // if so, then the user is converting NO tokens
+    // otherwise,
+    // ex: indexSet = 00010000
+    // if questionIndex = 4, then 1 << 4 = 00010000
+    // so indexSet AND (1 << questionIndex) = 00010000 > 0
+    // if questionIndex = 2, then 1 << 2 = 00000100
+    // so indexSet AND (1 << questionIndex) = 00000000 == 0
+    //
     if (
       indexSet
         .bitAnd(BigInt.fromI32(1).leftShift(questionIndex))
@@ -202,7 +212,7 @@ export function handleMarketPrepared(event: MarketPrepared): void {
 // QUESTION PREPARED
 export function handleQuestionPrepared(event: QuestionPrepared): void {
   const negRiskEvent = NegRiskEvent.load(event.params.marketId.toHexString());
-  if (negRiskEvent === null) {
+  if (negRiskEvent == null) {
     return;
   }
 

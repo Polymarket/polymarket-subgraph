@@ -153,7 +153,7 @@ export function handlePayoutRedemption(event: PayoutRedemption): void {
 
 export function handleConditionPreparation(event: ConditionPreparation): void {
   // we don't handle conditions with more than 2 outcomes
-  if (event.params.outcomeSlotCount.toI32() !== 2) {
+  if (event.params.outcomeSlotCount.toI32() != 2) {
     return;
   }
 

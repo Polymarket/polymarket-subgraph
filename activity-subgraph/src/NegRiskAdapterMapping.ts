@@ -56,7 +56,7 @@ export function handlePositionsMerge(event: PositionsMerge): void {
 
 export function handlePositionsConverted(event: PositionsConverted): void {
   const negRiskEvent = NegRiskEvent.load(event.params.marketId.toHexString());
-  if (negRiskEvent === null) {
+  if (negRiskEvent == null) {
     return;
   }
 
@@ -89,7 +89,7 @@ export function handleMarketPrepared(event: MarketPrepared): void {
 export function handleQuestionPrepared(event: QuestionPrepared): void {
   let negRiskEvent = NegRiskEvent.load(event.params.marketId.toHexString());
   // if the event is not recognized, return
-  if (negRiskEvent === null) {
+  if (negRiskEvent == null) {
     return;
   }
 

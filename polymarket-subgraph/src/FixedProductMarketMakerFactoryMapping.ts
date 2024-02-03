@@ -66,7 +66,7 @@ export function handleFixedProductMarketMakerCreation(
   let addressHexString = address.toHexString();
   let conditionalTokensAddress = event.params.conditionalTokens.toHexString();
 
-  if (conditionalTokensAddress !== CONDITIONAL_TOKENS) {
+  if (conditionalTokensAddress != CONDITIONAL_TOKENS) {
     log.info('cannot index market maker {}: using conditional tokens {}', [
       addressHexString,
       conditionalTokensAddress,

@@ -2,6 +2,7 @@ import { log, BigInt, Bytes } from '@graphprotocol/graph-ts';
 
 import { Condition } from '../types/schema';
 
+// does not save the condition
 const createCondition = (conditionId: Bytes): Condition => {
   let condition = Condition.load(conditionId.toHexString());
   if (condition != null) {

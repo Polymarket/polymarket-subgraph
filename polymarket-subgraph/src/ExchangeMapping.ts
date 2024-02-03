@@ -112,7 +112,7 @@ export function handleFill(event: OrderFilled): void {
   );
 
   let tokenId = '';
-  if (side === TRADE_TYPE_BUY) {
+  if (side == TRADE_TYPE_BUY) {
     tokenId = takerAssetId.toString();
   } else {
     tokenId = makerAssetId.toString();
@@ -201,13 +201,13 @@ export function handleTokenRegistered(event: TokenRegistered): void {
 
   // there should be a registered condition
   // this is picked up at ConditionPreparation
-  if (condition === null) {
+  if (condition == null) {
     return;
   }
 
   for (let outcomeIndex = 0; outcomeIndex < 2; outcomeIndex++) {
     // compute the position id
-    const negRisk = event.address.toHexString() === NEG_RISK_EXCHANGE;
+    const negRisk = event.address.toHexString() == NEG_RISK_EXCHANGE;
     const positionId = getPositionId(
       Bytes.fromHexString(condition.id),
       outcomeIndex,

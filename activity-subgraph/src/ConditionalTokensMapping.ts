@@ -20,8 +20,7 @@ import { getPositionId } from '../../common/utils/getPositionId';
 export function handlePositionSplit(event: PositionSplit): void {
   // - don't track splits within the market makers
   if (
-    FixedProductMarketMaker.load(event.params.stakeholder.toHexString()) !==
-    null
+    FixedProductMarketMaker.load(event.params.stakeholder.toHexString()) != null
   ) {
     return;
   }
@@ -58,8 +57,7 @@ export function handlePositionSplit(event: PositionSplit): void {
 export function handlePositionsMerge(event: PositionsMerge): void {
   // - don't track merges within the market makers
   if (
-    FixedProductMarketMaker.load(event.params.stakeholder.toHexString()) !==
-    null
+    FixedProductMarketMaker.load(event.params.stakeholder.toHexString()) != null
   ) {
     return;
   }
@@ -125,7 +123,7 @@ export function handlePayoutRedemption(event: PayoutRedemption): void {
 
 export function handleConditionPreparation(event: ConditionPreparation): void {
   // we don't handle conditions with more than 2 outcomes
-  if (event.params.outcomeSlotCount.toI32() !== 2) {
+  if (event.params.outcomeSlotCount.toI32() != 2) {
     return;
   }
 
@@ -135,7 +133,7 @@ export function handleConditionPreparation(event: ConditionPreparation): void {
   condition.save();
 
   const negRisk =
-    event.params.oracle.toHexString() === NEG_RISK_ADAPTER.toHexString();
+    event.params.oracle.toHexString() == NEG_RISK_ADAPTER.toHexString();
 
   // @ts-expect-error Cannot find name 'u8'.
   for (let outcomeIndex: u8 = 0; outcomeIndex < 2; outcomeIndex++) {

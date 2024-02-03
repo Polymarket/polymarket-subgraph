@@ -12,7 +12,7 @@ const config = {
 };
 
 Handlebars.registerHelper('lowercase', function (str) {
-  if (str && typeof str === 'string') {
+  if (str && typeof str == 'string') {
     return str.toLowerCase();
   }
   return '';

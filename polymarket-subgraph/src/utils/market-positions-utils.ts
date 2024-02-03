@@ -224,7 +224,7 @@ export function updateMarketPositionsFromRedemption(
   amounts: BigInt[],
 ): void {
   const condition = Condition.load(conditionId.toHexString());
-  if (condition === null) {
+  if (condition == null) {
     return;
   }
 

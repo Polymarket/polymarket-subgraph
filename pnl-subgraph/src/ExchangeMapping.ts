@@ -26,7 +26,7 @@ export function handleOrderFilled(event: OrderFilled): void {
   // dollars per share
   const price = order.quoteAmount.times(COLLATERAL_SCALE).div(order.baseAmount);
 
-  if (order.side === TradeType.BUY) {
+  if (order.side == TradeType.BUY) {
     updateUserPositionWithBuy(
       order.account,
       order.positionId,

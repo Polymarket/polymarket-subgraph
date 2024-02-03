@@ -99,7 +99,7 @@ export function handlePositionsConverted(event: PositionsConverted): void {
 
   const negRiskEvent = NegRiskEvent.load(event.params.marketId.toHexString());
 
-  if (negRiskEvent === null) {
+  if (negRiskEvent == null) {
     return;
   }
 
@@ -146,7 +146,7 @@ export function handlePayoutRedemption(event: PayoutRedemption): void {
 
 export function handleMarketPrepared(event: MarketPrepared): void {
   // ignore non-negRiskOperator events
-  if (event.params.oracle.toHexString() !== NEG_RISK_OPERATOR) {
+  if (event.params.oracle.toHexString() != NEG_RISK_OPERATOR) {
     return;
   }
 
@@ -159,7 +159,7 @@ export function handleQuestionPrepared(event: QuestionPrepared): void {
   let negRiskEvent = NegRiskEvent.load(event.params.marketId.toHexString());
 
   // ignore non-negRiskOperator events
-  if (negRiskEvent === null) {
+  if (negRiskEvent == null) {
     return;
   }
 

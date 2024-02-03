@@ -69,12 +69,12 @@ export function updateVolumes(
   orderBook.scaledCollateralVolume =
     orderBook.collateralVolume.divDecimal(COLLATERAL_SCALE_DEC);
 
-  if (tradeType === TRADE_TYPE_BUY) {
+  if (tradeType == TRADE_TYPE_BUY) {
     orderBook.collateralBuyVolume =
       orderBook.collateralBuyVolume.plus(tradeSize);
     orderBook.scaledCollateralBuyVolume =
       orderBook.collateralBuyVolume.divDecimal(COLLATERAL_SCALE_DEC);
-  } else if (tradeType === TRADE_TYPE_SELL) {
+  } else if (tradeType == TRADE_TYPE_SELL) {
     orderBook.collateralSellVolume =
       orderBook.collateralSellVolume.plus(tradeSize);
     orderBook.scaledCollateralSellVolume =
@@ -87,14 +87,14 @@ export function updateTradesQuantity(
   side: string,
   orderId: string,
 ): void {
-  if (side === TRADE_TYPE_BUY) {
-    if (orderBook.buys.indexOf(orderId) === -1) {
+  if (side == TRADE_TYPE_BUY) {
+    if (orderBook.buys.indexOf(orderId) == -1) {
       orderBook.tradesQuantity = increment(orderBook.tradesQuantity);
       orderBook.buysQuantity = increment(orderBook.buysQuantity);
       orderBook.buys = orderBook.buys.concat([orderId]);
     }
-  } else if (side === TRADE_TYPE_SELL) {
-    if (orderBook.sells.indexOf(orderId) === -1) {
+  } else if (side == TRADE_TYPE_SELL) {
+    if (orderBook.sells.indexOf(orderId) == -1) {
       orderBook.tradesQuantity = increment(orderBook.tradesQuantity);
       orderBook.sellsQuantity = increment(orderBook.sellsQuantity);
       orderBook.sells = orderBook.sells.concat([orderId]);
@@ -111,12 +111,12 @@ export function updateGlobalVolume(
   global.scaledCollateralVolume =
     global.collateralVolume.div(COLLATERAL_SCALE_DEC);
   global.tradesQuantity = increment(global.tradesQuantity);
-  if (tradeType === TRADE_TYPE_BUY) {
+  if (tradeType == TRADE_TYPE_BUY) {
     global.buysQuantity = increment(global.buysQuantity);
     global.collateralBuyVolume = global.collateralBuyVolume.plus(tradeAmount);
     global.scaledCollateralBuyVolume =
       global.collateralBuyVolume.div(COLLATERAL_SCALE_DEC);
-  } else if (tradeType === TRADE_TYPE_SELL) {
+  } else if (tradeType == TRADE_TYPE_SELL) {
     global.sellsQuantity = increment(global.sellsQuantity);
     global.collateralSellVolume = global.collateralSellVolume.plus(tradeAmount);
     global.scaledCollateralSellVolume =
@@ -134,7 +134,7 @@ export function getOrderSize(
   takerAmountFilled: BigInt,
   side: string,
 ): BigInt {
-  if (side === TRADE_TYPE_BUY) {
+  if (side == TRADE_TYPE_BUY) {
     return makerAmountFilled;
   }
   return takerAmountFilled;

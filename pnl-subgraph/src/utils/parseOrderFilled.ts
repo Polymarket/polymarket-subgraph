@@ -24,7 +24,7 @@ const parseOrderFilled = (event: OrderFilled): Order => {
     ? TradeType.BUY
     : TradeType.SELL;
 
-  return side === TradeType.BUY
+  return side == TradeType.BUY
     ? {
         account: event.params.maker,
         side: TradeType.BUY,
