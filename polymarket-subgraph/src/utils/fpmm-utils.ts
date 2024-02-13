@@ -1,10 +1,8 @@
-/* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable no-param-reassign */
 import { BigInt, BigDecimal } from '@graphprotocol/graph-ts';
 import { FixedProductMarketMaker, FpmmPoolMembership } from '../types/schema';
 import { timestampToDay } from './time';
 import { bigOne, bigZero, TRADE_TYPE_BUY, TRADE_TYPE_SELL } from './constants';
-import { COLLATERAL_SCALE_DEC } from '../../../common/constants';
 
 export function loadPoolMembership(
   fpmmAddress: string,
@@ -58,6 +56,7 @@ export function updateVolumes(
   fpmm: FixedProductMarketMaker,
   timestamp: BigInt,
   tradeSize: BigInt,
+  collateralScaleDec: BigDecimal,
   tradeType: string,
 ): void {
   let currentDay = timestampToDay(timestamp);
@@ -68,32 +67,34 @@ export function updateVolumes(
 
   fpmm.collateralVolume = fpmm.collateralVolume.plus(tradeSize);
   fpmm.scaledCollateralVolume =
-    fpmm.collateralVolume.divDecimal(COLLATERAL_SCALE_DEC);
+    fpmm.collateralVolume.divDecimal(collateralScaleDec);
 
   if (tradeType == TRADE_TYPE_BUY) {
     fpmm.collateralBuyVolume = fpmm.collateralBuyVolume.plus(tradeSize);
     fpmm.scaledCollateralBuyVolume =
-      fpmm.collateralBuyVolume.divDecimal(COLLATERAL_SCALE_DEC);
+      fpmm.collateralBuyVolume.divDecimal(collateralScaleDec);
   } else if (tradeType == TRADE_TYPE_SELL) {
     fpmm.collateralSellVolume = fpmm.collateralSellVolume.plus(tradeSize);
     fpmm.scaledCollateralSellVolume =
-      fpmm.collateralSellVolume.divDecimal(COLLATERAL_SCALE_DEC);
+      fpmm.collateralSellVolume.divDecimal(collateralScaleDec);
   }
 }
 
 export function updateLiquidityFields(
   fpmm: FixedProductMarketMaker,
   liquidityParameter: BigInt,
+  collateralScale: BigDecimal,
 ): void {
   fpmm.liquidityParameter = liquidityParameter;
   fpmm.scaledLiquidityParameter =
-    liquidityParameter.divDecimal(COLLATERAL_SCALE_DEC);
+    liquidityParameter.divDecimal(collateralScale);
 }
 
 export function updateFeeFields(
   fpmm: FixedProductMarketMaker,
   feeAmount: BigInt,
+  collateralScaleDec: BigDecimal,
 ): void {
   fpmm.feeVolume = fpmm.feeVolume.plus(feeAmount);
-  fpmm.scaledFeeVolume = fpmm.feeVolume.divDecimal(COLLATERAL_SCALE_DEC);
+  fpmm.scaledFeeVolume = fpmm.feeVolume.divDecimal(collateralScaleDec);
 }

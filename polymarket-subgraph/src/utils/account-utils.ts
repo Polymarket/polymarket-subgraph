@@ -1,13 +1,10 @@
-/* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable no-param-reassign */
-
-import { BigInt } from '@graphprotocol/graph-ts';
+import { BigDecimal, BigInt } from '@graphprotocol/graph-ts';
 import { Account } from '../types/schema';
 
 import { bigOne, bigZero } from './constants';
 import { countNewTrader } from './global-utils';
 import { loadMarketProfit } from './pnl-utils';
-import { COLLATERAL_SCALE_DEC } from '../../../common/constants';
 
 export function requireAccount(
   accountAddress: string,
@@ -63,12 +60,13 @@ export function incrementAccountTrades(
 export function updateUserVolume(
   accountAddress: string,
   tradeAmount: BigInt,
+  collateralScaleDec: BigDecimal,
   timestamp: BigInt,
 ): void {
   let account = requireAccount(accountAddress, timestamp);
   account.collateralVolume = account.collateralVolume.plus(tradeAmount);
   account.scaledCollateralVolume =
-    account.collateralVolume.divDecimal(COLLATERAL_SCALE_DEC);
+    account.collateralVolume.divDecimal(collateralScaleDec);
   account.lastTradedTimestamp = timestamp;
   account.save();
 }
@@ -76,19 +74,19 @@ export function updateUserVolume(
 export function updateUserProfit(
   user: string,
   pnl: BigInt,
+  collateralScaleDec: BigDecimal,
   timestamp: BigInt,
   conditionId: string,
 ): void {
   let account = requireAccount(user, timestamp);
   // will subtract if a negative profit
   account.profit = account.profit.plus(pnl);
-
-  account.scaledProfit = account.profit.divDecimal(COLLATERAL_SCALE_DEC);
+  account.scaledProfit = account.profit.divDecimal(collateralScaleDec);
   account.save();
 
   let marketProfit = loadMarketProfit(conditionId, user);
   marketProfit.profit = marketProfit.profit.plus(pnl);
   marketProfit.scaledProfit =
-    marketProfit.profit.divDecimal(COLLATERAL_SCALE_DEC);
+    marketProfit.profit.divDecimal(collateralScaleDec);
   marketProfit.save();
 }

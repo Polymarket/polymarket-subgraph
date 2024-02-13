@@ -3,7 +3,7 @@ type UserPosition @entity {
   "User Address + Token ID"
   id: ID!
   "User Address"
-  user: Bytes!
+  user: String!
   "Token ID"
   tokenId: BigInt!
   "amount of token the user holds"
@@ -30,4 +30,11 @@ type Condition @entity {
   "payouts"
   payoutNumerators: [BigInt!]!
   payoutDenominator: BigInt!
+}
+
+type FPMM @entity {
+  "FPMM address"
+  id: ID!
+  "conditionId"
+  conditionId: String!
 }

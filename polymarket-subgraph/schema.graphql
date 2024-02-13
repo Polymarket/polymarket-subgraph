@@ -55,8 +55,8 @@ type Account @entity {
   fpmmPoolMemberships: [FpmmPoolMembership!] @derivedFrom(field: "funder")
   "Markets in which the user has taken a position on the outcome"
   marketPositions: [MarketPosition!] @derivedFrom(field: "user")
-  # "Purchases and sales of shares by the user"
-  # transactions: [Transaction!] @derivedFrom(field: "user")
+  "Purchases and sales of shares by the user"
+  transactions: [Transaction!] @derivedFrom(field: "user")
   "Split of collateral / outcome tokens into multiple positions"
   splits: [Split!] @derivedFrom(field: "stakeholder")
   "Merge of more specific outcome tokens into collateral / more general outcome tokens"
@@ -70,6 +70,14 @@ type Account @entity {
   scaledProfit: BigDecimal!
   "Profits in USDC base units by market"
   marketProfits: [MarketProfit!] @derivedFrom(field: "user")
+}
+
+type Collateral @entity {
+  "Token address"
+  id: ID!
+  name: String!
+  symbol: String!
+  decimals: Int!
 }
 
 # Conditional Tokens
@@ -102,7 +110,7 @@ type Split @entity {
   "Address which is performing this split"
   stakeholder: Account!
   "Token which is collateralising positions being split"
-  collateralToken: String!
+  collateralToken: Collateral!
   parentCollectionId: Bytes!
   "Condition on which split is occuring"
   condition: Condition!
@@ -119,7 +127,7 @@ type Merge @entity {
   "Address which is performing this merge"
   stakeholder: Account!
   "Token which is collateralising positions being merged"
-  collateralToken: String!
+  collateralToken: Collateral!
   parentCollectionId: Bytes!
   "Condition on which merge is occuring"
   condition: Condition!
@@ -136,7 +144,7 @@ type Redemption @entity {
   "Address which is redeeming these outcomes"
   redeemer: Account!
   "Token which is being claimed in return for outcome tokens"
-  collateralToken: String!
+  collateralToken: Collateral!
   parentCollectionId: Bytes!
   "Condition on which redemption is occuring"
   condition: Condition!
@@ -146,32 +154,8 @@ type Redemption @entity {
   payout: BigInt!
 }
 
-type NegRiskConversion @entity {
-  "Transaction Hash"
-  id: ID!
-  "Timestamp at which conversion occurred"
-  timestamp: BigInt!
-  "Address which is performing this conversion"
-  stakeholder: Account!
-  "Neg Risk Market Id assigned to the event"
-  negRiskMarketId: String!
-  "The amount of each token being converted"
-  amount: BigInt!
-  "The index set of the outcome tokens being converted"
-  indexSet: BigInt!
-  "The number of questions at the time of conversion"
-  questionCount: Int!
-}
-
-# Neg Risk Events/Markets
-type NegRiskEvent @entity {
-  "negRiskMarketId"
-  id: ID!
-  "Question Count"
-  questionCount: Int!
-}
-
 # Market Makers
+
 type FixedProductMarketMaker @entity {
   "Market maker address"
   id: ID!
@@ -184,7 +168,7 @@ type FixedProductMarketMaker @entity {
   creationTransactionHash: Bytes!
 
   "Token which is colleralising this market"
-  collateralToken: String!
+  collateralToken: Collateral!
   "Conditional Token Address"
   conditionalTokenAddress: String!
   "Conditions which this market is trading against"
@@ -241,7 +225,7 @@ type FixedProductMarketMaker @entity {
   poolMembers: [FpmmPoolMembership!] @derivedFrom(field: "pool")
 }
 
-# Metadata for the market, keyed by positionId
+# Metadata for the market
 type MarketData @entity {
   "ERC1155 TokenID of the CTF Asset"
   id: ID!
@@ -315,6 +299,27 @@ type FpmmFundingRemoval @entity {
 enum TradeType {
   Buy
   Sell
+}
+
+type Transaction @entity {
+  "Transaction Hash"
+  id: ID!
+  "Buy or Sell transaction"
+  type: TradeType!
+  "Timestamp at which transaction occurred"
+  timestamp: BigInt!
+  "Market which transaction is interacting with"
+  market: FixedProductMarketMaker!
+  "Account performing transaction"
+  user: Account!
+  "Amount of collateral in trade"
+  tradeAmount: BigInt!
+  "Amount of collateral paid in fees"
+  feeAmount: BigInt!
+  "Index of outcome token being bought or sold"
+  outcomeIndex: BigInt!
+  "Amount of outcome tokens being bought or sold"
+  outcomeTokensAmount: BigInt!
 }
 
 type FpmmPoolMembership @entity {

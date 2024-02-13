@@ -137,7 +137,7 @@ export function handlePayoutRedemption(event: PayoutRedemption): void {
       positionId,
     );
 
-    // the user redeem's their entire amount
+    // the user redeems their entire amount
     const amount = userPosition.amount;
     const price = payoutNumerators[outcomeIndex]
       .times(COLLATERAL_SCALE)

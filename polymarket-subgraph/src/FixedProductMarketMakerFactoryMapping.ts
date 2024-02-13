@@ -1,20 +1,12 @@
-/* eslint-disable @typescript-eslint/ban-types */
-
-import {
-  BigInt,
-  log,
-  BigDecimal,
-  Address,
-  Bytes,
-} from '@graphprotocol/graph-ts';
+import { BigInt, log, BigDecimal } from '@graphprotocol/graph-ts';
 
 import { FixedProductMarketMakerCreation } from './types/FixedProductMarketMakerFactory/FixedProductMarketMakerFactory';
 import { FixedProductMarketMaker, Condition, MarketData } from './types/schema';
 import { FixedProductMarketMaker as FixedProductMarketMakerTemplate } from './types/templates';
 import { timestampToDay } from './utils/time';
 import { bigZero } from './utils/constants';
-import { computePositionId } from './utils/ctf-utils';
-import { CONDITIONAL_TOKENS, USDC } from './constants';
+import { getCollateralDetails } from './utils/collateralTokens';
+import { getMarket } from './utils/ctf-utils';
 
 /**
  * Initialise all variables of fpmm which start at zero
@@ -66,7 +58,10 @@ export function handleFixedProductMarketMakerCreation(
   let addressHexString = address.toHexString();
   let conditionalTokensAddress = event.params.conditionalTokens.toHexString();
 
-  if (conditionalTokensAddress != CONDITIONAL_TOKENS) {
+  if (
+    conditionalTokensAddress !=
+    '{{lowercase contracts.ConditionalTokens.address}}'
+  ) {
     log.info('cannot index market maker {}: using conditional tokens {}', [
       addressHexString,
       conditionalTokensAddress,
@@ -81,6 +76,7 @@ export function handleFixedProductMarketMakerCreation(
   fixedProductMarketMaker.conditionalTokenAddress = conditionalTokensAddress;
   fixedProductMarketMaker.conditions = [];
 
+  getCollateralDetails(event.params.collateralToken);
   let collateralToken = event.params.collateralToken.toHexString();
   fixedProductMarketMaker.collateralToken = collateralToken;
   fixedProductMarketMaker.fee = event.params.fee;
@@ -121,18 +117,18 @@ export function handleFixedProductMarketMakerCreation(
   ) {
     let condition = fixedProductMarketMaker.conditions[0];
 
-    // NOTE: THESE ARE NOT NEG RISK MARKETS
-    // (negRisk markets don't have fpmm's)
-    let tokenId = computePositionId(
-      Address.fromString(USDC),
-      Bytes.fromHexString(condition),
+    let tokenId = getMarket(
+      conditionalTokensAddress,
+      condition,
+      collateralToken,
+      outcomeTokenCount,
       outcomeIndex,
     );
 
     // Create/update MarketData on FPMM Creation
-    let marketData = MarketData.load(tokenId.toString());
+    let marketData = MarketData.load(tokenId);
     if (marketData == null) {
-      marketData = new MarketData(tokenId.toString());
+      marketData = new MarketData(tokenId);
       marketData.condition = condition;
     }
     // If the MarketData exists, update the outcomeIndex and FPMM address

@@ -1,11 +1,10 @@
-import { Address, BigInt, Bytes } from '@graphprotocol/graph-ts';
+import { BigDecimal, BigInt } from '@graphprotocol/graph-ts';
 import {
   OrderFilled,
   OrdersMatched,
   TokenRegistered,
 } from './types/Exchange/Exchange';
 import {
-  Condition,
   EnrichedOrderFilled,
   MarketData,
   Orderbook,
@@ -24,8 +23,6 @@ import {
   updateTradesQuantity,
   updateVolumes,
 } from './utils/order-book-utils';
-import { getPositionId } from './utils/getPositionId';
-import { NEG_RISK_EXCHANGE } from './constants';
 
 function enrichOrder(
   event: OrderFilled,
@@ -111,8 +108,10 @@ export function handleFill(event: OrderFilled): void {
     side,
   );
 
+  let collateralScaleDec = new BigDecimal(BigInt.fromI32(10).pow(<u8>6));
+
   let tokenId = '';
-  if (side == TRADE_TYPE_BUY) {
+  if (side === TRADE_TYPE_BUY) {
     tokenId = takerAssetId.toString();
   } else {
     tokenId = makerAssetId.toString();
@@ -127,12 +126,18 @@ export function handleFill(event: OrderFilled): void {
   // order book
   let orderBook: Orderbook = requireOrderBook(tokenId as string);
 
-  updateVolumes(orderBook as Orderbook, timestamp, size, side);
+  updateVolumes(
+    orderBook as Orderbook,
+    timestamp,
+    size,
+    collateralScaleDec,
+    side,
+  );
 
-  updateUserVolume(taker, size, timestamp);
+  updateUserVolume(taker, size, collateralScaleDec, timestamp);
   markAccountAsSeen(taker, timestamp);
 
-  updateUserVolume(maker, size, timestamp);
+  updateUserVolume(maker, size, collateralScaleDec, timestamp);
   markAccountAsSeen(maker, timestamp);
 
   updateTradesQuantity(orderBook, side, enriched.id);
@@ -145,12 +150,7 @@ export function handleFill(event: OrderFilled): void {
   }
 
   // Update market position
-  updateMarketPositionFromOrderFilled(
-    Address.fromString(maker),
-    BigInt.fromString(tokenId),
-    side,
-    event,
-  );
+  updateMarketPositionFromOrderFilled(maker, tokenId, side, event);
 
   // persist order book
   orderBook.save();
@@ -187,40 +187,35 @@ export function handleMatch(event: OrdersMatched): void {
   let takerAmountFilled = event.params.makerAmountFilled;
 
   const side = getOrderSide(event.params.makerAssetId);
+
   const size = getOrderSize(makerAmountFilled, takerAmountFilled, side);
+  const collateralScaleDec = new BigDecimal(BigInt.fromI32(10).pow(<u8>6));
 
   // record event
   recordOrdersMatchedEvent(event);
 
   // update global volume
-  updateGlobalVolume(size.toBigDecimal(), side);
+  updateGlobalVolume(size.toBigDecimal(), collateralScaleDec, side);
 }
 
 export function handleTokenRegistered(event: TokenRegistered): void {
-  const condition = Condition.load(event.params.conditionId.toHexString());
+  // Create MarketData entity on token registration if it hasn't been created
+  // e.g if the tokens aren't associated with an FPMM
+  let token0Str = event.params.token0.toString();
+  let token1Str = event.params.token1.toString();
+  let condition = event.params.conditionId.toHexString();
 
-  // there should be a registered condition
-  // this is picked up at ConditionPreparation
-  if (condition == null) {
-    return;
+  let data0 = MarketData.load(token0Str);
+  if (data0 == null) {
+    data0 = new MarketData(token0Str);
+    data0.condition = condition;
+    data0.save();
   }
 
-  for (let outcomeIndex = 0; outcomeIndex < 2; outcomeIndex++) {
-    // compute the position id
-    const negRisk = event.address.toHexString() == NEG_RISK_EXCHANGE;
-    const positionId = getPositionId(
-      Bytes.fromHexString(condition.id),
-      outcomeIndex,
-      negRisk,
-    ).toString();
-
-    if (!MarketData.load(positionId)) {
-      const marketData = new MarketData(positionId);
-
-      marketData.condition = event.params.conditionId.toHexString();
-      marketData.outcomeIndex = BigInt.fromI32(outcomeIndex);
-
-      marketData.save();
-    }
+  let data1 = MarketData.load(token1Str);
+  if (data1 == null) {
+    data1 = new MarketData(token1Str);
+    data1.condition = condition;
+    data1.save();
   }
 }
