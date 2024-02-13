@@ -3,6 +3,7 @@ import { Bytes } from '@graphprotocol/graph-ts';
 import {
   FPMMBuy,
   FPMMFundingAdded,
+  FPMMFundingRemoved,
   FPMMSell,
 } from './types/templates/FixedProductMarketMaker/FixedProductMarketMaker';
 import { updateUserPositionWithBuy } from './utils/updateUserPositionWithBuy';
@@ -10,7 +11,8 @@ import { computePositionId } from '../../common';
 import { COLLATERAL_SCALE, USDC } from '../../common/constants';
 import { FPMM } from './types/schema';
 import { updateUserPositionWithSell } from './utils/updateUserPositionWithSell';
-import { parseFundingAddedRefundDetails } from './utils/parseFundingAdded';
+import { parseFundingAddedSendback } from './utils/parseFundingAddedSendback';
+import { parseFundingRemovedSendback } from './utils/parseFundingRemovedSendback';
 
 export function handleBuy(event: FPMMBuy): void {
   // buyer
@@ -97,21 +99,21 @@ export function handleFundingAdded(event: FPMMFundingAdded): void {
   }
   const conditionId = fpmm.conditionId;
 
-  const refundDetails = parseFundingAddedRefundDetails(event);
+  const sendbackDetails = parseFundingAddedSendback(event);
 
   // FPMM tokens are never neg risk
   const positionId = computePositionId(
     USDC,
     Bytes.fromHexString(conditionId),
     // @ts-expect-error: Cannot find name 'u8'.
-    <u8>refundDetails.outcomeIndex,
+    <u8>sendbackDetails.outcomeIndex,
   );
 
   updateUserPositionWithBuy(
     event.params.funder,
     positionId,
-    refundDetails.price,
-    refundDetails.amount,
+    sendbackDetails.price,
+    sendbackDetails.amount,
   );
 }
 
@@ -122,13 +124,20 @@ export function handleFundingRemoved(event: FPMMFundingRemoved): void {
   }
   const conditionId = fpmm.conditionId;
 
-  const refundDetails = parseFundingAddedRefundDetails(event);
+  const sendbackDetails = parseFundingRemovedSendback(event);
 
   // FPMM tokens are never neg risk
   const positionId = computePositionId(
     USDC,
     Bytes.fromHexString(conditionId),
     // @ts-expect-error: Cannot find name 'u8'.
-    <u8>refundDetails.outcomeIndex,
+    <u8>sendbackDetails.outcomeIndex,
+  );
+
+  updateUserPositionWithBuy(
+    event.params.funder,
+    positionId,
+    sendbackDetails.price,
+    sendbackDetails.amount,
   );
 }
