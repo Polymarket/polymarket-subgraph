@@ -1,5 +1,3 @@
-import { Bytes } from '@graphprotocol/graph-ts';
-
 import {
   FPMMBuy,
   FPMMFundingAdded,
@@ -7,9 +5,8 @@ import {
   FPMMSell,
 } from './types/templates/FixedProductMarketMaker/FixedProductMarketMaker';
 import { updateUserPositionWithBuy } from './utils/updateUserPositionWithBuy';
-import { computePositionId } from '../../common';
-import { COLLATERAL_SCALE, USDC } from '../../common/constants';
-import { FPMM } from './types/schema';
+import { COLLATERAL_SCALE } from '../../common/constants';
+import { Condition, FPMM } from './types/schema';
 import { updateUserPositionWithSell } from './utils/updateUserPositionWithSell';
 import { parseFundingAddedSendback } from './utils/parseFundingAddedSendback';
 import { parseFundingRemovedSendback } from './utils/parseFundingRemovedSendback';
@@ -29,7 +26,7 @@ export function handleBuy(event: FPMMBuy): void {
   const price = event.params.investmentAmount
     .times(COLLATERAL_SCALE)
     .div(event.params.outcomeTokensBought);
-  let outcomeIndex = event.params.outcomeIndex.toI32();
+  const outcomeIndex = event.params.outcomeIndex.toI32();
 
   const fpmm = FPMM.load(event.address.toHexString());
   if (fpmm == null) {
@@ -37,13 +34,12 @@ export function handleBuy(event: FPMMBuy): void {
   }
   const conditionId = fpmm.conditionId;
 
-  // FPMM tokens are never neg risk
-  const positionId = computePositionId(
-    USDC,
-    Bytes.fromHexString(conditionId),
-    // @ts-expect-error: Cannot find name 'u8'.
-    <u8>outcomeIndex,
-  );
+  const condition = Condition.load(conditionId);
+  if (condition == null) {
+    return;
+  }
+
+  const positionId = condition.positionIds[outcomeIndex];
 
   updateUserPositionWithBuy(
     event.params.buyer,
@@ -68,21 +64,19 @@ export function handleSell(event: FPMMSell): void {
   const price = event.params.returnAmount
     .times(COLLATERAL_SCALE)
     .div(event.params.outcomeTokensSold);
-  let outcomeIndex = event.params.outcomeIndex.toI32();
+  const outcomeIndex = event.params.outcomeIndex.toI32();
 
   const fpmm = FPMM.load(event.address.toHexString());
   if (fpmm == null) {
     return;
   }
   const conditionId = fpmm.conditionId;
+  const condition = Condition.load(conditionId);
+  if (condition == null) {
+    return;
+  }
 
-  // FPMM tokens are never neg risk
-  const positionId = computePositionId(
-    USDC,
-    Bytes.fromHexString(conditionId),
-    // @ts-expect-error: Cannot find name 'u8'.
-    <u8>outcomeIndex,
-  );
+  const positionId = condition.positionIds[outcomeIndex];
 
   updateUserPositionWithSell(
     event.params.seller,
@@ -101,13 +95,12 @@ export function handleFundingAdded(event: FPMMFundingAdded): void {
 
   const sendbackDetails = parseFundingAddedSendback(event);
 
-  // FPMM tokens are never neg risk
-  const positionId = computePositionId(
-    USDC,
-    Bytes.fromHexString(conditionId),
-    // @ts-expect-error: Cannot find name 'u8'.
-    <u8>sendbackDetails.outcomeIndex,
-  );
+  const condition = Condition.load(conditionId);
+  if (condition == null) {
+    return;
+  }
+
+  const positionId = condition.positionIds[sendbackDetails.outcomeIndex];
 
   updateUserPositionWithBuy(
     event.params.funder,
@@ -126,13 +119,12 @@ export function handleFundingRemoved(event: FPMMFundingRemoved): void {
 
   const sendbackDetails = parseFundingRemovedSendback(event);
 
-  // FPMM tokens are never neg risk
-  const positionId = computePositionId(
-    USDC,
-    Bytes.fromHexString(conditionId),
-    // @ts-expect-error: Cannot find name 'u8'.
-    <u8>sendbackDetails.outcomeIndex,
-  );
+  const condition = Condition.load(conditionId);
+  if (condition == null) {
+    return;
+  }
+
+  const positionId = condition.positionIds[sendbackDetails.outcomeIndex];
 
   updateUserPositionWithBuy(
     event.params.funder,

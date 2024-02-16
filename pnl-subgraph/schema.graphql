@@ -27,6 +27,8 @@ type NegRiskEvent @entity {
 type Condition @entity {
   "conditionId"
   id: ID!
+  "tokenIds"
+  positionIds: [BigInt!]!
   "payouts"
   payoutNumerators: [BigInt!]!
   payoutDenominator: BigInt!

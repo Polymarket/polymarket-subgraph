@@ -13,11 +13,11 @@ import {
 import { NegRiskEvent } from './types/schema';
 import { loadCondition } from './utils/loadCondition';
 
-import { computePositionId, getNegRiskPositionId } from '../../common';
+import { getNegRiskPositionId } from '../../common';
 import {
   COLLATERAL_SCALE,
+  FIFTY_CENTS,
   NEG_RISK_EXCHANGE,
-  NEG_RISK_WRAPPED_COLLATERAL,
 } from '../../common/constants';
 import { loadOrCreateUserPosition } from './utils/loadOrCreateUserPosition';
 import { indexSetContains } from '../../common/utils/indexSetContains';
@@ -46,20 +46,15 @@ export function handlePositionSplit(event: PositionSplit): void {
     return;
   }
 
-  const BUY_PRICE = COLLATERAL_SCALE.div(BigInt.fromI32(2));
-
   // @ts-expect-error Cannot find name 'u8'.
   let outcomeIndex: u8 = 0;
   for (; outcomeIndex < 2; outcomeIndex++) {
-    const positionId = computePositionId(
-      NEG_RISK_WRAPPED_COLLATERAL,
-      event.params.conditionId,
-      outcomeIndex,
-    );
+    const positionId = condition.positionIds[outcomeIndex];
+
     updateUserPositionWithBuy(
       event.params.stakeholder,
       positionId,
-      BUY_PRICE,
+      FIFTY_CENTS,
       event.params.amount,
     );
   }
@@ -83,20 +78,15 @@ export function handlePositionsMerge(event: PositionsMerge): void {
     return;
   }
 
-  const SELL_PRICE = COLLATERAL_SCALE.div(BigInt.fromI32(2));
-
   // @ts-expect-error Cannot find name 'u8'.
   let outcomeIndex: u8 = 0;
   for (; outcomeIndex < 2; outcomeIndex++) {
-    const positionId = computePositionId(
-      NEG_RISK_WRAPPED_COLLATERAL,
-      event.params.conditionId,
-      outcomeIndex,
-    );
+    const positionId = condition.positionIds[outcomeIndex];
+
     updateUserPositionWithSell(
       event.params.stakeholder,
       positionId,
-      SELL_PRICE,
+      FIFTY_CENTS,
       event.params.amount,
     );
   }
@@ -205,11 +195,7 @@ export function handlePayoutRedemption(event: PayoutRedemption): void {
   // @ts-expect-error Cannot find name 'u8'.
   let outcomeIndex: u8 = 0;
   for (; outcomeIndex < 2; outcomeIndex++) {
-    const positionId = computePositionId(
-      NEG_RISK_WRAPPED_COLLATERAL,
-      conditionId,
-      outcomeIndex,
-    );
+    const positionId = condition.positionIds[outcomeIndex];
 
     const amount = event.params.amounts[outcomeIndex];
     const price = payoutNumerators[outcomeIndex]

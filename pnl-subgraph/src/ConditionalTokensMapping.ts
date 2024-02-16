@@ -12,12 +12,11 @@ import { updateUserPositionWithSell } from './utils/updateUserPositionWithSell';
 import { updateUserPositionWithBuy } from './utils/updateUserPositionWithBuy';
 import { loadOrCreateUserPosition } from './utils/loadOrCreateUserPosition';
 
-import { computePositionId } from '../../common';
 import {
   COLLATERAL_SCALE,
   EXCHANGE,
+  FIFTY_CENTS,
   NEG_RISK_ADAPTER,
-  USDC,
 } from '../../common/constants';
 import { createCondition } from './utils/createCondition';
 import { loadCondition } from './utils/loadCondition';
@@ -42,20 +41,15 @@ export function handlePositionSplit(event: PositionSplit): void {
     return;
   }
 
-  const BUY_PRICE = COLLATERAL_SCALE.div(BigInt.fromI32(2));
   // @ts-expect-error Cannot find name 'u8'.
   let outcomeIndex: u8 = 0;
   for (; outcomeIndex < 2; outcomeIndex++) {
-    const positionId = computePositionId(
-      USDC,
-      event.params.conditionId,
-      outcomeIndex,
-    );
+    const positionId = condition.positionIds[outcomeIndex];
 
     updateUserPositionWithBuy(
       event.params.stakeholder,
       positionId,
-      BUY_PRICE,
+      FIFTY_CENTS,
       event.params.amount,
     );
   }
@@ -81,20 +75,15 @@ export function handlePositionsMerge(event: PositionsMerge): void {
     return;
   }
 
-  const SELL_PRICE = COLLATERAL_SCALE.div(BigInt.fromI32(2));
   // @ts-expect-error Cannot find name 'u8'.
   let outcomeIndex: u8 = 0;
   for (; outcomeIndex < 2; outcomeIndex++) {
-    const positionId = computePositionId(
-      USDC,
-      event.params.conditionId,
-      outcomeIndex,
-    );
+    const positionId = condition.positionIds[outcomeIndex];
 
     updateUserPositionWithSell(
       event.params.stakeholder,
       positionId,
-      SELL_PRICE,
+      FIFTY_CENTS,
       event.params.amount,
     );
   }
@@ -130,7 +119,7 @@ export function handlePayoutRedemption(event: PayoutRedemption): void {
   // @ts-expect-error Cannot find name 'u8'.
   let outcomeIndex: u8 = 0;
   for (; outcomeIndex < 2; outcomeIndex++) {
-    const positionId = computePositionId(USDC, conditionId, outcomeIndex);
+    const positionId = condition.positionIds[outcomeIndex];
 
     const userPosition = loadOrCreateUserPosition(
       event.params.redeemer,
@@ -157,8 +146,11 @@ export function handleConditionPreparation(event: ConditionPreparation): void {
     return;
   }
 
+  const negRisk =
+    event.params.oracle.toHexString() == NEG_RISK_ADAPTER.toHexString();
+
   // this is the only place we make new conditions !
-  const condition = createCondition(event.params.conditionId);
+  const condition = createCondition(event.params.conditionId, negRisk);
   condition.save();
 }
 
