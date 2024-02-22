@@ -93,13 +93,12 @@ export function handleFundingAdded(event: FPMMFundingAdded): void {
   }
   const conditionId = fpmm.conditionId;
 
-  const sendbackDetails = parseFundingAddedSendback(event);
-
   const condition = Condition.load(conditionId);
   if (condition == null) {
     return;
   }
 
+  const sendbackDetails = parseFundingAddedSendback(event);
   const positionId = condition.positionIds[sendbackDetails.outcomeIndex];
 
   updateUserPositionWithBuy(
