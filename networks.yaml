@@ -35,6 +35,16 @@ matic:
       address: '0xC5d563A36AE78145C45a50134d48A1215220f80a'
       transactionHash: '0x5935e680b186f72b6db932ce351dd6f0288b1e056ab8d0d307c5146606879369'
       startBlock: 50505492
+    NegRiskAdapter:
+      address: '0xd91E80cF2E7be2e162c6513ceD06f1dD0dA35296'
+      transactionHash: '0x192214f14b05d4404271a8d54d633d840277ba7b96df853417eb3fce274af2b9'
+      startBlock: 50505403
+    NegRiskOperator:
+      address: '0x71523d0f655B41E805Cec45b17163f528B59B820'
+    NegRiskWrappedCollateral:
+      address: '0x3A3BD7bb9528E159577F7C2e685CC81A765002E2'
+    USDC:
+      address: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174'
   networkName: matic
 mumbai:
   contracts:

@@ -22,13 +22,21 @@ node_modules/
 # Truffle and Graph build artifacts
 build/
 
-# Subgraph stuff
-#abis/
+# Subgraph
 subgraph.yaml
-src/types/
-
-# built templates
-src/FixedProductMarketMakerFactoryMapping.ts
+src/constants.ts
+*/src/types/
 
 # Jetbrains
 .idea/
+
+# matchstick
+tests/.latest.json
+tests/.bin/
+tests/.docker/
+
+**/.bin/
+**/.docker/
+**/.latest.json
+
+common/constants.ts

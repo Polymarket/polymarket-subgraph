@@ -3,36 +3,45 @@ import * as Handlebars from 'handlebars';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
+const config = {
+  templatedFiles: [
+    'activity-subgraph/subgraph.yaml',
+    'polymarket-subgraph/subgraph.yaml',
+    'pnl-subgraph/subgraph.yaml',
+    'common/constants.ts',
+  ],
+};
+
 Handlebars.registerHelper('lowercase', function (str) {
-  if (str && typeof str === 'string') {
+  if (str && typeof str == 'string') {
     return str.toLowerCase();
   }
   return '';
 });
 
-function getNetworkNameForSubgraph(): string | null {
-  switch (process.env.SUBGRAPH) {
-    case 'tomafrench/polymarket':
-      return 'mainnet';
-    case 'TokenUnion/polymarket':
-      return 'mainnet';
-    case 'TokenUnion/polymarket-matic':
-      return 'matic';
-    case 'TokenUnion/polymarket-mumbai':
-      return 'mumbai';
-    default:
-      return null;
-  }
-}
+// function getNetworkNameForSubgraph(): string | null {
+//   switch (process.env.SUBGRAPH) {
+//     case 'tomafrench/polymarket':
+//       return 'mainnet';
+//     case 'TokenUnion/polymarket':
+//       return 'mainnet';
+//     case 'TokenUnion/polymarket-matic':
+//       return 'matic';
+//     case 'TokenUnion/polymarket-mumbai':
+//       return 'mumbai';
+//     default:
+//       return null;
+//   }
+// }
 
 (async (): Promise<void> => {
-  console.log("Starting...");
+  console.log('Starting...');
   const networksFilePath = path.join(__dirname, 'networks.yaml');
   const networks: any = yaml.load(
     await fs.readFile(networksFilePath, { encoding: 'utf-8' }),
   );
 
-  const networkName = process.env.NETWORK_NAME || getNetworkNameForSubgraph();
+  const networkName = process.argv[2];
   console.log(`Network: ${networkName}`);
   const network = { ...networks[networkName || ''], networkName };
 
@@ -43,17 +52,14 @@ function getNetworkNameForSubgraph(): string | null {
   }
 
   // eslint-disable-next-line no-restricted-syntax
-  for (const templatedFileDesc of [
-    ['subgraph', 'yaml'],
-    ['src/FixedProductMarketMakerFactoryMapping', 'ts'],
-  ]) {
+  for (const templatedFile of config.templatedFiles) {
+    console.log(templatedFile);
+    const templatedFileDesc = templatedFile.split('.');
     const template = fs
       .readFileSync(`${templatedFileDesc[0]}.template.${templatedFileDesc[1]}`)
       .toString();
-    fs.writeFileSync(
-      `${templatedFileDesc[0]}.${templatedFileDesc[1]}`,
-      Handlebars.compile(template)(network),
-    );
+    const result = Handlebars.compile(template, {})(network);
+    fs.writeFileSync(`${templatedFileDesc[0]}.${templatedFileDesc[1]}`, result);
   }
 
   console.log(`🎉 subgraph successfully generated for ${networkName}\n`);

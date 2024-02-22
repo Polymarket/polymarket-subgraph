@@ -170,7 +170,7 @@ type FixedProductMarketMaker @entity {
   "Token which is colleralising this market"
   collateralToken: Collateral!
   "Conditional Token Address"
-  conditionalTokenAddress: String! 
+  conditionalTokenAddress: String!
   "Conditions which this market is trading against"
   conditions: [String!]!
   "Percentage fee of trades taken by market maker. A 2% fee is represented as 2*10^16"
@@ -225,7 +225,7 @@ type FixedProductMarketMaker @entity {
   poolMembers: [FpmmPoolMembership!] @derivedFrom(field: "pool")
 }
 
-# Metadata for the market 
+# Metadata for the market
 type MarketData @entity {
   "ERC1155 TokenID of the CTF Asset"
   id: ID!
@@ -333,8 +333,7 @@ type FpmmPoolMembership @entity {
   amount: BigInt!
 }
 
-
-# Exchange OrdersMatched event stored directly 
+# Exchange OrdersMatched event stored directly
 type OrdersMatchedEvent @entity {
   "Transaction Hash"
   id: ID!
@@ -466,4 +465,3 @@ type MarketProfit @entity {
   "Profit in USDC scaled by 10^6"
   scaledProfit: BigDecimal!
 }
-

@@ -1,0 +1,86 @@
+type Split @entity {
+  "Transaction Hash"
+  id: ID!
+  "Timestamp at which split occurred"
+  timestamp: BigInt!
+  "Address which is performing this split"
+  stakeholder: String!
+  "Condition on which split is occuring"
+  condition: String!
+  "The amount of collateral/outcome tokens being split"
+  amount: BigInt!
+}
+
+type Merge @entity {
+  "Transaction Hash"
+  id: ID!
+  "Timestamp at which merge occurred"
+  timestamp: BigInt!
+  "Address which is performing this merge"
+  stakeholder: String!
+  "Token which is collateralising positions being merged"
+  condition: String!
+  "The amount of collateral/outcome tokens being merged"
+  amount: BigInt!
+}
+
+type Redemption @entity {
+  "Transaction Hash"
+  id: ID!
+  "Timestamp at which redemption occurred"
+  timestamp: BigInt!
+  "Address which is redeeming these outcomes"
+  redeemer: String!
+  "Condition on which redemption is occuring"
+  condition: String!
+  "Outcomes which are being redeemed"
+  indexSets: [BigInt!]!
+  "The amount of collateral being claimed"
+  payout: BigInt!
+}
+
+type NegRiskConversion @entity {
+  "Transaction Hash"
+  id: ID!
+  "Timestamp at which conversion occurred"
+  timestamp: BigInt!
+  "Address which is performing this conversion"
+  stakeholder: String!
+  "Neg Risk Market Id assigned to the event"
+  negRiskMarketId: String!
+  "The amount of each token being converted"
+  amount: BigInt!
+  "The index set of the outcome tokens being converted"
+  indexSet: BigInt!
+  "The number of questions at the time of conversion"
+  questionCount: Int!
+}
+
+# Neg Risk Events/Markets
+type NegRiskEvent @entity {
+  "negRiskMarketId"
+  id: ID!
+  "Question Count"
+  questionCount: Int!
+}
+
+# Fixed Product Market Makers
+type FixedProductMarketMaker @entity {
+  "Market maker address"
+  id: ID!
+}
+
+# Metadata for the market, keyed by positionId
+type Position @entity {
+  "ERC1155 TokenID of the CTF Asset"
+  id: ID!
+  "Condition that the token is linked to"
+  condition: String!
+  "Outcome Index"
+  outcomeIndex: BigInt!
+}
+
+type Condition @entity {
+  "Condition ID"
+  id: ID!
+}

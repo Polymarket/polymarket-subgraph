@@ -44,26 +44,22 @@ export function updateGlobalVolume(
 ): void {
   let global = requireGlobal();
   global.collateralVolume = global.collateralVolume.plus(tradeAmount);
-  global.scaledCollateralVolume = global.collateralVolume.divDecimal(
-    collateralScaleDec,
-  );
+  global.scaledCollateralVolume =
+    global.collateralVolume.divDecimal(collateralScaleDec);
   global.collateralFees = global.collateralFees.plus(feesAmount);
-  global.scaledCollateralFees = global.collateralFees.divDecimal(
-    collateralScaleDec,
-  );
+  global.scaledCollateralFees =
+    global.collateralFees.divDecimal(collateralScaleDec);
   global.tradesQuantity = increment(global.tradesQuantity);
   if (tradeType == TRADE_TYPE_BUY) {
     global.buysQuantity = increment(global.buysQuantity);
     global.collateralBuyVolume = global.collateralBuyVolume.plus(tradeAmount);
-    global.scaledCollateralBuyVolume = global.collateralBuyVolume.divDecimal(
-      collateralScaleDec,
-    );
+    global.scaledCollateralBuyVolume =
+      global.collateralBuyVolume.divDecimal(collateralScaleDec);
   } else if (tradeType == TRADE_TYPE_SELL) {
     global.sellsQuantity = increment(global.sellsQuantity);
     global.collateralSellVolume = global.collateralSellVolume.plus(tradeAmount);
-    global.scaledCollateralSellVolume = global.collateralSellVolume.divDecimal(
-      collateralScaleDec,
-    );
+    global.scaledCollateralSellVolume =
+      global.collateralSellVolume.divDecimal(collateralScaleDec);
   }
   global.save();
 }

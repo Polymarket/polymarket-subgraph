@@ -1,0 +1,42 @@
+# User Token Position
+type UserPosition @entity {
+  "User Address + Token ID"
+  id: ID!
+  "User Address"
+  user: String!
+  "Token ID"
+  tokenId: BigInt!
+  "amount of token the user holds"
+  amount: BigInt!
+  "the avg price the user bought the token"
+  avgPrice: BigInt!
+  "realized profits - losses"
+  realizedPnl: BigInt!
+  "total amount of token bought"
+  totalBought: BigInt!
+}
+
+# Neg Risk Events/Markets
+type NegRiskEvent @entity {
+  "negRiskMarketId"
+  id: ID!
+  "Question Count"
+  questionCount: Int!
+}
+
+type Condition @entity {
+  "conditionId"
+  id: ID!
+  "tokenIds"
+  positionIds: [BigInt!]!
+  "payouts"
+  payoutNumerators: [BigInt!]!
+  payoutDenominator: BigInt!
+}
+
+type FPMM @entity {
+  "FPMM address"
+  id: ID!
+  "conditionId"
+  conditionId: String!
+}
