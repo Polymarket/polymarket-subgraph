@@ -149,4 +149,8 @@ templates:
           handler: handleBuy
         - event: FPMMSell(indexed address,uint256,uint256,indexed uint256,uint256)
           handler: handleSell
+        - event: FPMMFundingAdded(indexed address,uint256[],uint256)
+          handler: handleFundingAdded
+        - event: FPMMFundingRemoved(indexed address,uint256[],uint256,uint256)
+          handler: handleFundingRemoved
       file: ./src/FixedProductMarketMakerMapping.ts

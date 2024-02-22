@@ -12,11 +12,13 @@ import { parseFundingAddedSendback } from './utils/parseFundingAddedSendback';
 import { parseFundingRemovedSendback } from './utils/parseFundingRemovedSendback';
 
 export function handleBuy(event: FPMMBuy): void {
-  // buyer
-  // investmentAmount
-  // feeAmount
-  // outcomeIndex
-  // outcomeTokensBought
+  //   event FPMMBuy(
+  //     address indexed buyer,
+  //     uint investmentAmount,
+  //     uint feeAmount,
+  //     uint indexed outcomeIndex,
+  //     uint outcomeTokensBought
+  // );
 
   if (event.params.outcomeTokensBought.isZero()) {
     return;
@@ -50,11 +52,13 @@ export function handleBuy(event: FPMMBuy): void {
 }
 
 export function handleSell(event: FPMMSell): void {
-  // sller
-  // returnAmount
-  // feeAmount
-  // outcomeIndex
-  // outcomeTokensSold
+  //   event FPMMSell(
+  //     address indexed seller,
+  //     uint returnAmount,
+  //     uint feeAmount,
+  //     uint indexed outcomeIndex,
+  //     uint outcomeTokensSold
+  // );
 
   if (event.params.outcomeTokensSold.isZero()) {
     return;
@@ -87,6 +91,12 @@ export function handleSell(event: FPMMSell): void {
 }
 
 export function handleFundingAdded(event: FPMMFundingAdded): void {
+  //   event FPMMFundingAdded(
+  //     address indexed funder,
+  //     uint[] amountsAdded,
+  //     uint sharesMinted
+  // );
+
   const fpmm = FPMM.load(event.address.toHexString());
   if (fpmm == null) {
     return;
@@ -110,6 +120,13 @@ export function handleFundingAdded(event: FPMMFundingAdded): void {
 }
 
 export function handleFundingRemoved(event: FPMMFundingRemoved): void {
+  //   event FPMMFundingRemoved(
+  //     address indexed funder,
+  //     uint[] amountsRemoved,
+  //     uint collateralRemovedFromFeePool,
+  //     uint sharesBurnt
+  // );
+
   const fpmm = FPMM.load(event.address.toHexString());
   if (fpmm == null) {
     return;
