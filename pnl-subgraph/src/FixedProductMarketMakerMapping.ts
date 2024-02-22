@@ -97,6 +97,10 @@ export function handleFundingAdded(event: FPMMFundingAdded): void {
   //     uint sharesMinted
   // );
 
+  if (event.params.sharesMinted.isZero()) {
+    return;
+  }
+
   const fpmm = FPMM.load(event.address.toHexString());
   if (fpmm == null) {
     return;
@@ -126,6 +130,10 @@ export function handleFundingRemoved(event: FPMMFundingRemoved): void {
   //     uint collateralRemovedFromFeePool,
   //     uint sharesBurnt
   // );
+
+  if (event.params.sharesBurnt.isZero()) {
+    return;
+  }
 
   const fpmm = FPMM.load(event.address.toHexString());
   if (fpmm == null) {
