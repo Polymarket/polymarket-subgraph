@@ -12,6 +12,7 @@ const loadOrCreateUserPosition = (
 ): UserPosition => {
   const userPositionEntityId = getUserPositionEntityId(user, tokenId);
   let userPosition = UserPosition.load(userPositionEntityId);
+
   if (userPosition == null) {
     userPosition = new UserPosition(userPositionEntityId);
     userPosition.user = user.toHexString();

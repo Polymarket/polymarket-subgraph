@@ -9,7 +9,7 @@ import { COLLATERAL_SCALE } from '../../common/constants';
 import { Condition, FPMM } from './types/schema';
 import { updateUserPositionWithSell } from './utils/updateUserPositionWithSell';
 import { parseFundingAddedSendback } from './utils/parseFundingAddedSendback';
-import { parseFundingRemovedSendback } from './utils/parseFundingRemovedSendback';
+import { computeFpmmPrice } from './utils/computeFpmmPrice';
 
 export function handleBuy(event: FPMMBuy): void {
   //   event FPMMBuy(
@@ -97,18 +97,24 @@ export function handleFundingAdded(event: FPMMFundingAdded): void {
   //     uint sharesMinted
   // );
 
-  if (event.params.sharesMinted.isZero()) {
-    return;
-  }
-
   const fpmm = FPMM.load(event.address.toHexString());
+
   if (fpmm == null) {
     return;
   }
-  const conditionId = fpmm.conditionId;
 
+  const conditionId = fpmm.conditionId;
   const condition = Condition.load(conditionId);
+
+  // ensure the condition exists _before_ we parse the sendback
   if (condition == null) {
+    return;
+  }
+
+  // if no tokens were exchanged, do nothing
+  if (
+    event.params.amountsAdded[0].plus(event.params.amountsAdded[1]).isZero()
+  ) {
     return;
   }
 
@@ -131,29 +137,35 @@ export function handleFundingRemoved(event: FPMMFundingRemoved): void {
   //     uint sharesBurnt
   // );
 
-  if (event.params.sharesBurnt.isZero()) {
-    return;
-  }
-
   const fpmm = FPMM.load(event.address.toHexString());
+
   if (fpmm == null) {
     return;
   }
   const conditionId = fpmm.conditionId;
-
-  const sendbackDetails = parseFundingRemovedSendback(event);
-
   const condition = Condition.load(conditionId);
+
+  // ensure the condition exists _before_ we parse the sendback
   if (condition == null) {
     return;
   }
 
-  const positionId = condition.positionIds[sendbackDetails.outcomeIndex];
+  // if no tokens were exchanged, do nothing
+  if (
+    event.params.amountsRemoved[0].plus(event.params.amountsRemoved[1]).isZero()
+  ) {
+    return;
+  }
 
-  updateUserPositionWithBuy(
-    event.params.funder,
-    positionId,
-    sendbackDetails.price,
-    sendbackDetails.amount,
-  );
+  for (let i = 0; i < 2; i++) {
+    const positionId = condition.positionIds[i];
+
+    updateUserPositionWithBuy(
+      event.params.funder,
+      positionId,
+      // @ts-expect-error: Cannot find name 'u8'.
+      computeFpmmPrice(event.params.amountsRemoved, <u8>i),
+      event.params.amountsRemoved[i],
+    );
+  }
 }
