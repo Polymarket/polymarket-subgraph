@@ -6,6 +6,7 @@ import {
   BigInt,
   Bytes,
   ByteArray,
+  log,
 } from '@graphprotocol/graph-ts';
 
 const P = BigInt.fromString(
@@ -65,7 +66,7 @@ const computeCollectionId = (
   hashPayload[63] = BigInt.fromI32(1).leftShift(outcomeIndex).toI32();
 
   let hashResult = crypto.keccak256(Bytes.fromUint8Array(hashPayload));
-
+  log.info('hashResult: {}', [hashResult.toString()]);
   // always reverse before converting to BigInt
   hashResult.reverse();
   const hashBigInt = BigInt.fromUnsignedBytes(hashResult);

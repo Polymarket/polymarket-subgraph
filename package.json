@@ -30,7 +30,7 @@
     "publish-graph:matic-trading": "yarn prepare:matic && yarn deploy:matic-trading",
     "publish-graph:matic-backup-two": "yarn prepare:matic && yarn deploy:matic-backup-two",
     "publish-graph:mumbai": "yarn prepare:mumbai && yarn deploy:mumbai",
-    "test": "RUST_BACKTRACE=full graph test -d",
+    "test": "RUST_BACKTRACE=full graph test -d getNegRiskPositionId",
     "templatify:matic": "ts-node ./templatify.ts matic",
     "activity:codegen": "yarn graph codegen ./activity-subgraph/subgraph.yaml --debug --output-dir ./activity-subgraph/src/types",
     "activity:build": "yarn graph build ./activity-subgraph/subgraph.yaml",

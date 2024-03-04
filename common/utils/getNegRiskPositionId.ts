@@ -15,6 +15,7 @@ const getNegRiskPositionId = (
 ): BigInt => {
   const questionId = getNegRiskQuestionId(negRiskMarketId, questionIndex);
   const conditionId = getConditionId(NEG_RISK_ADAPTER, questionId);
+
   const positionId = computePositionId(
     NEG_RISK_WRAPPED_COLLATERAL,
     conditionId,
