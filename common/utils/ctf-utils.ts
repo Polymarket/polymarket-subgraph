@@ -1,13 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
-import {
-  Address,
-  crypto,
-  BigInt,
-  Bytes,
-  ByteArray,
-  log,
-} from '@graphprotocol/graph-ts';
+import { Address, crypto, BigInt, Bytes } from '@graphprotocol/graph-ts';
 
 const P = BigInt.fromString(
   '21888242871839275222246405745257275088696311157297823662689037894645226208583',
@@ -45,7 +38,7 @@ const legendreSymbol = (a: BigInt): BigInt =>
   powModP(a, P.minus(BigInt.fromI32(1)).rightShift(1));
 
 // original implementation: https://github.com/gnosis/conditional-tokens-contracts/blob/master/contracts/CTHelpers.sol
-// (ignorning the parent collection id)
+// (ignoring the parent collection id)
 const computeCollectionId = (
   conditionId: Bytes,
   // @ts-expect-error Cannot find name 'u8'.
