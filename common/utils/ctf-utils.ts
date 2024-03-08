@@ -6,6 +6,7 @@ import {
   BigInt,
   Bytes,
   ByteArray,
+  log,
 } from '@graphprotocol/graph-ts';
 
 const P = BigInt.fromString(
@@ -17,13 +18,6 @@ const addModP = (a: BigInt, b: BigInt): BigInt => a.plus(b).mod(P);
 const mulModP = (a: BigInt, b: BigInt): BigInt => a.times(b).mod(P);
 const powModP = (a: BigInt, b: BigInt): BigInt => {
   // assume b is in uint256 range
-  // first we check how big b is
-  let bitLength = 0;
-  let tmp = b;
-  while (!tmp.isZero()) {
-    bitLength++;
-    tmp = tmp.rightShift(1);
-  }
 
   // then we compute a^b
   // using binary expansion of b
@@ -34,8 +28,8 @@ const powModP = (a: BigInt, b: BigInt): BigInt => {
   let bt = b;
   let result = BigInt.fromI32(1);
 
-  for (let i = 0; i < bitLength; i++) {
-    if (!bt.mod(BigInt.fromI32(2)).isZero()) {
+  while (bt.isZero() == false) {
+    if (bt.bitAnd(BigInt.fromI32(1)).isZero() == false) {
       result = mulModP(result, at);
     }
 
@@ -46,9 +40,12 @@ const powModP = (a: BigInt, b: BigInt): BigInt => {
   return result;
 };
 
+// a^((P-1)/2) mod P
 const legendreSymbol = (a: BigInt): BigInt =>
   powModP(a, P.minus(BigInt.fromI32(1)).rightShift(1));
 
+// original implementation: https://github.com/gnosis/conditional-tokens-contracts/blob/master/contracts/CTHelpers.sol
+// (ignorning the parent collection id)
 const computeCollectionId = (
   conditionId: Bytes,
   // @ts-expect-error Cannot find name 'u8'.
@@ -63,17 +60,16 @@ const computeCollectionId = (
   }
   // second 32 bytes is index set
   hashPayload[63] = BigInt.fromI32(1).leftShift(outcomeIndex).toI32();
-
-  let hashResult = crypto.keccak256(Bytes.fromUint8Array(hashPayload));
+  const hashResult = crypto.keccak256(Bytes.fromUint8Array(hashPayload));
 
   // always reverse before converting to BigInt
   hashResult.reverse();
   const hashBigInt = BigInt.fromUnsignedBytes(hashResult);
 
   // check if the msb is set
-  const odd = !hashBigInt.bitAnd(BigInt.fromI32(1).leftShift(255)).isZero();
+  const odd = hashBigInt.rightShift(255).isZero() == false;
 
-  let x1 = hashBigInt.mod(P);
+  let x1 = hashBigInt;
   let yy = BigInt.fromI32(0);
 
   // increment x1 until we find a point on the curve
@@ -85,13 +81,23 @@ const computeCollectionId = (
     yy = addModP(mulModP(x1, mulModP(x1, x1)), B);
   } while (legendreSymbol(yy) != BigInt.fromI32(1));
 
+  const oddToggle = BigInt.fromI32(1).leftShift(254);
   if (odd) {
-    // set the second msb
-    x1 = x1.plus(BigInt.fromI32(1).leftShift(254));
+    if (x1.bitAnd(oddToggle).isZero()) {
+      x1 = x1.plus(oddToggle);
+    } else {
+      x1 = x1.minus(oddToggle);
+    }
   }
 
-  // reverse the bigint back, and convert to bytes
-  const result = Bytes.fromUint8Array(ByteArray.fromBigInt(x1).reverse());
+  let x1Hex = x1.toHexString();
+
+  // pad x1 with zeroes
+  if (x1Hex.length < 66) {
+    x1Hex = '0x' + '0'.repeat(66 - x1Hex.length) + x1Hex.slice(2);
+  }
+
+  const result = Bytes.fromHexString(x1Hex);
   return result;
 };
 
@@ -121,6 +127,7 @@ const computePositionIdFromCollectionId = (
 
   const byteArray = crypto.keccak256(Bytes.fromUint8Array(hashPayload));
   byteArray.reverse();
+
   return BigInt.fromUnsignedBytes(byteArray);
 };
 
