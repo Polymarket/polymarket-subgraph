@@ -127,6 +127,7 @@ export function handlePositionsConverted(event: PositionsConverted): void {
         questionIndex,
         NO_INDEX,
       );
+
       const userPosition = loadOrCreateUserPosition(
         event.params.stakeholder,
         positionId,
