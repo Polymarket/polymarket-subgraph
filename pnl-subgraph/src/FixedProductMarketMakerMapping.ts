@@ -98,6 +98,10 @@ export function handleFundingAdded(event: FPMMFundingAdded): void {
   //     uint sharesMinted
   // );
 
+  // 1. spend USDC
+  // 2. receive conditional token (just one)
+  // 3. receive LP shares
+
   const fpmm = FPMM.load(event.address.toHexString());
 
   if (fpmm == null) {
@@ -163,6 +167,10 @@ export function handleFundingRemoved(event: FPMMFundingRemoved): void {
   //     uint sharesBurnt
   // );
 
+  // 1. burn LP shares
+  // 2. receive USDC
+  // 3. receive conditional tokens
+
   const fpmm = FPMM.load(event.address.toHexString());
 
   if (fpmm == null) {
@@ -183,8 +191,16 @@ export function handleFundingRemoved(event: FPMMFundingRemoved): void {
     return;
   }
 
+  let tokensCost = BigInt.fromI32(0);
+  // we consider that the user purchased the recieved tokens
+  // at the market price
   for (let i = 0; i < 2; i++) {
     const positionId = condition.positionIds[i];
+    // @ts-expect-error: Cannot find name 'u8'.
+    const tokenPrice = computeFpmmPrice(event.params.amountsRemoved, <u8>i);
+    const tokenAmount = event.params.amountsRemoved[i];
+    const tokenCost = tokenPrice.times(tokenAmount).div(COLLATERAL_SCALE);
+    tokensCost = tokensCost.plus(tokenCost);
 
     updateUserPositionWithBuy(
       event.params.funder,
@@ -195,10 +211,11 @@ export function handleFundingRemoved(event: FPMMFundingRemoved): void {
     );
   }
 
+  // now we consider selling the LP shares, for exactly
   const LpSalePrice = event.params.collateralRemovedFromFeePool
     .times(COLLATERAL_SCALE)
     .div(event.params.sharesBurnt);
-  // now we consider selling the LP shares
+
   updateUserPositionWithSell(
     event.params.funder,
     BigInt.fromByteArray(event.address),
