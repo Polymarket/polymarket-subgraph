@@ -192,7 +192,7 @@ export function handleFundingRemoved(event: FPMMFundingRemoved): void {
   }
 
   let tokensCost = BigInt.fromI32(0);
-  // we consider that the user purchased the recieved tokens
+  // we consider that the user purchased the received tokens
   // at the market price
   for (let i = 0; i < 2; i++) {
     const positionId = condition.positionIds[i];
@@ -205,9 +205,8 @@ export function handleFundingRemoved(event: FPMMFundingRemoved): void {
     updateUserPositionWithBuy(
       event.params.funder,
       positionId,
-      // @ts-expect-error: Cannot find name 'u8'.
-      computeFpmmPrice(event.params.amountsRemoved, <u8>i),
-      event.params.amountsRemoved[i],
+      tokenPrice,
+      tokenAmount,
     );
   }
 
