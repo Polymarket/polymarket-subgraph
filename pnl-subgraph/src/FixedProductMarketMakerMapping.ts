@@ -1,3 +1,4 @@
+import { BigInt } from '@graphprotocol/graph-ts';
 import {
   FPMMBuy,
   FPMMFundingAdded,
@@ -121,11 +122,34 @@ export function handleFundingAdded(event: FPMMFundingAdded): void {
   const sendbackDetails = parseFundingAddedSendback(event);
   const positionId = condition.positionIds[sendbackDetails.outcomeIndex];
 
+  // we consider that the user is buying the resulting token
+  // at the market price
   updateUserPositionWithBuy(
     event.params.funder,
     positionId,
     sendbackDetails.price,
     sendbackDetails.amount,
+  );
+
+  // the largest amounts added is the total USDC spent
+  const totalUSDCSpend =
+    event.params.amountsAdded[0] > event.params.amountsAdded[1]
+      ? event.params.amountsAdded[0]
+      : event.params.amountsAdded[1];
+  // we compute the cost of the token received
+  const tokenCost = sendbackDetails.amount.times(sendbackDetails.price);
+  // the leftover USDC is used to purchase the LP position
+  const LPShareCost = totalUSDCSpend.minus(tokenCost);
+  // then the price of the LP position is the cost of the LP position divided by the number of shares minted
+  const LPSharePrice = LPShareCost.times(COLLATERAL_SCALE).div(
+    event.params.sharesMinted,
+  );
+
+  updateUserPositionWithBuy(
+    event.params.funder,
+    BigInt.fromByteArray(event.address),
+    LPSharePrice,
+    event.params.sharesMinted,
   );
 }
 
@@ -168,4 +192,15 @@ export function handleFundingRemoved(event: FPMMFundingRemoved): void {
       event.params.amountsRemoved[i],
     );
   }
+
+  // now we consider selling the LP shares
+  updateUserPositionWithSell(
+    event.params.funder,
+    BigInt.fromByteArray(event.address),
+    // the price of the LP position is the collateral removed from the fee pool divided by the shares burnt
+    event.params.collateralRemovedFromFeePool
+      .times(COLLATERAL_SCALE)
+      .div(event.params.sharesBurnt),
+    event.params.sharesBurnt,
+  );
 }
