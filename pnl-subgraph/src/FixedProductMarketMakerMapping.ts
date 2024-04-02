@@ -210,15 +210,17 @@ export function handleFundingRemoved(event: FPMMFundingRemoved): void {
     );
   }
 
-  // now we consider selling the LP shares, for exactly
+  // now we consider selling the LP shares
+  // for the collateral removed,
+  // _minus_ the cost of the tokens received
   const LpSalePrice = event.params.collateralRemovedFromFeePool
+    .minus(tokensCost)
     .times(COLLATERAL_SCALE)
     .div(event.params.sharesBurnt);
 
   updateUserPositionWithSell(
     event.params.funder,
     BigInt.fromByteArray(event.address),
-    // the price of the LP position is the collateral removed from the fee pool divided by the shares burnt
     LpSalePrice,
     event.params.sharesBurnt,
   );
