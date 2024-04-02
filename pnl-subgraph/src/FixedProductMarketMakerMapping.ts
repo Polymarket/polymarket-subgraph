@@ -137,18 +137,20 @@ export function handleFundingAdded(event: FPMMFundingAdded): void {
       ? event.params.amountsAdded[0]
       : event.params.amountsAdded[1];
   // we compute the cost of the token received
-  const tokenCost = sendbackDetails.amount.times(sendbackDetails.price);
+  const tokenCost = sendbackDetails.amount
+    .times(sendbackDetails.price)
+    .div(COLLATERAL_SCALE);
   // the leftover USDC is used to purchase the LP position
-  const LPShareCost = totalUSDCSpend.minus(tokenCost);
+  const LpShareCost = totalUSDCSpend.minus(tokenCost);
   // then the price of the LP position is the cost of the LP position divided by the number of shares minted
-  const LPSharePrice = LPShareCost.times(COLLATERAL_SCALE).div(
+  const LpSharePrice = LpShareCost.times(COLLATERAL_SCALE).div(
     event.params.sharesMinted,
   );
 
   updateUserPositionWithBuy(
     event.params.funder,
     BigInt.fromByteArray(event.address),
-    LPSharePrice,
+    LpSharePrice,
     event.params.sharesMinted,
   );
 }
@@ -193,14 +195,15 @@ export function handleFundingRemoved(event: FPMMFundingRemoved): void {
     );
   }
 
+  const LpSalePrice = event.params.collateralRemovedFromFeePool
+    .times(COLLATERAL_SCALE)
+    .div(event.params.sharesBurnt);
   // now we consider selling the LP shares
   updateUserPositionWithSell(
     event.params.funder,
     BigInt.fromByteArray(event.address),
     // the price of the LP position is the collateral removed from the fee pool divided by the shares burnt
-    event.params.collateralRemovedFromFeePool
-      .times(COLLATERAL_SCALE)
-      .div(event.params.sharesBurnt),
+    LpSalePrice,
     event.params.sharesBurnt,
   );
 }
