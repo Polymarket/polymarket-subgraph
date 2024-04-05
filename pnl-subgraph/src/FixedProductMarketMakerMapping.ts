@@ -135,6 +135,10 @@ export function handleFundingAdded(event: FPMMFundingAdded): void {
     sendbackDetails.amount,
   );
 
+  if (event.params.sharesMinted.isZero()) {
+    return;
+  }
+
   // the largest amounts added is the total USDC spent
   const totalUSDCSpend =
     event.params.amountsAdded[0] > event.params.amountsAdded[1]
@@ -208,6 +212,10 @@ export function handleFundingRemoved(event: FPMMFundingRemoved): void {
       tokenPrice,
       tokenAmount,
     );
+  }
+
+  if (event.params.sharesBurnt.isZero()) {
+    return;
   }
 
   // now we consider selling the LP shares
