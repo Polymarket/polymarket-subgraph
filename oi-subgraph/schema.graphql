@@ -1,0 +1,34 @@
+type Condition @entity {
+  "conditionId"
+  id: ID!
+  "tokenIds"
+  positionIds: [BigInt!]!
+  "payouts"
+  payoutNumerators: [BigInt!]!
+  payoutDenominator: BigInt!
+}
+
+type Position @entity {
+  "ERC1155 TokenID of the CTF Asset"
+  id: ID!
+  "Condition that the token is linked to"
+  condition: String!
+  "Outcome Index"
+  outcomeIndex: BigInt!
+}
+
+# Market Open Interest
+type MarketOpenInterest @entity {
+  "Condition ID"
+  id: ID!
+  "Open interest for the market"
+  amount: BigInt!
+}
+
+# Global Open Interest
+type GlobalOpenInterest @entity {
+  "Empty string"
+  id: ID!
+  "Global Open Interest"
+  amount: BigInt!
+}
