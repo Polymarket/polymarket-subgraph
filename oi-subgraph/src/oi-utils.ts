@@ -2,12 +2,12 @@ import { BigInt } from '@graphprotocol/graph-ts';
 import { MarketOpenInterest, GlobalOpenInterest } from './types/schema';
 
 function getMarketOpenInterest(condition: string): MarketOpenInterest {
-  let mktoi = MarketOpenInterest.load(condition);
-  if (mktoi == null) {
-    mktoi = new MarketOpenInterest(condition);
-    mktoi.amount = BigInt.fromI32(0);
+  let oi = MarketOpenInterest.load(condition);
+  if (oi == null) {
+    oi = new MarketOpenInterest(condition);
+    oi.amount = BigInt.fromI32(0);
   }
-  return mktoi as MarketOpenInterest;
+  return oi as MarketOpenInterest;
 }
 
 function getGlobalOpenInterest(): GlobalOpenInterest {

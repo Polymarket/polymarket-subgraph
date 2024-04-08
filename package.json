@@ -43,6 +43,7 @@
     "oi:build": "yarn graph build ./oi-subgraph/subgraph.yaml",
     "oi:create-local": "graph create --node http://localhost:8020/ oi-subgraph",
     "oi:deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 oi-subgraph ./oi-subgraph/subgraph.yaml",
+    "oi:remove-local": "graph remove --node http://localhost:8020/ oi-subgraph",
     "polymarket:codegen": "yarn graph codegen ./polymarket-subgraph/subgraph.yaml --debug --output-dir ./polymarket-subgraph/src/types",
     "polymarket:build": "yarn graph build ./polymarket-subgraph/subgraph.yaml",
     "polymarket:create-local": "graph create --node http://localhost:8020/ polymarket-subgraph",

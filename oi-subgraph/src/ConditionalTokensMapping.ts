@@ -63,24 +63,4 @@ export function handleConditionPreparation(event: ConditionPreparation): void {
   const conditionId = event.params.conditionId.toHexString();
   const condition = new Condition(conditionId);
   condition.save();
-
-  const negRisk =
-    event.params.oracle.toHexString() == NEG_RISK_ADAPTER.toHexString();
-
-  // @ts-expect-error Cannot find name 'u8'.
-  for (let outcomeIndex: u8 = 0; outcomeIndex < 2; outcomeIndex++) {
-    // compute the position id
-    const positionId = getPositionId(
-      Bytes.fromHexString(conditionId),
-      outcomeIndex,
-      negRisk,
-    ).toString();
-
-    if (!Position.load(positionId)) {
-      const position = new Position(positionId);
-      position.condition = event.params.conditionId.toHexString();
-      position.outcomeIndex = BigInt.fromI32(outcomeIndex);
-      position.save();
-    }
-  }
 }
