@@ -1,13 +1,11 @@
-import { BigInt, Bytes, log } from '@graphprotocol/graph-ts';
+import { log } from '@graphprotocol/graph-ts';
 import {
   ConditionPreparation,
   PositionSplit,
   PositionsMerge,
   PayoutRedemption,
 } from './types/ConditionalTokens/ConditionalTokens';
-import { Condition, Position } from './types/schema';
-import { NEG_RISK_ADAPTER } from '../../common/constants';
-import { getPositionId } from '../../common/utils/getPositionId';
+import { Condition } from './types/schema';
 import { updateOpenInterest } from './oi-utils';
 
 export function handlePositionSplit(event: PositionSplit): void {
