@@ -19,7 +19,6 @@ dataSources:
       language: wasm/assemblyscript
       entities:
         - Condition
-        - Position
         - MarketOpenInterest
         - GlobalOpenInterest
       abis:

@@ -3,15 +3,6 @@ type Condition @entity {
   id: ID!
 }
 
-type Position @entity {
-  "ERC1155 TokenID of the CTF Asset"
-  id: ID!
-  "Condition that the token is linked to"
-  condition: String!
-  "Outcome Index"
-  outcomeIndex: BigInt!
-}
-
 # Market Open Interest
 type MarketOpenInterest @entity {
   "Condition ID"
