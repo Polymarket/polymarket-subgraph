@@ -1,4 +1,3 @@
-import { log } from '@graphprotocol/graph-ts';
 import {
   ConditionPreparation,
   PositionSplit,
@@ -7,18 +6,25 @@ import {
 } from './types/ConditionalTokens/ConditionalTokens';
 import { Condition } from './types/schema';
 import { updateOpenInterest } from './oi-utils';
+import { USDC } from '../../common/constants';
 
 export function handlePositionSplit(event: PositionSplit): void {
   // skip unrecognized conditions
   const conditionId = event.params.conditionId.toHexString();
   const condition = Condition.load(conditionId);
 
-  // Split increases OI
-  const amount = event.params.amount;
   if (condition == null) {
-    log.error('Failed to update OI: condition {} not prepared', [conditionId]);
     return;
   }
+
+  // Only track USDC splits, ignores wrapped collateral from neg risk markets
+  const collateralToken = event.params.collateralToken.toHexString();
+  if (collateralToken != USDC.toHexString()) {
+    return;
+  }
+
+  // Split increases OI
+  const amount = event.params.amount;
   updateOpenInterest(conditionId, amount);
 }
 
@@ -27,12 +33,18 @@ export function handlePositionsMerge(event: PositionsMerge): void {
   const conditionId = event.params.conditionId.toHexString();
   const condition = Condition.load(conditionId);
 
-  // Merge reduces OI
-  const amount = event.params.amount.neg();
   if (condition == null) {
-    log.error('Failed to update OI: condition {} not prepared', [conditionId]);
     return;
   }
+
+  // Only track USDC merge, ignores wrapped collateral from neg risk markets
+  const collateralToken = event.params.collateralToken.toHexString();
+  if (collateralToken != USDC.toHexString()) {
+    return;
+  }
+
+  // Merge reduces OI
+  const amount = event.params.amount.neg();
 
   updateOpenInterest(conditionId, amount);
 }
@@ -41,12 +53,19 @@ export function handlePayoutRedemption(event: PayoutRedemption): void {
   // skip unrecognized conditions
   const conditionId = event.params.conditionId.toHexString();
   const condition = Condition.load(conditionId);
-  // Redeem reduces OI
-  const amount = event.params.payout.neg();
+
   if (condition == null) {
-    log.error('Failed to update OI: condition {} not prepared', [conditionId]);
     return;
   }
+
+  // Only track USDC redemptions, ignores wrapped collateral from neg risk markets
+  const collateralToken = event.params.collateralToken.toHexString();
+  if (collateralToken != USDC.toHexString()) {
+    return;
+  }
+
+  // Redeem reduces OI
+  const amount = event.params.payout.neg();
 
   updateOpenInterest(conditionId, amount);
 }

@@ -34,3 +34,29 @@ dataSources:
         - event: ConditionPreparation(indexed bytes32,indexed address,indexed bytes32,uint256)
           handler: handleConditionPreparation
       file: ./src/ConditionalTokensMapping.ts
+  - kind: ethereum/contract
+    name: NegRiskAdapter
+    network: {{ networkName }}
+    source:
+      address: '{{ contracts.NegRiskAdapter.address }}'
+      abi: NegRiskAdapter
+      startBlock: {{ contracts.NegRiskAdapter.startBlock }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Condition
+        - MarketOpenInterest
+        - GlobalOpenInterest
+      abis:
+        - name: NegRiskAdapter
+          file: ../abis/NegRiskAdapter.json
+      eventHandlers:
+        - event: PositionSplit(indexed address,indexed bytes32,uint256)
+          handler: handlePositionSplit
+        - event: PositionsMerge(indexed address,indexed bytes32,uint256)
+          handler: handlePositionsMerge
+        - event: PayoutRedemption(indexed address,indexed bytes32,uint256[],uint256)
+          handler: handlePayoutRedemption
+      file: ./src/NegRiskAdapterMapping.ts
