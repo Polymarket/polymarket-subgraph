@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import { BigInt } from '@graphprotocol/graph-ts';
 import { MarketOpenInterest, GlobalOpenInterest } from './types/schema';
 
@@ -19,7 +20,12 @@ function getGlobalOpenInterest(): GlobalOpenInterest {
   return oi as GlobalOpenInterest;
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-types
+export function updateGlobalOpenInterest(amount: BigInt): void {
+  let globaloi = getGlobalOpenInterest();
+  globaloi.amount = globaloi.amount.plus(amount);
+  globaloi.save();
+}
+
 export function updateOpenInterest(condition: string, amount: BigInt): void {
   // Update OI for the market
   let mktoi = getMarketOpenInterest(condition);
@@ -27,7 +33,5 @@ export function updateOpenInterest(condition: string, amount: BigInt): void {
   mktoi.save();
 
   // Update Global OI
-  let globaloi = getGlobalOpenInterest();
-  globaloi.amount = globaloi.amount.plus(amount);
-  globaloi.save();
+  updateGlobalOpenInterest(amount);
 }

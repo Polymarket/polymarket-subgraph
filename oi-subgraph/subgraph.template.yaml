@@ -47,6 +47,7 @@ dataSources:
       language: wasm/assemblyscript
       entities:
         - Condition
+        - NegRiskEvent
         - MarketOpenInterest
         - GlobalOpenInterest
       abis:
@@ -59,4 +60,10 @@ dataSources:
           handler: handlePositionsMerge
         - event: PayoutRedemption(indexed address,indexed bytes32,uint256[],uint256)
           handler: handlePayoutRedemption
+        - event: PositionsConverted(indexed address,indexed bytes32,indexed uint256,uint256)
+          handler: handlePositionsConverted
+        - event: MarketPrepared(indexed bytes32,indexed address,uint256,bytes)
+          handler: handleMarketPrepared
+        - event: QuestionPrepared(indexed bytes32,indexed bytes32,uint256,bytes)
+          handler: handleQuestionPrepared
       file: ./src/NegRiskAdapterMapping.ts

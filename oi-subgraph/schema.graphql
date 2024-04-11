@@ -3,6 +3,16 @@ type Condition @entity {
   id: ID!
 }
 
+# Neg Risk Events/Markets
+type NegRiskEvent @entity {
+  "negRiskMarketId"
+  id: ID!
+  "Fee Bps"
+  feeBps: BigInt!
+  "Question Count"
+  questionCount: Int!
+}
+
 # Market Open Interest
 type MarketOpenInterest @entity {
   "Condition ID"
