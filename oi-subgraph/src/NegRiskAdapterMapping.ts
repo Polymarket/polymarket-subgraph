@@ -8,8 +8,10 @@ import {
   QuestionPrepared,
 } from './types/NegRiskAdapter/NegRiskAdapter';
 import { Condition, NegRiskEvent } from './types/schema';
-import { updateGlobalOpenInterest, updateOpenInterest } from './oi-utils';
+import { updateOpenInterest } from './oi-utils';
 import { indexSetContains } from '../../common/utils/indexSetContains';
+import { getConditionId, getNegRiskQuestionId } from '../../common';
+import { NEG_RISK_ADAPTER } from '../../common/constants';
 
 const FEE_DENOMINATOR = BigInt.fromI32(10_000);
 
@@ -66,16 +68,24 @@ export function handlePositionsConverted(event: PositionsConverted): void {
 
   // @ts-expect-error Cannot find name 'u8'.
   let questionIndex: u8 = 0;
-  let noCount = 0;
+  let conditionIds: string[] = [];
 
   // Get the number of no positions
   for (; questionIndex < questionCount; questionIndex++) {
     if (indexSetContains(indexSet, questionIndex)) {
-      noCount++;
+      const questionId = getNegRiskQuestionId(
+        event.params.marketId,
+        questionIndex,
+      );
+      const conditionId = getConditionId(NEG_RISK_ADAPTER, questionId)
+        .toHexString()
+        .toLowerCase();
+      conditionIds.push(conditionId);
     }
   }
 
   // Converts reduce OI by releasing collateral if number of no positions > 1
+  let noCount = conditionIds.length;
   if (noCount > 1) {
     let amount = event.params.amount;
     let feeAmount = BigInt.zero();
@@ -86,15 +96,20 @@ export function handlePositionsConverted(event: PositionsConverted): void {
       amount = amount.minus(feeAmount);
 
       let feeReleasedToVault = feeAmount.times(multiplier).neg();
-
-      // Reduce the Global OI by the fees released to the vault
-      updateGlobalOpenInterest(feeReleasedToVault);
+      // Reduce OI by the fees released to the vault
+      for (let i = 0; i < noCount; i++) {
+        let condition = conditionIds[i];
+        updateOpenInterest(condition, feeReleasedToVault);
+      }
     }
 
     let collateralReleasedToUser = amount.times(multiplier).neg();
 
-    // Reduce the Global OI by the collateral released to the user
-    updateGlobalOpenInterest(collateralReleasedToUser);
+    // Reduce OI by the collateral released to the user
+    for (let i = 0; i < noCount; i++) {
+      let condition = conditionIds[i];
+      updateOpenInterest(condition, collateralReleasedToUser);
+    }
   }
 }
 
