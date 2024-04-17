@@ -8,7 +8,11 @@ import {
   QuestionPrepared,
 } from './types/NegRiskAdapter/NegRiskAdapter';
 import { Condition, NegRiskEvent } from './types/schema';
-import { updateOpenInterest } from './oi-utils';
+import {
+  updateGlobalOpenInterest,
+  updateMarketOpenInterest,
+  updateOpenInterest,
+} from './oi-utils';
 import { indexSetContains } from '../../common/utils/indexSetContains';
 import { getConditionId, getNegRiskQuestionId } from '../../common';
 import { NEG_RISK_ADAPTER } from '../../common/constants';
@@ -99,8 +103,9 @@ export function handlePositionsConverted(event: PositionsConverted): void {
       // Reduce OI by the fees released to the vault
       for (let i = 0; i < noCount; i++) {
         let condition = conditionIds[i];
-        updateOpenInterest(condition, feeReleasedToVault);
+        updateMarketOpenInterest(condition, feeReleasedToVault);
       }
+      updateGlobalOpenInterest(feeReleasedToVault);
     }
 
     let collateralReleasedToUser = amount.times(multiplier).neg();
@@ -108,8 +113,9 @@ export function handlePositionsConverted(event: PositionsConverted): void {
     // Reduce OI by the collateral released to the user
     for (let i = 0; i < noCount; i++) {
       let condition = conditionIds[i];
-      updateOpenInterest(condition, collateralReleasedToUser);
+      updateMarketOpenInterest(condition, collateralReleasedToUser);
     }
+    updateGlobalOpenInterest(collateralReleasedToUser);
   }
 }
 

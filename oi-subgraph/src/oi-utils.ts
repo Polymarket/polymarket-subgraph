@@ -26,11 +26,18 @@ export function updateGlobalOpenInterest(amount: BigInt): void {
   globaloi.save();
 }
 
-export function updateOpenInterest(condition: string, amount: BigInt): void {
-  // Update OI for the market
+export function updateMarketOpenInterest(
+  condition: string,
+  amount: BigInt,
+): void {
   let mktoi = getMarketOpenInterest(condition);
   mktoi.amount = mktoi.amount.plus(amount);
   mktoi.save();
+}
+
+export function updateOpenInterest(condition: string, amount: BigInt): void {
+  // Update OI for the market
+  updateMarketOpenInterest(condition, amount);
 
   // Update Global OI
   updateGlobalOpenInterest(amount);
