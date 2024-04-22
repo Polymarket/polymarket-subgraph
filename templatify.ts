@@ -8,6 +8,7 @@ const config = {
     'activity-subgraph/subgraph.yaml',
     'polymarket-subgraph/subgraph.yaml',
     'pnl-subgraph/subgraph.yaml',
+    'oi-subgraph/subgraph.yaml',
     'common/constants.ts',
   ],
 };
