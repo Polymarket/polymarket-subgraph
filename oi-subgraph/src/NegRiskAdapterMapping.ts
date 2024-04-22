@@ -94,6 +94,7 @@ export function handlePositionsConverted(event: PositionsConverted): void {
     let amount = event.params.amount;
     let feeAmount = BigInt.zero();
     let multiplier = BigInt.fromI32(noCount - 1);
+    let divisor = BigInt.fromI32(noCount);
 
     if (negRiskEvent.feeBps.gt(BigInt.zero())) {
       feeAmount = amount.times(negRiskEvent.feeBps).div(FEE_DENOMINATOR);
@@ -103,17 +104,19 @@ export function handlePositionsConverted(event: PositionsConverted): void {
       // Reduce OI by the fees released to the vault
       for (let i = 0; i < noCount; i++) {
         let condition = conditionIds[i];
-        updateMarketOpenInterest(condition, feeReleasedToVault);
+        updateMarketOpenInterest(condition, feeReleasedToVault.div(divisor));
       }
       updateGlobalOpenInterest(feeReleasedToVault);
     }
 
     let collateralReleasedToUser = amount.times(multiplier).neg();
-
     // Reduce OI by the collateral released to the user
     for (let i = 0; i < noCount; i++) {
       let condition = conditionIds[i];
-      updateMarketOpenInterest(condition, collateralReleasedToUser);
+      updateMarketOpenInterest(
+        condition,
+        collateralReleasedToUser.div(divisor),
+      );
     }
     updateGlobalOpenInterest(collateralReleasedToUser);
   }
