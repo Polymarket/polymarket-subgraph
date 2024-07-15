@@ -140,7 +140,7 @@ export function handleFill(event: OrderFilled): void {
   updateUserVolume(maker, size, collateralScaleDec, timestamp);
   markAccountAsSeen(maker, timestamp);
 
-  updateTradesQuantity(orderBook, side, enriched.id);
+  updateTradesQuantity(orderBook, side);
 
   // Update market data with most recent orderbook price
   let marketData = MarketData.load(tokenId);

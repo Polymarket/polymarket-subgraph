@@ -400,10 +400,6 @@ type EnrichedOrderFilled @entity {
 type Orderbook @entity {
   "Token Id"
   id: ID!
-  "Buy orders"
-  buys: [EnrichedOrderFilled!]!
-  "Sell orders"
-  sells: [EnrichedOrderFilled!]!
   "Number of trades of any kind against this order book"
   tradesQuantity: BigInt!
   "Number of purchases of shares from this order book"

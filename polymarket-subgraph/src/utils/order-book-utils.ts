@@ -10,9 +10,6 @@ export function requireOrderBook(tokenId: string): Orderbook {
   if (orderBook == null) {
     orderBook = new Orderbook(tokenId);
 
-    orderBook.buys = [] as string[];
-    orderBook.sells = [] as string[];
-
     orderBook.tradesQuantity = bigZero;
     orderBook.buysQuantity = bigZero;
     orderBook.sellsQuantity = bigZero;
@@ -82,21 +79,14 @@ export function updateVolumes(
 
 export function updateTradesQuantity(
   orderBook: Orderbook,
-  side: string,
-  orderId: string,
+  side: string
 ): void {
   if (side === TRADE_TYPE_BUY) {
-    if (orderBook.buys.indexOf(orderId) === -1) {
-      orderBook.tradesQuantity = increment(orderBook.tradesQuantity);
-      orderBook.buysQuantity = increment(orderBook.buysQuantity);
-      orderBook.buys = orderBook.buys.concat([orderId]);
-    }
+    orderBook.tradesQuantity = increment(orderBook.tradesQuantity);
+    orderBook.buysQuantity = increment(orderBook.buysQuantity);
   } else if (side === TRADE_TYPE_SELL) {
-    if (orderBook.sells.indexOf(orderId) === -1) {
-      orderBook.tradesQuantity = increment(orderBook.tradesQuantity);
-      orderBook.sellsQuantity = increment(orderBook.sellsQuantity);
-      orderBook.sells = orderBook.sells.concat([orderId]);
-    }
+    orderBook.tradesQuantity = increment(orderBook.tradesQuantity);
+    orderBook.sellsQuantity = increment(orderBook.sellsQuantity);
   }
 }
 
