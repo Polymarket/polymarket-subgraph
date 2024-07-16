@@ -1,0 +1,69 @@
+specVersion: 0.0.1
+description: oi-subgraph
+repository: https://github.com/Polymarket/polymarket-subgraph
+schema:
+  file: ./schema.graphql
+features:
+  - grafting
+dataSources:
+  - kind: ethereum/contract
+    name: ConditionalTokens
+    network: {{ networkName }}
+    source:
+      address: '{{ contracts.ConditionalTokens.address }}'
+      abi: ConditionalTokens
+      startBlock: {{ contracts.ConditionalTokens.startBlock }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - Condition
+        - MarketOpenInterest
+        - GlobalOpenInterest
+      abis:
+        - name: ConditionalTokens
+          file: ../abis/ConditionalTokens.json
+      eventHandlers:
+        - event: PositionSplit(indexed address,address,indexed bytes32,indexed bytes32,uint256[],uint256)
+          handler: handlePositionSplit
+        - event: PositionsMerge(indexed address,address,indexed bytes32,indexed bytes32,uint256[],uint256)
+          handler: handlePositionsMerge
+        - event: PayoutRedemption(indexed address,indexed address,indexed bytes32,bytes32,uint256[],uint256)
+          handler: handlePayoutRedemption
+        - event: ConditionPreparation(indexed bytes32,indexed address,indexed bytes32,uint256)
+          handler: handleConditionPreparation
+      file: ./src/ConditionalTokensMapping.ts
+  - kind: ethereum/contract
+    name: NegRiskAdapter
+    network: {{ networkName }}
+    source:
+      address: '{{ contracts.NegRiskAdapter.address }}'
+      abi: NegRiskAdapter
+      startBlock: {{ contracts.NegRiskAdapter.startBlock }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Condition
+        - NegRiskEvent
+        - MarketOpenInterest
+        - GlobalOpenInterest
+      abis:
+        - name: NegRiskAdapter
+          file: ../abis/NegRiskAdapter.json
+      eventHandlers:
+        - event: PositionSplit(indexed address,indexed bytes32,uint256)
+          handler: handlePositionSplit
+        - event: PositionsMerge(indexed address,indexed bytes32,uint256)
+          handler: handlePositionsMerge
+        - event: PayoutRedemption(indexed address,indexed bytes32,uint256[],uint256)
+          handler: handlePayoutRedemption
+        - event: PositionsConverted(indexed address,indexed bytes32,indexed uint256,uint256)
+          handler: handlePositionsConverted
+        - event: MarketPrepared(indexed bytes32,indexed address,uint256,bytes)
+          handler: handleMarketPrepared
+        - event: QuestionPrepared(indexed bytes32,indexed bytes32,uint256,bytes)
+          handler: handleQuestionPrepared
+      file: ./src/NegRiskAdapterMapping.ts
