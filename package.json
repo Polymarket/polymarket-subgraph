@@ -71,8 +71,8 @@
   "devDependencies": {
     "@as-pect/cli": "^8.1.0",
     "@goldskycom/cli": "^7.4.0",
-    "@graphprotocol/graph-cli": "^0.33.1",
-    "@graphprotocol/graph-ts": "^0.27.0",
+    "@graphprotocol/graph-cli": "^0.86.0",
+    "@graphprotocol/graph-ts": "^0.35.1",
     "@types/fs-extra": "^9.0.13",
     "@types/js-yaml": "^4.0.5",
     "eslint": "^8.24.0",
