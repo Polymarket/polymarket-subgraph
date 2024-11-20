@@ -1,0 +1,116 @@
+specVersion: 0.0.4
+description: Polymarket Subgraph
+repository: https://github.com/TokenUnion/polymarket-subgraph
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: ConditionalTokens
+    network: {{ networkName }}
+    source:
+      address: '{{contracts.ConditionalTokens.address}}'
+      abi: ConditionalTokens
+      startBlock: {{ contracts.ConditionalTokens.startBlock }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - Condition
+        - FixedProductMarketMaker
+      abis:
+        - name: ConditionalTokens
+          file: ../abis/ConditionalTokens.json
+        - name: ERC20Detailed
+          file: ../abis/ERC20Detailed.json
+      eventHandlers:
+        - event: ConditionPreparation(indexed bytes32,indexed address,indexed bytes32,uint256)
+          handler: handleConditionPreparation
+      file: ./src/ConditionalTokensMapping.ts
+  - kind: ethereum/contract
+    name: FixedProductMarketMakerFactory
+    network: {{ networkName }}
+    source:
+      address: '{{contracts.FixedProductMarketMakerFactory.address}}'
+      abi: FixedProductMarketMakerFactory
+      startBlock: {{ contracts.FixedProductMarketMakerFactory.startBlock }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - FixedProductMarketMaker
+      abis:
+        - name: FixedProductMarketMakerFactory
+          file: ../abis/FixedProductMarketMakerFactory.json
+        - name: ConditionalTokens
+          file: ../abis/ConditionalTokens.json
+        - name: ERC20Detailed
+          file: ../abis/ERC20Detailed.json
+      eventHandlers:
+        - event: FixedProductMarketMakerCreation(indexed address,address,indexed address,indexed address,bytes32[],uint256)
+          handler: handleFixedProductMarketMakerCreation
+      file: ./src/FixedProductMarketMakerFactoryMapping.ts
+templates:
+  - name: FixedProductMarketMaker
+    kind: ethereum/contract
+    network: {{ networkName }}
+    source:
+      abi: FixedProductMarketMaker
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - FixedProductMarketMaker
+        - FpmmFundingAddition
+        - FpmmFundingRemoval
+        - FpmmPoolMembership
+        - FpmmTransaction
+      abis:
+        - name: FixedProductMarketMaker
+          file: ../abis/FixedProductMarketMaker.json
+        - name: ConditionalTokens
+          file: ../abis/ConditionalTokens.json
+        - name: ERC20Detailed
+          file: ../abis/ERC20Detailed.json
+      eventHandlers:
+        - event: FPMMFundingAdded(indexed address,uint256[],uint256)
+          handler: handleFundingAdded
+        - event: FPMMFundingRemoved(indexed address,uint256[],uint256,uint256)
+          handler: handleFundingRemoved
+        - event: FPMMBuy(indexed address,uint256,uint256,indexed uint256,uint256)
+          handler: handleBuy
+        - event: FPMMSell(indexed address,uint256,uint256,indexed uint256,uint256)
+          handler: handleSell
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handlePoolShareTransfer
+      file: ./src/FixedProductMarketMakerMapping.ts
+  - name: ConditionalTokens
+    kind: ethereum/contract
+    network: {{ networkName }}
+    source:
+      abi: ConditionalTokens
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities: []
+      abis:
+        - name: ConditionalTokens
+          file: ../abis/ConditionalTokens.json
+      file: ./src/empty.ts
+  - name: ERC20Detailed
+    kind: ethereum/contract
+    network: {{ networkName }}
+    source:
+      abi: ERC20Detailed
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities: []
+      abis:
+        - name: ERC20Detailed
+          file: ../abis/ERC20Detailed.json
+      file: ./src/empty.ts

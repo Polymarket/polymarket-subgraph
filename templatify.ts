@@ -6,9 +6,10 @@ import * as path from 'path';
 const config = {
   templatedFiles: [
     'activity-subgraph/subgraph.yaml',
-    'polymarket-subgraph/subgraph.yaml',
     'pnl-subgraph/subgraph.yaml',
     'oi-subgraph/subgraph.yaml',
+    'fpmm-subgraph/subgraph.yaml',
+    'orderbook-subgraph/subgraph.yaml',
     'common/constants.ts',
   ],
 };

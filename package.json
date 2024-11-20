@@ -44,10 +44,16 @@
     "oi:create-local": "graph create --node http://localhost:8020/ oi-subgraph",
     "oi:deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 oi-subgraph ./oi-subgraph/subgraph.yaml",
     "oi:remove-local": "graph remove --node http://localhost:8020/ oi-subgraph",
-    "polymarket:codegen": "yarn graph codegen ./polymarket-subgraph/subgraph.yaml --debug --output-dir ./polymarket-subgraph/src/types",
-    "polymarket:build": "yarn graph build ./polymarket-subgraph/subgraph.yaml",
-    "polymarket:create-local": "graph create --node http://localhost:8020/ polymarket-subgraph",
-    "polymarket:deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 polymarket-subgraph ./polymarket-subgraph/subgraph.yaml"
+    "fpmm:codegen": "yarn graph codegen ./fpmm-subgraph/subgraph.yaml --output-dir ./fpmm-subgraph/src/types",
+    "fpmm:build": "yarn graph build ./fpmm-subgraph/subgraph.yaml",
+    "fpmm:create-local": "graph create --node http://localhost:8020/ fpmm-subgraph",
+    "fpmm:deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 fpmm-subgraph ./fpmm-subgraph/subgraph.yaml",
+    "fpmm:remove-local": "graph remove --node http://localhost:8020/ fpmm-subgraph",
+    "orderbook:codegen": "yarn graph codegen ./orderbook-subgraph/subgraph.yaml --debug --output-dir ./orderbook-subgraph/src/types",
+    "orderbook:build": "yarn graph build ./orderbook-subgraph/subgraph.yaml",
+    "orderbook:create-local": "graph create --node http://localhost:8020/ orderbook-subgraph",
+    "orderbook:deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 orderbook-subgraph ./orderbook-subgraph/subgraph.yaml",
+    "orderbook:remove-local": "graph remove --node http://localhost:8020/ orderbook-subgraph"
   },
   "repository": {
     "type": "git",
