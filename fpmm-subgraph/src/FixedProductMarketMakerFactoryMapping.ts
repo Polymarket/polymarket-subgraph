@@ -5,6 +5,7 @@ import { FixedProductMarketMaker, Condition } from './types/schema';
 import { FixedProductMarketMaker as FixedProductMarketMakerTemplate } from './types/templates';
 import { timestampToDay } from './utils/time';
 import { bigZero } from './utils/constants';
+import { CONDITIONAL_TOKENS } from '../../common/constants';
 import { getCollateralDetails } from './utils/collateralTokens';
 
 /**
@@ -55,11 +56,10 @@ export function handleFixedProductMarketMakerCreation(
 ): void {
   let address = event.params.fixedProductMarketMaker;
   let addressHexString = address.toHexString();
-  let conditionalTokensAddress = event.params.conditionalTokens.toHexString();
-
+  let conditionalTokensAddress = event.params.conditionalTokens.toHexString().toLowerCase();
   if (
     conditionalTokensAddress !=
-    '{{lowercase contracts.ConditionalTokens.address}}'
+    CONDITIONAL_TOKENS.toHexString().toLowerCase()
   ) {
     log.info('cannot index market maker {}: using conditional tokens {}', [
       addressHexString,
