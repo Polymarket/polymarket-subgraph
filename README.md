@@ -82,7 +82,7 @@ docker rmi graphprotocol/graph-node:latest
 docker tag graph-node graphprotocol/graph-node:latest
 ```
 
-Note: you likely will have to increase your Docker daemon memory capacity. In Docker desktop you can find this setting under Preferences > Resources > Advanced.
+Note: you likely will have to increase your Docker daemon memory capacity. In Docker desktop you can find this setting under Settings > Resources > Advanced.
 
 ## Contracts
 
