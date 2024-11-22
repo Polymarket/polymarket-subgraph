@@ -1,8 +1,6 @@
 import { BigDecimal, BigInt } from '@graphprotocol/graph-ts';
 import { Orderbook, OrdersMatchedGlobal } from '../types/schema';
-import { bigZero, TRADE_TYPE_BUY, TRADE_TYPE_SELL } from './constants';
-import { increment } from './maths';
-import { timestampToDay } from './time';
+import { bigOne, bigZero, TRADE_TYPE_BUY, TRADE_TYPE_SELL } from './constants';
 
 export function requireOrderBook(tokenId: string): Orderbook {
   let orderBook = Orderbook.load(tokenId);
@@ -20,8 +18,6 @@ export function requireOrderBook(tokenId: string): Orderbook {
     orderBook.scaledCollateralBuyVolume = bigZero.toBigDecimal();
     orderBook.collateralSellVolume = bigZero;
     orderBook.scaledCollateralSellVolume = bigZero.toBigDecimal();
-
-    orderBook.lastActiveDay = bigZero;
   }
 
   return orderBook as Orderbook;
@@ -54,12 +50,6 @@ export function updateVolumes(
   collateralScaleDec: BigDecimal,
   tradeType: string,
 ): void {
-  let currentDay = timestampToDay(timestamp);
-
-  if (orderBook.lastActiveDay.notEqual(currentDay)) {
-    orderBook.lastActiveDay = currentDay;
-  }
-
   orderBook.collateralVolume = orderBook.collateralVolume.plus(tradeSize);
   orderBook.scaledCollateralVolume =
     orderBook.collateralVolume.divDecimal(collateralScaleDec);
@@ -82,11 +72,11 @@ export function updateTradesQuantity(
   side: string
 ): void {
   if (side === TRADE_TYPE_BUY) {
-    orderBook.tradesQuantity = increment(orderBook.tradesQuantity);
-    orderBook.buysQuantity = increment(orderBook.buysQuantity);
+    orderBook.tradesQuantity = orderBook.tradesQuantity.plus(bigOne);
+    orderBook.buysQuantity = orderBook.buysQuantity.plus(bigOne);
   } else if (side === TRADE_TYPE_SELL) {
-    orderBook.tradesQuantity = increment(orderBook.tradesQuantity);
-    orderBook.sellsQuantity = increment(orderBook.sellsQuantity);
+    orderBook.tradesQuantity = orderBook.tradesQuantity.plus(bigOne);
+    orderBook.sellsQuantity = orderBook.sellsQuantity.plus(bigOne);
   }
 }
 
@@ -99,14 +89,14 @@ export function updateGlobalVolume(
   global.collateralVolume = global.collateralVolume.plus(tradeAmount);
   global.scaledCollateralVolume =
     global.collateralVolume.div(collateralScaleDec);
-  global.tradesQuantity = increment(global.tradesQuantity);
+  global.tradesQuantity = global.tradesQuantity.plus(bigOne);
   if (tradeType === TRADE_TYPE_BUY) {
-    global.buysQuantity = increment(global.buysQuantity);
+    global.buysQuantity = global.buysQuantity.plus(bigOne);
     global.collateralBuyVolume = global.collateralBuyVolume.plus(tradeAmount);
     global.scaledCollateralBuyVolume =
       global.collateralBuyVolume.div(collateralScaleDec);
   } else if (tradeType === TRADE_TYPE_SELL) {
-    global.sellsQuantity = increment(global.sellsQuantity);
+    global.sellsQuantity = global.sellsQuantity.plus(bigOne);
     global.collateralSellVolume = global.collateralSellVolume.plus(tradeAmount);
     global.scaledCollateralSellVolume =
       global.collateralSellVolume.div(collateralScaleDec);
@@ -129,34 +119,3 @@ export function getOrderSize(
   return takerAmountFilled;
 }
 
-function normalizeAmounts(amount: BigInt): BigDecimal {
-  let amtDecimal = new BigDecimal(amount);
-  let t = new BigDecimal(BigInt.fromI32(10).pow(<u8>6));
-  return amtDecimal.div(t);
-}
-
-export function getOrderPrice(
-  makerAmountFilled: BigInt,
-  takerAmountFilled: BigInt,
-  side: string,
-): BigDecimal {
-  let price = BigDecimal.fromString('0');
-  let quoteAssetAmount = BigDecimal.fromString('0');
-  let baseAssetAmount = BigDecimal.fromString('0');
-  let makerAmount = normalizeAmounts(makerAmountFilled);
-  let takerAmount = normalizeAmounts(takerAmountFilled);
-
-  if (side == TRADE_TYPE_BUY) {
-    quoteAssetAmount = makerAmount;
-    baseAssetAmount = takerAmount;
-  } else {
-    quoteAssetAmount = takerAmount;
-    baseAssetAmount = makerAmount;
-  }
-
-  if (!baseAssetAmount.equals(BigDecimal.fromString('0'))) {
-    price = quoteAssetAmount.div(baseAssetAmount);
-  }
-
-  return price;
-}

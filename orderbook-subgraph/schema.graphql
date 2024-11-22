@@ -2,13 +2,9 @@ type MarketData @entity {
   "ERC1155 TokenID of the CTF Asset"
   id: ID!
   "Condition that the token is linked to"
-  condition: Condition!
+  condition: String!
   "Outcome Index, may not be present if an FPMM is not created"
   outcomeIndex: BigInt
-  "The linked FixedProductMarketMaker"
-  fpmm: FixedProductMarketMaker
-  "The most recent onchain price of the asset on the orderbook"
-  priceOrderbook: BigDecimal
 }
 
 # Exchange OrderFilled event stored directly
@@ -21,8 +17,8 @@ type OrderFilledEvent @entity {
   timestamp: BigInt!
   orderHash: Bytes!
   "Addresses of the maker and the taker"
-  maker: Account!
-  taker: Account!
+  maker: String!
+  taker: String!
   "Maker assetId"
   makerAssetId: String!
   "Taker assetId"
@@ -51,7 +47,6 @@ type OrdersMatchedEvent @entity {
   takerAmountFilled: BigInt!
 }
 
-# Collection of EnrichedOrderFilled trades
 type Orderbook @entity {
   "Token Id"
   id: ID!

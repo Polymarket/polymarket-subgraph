@@ -5,17 +5,13 @@ import {
   TokenRegistered,
 } from './types/Exchange/Exchange';
 import {
-  EnrichedOrderFilled,
   MarketData,
   Orderbook,
   OrderFilledEvent,
   OrdersMatchedEvent,
 } from './types/schema';
-import { markAccountAsSeen, updateUserVolume } from './utils/account-utils';
 import { TRADE_TYPE_BUY } from './utils/constants';
-import { updateMarketPositionFromOrderFilled } from './utils/market-positions-utils';
 import {
-  getOrderPrice,
   getOrderSide,
   getOrderSize,
   requireOrderBook,
@@ -24,39 +20,6 @@ import {
   updateVolumes,
 } from './utils/order-book-utils';
 
-function enrichOrder(
-  event: OrderFilled,
-  side: string,
-  marketId: string,
-): EnrichedOrderFilled {
-  let eventId =
-    event.transaction.hash.toHexString() +
-    '_' +
-    event.params.orderHash.toHexString();
-
-  let enriched = new EnrichedOrderFilled(eventId);
-  enriched.transactionHash = event.transaction.hash;
-  enriched.timestamp = event.block.timestamp;
-  enriched.maker = event.params.maker.toHexString();
-  enriched.taker = event.params.taker.toHexString();
-  enriched.orderHash = event.params.orderHash;
-  enriched.market = marketId;
-  enriched.side = side;
-  enriched.size = getOrderSize(
-    event.params.makerAmountFilled,
-    event.params.takerAmountFilled,
-    side,
-  );
-  enriched.price = getOrderPrice(
-    event.params.makerAmountFilled,
-    event.params.takerAmountFilled,
-    side,
-  );
-
-  enriched.save();
-
-  return enriched;
-}
 
 function recordOrderFilledEvent(event: OrderFilled): string {
   let eventId =
@@ -95,8 +58,6 @@ event OrderFilled(
  * @param event 
  */
 export function handleFill(event: OrderFilled): void {
-  let maker = event.params.maker.toHexString();
-  let taker = event.params.taker.toHexString();
   let makerAssetId = event.params.makerAssetId;
   let takerAssetId = event.params.takerAssetId;
   let timestamp = event.block.timestamp;
@@ -120,9 +81,6 @@ export function handleFill(event: OrderFilled): void {
   // record event
   recordOrderFilledEvent(event);
 
-  // Enrich and store the OrderFilled event
-  let enriched = enrichOrder(event, side, tokenId);
-
   // order book
   let orderBook: Orderbook = requireOrderBook(tokenId as string);
 
@@ -134,23 +92,7 @@ export function handleFill(event: OrderFilled): void {
     side,
   );
 
-  updateUserVolume(taker, size, collateralScaleDec, timestamp);
-  markAccountAsSeen(taker, timestamp);
-
-  updateUserVolume(maker, size, collateralScaleDec, timestamp);
-  markAccountAsSeen(maker, timestamp);
-
   updateTradesQuantity(orderBook, side);
-
-  // Update market data with most recent orderbook price
-  let marketData = MarketData.load(tokenId);
-  if (marketData != null) {
-    marketData.priceOrderbook = enriched.price;
-    marketData.save();
-  }
-
-  // Update market position
-  updateMarketPositionFromOrderFilled(maker, tokenId, side, event);
 
   // persist order book
   orderBook.save();
@@ -160,13 +102,12 @@ function recordOrdersMatchedEvent(event: OrdersMatched): string {
   let evt = new OrdersMatchedEvent(event.transaction.hash.toHexString());
 
   evt.timestamp = event.block.timestamp;
-  evt.makerAssetID = event.params.takerAssetId;
-  evt.takerAssetID = event.params.makerAssetId;
-  evt.makerAmountFilled = event.params.takerAmountFilled;
-  evt.takerAmountFilled = event.params.makerAmountFilled;
+  evt.makerAssetID = event.params.makerAssetId;
+  evt.takerAssetID = event.params.takerAssetId;
+  evt.makerAmountFilled = event.params.makerAmountFilled;
+  evt.takerAmountFilled = event.params.takerAmountFilled;
 
   evt.save();
-
   return evt.id;
 }
 
