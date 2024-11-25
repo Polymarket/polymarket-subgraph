@@ -1,0 +1,153 @@
+type Condition @entity {
+  "conditionId"
+  id: ID!
+}
+
+type Collateral @entity {
+  "Token address"
+  id: ID!
+  name: String!
+  symbol: String!
+  decimals: Int!
+}
+
+type FixedProductMarketMaker @entity {
+  "Market maker address"
+  id: ID!
+
+  "Address which deployed this market"
+  creator: Bytes!
+  "Time at which this market was deployed"
+  creationTimestamp: BigInt!
+  "Hash of deployment transactions"
+  creationTransactionHash: Bytes!
+
+  "Token which is colleralising this market"
+  collateralToken: Collateral!
+  "Conditional Token Address"
+  conditionalTokenAddress: String!
+  "Conditions which this market is trading against"
+  conditions: [String!]!
+  "Percentage fee of trades taken by market maker. A 2% fee is represented as 2*10^16"
+  fee: BigInt!
+
+  "Number of trades of any kind against this market maker"
+  tradesQuantity: BigInt!
+  "Number of purchases of shares from this market maker"
+  buysQuantity: BigInt!
+  "Number of sales of shares to this market maker"
+  sellsQuantity: BigInt!
+  "Number of times liquidity has been added to this market maker"
+  liquidityAddQuantity: BigInt!
+  "Number of times liquidity has been removed from this market maker"
+  liquidityRemoveQuantity: BigInt!
+
+  "Market volume in terms of the underlying collateral value"
+  collateralVolume: BigInt!
+  "Volume scaled by the number of decimals of collateralToken"
+  scaledCollateralVolume: BigDecimal!
+  "Global volume of share purchases in USDC base units"
+  collateralBuyVolume: BigInt!
+  "Global volume of share purchases in USDC scaled by 10^6"
+  scaledCollateralBuyVolume: BigDecimal!
+  "Global volume of share sales in USDC base units"
+  collateralSellVolume: BigInt!
+  "Global volume of share sales in USDC scaled by 10^6"
+  scaledCollateralSellVolume: BigDecimal!
+  "Fees collected in terms of the underlying collateral value"
+  feeVolume: BigInt!
+  "Fees scaled by the number of decimals of collateralToken"
+  scaledFeeVolume: BigDecimal!
+
+  "Constant product parameter k"
+  liquidityParameter: BigInt!
+  scaledLiquidityParameter: BigDecimal!
+
+  "Balances of each outcome token held by the market maker"
+  outcomeTokenAmounts: [BigInt!]!
+  "Prices at which market maker values each outcome token"
+  outcomeTokenPrices: [BigDecimal!]!
+  "Number of outcomes which this market maker is trading"
+  outcomeSlotCount: Int
+
+  "Timestamp of last day during which someone made a trade"
+  lastActiveDay: BigInt!
+
+  "Number of shares for tokens in the market maker's reserves"
+  totalSupply: BigInt!
+
+  "Addresses which are supplying liquidity to the market maker"
+  poolMembers: [FpmmPoolMembership!] @derivedFrom(field: "pool")
+}
+
+
+
+type FpmmFundingAddition @entity {
+  "Transaction Hash"
+  id: ID!
+  "Timestamp at which funding addition occurred"
+  timestamp: BigInt!
+  "FPMM to which funding is being added"
+  fpmm: FixedProductMarketMaker!
+  "Address adding funding"
+  funder: String!
+  "Outcome tokens amounts added to FPMM"
+  amountsAdded: [BigInt!]!
+  "Outcome tokens amounts refunded to funder"
+  amountsRefunded: [BigInt!]!
+  "Liquidity shares minted to funder"
+  sharesMinted: BigInt!
+}
+
+type FpmmFundingRemoval @entity {
+  "Transaction Hash"
+  id: ID!
+  "Timestamp at which funding removal occurred"
+  timestamp: BigInt!
+  "FPMM to which funding is being removed"
+  fpmm: FixedProductMarketMaker!
+  "Account removing funding"
+  funder: String!
+  "Outcome tokens amounts removed from FPMM"
+  amountsRemoved: [BigInt!]!
+  collateralRemoved: BigInt!
+  "Liquidity shares burned by funder"
+  sharesBurnt: BigInt!
+}
+
+enum TradeType {
+  Buy
+  Sell
+}
+
+type FpmmTransaction @entity {
+  "Transaction Hash"
+  id: ID!
+  "Buy or Sell transaction"
+  type: TradeType!
+  "Timestamp at which transaction occurred"
+  timestamp: BigInt!
+  "Market which transaction is interacting with"
+  market: FixedProductMarketMaker!
+  "Account performing transaction"
+  user: String!
+  "Amount of collateral in trade"
+  tradeAmount: BigInt!
+  "Amount of collateral paid in fees"
+  feeAmount: BigInt!
+  "Index of outcome token being bought or sold"
+  outcomeIndex: BigInt!
+  "Amount of outcome tokens being bought or sold"
+  outcomeTokensAmount: BigInt!
+}
+
+type FpmmPoolMembership @entity {
+  "funder address + pool address"
+  id: ID!
+  "Market to which funder is providing funding"
+  pool: FixedProductMarketMaker!
+  "Account which is providing funding"
+  funder: String!
+  "Amount of liquidity tokens owned by funder"
+  amount: BigInt!
+}

@@ -1,5 +1,5 @@
-specVersion: 0.0.2
-description: Polymarket Subgraph
+specVersion: 0.0.4
+description: FPMM Subgraph
 repository: https://github.com/TokenUnion/polymarket-subgraph
 schema:
   file: ./schema.graphql
@@ -18,9 +18,6 @@ dataSources:
       entities:
         - Condition
         - FixedProductMarketMaker
-        - Split
-        - Merge
-        - Redemption
       abis:
         - name: ConditionalTokens
           file: ../abis/ConditionalTokens.json
@@ -29,14 +26,6 @@ dataSources:
       eventHandlers:
         - event: ConditionPreparation(indexed bytes32,indexed address,indexed bytes32,uint256)
           handler: handleConditionPreparation
-        - event: ConditionResolution(indexed bytes32,indexed address,indexed bytes32,uint256,uint256[])
-          handler: handleConditionResolution
-        - event: PositionSplit(indexed address,address,indexed bytes32,indexed bytes32,uint256[],uint256)
-          handler: handlePositionSplit
-        - event: PositionsMerge(indexed address,address,indexed bytes32,indexed bytes32,uint256[],uint256)
-          handler: handlePositionsMerge
-        - event: PayoutRedemption(indexed address,indexed address,indexed bytes32,bytes32,uint256[],uint256)
-          handler: handlePayoutRedemption
       file: ./src/ConditionalTokensMapping.ts
   - kind: ethereum/contract
     name: FixedProductMarketMakerFactory
@@ -62,64 +51,6 @@ dataSources:
         - event: FixedProductMarketMakerCreation(indexed address,address,indexed address,indexed address,bytes32[],uint256)
           handler: handleFixedProductMarketMakerCreation
       file: ./src/FixedProductMarketMakerFactoryMapping.ts
-  - kind: ethereum/contract
-    name: Exchange
-    network: {{ networkName }}
-    source:
-      address: '{{ contracts.Exchange.address }}'
-      abi: Exchange
-      startBlock: {{ contracts.Exchange.startBlock }}
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.5
-      language: wasm/assemblyscript
-      entities:
-        - OrdersMatchedGlobal
-        - OrdersMatchedEvent
-        - EnrichedOrderFilled
-        - Orderbook
-        - MarketData
-        - MarketProfit
-      abis:
-        - name: Exchange
-          file: ../abis/Exchange.json
-      eventHandlers:
-        - event: OrderFilled(indexed bytes32,indexed address,indexed address,uint256,uint256,uint256,uint256,uint256)
-          handler: handleFill
-        - event: OrdersMatched(indexed bytes32,indexed address,uint256,uint256,uint256,uint256)
-          handler: handleMatch
-        - event: TokenRegistered(indexed uint256,indexed uint256,indexed bytes32)
-          handler: handleTokenRegistered
-      file: ./src/ExchangeMapping.ts
-  - kind: ethereum/contract
-    name: NegRiskExchange
-    network: {{ networkName }}
-    source:
-      address: '{{contracts.NegRiskExchange.address}}'
-      abi: Exchange
-      startBlock: {{ contracts.NegRiskExchange.startBlock }}
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.5
-      language: wasm/assemblyscript
-      entities:
-        - OrdersMatchedGlobal
-        - OrdersMatchedEvent
-        - EnrichedOrderFilled
-        - Orderbook
-        - MarketData
-        - MarketProfit
-      abis:
-        - name: Exchange
-          file: ../abis/Exchange.json
-      eventHandlers:
-        - event: OrderFilled(indexed bytes32,indexed address,indexed address,uint256,uint256,uint256,uint256,uint256)
-          handler: handleFill
-        - event: OrdersMatched(indexed bytes32,indexed address,uint256,uint256,uint256,uint256)
-          handler: handleMatch
-        - event: TokenRegistered(indexed uint256,indexed uint256,indexed bytes32)
-          handler: handleTokenRegistered
-      file: ./src/ExchangeMapping.ts
 templates:
   - name: FixedProductMarketMaker
     kind: ethereum/contract
@@ -131,15 +62,11 @@ templates:
       apiVersion: 0.0.5
       language: wasm/assemblyscript
       entities:
-        - Account
         - FixedProductMarketMaker
         - FpmmFundingAddition
         - FpmmFundingRemoval
         - FpmmPoolMembership
-        - Transaction
-        - MarketPosition
-        - MarketData
-        - MarketProfit
+        - FpmmTransaction
       abis:
         - name: FixedProductMarketMaker
           file: ../abis/FixedProductMarketMaker.json

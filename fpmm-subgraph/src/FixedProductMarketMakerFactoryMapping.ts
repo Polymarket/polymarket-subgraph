@@ -1,12 +1,12 @@
 import { BigInt, log, BigDecimal } from '@graphprotocol/graph-ts';
 
 import { FixedProductMarketMakerCreation } from './types/FixedProductMarketMakerFactory/FixedProductMarketMakerFactory';
-import { FixedProductMarketMaker, Condition, MarketData } from './types/schema';
+import { FixedProductMarketMaker, Condition } from './types/schema';
 import { FixedProductMarketMaker as FixedProductMarketMakerTemplate } from './types/templates';
 import { timestampToDay } from './utils/time';
 import { bigZero } from './utils/constants';
+import { CONDITIONAL_TOKENS } from '../../common/constants';
 import { getCollateralDetails } from './utils/collateralTokens';
-import { getMarket } from './utils/ctf-utils';
 
 /**
  * Initialise all variables of fpmm which start at zero
@@ -56,11 +56,10 @@ export function handleFixedProductMarketMakerCreation(
 ): void {
   let address = event.params.fixedProductMarketMaker;
   let addressHexString = address.toHexString();
-  let conditionalTokensAddress = event.params.conditionalTokens.toHexString();
-
+  let conditionalTokensAddress = event.params.conditionalTokens.toHexString().toLowerCase();
   if (
     conditionalTokensAddress !=
-    '{{lowercase contracts.ConditionalTokens.address}}'
+    CONDITIONAL_TOKENS.toHexString().toLowerCase()
   ) {
     log.info('cannot index market maker {}: using conditional tokens {}', [
       addressHexString,
@@ -95,11 +94,6 @@ export function handleFixedProductMarketMakerCreation(
       return;
     }
 
-    outcomeTokenCount *= condition.outcomeSlotCount;
-    condition.fixedProductMarketMakers =
-      condition.fixedProductMarketMakers.concat([addressHexString]);
-    condition.save();
-
     fixedProductMarketMaker.conditions =
       fixedProductMarketMaker.conditions.concat([conditionIdStr]);
   }
@@ -108,34 +102,6 @@ export function handleFixedProductMarketMakerCreation(
 
   fixedProductMarketMaker = initialiseFPMM(fixedProductMarketMaker, event);
   fixedProductMarketMaker.save();
-
-  // Update MarketData with FPMM on FPMM creation
-  for (
-    let outcomeIndex = 0;
-    outcomeIndex < outcomeTokenCount;
-    outcomeIndex += 1
-  ) {
-    let condition = fixedProductMarketMaker.conditions[0];
-
-    let tokenId = getMarket(
-      conditionalTokensAddress,
-      condition,
-      collateralToken,
-      outcomeTokenCount,
-      outcomeIndex,
-    );
-
-    // Create/update MarketData on FPMM Creation
-    let marketData = MarketData.load(tokenId);
-    if (marketData == null) {
-      marketData = new MarketData(tokenId);
-      marketData.condition = condition;
-    }
-    // If the MarketData exists, update the outcomeIndex and FPMM address
-    marketData.outcomeIndex = BigInt.fromI32(outcomeIndex);
-    marketData.fpmm = addressHexString;
-    marketData.save();
-  }
 
   FixedProductMarketMakerTemplate.create(address);
 }

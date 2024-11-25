@@ -4,7 +4,7 @@ import {
   FixedProductMarketMaker,
   FpmmFundingAddition,
   FpmmFundingRemoval,
-  Transaction,
+  FpmmTransaction,
 } from './types/schema';
 import {
   FPMMFundingAdded,
@@ -22,11 +22,6 @@ import {
   loadPoolMembership,
 } from './utils/fpmm-utils';
 import {
-  updateMarketPositionFromLiquidityAdded,
-  updateMarketPositionFromLiquidityRemoved,
-  updateMarketPositionFromTrade,
-} from './utils/market-positions-utils';
-import {
   AddressZero,
   bigOne,
   bigZero,
@@ -34,17 +29,12 @@ import {
   TRADE_TYPE_SELL,
 } from './utils/constants';
 import { getCollateralScale } from './utils/collateralTokens';
-import { updateGlobalVolume } from './utils/global-utils';
 import { increment, max } from './utils/maths';
-import {
-  incrementAccountTrades,
-  markAccountAsSeen,
-  requireAccount,
-  updateUserVolume,
-} from './utils/account-utils';
+import { getEventKey } from '../../common/utils/getEventKey';
+
 
 function recordBuy(event: FPMMBuy): void {
-  let buy = new Transaction(event.transaction.hash.toHexString());
+  let buy = new FpmmTransaction(getEventKey(event));
   buy.type = TRADE_TYPE_BUY;
   buy.timestamp = event.block.timestamp;
   buy.market = event.address.toHexString();
@@ -57,7 +47,7 @@ function recordBuy(event: FPMMBuy): void {
 }
 
 function recordSell(event: FPMMSell): void {
-  let sell = new Transaction(event.transaction.hash.toHexString());
+  let sell = new FpmmTransaction(getEventKey(event));
   sell.type = TRADE_TYPE_SELL;
   sell.timestamp = event.block.timestamp;
   sell.market = event.address.toHexString();
@@ -152,9 +142,7 @@ export function handleFundingAdded(event: FPMMFundingAdded): void {
 
   fpmm.liquidityAddQuantity = increment(fpmm.liquidityAddQuantity);
   fpmm.save();
-  markAccountAsSeen(event.params.funder.toHexString(), event.block.timestamp);
   recordFundingAddition(event);
-  updateMarketPositionFromLiquidityAdded(event);
 }
 
 export function handleFundingRemoved(event: FPMMFundingRemoved): void {
@@ -194,9 +182,7 @@ export function handleFundingRemoved(event: FPMMFundingRemoved): void {
 
   fpmm.liquidityRemoveQuantity = increment(fpmm.liquidityRemoveQuantity);
   fpmm.save();
-  markAccountAsSeen(event.params.funder.toHexString(), event.block.timestamp);
   recordFundingRemoval(event);
-  updateMarketPositionFromLiquidityRemoved(event);
 }
 
 export function handleBuy(event: FPMMBuy): void {
@@ -255,26 +241,7 @@ export function handleBuy(event: FPMMBuy): void {
   fpmm.tradesQuantity = increment(fpmm.tradesQuantity);
   fpmm.buysQuantity = increment(fpmm.buysQuantity);
   fpmm.save();
-
-  updateUserVolume(
-    event.params.buyer.toHexString(),
-    event.params.investmentAmount,
-    collateralScaleDec,
-    event.block.timestamp,
-  );
-  markAccountAsSeen(event.params.buyer.toHexString(), event.block.timestamp);
-  incrementAccountTrades(
-    event.params.buyer.toHexString(),
-    event.block.timestamp,
-  );
   recordBuy(event);
-  updateGlobalVolume(
-    event.params.investmentAmount,
-    event.params.feeAmount,
-    collateralScaleDec,
-    TRADE_TYPE_BUY,
-  );
-  updateMarketPositionFromTrade(event);
 }
 
 export function handleSell(event: FPMMSell): void {
@@ -333,26 +300,7 @@ export function handleSell(event: FPMMSell): void {
   fpmm.tradesQuantity = increment(fpmm.tradesQuantity);
   fpmm.sellsQuantity = increment(fpmm.sellsQuantity);
   fpmm.save();
-
-  updateUserVolume(
-    event.params.seller.toHexString(),
-    event.params.returnAmount,
-    collateralScaleDec,
-    event.block.timestamp,
-  );
-  markAccountAsSeen(event.params.seller.toHexString(), event.block.timestamp);
-  incrementAccountTrades(
-    event.params.seller.toHexString(),
-    event.block.timestamp,
-  );
   recordSell(event);
-  updateGlobalVolume(
-    event.params.returnAmount,
-    event.params.feeAmount,
-    collateralScaleDec,
-    TRADE_TYPE_SELL,
-  );
-  updateMarketPositionFromTrade(event);
 }
 
 export function handlePoolShareTransfer(event: Transfer): void {
@@ -360,9 +308,6 @@ export function handlePoolShareTransfer(event: Transfer): void {
   let fromAddress = event.params.from.toHexString();
   let toAddress = event.params.to.toHexString();
   let sharesAmount = event.params.value;
-
-  requireAccount(fromAddress, event.block.timestamp);
-  requireAccount(toAddress, event.block.timestamp);
 
   if (fromAddress != AddressZero) {
     let fromMembership = loadPoolMembership(fpmmAddress, fromAddress);

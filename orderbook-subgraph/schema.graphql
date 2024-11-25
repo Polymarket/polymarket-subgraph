@@ -1,0 +1,99 @@
+type MarketData @entity {
+  "ERC1155 TokenID of the CTF Asset"
+  id: ID!
+  "Condition that the token is linked to"
+  condition: String!
+  "Outcome Index, may not be present if an FPMM is not created"
+  outcomeIndex: BigInt
+}
+
+# Exchange OrderFilled event stored directly
+type OrderFilledEvent @entity {
+  "Transaction hash + Order hash"
+  id: ID!
+  "Transaction hash"
+  transactionHash: Bytes!
+  "Timestamp at which filled occurred"
+  timestamp: BigInt!
+  orderHash: Bytes!
+  "Addresses of the maker and the taker"
+  maker: String!
+  taker: String!
+  "Maker assetId"
+  makerAssetId: String!
+  "Taker assetId"
+  takerAssetId: String!
+  "Maker amount filled"
+  makerAmountFilled: BigInt!
+  "Taker amount filled"
+  takerAmountFilled: BigInt!
+  "Fee paid by the order maker"
+  fee: BigInt!
+}
+
+# Exchange OrdersMatched event stored directly
+type OrdersMatchedEvent @entity {
+  "Transaction Hash"
+  id: ID!
+  "Timestamp at which filled occurred"
+  timestamp: BigInt!
+  "Maker asset Id"
+  makerAssetID: BigInt!
+  "Taker asset Id"
+  takerAssetID: BigInt!
+  "Maker amount filled"
+  makerAmountFilled: BigInt!
+  "Taker amount filled"
+  takerAmountFilled: BigInt!
+}
+
+type Orderbook @entity {
+  "Token Id"
+  id: ID!
+  "Number of trades of any kind against this order book"
+  tradesQuantity: BigInt!
+  "Number of purchases of shares from this order book"
+  buysQuantity: BigInt!
+  "Number of sales of shares to this order book"
+  sellsQuantity: BigInt!
+  "Market volume in terms of the underlying collateral value"
+  collateralVolume: BigInt!
+  "Volume scaled by the number of decimals of collateralToken"
+  scaledCollateralVolume: BigDecimal!
+  "Global volume of share purchases in USDC base units"
+  collateralBuyVolume: BigInt!
+  "Global volume of share purchases in USDC scaled by 10^6"
+  scaledCollateralBuyVolume: BigDecimal!
+  "Global volume of share sales in USDC base units"
+  collateralSellVolume: BigInt!
+  "Global volume of share sales in USDC scaled by 10^6"
+  scaledCollateralSellVolume: BigDecimal!
+}
+
+# Exchange: all trades aggregated
+type OrdersMatchedGlobal @entity {
+  "ID is empty string, this is a singleton"
+  id: ID!
+
+  "Number of trades of any kind for all order books"
+  tradesQuantity: BigInt!
+  "Number of purchases of shares from any order book"
+  buysQuantity: BigInt!
+  "Number of sales of shares to any order book"
+  sellsQuantity: BigInt!
+
+  "Global volume in USDC base units"
+  collateralVolume: BigDecimal!
+  "Global volume in USDC scaled by 10^6"
+  scaledCollateralVolume: BigDecimal!
+
+  "Global volume of share purchases in USDC base units"
+  collateralBuyVolume: BigDecimal!
+  "Global volume of share purchases in USDC scaled by 10^6"
+  scaledCollateralBuyVolume: BigDecimal!
+  "Global volume of share sales in USDC base units"
+  collateralSellVolume: BigDecimal!
+  "Global volume of share sales in USDC scaled by 10^6"
+  scaledCollateralSellVolume: BigDecimal!
+}
+

@@ -1,5 +1,18 @@
 # polymarket-subgraph
 
+## Subgraphs
+
+* activity-subgraph
+
+* fpmm-subgraph
+
+* oi-subgraph
+
+* orderbook-subgraph
+
+* pnl-subgraph
+
+
 ## Environment Variables
 
 Create a `.env` file with the following variables:
@@ -16,7 +29,7 @@ Run `yarn test` to run the test suite, which will run in a docker container.
 
 ## Preparing `subgraph.yaml`
 
-This repo contains multiple subgraphs, pnl-subgraph, activity-subgraph, and market-subgraph. Each subgraph has dedicated yarn scripts for convenience.
+Each subgraph has dedicated yarn scripts for convenience.
 
 First, to prepare `subgraph.yaml` and other templated files, run `yarn templatify:matic`.
 
@@ -82,7 +95,7 @@ docker rmi graphprotocol/graph-node:latest
 docker tag graph-node graphprotocol/graph-node:latest
 ```
 
-Note: you likely will have to increase your Docker daemon memory capacity. In Docker desktop you can find this setting under Preferences > Resources > Advanced.
+Note: you likely will have to increase your Docker daemon memory capacity. In Docker desktop you can find this setting under Settings > Resources > Advanced.
 
 ## Contracts
 
