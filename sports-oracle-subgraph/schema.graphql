@@ -1,0 +1,38 @@
+type Game @entity {
+  "The Game Id"
+  id: ID!
+  "Ancillary Data"
+  ancillaryData: String!
+  "The ordering of the game"
+  "The state of the game"
+  state: String!
+  "The ordering of the game"
+  ordering: String!
+  "The token used for rewards and bonds"
+  token: String!
+  "The reward for the Game"
+  reward: BigInt!
+  "The bond"
+  bond: BigInt!
+  "The liveness of the Game"
+  liveness: BigInt!
+  "The score of the home team"
+  homeScore: Int!
+  "The score of the away team"
+  awayScore: Int!
+}
+
+type Market @entity {
+  "The Market Id"
+  id: ID!
+  "The Game Id the Market is linked to"
+  gameId: String!
+  "The state of the Market"
+  state: String!
+  "The Market type"
+  marketType: String!
+  "The underdog of the Market, must be home or away, used for Spreads"
+  underdog: String!
+  "The line of Market, used for Spreads and Totals"
+  line: BigInt!
+}

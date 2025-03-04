@@ -43,6 +43,10 @@ matic:
       address: '0x71523d0f655B41E805Cec45b17163f528B59B820'
     NegRiskWrappedCollateral:
       address: '0x3A3BD7bb9528E159577F7C2e685CC81A765002E2'
+    UmaSportsOracle:
+      address: '0xbec046Ae23FEE91643a45b03f12c6afDb2628d9c'
+      transactionHash: '0x9c516acb98eb95200482d69e9866a5957c0b1e96fdd3d522761e1aa128a8ffb4'
+      startBlock: 68324581
     USDC:
       address: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174'
   networkName: matic
