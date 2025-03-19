@@ -16,6 +16,10 @@ mainnet:
       address: ''
       transactionHash: ''
       startBlock: 0
+    UmaSportsOracle:
+      address: ''
+      transactionHash: ''
+      startBlock: 0
     networkName: mainnet
 matic:
   contracts:
@@ -43,6 +47,10 @@ matic:
       address: '0x71523d0f655B41E805Cec45b17163f528B59B820'
     NegRiskWrappedCollateral:
       address: '0x3A3BD7bb9528E159577F7C2e685CC81A765002E2'
+    UmaSportsOracle:
+      address: '0xb21182d0494521Cf45DbbeEbb5A3ACAAb6d22093'
+      transactionHash: '0xb0cc39f6c2a66a9545a1918724f3e38b8e61b0f7e5282ab1154351a18dc4e0a4'
+      startBlock: 68931384
     USDC:
       address: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174'
   networkName: matic
@@ -64,4 +72,8 @@ mumbai:
       address: '0x87d1A0DdB4C63a6301916F02090A51a7241571e4'
       transactionHash: '0xbbf404aab8cb23f696aa50550fe3d80e52775bdabe3948b98f2c1b90e9b41172'
       startBlock: 43225359
+    UmaSportsOracle:
+      address: ''
+      transactionHash: ''
+      startBlock: 0
   networkName: mumbai
