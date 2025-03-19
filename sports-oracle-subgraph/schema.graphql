@@ -8,9 +8,9 @@ type Game @entity {
   "The state of the game"
   state: String!
   "The score of the home team"
-  homeScore: Int!
+  homeScore: BigInt!
   "The score of the away team"
-  awayScore: Int!
+  awayScore: BigInt!
 }
 
 type Market @entity {

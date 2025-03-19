@@ -1,3 +1,4 @@
+import { MONEYLINE, SPREADS,TOTALS, MarketType, GameOrdering, Underdog } from "./constants"
 
 // @ts-expect-error Cannot find name 'i32'.
 export function getMarketType(marketTypeEnum: i32): string {

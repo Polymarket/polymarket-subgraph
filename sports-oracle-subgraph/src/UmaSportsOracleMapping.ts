@@ -1,4 +1,4 @@
-import { log } from '@graphprotocol/graph-ts';
+import { log, BigInt } from '@graphprotocol/graph-ts';
 import {
     GameCreated,
     GameSettled,
@@ -12,18 +12,28 @@ import {
     MarketPaused,
     MarketUnpaused,
   } from './types/UmaSportsOracle/UmaSportsOracle';
-// import { getEventKey } from '../../common/utils/getEventKey';
 import { Game, Market } from './types/schema';
 import { getGameOrdering, getMarketType, getMarketUnderdog } from './utils';
+import { 
+    GameStateCreated,
+    GameStateSettled,
+    GameStateCanceled,
+    GameStatePaused,
+    GameStateEmergencySettled, 
+    MarketStateCreated, 
+    MarketStateResolved,
+    MarketStatePaused,
+    MarketStateEmergencyResolved
+} from "./constants"
 
 export function handleGameCreated(event: GameCreated): void {
     // new game
     const game = new Game(event.params.gameId.toHexString().toLowerCase());
     game.ancillaryData = event.params.ancillaryData.toHexString();;
     game.ordering = getGameOrdering(event.params.ordering);
-    game.state = GameState.Created;
-    game.homeScore =0;
-    game.awayScore =0;
+    game.state = GameStateCreated;
+    game.homeScore = BigInt.zero();
+    game.awayScore = BigInt.zero();
     game.save();
 }
 
@@ -37,7 +47,7 @@ export function handleGameSettled(event: GameSettled): void {
         ]);
         return;
     }
-    game.state = GameState.Settled;
+    game.state = GameStateSettled;
     game.homeScore = event.params.home;
     game.awayScore = event.params.away;
     game.save();
@@ -53,7 +63,7 @@ export function handleGameEmergencySettled(event: GameEmergencySettled): void {
         ]);
         return;
     }
-    game.state = GameState.EmergencySettled;
+    game.state = GameStateEmergencySettled;
     game.homeScore = event.params.home;
     game.awayScore = event.params.away;
     game.save();
@@ -69,7 +79,7 @@ export function handleGameCanceled(event: GameCanceled): void {
         ]);
         return;
     }
-    game.state = GameState.Canceled;
+    game.state = GameStateCanceled;
     game.save();
 }
 
@@ -83,7 +93,7 @@ export function handleGamePaused(event: GamePaused): void {
         ]);
         return;
     }
-    game.state = GameState.Paused;
+    game.state = GameStatePaused;
     game.save();
 }
 
@@ -95,7 +105,7 @@ export function handleGameUnpaused(event: GameUnpaused): void {
         log.error('Game not found: {}', [gameId]);
         return;
     }
-    game.state = GameState.Created;
+    game.state = GameStateCreated;
     game.save();
 }
 
@@ -103,7 +113,7 @@ export function handleMarketCreated(event: MarketCreated): void {
     // new market
     const market = new Market(event.params.marketId.toHexString().toLowerCase());
     market.gameId = event.params.gameId.toHexString().toLowerCase();
-    market.state = MarketState.Created;
+    market.state = MarketStateCreated;
     market.marketType = getMarketType(event.params.marketType);
     market.underdog = getMarketUnderdog(event.params.underdog);
     market.line = event.params.line;
@@ -120,7 +130,7 @@ export function handleMarketResolved(event: MarketResolved): void {
         return;
     }
 
-    market.state = MarketState.Resolved;
+    market.state = MarketStateResolved;
     market.payouts = event.params.payouts;
     market.save();
 }
@@ -134,7 +144,7 @@ export function handleMarketEmergencyResolved(event: MarketEmergencyResolved): v
         return;
     }
 
-    market.state = MarketState.EmergencyResolved;
+    market.state = MarketStateEmergencyResolved;
     market.payouts = event.params.payouts;
     market.save();
 }
@@ -148,7 +158,7 @@ export function handleMarketPaused(event: MarketPaused): void {
         return;
     }
 
-    market.state = MarketState.Paused;
+    market.state = MarketStatePaused;
     market.save();
 }
 
@@ -161,7 +171,7 @@ export function handleMarketUnpaused(event: MarketUnpaused): void {
         return;
     }
 
-    market.state = MarketState.Created;
+    market.state = MarketStateCreated;
     market.save();
 }
 
