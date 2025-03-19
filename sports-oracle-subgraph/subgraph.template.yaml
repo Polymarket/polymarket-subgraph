@@ -24,11 +24,11 @@ dataSources:
         - name: UmaSportsOracle
           file: ../abis/UmaSportsOracle.json
       eventHandlers:
-        - event: GameCreated(indexed bytes32, uint8, bytes, uint256)
+        - event: GameCreated(indexed bytes32,uint8,bytes,uint256)
           handler: handleGameCreated
-        - event: GameSettled(indexed bytes32, indexed uint256, indexed uint256)
+        - event: GameSettled(indexed bytes32,indexed uint256,indexed uint256)
           handler: handleGameSettled
-        - event: GameEmergencySettled(indexed bytes32, indexed uint256, indexed uint256)
+        - event: GameEmergencySettled(indexed bytes32,indexed uint256,indexed uint256)
           handler: handleGameEmergencySettled
         - event: GameCanceled(indexed bytes32)
           handler: handleGameCanceled
@@ -36,10 +36,14 @@ dataSources:
           handler: handleGamePaused
         - event: GameUnpaused(indexed bytes32)
           handler: handleGameUnpaused
-        - event: MarketCreated(indexed bytes32, indexed bytes32, indexed bytes32, uint8, uint8, uint256)
+        - event: MarketCreated(indexed bytes32,indexed bytes32,indexed bytes32,uint8,uint8,uint256)
           handler: handleMarketCreated
-        - event: MarketResolved(indexed bytes32, uint256[])
+        - event: MarketPaused(indexed bytes32)
+          handler: handleMarketPaused
+        - event: MarketUnpaused(indexed bytes32)
+          handler: handleMarketUnpaused
+        - event: MarketResolved(indexed bytes32,uint256[])
           handler: handleMarketResolved
-        - event: MarketEmergencyResolved(indexed bytes32, uint256[])
+        - event: MarketEmergencyResolved(indexed bytes32,uint256[])
           handler: handleMarketEmergencyResolved
       file: ./src/UmaSportsOracleMapping.ts

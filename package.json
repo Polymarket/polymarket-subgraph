@@ -32,7 +32,12 @@
     "orderbook:build": "yarn graph build ./orderbook-subgraph/subgraph.yaml",
     "orderbook:create-local": "graph create --node http://localhost:8020/ orderbook-subgraph",
     "orderbook:deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 orderbook-subgraph ./orderbook-subgraph/subgraph.yaml",
-    "orderbook:remove-local": "graph remove --node http://localhost:8020/ orderbook-subgraph"
+    "orderbook:remove-local": "graph remove --node http://localhost:8020/ orderbook-subgraph",
+    "oracle:codegen": "yarn graph codegen ./sports-oracle-subgraph/subgraph.yaml --output-dir ./sports-oracle-subgraph/src/types",
+    "oracle:build": "yarn graph build ./sports-oracle-subgraph/subgraph.yaml",
+    "oracle:create-local": "graph create --node http://localhost:8020/ sports-oracle-subgraph",
+    "oracle:deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 sports-oracle-subgraph ./sports-oracle-subgraph/subgraph.yaml",
+    "oracle:remove-local": "graph remove --node http://localhost:8020/ sports-oracle-subgraph"
   },
   "repository": {
     "type": "git",

@@ -10,6 +10,7 @@ const config = {
     'oi-subgraph/subgraph.yaml',
     'fpmm-subgraph/subgraph.yaml',
     'orderbook-subgraph/subgraph.yaml',
+    'sports-oracle-subgraph/subgraph.yaml',
     'common/constants.ts',
   ],
 };
