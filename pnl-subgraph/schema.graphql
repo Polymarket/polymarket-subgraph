@@ -1,37 +1,18 @@
-# Historical PNL
-type HistoricalPNL @entity {
+type HistoricalPnl @entity {
   id: ID!
-  realizedPnl: BigInt!
+  realizedPnl: BigDecimal!
   user: String!
   date: BigInt!
 }
 
-# amm_markets
-type AMM_Market @entity {
+type FPMM @entity {
+  "FPMM address"
   id: ID!
-  fixedProductMarketMaker: String!
+  "conditionId"
+  conditionId: String!
 }
 
-# combined_first
-type Combined @entity {
-  id: ID!
-  evt_tx_hash: String!
-  user: String!
-  tokenID: String!
-  amount: BigDecimal!
-}
-
-# prices
 type Price @entity {
   id: ID!
-  price: BigDecimal!
-}
-
-# holders
-type Holder @entity {
-  id: ID!
-  user: String!
-  tokenID: String!
-  amount: BigDecimal!
-  P1_P2_Latest_Price: BigDecimal!
+  p: BigDecimal!
 }
