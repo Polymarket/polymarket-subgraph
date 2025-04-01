@@ -1,42 +1,37 @@
-# User Token Position
-type UserPosition @entity {
-  "User Address + Token ID"
+# Historical PNL
+type HistoricalPNL @entity {
   id: ID!
-  "User Address"
-  user: String!
-  "Token ID"
-  tokenId: BigInt!
-  "amount of token the user holds"
-  amount: BigInt!
-  "the avg price the user bought the token"
-  avgPrice: BigInt!
-  "realized profits - losses"
   realizedPnl: BigInt!
-  "total amount of token bought"
-  totalBought: BigInt!
+  user: String!
+  date: BigInt!
 }
 
-# Neg Risk Events/Markets
-type NegRiskEvent @entity {
-  "negRiskMarketId"
+# amm_markets
+type AMM_Market @entity {
   id: ID!
-  "Question Count"
-  questionCount: Int!
+  fixedProductMarketMaker: String!
 }
 
-type Condition @entity {
-  "conditionId"
+# combined_first
+type Combined @entity {
   id: ID!
-  "tokenIds"
-  positionIds: [BigInt!]!
-  "payouts"
-  payoutNumerators: [BigInt!]!
-  payoutDenominator: BigInt!
+  evt_tx_hash: String!
+  user: String!
+  tokenID: String!
+  amount: BigDecimal!
 }
 
-type FPMM @entity {
-  "FPMM address"
+# prices
+type Price @entity {
   id: ID!
-  "conditionId"
-  conditionId: String!
+  price: BigDecimal!
+}
+
+# holders
+type Holder @entity {
+  id: ID!
+  user: String!
+  tokenID: String!
+  amount: BigDecimal!
+  P1_P2_Latest_Price: BigDecimal!
 }
