@@ -24,16 +24,10 @@ dataSources:
         - name: ConditionalTokens
           file: ../abis/ConditionalTokens.json
       eventHandlers:
-        - event: ConditionPreparation(indexed bytes32,indexed address,indexed bytes32,uint256)
-          handler: handleConditionPreparation
-        - event: ConditionResolution(indexed bytes32,indexed address,indexed bytes32,uint256,uint256[])
-          handler: handleConditionResolution
-        - event: PositionSplit(indexed address,address,indexed bytes32,indexed bytes32,uint256[],uint256)
-          handler: handlePositionSplit
-        - event: PositionsMerge(indexed address,address,indexed bytes32,indexed bytes32,uint256[],uint256)
-          handler: handlePositionsMerge
-        - event: PayoutRedemption(indexed address,indexed address,indexed bytes32,bytes32,uint256[],uint256)
-          handler: handlePayoutRedemption
+        - event: TransferSingle(indexed address,indexed address,indexed address,uint256,uint256)
+          handler: handleTransferSingle
+        - event: TransferBatch(indexed address,indexed address,indexed address,uint256[],uint256[])
+          handler: handleTransferBatch
       file: ./src/ConditionalTokensMapping.ts
   - kind: ethereum/contract
     name: Exchange
@@ -78,38 +72,6 @@ dataSources:
           handler: handleOrderFilled
       file: ./src/ExchangeMapping.ts
   - kind: ethereum/contract
-    name: NegRiskAdapter
-    network: {{ networkName }}
-    source:
-      address: '{{ contracts.NegRiskAdapter.address }}'
-      abi: NegRiskAdapter
-      startBlock: {{ contracts.NegRiskAdapter.startBlock }}
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.6
-      language: wasm/assemblyscript
-      entities:
-        - UserPosition
-        - NegRiskEvent
-        - Condition
-      abis:
-        - name: NegRiskAdapter
-          file: ../abis/NegRiskAdapter.json
-      eventHandlers:
-        - event: PositionSplit(indexed address,indexed bytes32,uint256)
-          handler: handlePositionSplit
-        - event: PositionsMerge(indexed address,indexed bytes32,uint256)
-          handler: handlePositionsMerge
-        - event: PositionsConverted(indexed address,indexed bytes32,indexed uint256,uint256)
-          handler: handlePositionsConverted
-        - event: PayoutRedemption(indexed address,indexed bytes32,uint256[],uint256)
-          handler: handlePayoutRedemption
-        - event: MarketPrepared(indexed bytes32,indexed address,uint256,bytes)
-          handler: handleMarketPrepared
-        - event: QuestionPrepared(indexed bytes32,indexed bytes32,uint256,bytes)
-          handler: handleQuestionPrepared
-      file: ./src/NegRiskAdapterMapping.ts
-  - kind: ethereum/contract
     name: FixedProductMarketMakerFactory
     network: {{ networkName }}
     source:
@@ -130,27 +92,25 @@ dataSources:
           handler: handleFixedProductMarketMakerCreation
       file: ./src/FixedProductMarketMakerFactoryMapping.ts
 templates:
-  - name: FixedProductMarketMaker
+  - name: ERC20Detailed
     kind: ethereum/contract
     network: {{ networkName }}
     source:
-      abi: FixedProductMarketMaker
+      abi: ERC20Detailed
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
       language: wasm/assemblyscript
       entities:
-        - UserPosition
+        - FixedProductMarketMaker
+        - FpmmFundingAddition
+        - FpmmFundingRemoval
+        - FpmmPoolMembership
+        - FpmmTransaction
       abis:
-        - name: FixedProductMarketMaker
-          file: ../abis/FixedProductMarketMaker.json
+        - name: ERC20Detailed
+          file: ../abis/ERC20Detailed.json
       eventHandlers:
-        - event: FPMMBuy(indexed address,uint256,uint256,indexed uint256,uint256)
-          handler: handleBuy
-        - event: FPMMSell(indexed address,uint256,uint256,indexed uint256,uint256)
-          handler: handleSell
-        - event: FPMMFundingAdded(indexed address,uint256[],uint256)
-          handler: handleFundingAdded
-        - event: FPMMFundingRemoved(indexed address,uint256[],uint256,uint256)
-          handler: handleFundingRemoved
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handlePoolShareTransfer
       file: ./src/FixedProductMarketMakerMapping.ts
