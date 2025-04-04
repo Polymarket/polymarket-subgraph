@@ -1,7 +1,11 @@
 import { OrderFilled } from './types/Exchange/Exchange';
 
-import { Price } from './types/schema';
 import { parseOrderFilled } from './utils/parseOrderFilled';
+import { updateUserPositionWithBuy } from './utils/updateUserPositionWithBuy';
+import { updateUserPositionWithSell } from './utils/updateUserPositionWithSell';
+
+import { COLLATERAL_SCALE, TradeType } from '../../common/constants';
+import { getDateFromTimestamp } from './utils/getDateFromTimestamp';
 
 /**
  * Handles individual OrderFilled events
@@ -20,12 +24,25 @@ event OrderFilled(
 export function handleOrderFilled(event: OrderFilled): void {
   const order = parseOrderFilled(event);
 
-  let price = Price.load(order.positionId.toString());
+  const date = getDateFromTimestamp(event.block.timestamp);
 
-  if (price == null) {
-    price = new Price(order.positionId.toString());
+  // dollars per share
+  const price = order.quoteAmount.times(COLLATERAL_SCALE).div(order.baseAmount);
+
+  if (order.side == TradeType.BUY) {
+    updateUserPositionWithBuy(
+      order.account,
+      order.positionId,
+      price,
+      order.baseAmount,
+    );
+  } else {
+    updateUserPositionWithSell(
+      order.account,
+      order.positionId,
+      price,
+      order.baseAmount,
+      date,
+    );
   }
-
-  price.p = order.quoteAmount.div(order.baseAmount).toBigDecimal();
-  price.save();
 }

@@ -1,8 +1,45 @@
-type HistoricalPnl @entity {
+# Historical PnL
+type HistoricalPnL @entity {
   id: ID!
-  realizedPnl: BigDecimal!
+  realizedPnl: BigInt!
   user: String!
   date: BigInt!
+}
+
+# User Token Position
+type UserPosition @entity {
+  "User Address + Token ID"
+  id: ID!
+  "User Address"
+  user: String!
+  "Token ID"
+  tokenId: BigInt!
+  "amount of token the user holds"
+  amount: BigInt!
+  "the avg price the user bought the token"
+  avgPrice: BigInt!
+  "realized profits - losses"
+  realizedPnl: BigInt!
+  "total amount of token bought"
+  totalBought: BigInt!
+}
+
+# Neg Risk Events/Markets
+type NegRiskEvent @entity {
+  "negRiskMarketId"
+  id: ID!
+  "Question Count"
+  questionCount: Int!
+}
+
+type Condition @entity {
+  "conditionId"
+  id: ID!
+  "tokenIds"
+  positionIds: [BigInt!]!
+  "payouts"
+  payoutNumerators: [BigInt!]!
+  payoutDenominator: BigInt!
 }
 
 type FPMM @entity {
@@ -10,9 +47,4 @@ type FPMM @entity {
   id: ID!
   "conditionId"
   conditionId: String!
-}
-
-type Price @entity {
-  id: ID!
-  p: BigDecimal!
 }
