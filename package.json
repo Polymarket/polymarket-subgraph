@@ -41,7 +41,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/TokenUnion/polymarket-subgraph.git"
+    "url": "git+https://github.com/Polymarket/polymarket-subgraph.git"
   },
   "contributors": [
     {
@@ -55,9 +55,9 @@
   ],
   "license": "LGPL-3.0",
   "bugs": {
-    "url": "https://github.com/TokenUnion/polymarket-subgraph/issues"
+    "url": "https://github.com/Polymarket/polymarket-subgraph/issues"
   },
-  "homepage": "https://github.com/TokenUnion/polymarket-subgraph#readme",
+  "homepage": "https://github.com/Polymarket/polymarket-subgraph#readme",
   "devDependencies": {
     "@as-pect/cli": "^8.1.0",
     "@goldskycom/cli": "^7.4.0",

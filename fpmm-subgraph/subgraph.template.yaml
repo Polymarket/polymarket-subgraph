@@ -1,6 +1,6 @@
 specVersion: 0.0.4
 description: FPMM Subgraph
-repository: https://github.com/TokenUnion/polymarket-subgraph
+repository: https://github.com/Polymarket/polymarket-subgraph
 schema:
   file: ./schema.graphql
 dataSources:

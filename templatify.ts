@@ -26,11 +26,11 @@ Handlebars.registerHelper('lowercase', function (str) {
 //   switch (process.env.SUBGRAPH) {
 //     case 'tomafrench/polymarket':
 //       return 'mainnet';
-//     case 'TokenUnion/polymarket':
+//     case 'Polymarket/polymarket':
 //       return 'mainnet';
-//     case 'TokenUnion/polymarket-matic':
+//     case 'Polymarket/polymarket-matic':
 //       return 'matic';
-//     case 'TokenUnion/polymarket-mumbai':
+//     case 'Polymarket/polymarket-mumbai':
 //       return 'mumbai';
 //     default:
 //       return null;

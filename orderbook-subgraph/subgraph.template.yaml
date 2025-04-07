@@ -1,6 +1,6 @@
 specVersion: 0.0.6
 description: Orderbook Subgraph
-repository: https://github.com/TokenUnion/polymarket-subgraph
+repository: https://github.com/Polymarket/polymarket-subgraph
 schema:
   file: ./schema.graphql
 dataSources:
