@@ -1,0 +1,564 @@
+[
+  {
+    "type": "function",
+    "name": "balanceOf",
+    "inputs": [
+      {
+        "name": "target",
+        "type": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "canRelay",
+    "inputs": [
+      {
+        "name": "relay",
+        "type": "address"
+      },
+      {
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "name": "encodedFunction",
+        "type": "bytes"
+      },
+      {
+        "name": "transactionFee",
+        "type": "uint256"
+      },
+      {
+        "name": "gasPrice",
+        "type": "uint256"
+      },
+      {
+        "name": "gasLimit",
+        "type": "uint256"
+      },
+      {
+        "name": "nonce",
+        "type": "uint256"
+      },
+      {
+        "name": "signature",
+        "type": "bytes"
+      },
+      {
+        "name": "approvalData",
+        "type": "bytes"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "status",
+        "type": "uint256"
+      },
+      {
+        "name": "recipientContext",
+        "type": "bytes"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "depositFor",
+    "inputs": [
+      {
+        "name": "target",
+        "type": "address"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "payable"
+  },
+  {
+    "type": "function",
+    "name": "getNonce",
+    "inputs": [
+      {
+        "name": "from",
+        "type": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getRelay",
+    "inputs": [
+      {
+        "name": "relay",
+        "type": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "totalStake",
+        "type": "uint256"
+      },
+      {
+        "name": "unstakeDelay",
+        "type": "uint256"
+      },
+      {
+        "name": "unstakeTime",
+        "type": "uint256"
+      },
+      {
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "name": "state",
+        "type": "uint8"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "maxPossibleCharge",
+    "inputs": [
+      {
+        "name": "relayedCallStipend",
+        "type": "uint256"
+      },
+      {
+        "name": "gasPrice",
+        "type": "uint256"
+      },
+      {
+        "name": "transactionFee",
+        "type": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "penalizeIllegalTransaction",
+    "inputs": [
+      {
+        "name": "unsignedTx",
+        "type": "bytes"
+      },
+      {
+        "name": "signature",
+        "type": "bytes"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "penalizeRepeatedNonce",
+    "inputs": [
+      {
+        "name": "unsignedTx1",
+        "type": "bytes"
+      },
+      {
+        "name": "signature1",
+        "type": "bytes"
+      },
+      {
+        "name": "unsignedTx2",
+        "type": "bytes"
+      },
+      {
+        "name": "signature2",
+        "type": "bytes"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "registerRelay",
+    "inputs": [
+      {
+        "name": "transactionFee",
+        "type": "uint256"
+      },
+      {
+        "name": "url",
+        "type": "string"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "relayCall",
+    "inputs": [
+      {
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "name": "encodedFunction",
+        "type": "bytes"
+      },
+      {
+        "name": "transactionFee",
+        "type": "uint256"
+      },
+      {
+        "name": "gasPrice",
+        "type": "uint256"
+      },
+      {
+        "name": "gasLimit",
+        "type": "uint256"
+      },
+      {
+        "name": "nonce",
+        "type": "uint256"
+      },
+      {
+        "name": "signature",
+        "type": "bytes"
+      },
+      {
+        "name": "approvalData",
+        "type": "bytes"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "removeRelayByOwner",
+    "inputs": [
+      {
+        "name": "relay",
+        "type": "address"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "requiredGas",
+    "inputs": [
+      {
+        "name": "relayedCallStipend",
+        "type": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "stake",
+    "inputs": [
+      {
+        "name": "relayaddr",
+        "type": "address"
+      },
+      {
+        "name": "unstakeDelay",
+        "type": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "payable"
+  },
+  {
+    "type": "function",
+    "name": "unstake",
+    "inputs": [
+      {
+        "name": "relay",
+        "type": "address"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "withdraw",
+    "inputs": [
+      {
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "name": "dest",
+        "type": "address"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "event",
+    "name": "CanRelayFailed",
+    "inputs": [
+      {
+        "name": "relay",
+        "type": "address",
+        "indexed": true
+      },
+      {
+        "name": "from",
+        "type": "address",
+        "indexed": true
+      },
+      {
+        "name": "to",
+        "type": "address",
+        "indexed": true
+      },
+      {
+        "name": "selector",
+        "type": "bytes4",
+        "indexed": false
+      },
+      {
+        "name": "reason",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "Deposited",
+    "inputs": [
+      {
+        "name": "recipient",
+        "type": "address",
+        "indexed": true
+      },
+      {
+        "name": "from",
+        "type": "address",
+        "indexed": true
+      },
+      {
+        "name": "amount",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "Penalized",
+    "inputs": [
+      {
+        "name": "relay",
+        "type": "address",
+        "indexed": true
+      },
+      {
+        "name": "sender",
+        "type": "address",
+        "indexed": false
+      },
+      {
+        "name": "amount",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "RelayAdded",
+    "inputs": [
+      {
+        "name": "relay",
+        "type": "address",
+        "indexed": true
+      },
+      {
+        "name": "owner",
+        "type": "address",
+        "indexed": true
+      },
+      {
+        "name": "transactionFee",
+        "type": "uint256",
+        "indexed": false
+      },
+      {
+        "name": "stake",
+        "type": "uint256",
+        "indexed": false
+      },
+      {
+        "name": "unstakeDelay",
+        "type": "uint256",
+        "indexed": false
+      },
+      {
+        "name": "url",
+        "type": "string",
+        "indexed": false
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "RelayRemoved",
+    "inputs": [
+      {
+        "name": "relay",
+        "type": "address",
+        "indexed": true
+      },
+      {
+        "name": "unstakeTime",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "Staked",
+    "inputs": [
+      {
+        "name": "relay",
+        "type": "address",
+        "indexed": true
+      },
+      {
+        "name": "stake",
+        "type": "uint256",
+        "indexed": false
+      },
+      {
+        "name": "unstakeDelay",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "TransactionRelayed",
+    "inputs": [
+      {
+        "name": "relay",
+        "type": "address",
+        "indexed": true
+      },
+      {
+        "name": "from",
+        "type": "address",
+        "indexed": true
+      },
+      {
+        "name": "to",
+        "type": "address",
+        "indexed": true
+      },
+      {
+        "name": "selector",
+        "type": "bytes4",
+        "indexed": false
+      },
+      {
+        "name": "status",
+        "type": "uint8",
+        "indexed": false
+      },
+      {
+        "name": "charge",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "Unstaked",
+    "inputs": [
+      {
+        "name": "relay",
+        "type": "address",
+        "indexed": true
+      },
+      {
+        "name": "stake",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "Withdrawn",
+    "inputs": [
+      {
+        "name": "account",
+        "type": "address",
+        "indexed": true
+      },
+      {
+        "name": "dest",
+        "type": "address",
+        "indexed": true
+      },
+      {
+        "name": "amount",
+        "type": "uint256",
+        "indexed": false
+      }
+    ],
+    "anonymous": false
+  }
+]

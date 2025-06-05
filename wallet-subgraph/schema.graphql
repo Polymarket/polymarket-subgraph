@@ -1,0 +1,17 @@
+type Wallet @entity {
+  "wallet address"
+  id: ID!
+  "signer address"
+  signer: String!
+  "'proxy' or 'safe'"
+  type: String!
+  "USDC.e balance"
+  balance: BigInt!
+}
+
+type GlobalUSDCBalance @entity {
+  "Empty string"
+  id: ID!
+  "Global USDC.e balance"
+  balance: BigInt!
+}

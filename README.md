@@ -12,6 +12,9 @@
 
 * pnl-subgraph
 
+* polymarket-subgraph
+
+* sports-oracle-subgraph
 
 ## Environment Variables
 

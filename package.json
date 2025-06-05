@@ -8,7 +8,7 @@
     "prepare:mumbai": "NETWORK_NAME=mumbai ts-node ./templatify.ts && yarn codegen",
     "publish-graph:matic": "yarn prepare:matic && yarn deploy:matic",
     "publish-graph:mumbai": "yarn prepare:mumbai && yarn deploy:mumbai",
-    "test": "RUST_BACKTRACE=full graph test",
+    "test": "graph test --docker",
     "templatify:matic": "ts-node ./templatify.ts matic",
     "activity:codegen": "yarn graph codegen ./activity-subgraph/subgraph.yaml --output-dir ./activity-subgraph/src/types",
     "activity:build": "yarn graph build ./activity-subgraph/subgraph.yaml",
@@ -37,7 +37,12 @@
     "oracle:build": "yarn graph build ./sports-oracle-subgraph/subgraph.yaml",
     "oracle:create-local": "graph create --node http://localhost:8020/ sports-oracle-subgraph",
     "oracle:deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 sports-oracle-subgraph ./sports-oracle-subgraph/subgraph.yaml",
-    "oracle:remove-local": "graph remove --node http://localhost:8020/ sports-oracle-subgraph"
+    "oracle:remove-local": "graph remove --node http://localhost:8020/ sports-oracle-subgraph",
+    "wallet:codegen": "yarn graph codegen ./wallet-subgraph/subgraph.yaml --output-dir ./wallet-subgraph/src/types",
+    "wallet:build": "yarn graph build ./wallet-subgraph/subgraph.yaml",
+    "wallet:create-local": "graph create --node http://localhost:8020/ wallet-subgraph",
+    "wallet:deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 wallet-subgraph ./wallet-subgraph/subgraph.yaml",
+    "wallet:remove-local": "graph remove --node http://localhost:8020/ wallet-subgraph"
   },
   "repository": {
     "type": "git",
