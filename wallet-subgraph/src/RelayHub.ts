@@ -6,12 +6,12 @@ import {
 } from '../../common/constants';
 import { computeProxyWalletAddress } from '../../common/utils/computeProxyWalletAddress';
 
-import { RelayCallCall } from './types/RelayHub/RelayHub';
+import { TransactionRelayed } from './types/RelayHub/RelayHub';
 import { Wallet } from './types/schema';
 
-export function handleRelayCall(call: RelayCallCall): void {
-  const from = call.inputs.from;
-  const to = call.inputs.to;
+export function handleTransactionRelayed(event: TransactionRelayed): void {
+  const from = event.params.from;
+  const to = event.params.to;
 
   // ignore if not a proxy wallet factory call
   if (!to.equals(PROXY_WALLET_FACTORY)) {
