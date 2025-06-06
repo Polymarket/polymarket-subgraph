@@ -1,4 +1,4 @@
-specVersion: 0.0.1
+specVersion: 0.0.4
 description: oi-subgraph
 repository: https://github.com/Polymarket/polymarket-subgraph
 schema:
@@ -15,7 +15,7 @@ dataSources:
       startBlock: {{ contracts.UmaSportsOracle.startBlock }}
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
         - Game

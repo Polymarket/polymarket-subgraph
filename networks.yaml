@@ -53,6 +53,24 @@ matic:
       startBlock: 68931384
     USDC:
       address: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174'
+      transactionHash: '0x51103659d8827d6d24732d1168de73390f4f387d58a8281944241657f1bc61d7'
+      startBlock: 5013591
+    ProxyWalletFactory:
+      address: '0xaB45c5A4B0c941a2F231C04C3f49182e1A254052'
+      transactionHash: '0xda92d52957b2f8eb6f3f66e20a24a21f99e544e1cb2bc15b643beb3344eb4d99'
+      startBlock: 4022827
+    ProxyWalletImplementation:
+      address: '0x44e999d5c2F66Ef0861317f9A4805AC2e90aEB4f'
+      transactionHash: '0xda92d52957b2f8eb6f3f66e20a24a21f99e544e1cb2bc15b643beb3344eb4d99'
+      startBlock: 4022827
+    RelayHub:
+      address: '0xD216153c06E857cD7f72665E0aF1d7D82172F494'
+      transactionHash: '0x34159122fb20e9ee0c2e1b1b6ad59018a47403e473ffffcd5a401ec6428dfb79'
+      startBlock: 3764531
+    SafeProxyFactory:
+      address: '0xaacFeEa03eb1561C4e67d661e40682Bd20E3541b'
+      transactionHash: '0xddcfc612da555656acb1ac68d50a64cd07a8f9a84af534410567d781c49dfe5f'
+      startBlock: 19426226
   networkName: matic
 mumbai:
   contracts:

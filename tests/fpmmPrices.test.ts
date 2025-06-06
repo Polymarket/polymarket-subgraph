@@ -1,7 +1,8 @@
 import { BigInt } from '@graphprotocol/graph-ts';
 import { assert, describe, test } from 'matchstick-as/assembly/index';
-import { calculatePrices } from '../polymarket-subgraph/src/utils/fpmm-utils';
-import { COLLATERAL_SCALE, COLLATERAL_SCALE_DEC } from '../common/constants';
+
+import { COLLATERAL_SCALE_DEC } from '../common/constants';
+import { calculatePrices } from '../fpmm-subgraph/src/utils/fpmm-utils';
 import { computeFpmmPrice } from '../pnl-subgraph/src/utils/computeFpmmPrice';
 
 describe('fpmmPrices()', () => {

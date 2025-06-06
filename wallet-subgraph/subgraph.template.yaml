@@ -1,0 +1,90 @@
+specVersion: 0.0.5
+description: wallet-subgraph
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: RelayHub
+    network: {{ networkName }}
+    source:
+      address: '{{ contracts.RelayHub.address }}'
+      abi: RelayHub
+      startBlock: {{ contracts.RelayHub.startBlock }}
+    mapping:
+      kind: ethereum/call
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Wallet
+      abis:
+        - name: RelayHub
+          file: ../abis/RelayHub.json
+      callHandlers:
+        - function: relayCall(address,address,bytes,uint256,uint256,uint256,uint256,bytes,bytes)
+          handler: handleRelayCall
+      file: ./src/RelayHub.ts
+
+  - kind: ethereum
+    name: ProxyWalletFactory
+    network: {{ networkName }} 
+    source:
+      address: '{{ contracts.ProxyWalletFactory.address }}'
+      abi: ProxyWalletFactory
+      startBlock: {{ contracts.ProxyWalletFactory.startBlock }} 
+    mapping:
+      kind: ethereum/call
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Wallet
+      abis:
+        - name: ProxyWalletFactory
+          file: ../abis/ProxyWalletFactory.json
+      callHandlers:
+        - function: proxy((uint8,address,uint256,bytes)[])
+          handler: handleCallProxy
+      file: ./src/ProxyWalletFactory.ts
+
+  - kind: ethereum
+    name: SafeProxyFactory
+    network: {{ networkName }} 
+    source:
+      address: '{{ contracts.SafeProxyFactory.address }}'
+      abi: SafeProxyFactory
+      startBlock: {{ contracts.SafeProxyFactory.startBlock }} 
+    mapping:
+      kind: ethereum/call
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Wallet
+      abis:
+        - name: SafeProxyFactory
+          file: ../abis/SafeProxyFactory.json
+      eventHandlers:
+        - event: ProxyCreation(address,address)
+          handler: handleProxyCreation
+      file: ./src/SafeProxyFactory.ts
+
+
+  - kind: ethereum
+    name: USDC
+    network: {{ networkName }}
+    source:
+      address: '{{ contracts.USDC.address }}'
+      abi: ERC20
+      startBlock: {{ contracts.USDC.startBlock }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Wallet
+        - GlobalUSDCBalance
+      abis:
+        - name: ERC20
+          file: ../abis/ERC20.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleUSDCTransfer
+      file: ./src/USDC.ts
