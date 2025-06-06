@@ -11,7 +11,7 @@ dataSources:
       abi: RelayHub
       startBlock: {{ contracts.RelayHub.startBlock }}
     mapping:
-      kind: ethereum/call
+      kind: ethereum/events
       apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
@@ -19,31 +19,10 @@ dataSources:
       abis:
         - name: RelayHub
           file: ../abis/RelayHub.json
-      callHandlers:
-        - function: relayCall(address,address,bytes,uint256,uint256,uint256,uint256,bytes,bytes)
-          handler: handleRelayCall
+      eventHandlers:
+        - event: TransactionRelayed(indexed address,indexed address,indexed address,bytes4,uint8,uint256)
+          handler: handleTransactionRelayed
       file: ./src/RelayHub.ts
-
-  - kind: ethereum
-    name: ProxyWalletFactory
-    network: {{ networkName }} 
-    source:
-      address: '{{ contracts.ProxyWalletFactory.address }}'
-      abi: ProxyWalletFactory
-      startBlock: {{ contracts.ProxyWalletFactory.startBlock }} 
-    mapping:
-      kind: ethereum/call
-      apiVersion: 0.0.6
-      language: wasm/assemblyscript
-      entities:
-        - Wallet
-      abis:
-        - name: ProxyWalletFactory
-          file: ../abis/ProxyWalletFactory.json
-      callHandlers:
-        - function: proxy((uint8,address,uint256,bytes)[])
-          handler: handleCallProxy
-      file: ./src/ProxyWalletFactory.ts
 
   - kind: ethereum
     name: SafeProxyFactory
@@ -53,7 +32,7 @@ dataSources:
       abi: SafeProxyFactory
       startBlock: {{ contracts.SafeProxyFactory.startBlock }} 
     mapping:
-      kind: ethereum/call
+      kind: ethereum/events
       apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
