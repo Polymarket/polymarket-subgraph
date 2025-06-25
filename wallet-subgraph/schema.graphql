@@ -9,6 +9,8 @@ type Wallet @entity {
   balance: BigInt!
   "Last updated timestamp"
   timestamp: BigInt!
+  "Creation timestamp"
+  createdAt: BigInt!
 }
 
 type GlobalUSDCBalance @entity {

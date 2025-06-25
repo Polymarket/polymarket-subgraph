@@ -11,6 +11,8 @@ export function handleProxyCreation(event: ProxyCreation): void {
     newWallet.signer = event.params.owner.toHexString();
     newWallet.type = 'safe';
     newWallet.balance = BigInt.fromI32(0);
+    newWallet.timestamp = event.block.timestamp;
+    newWallet.createdAt = event.block.timestamp;
     newWallet.save();
   }
 }

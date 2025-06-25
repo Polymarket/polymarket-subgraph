@@ -30,6 +30,8 @@ export function handleTransactionRelayed(event: TransactionRelayed): void {
     newWallet.signer = from.toHexString();
     newWallet.type = 'proxy';
     newWallet.balance = BigInt.fromI32(0);
+    newWallet.timestamp = event.block.timestamp;
+    newWallet.createdAt = event.block.timestamp;
     newWallet.save();
   }
 }
