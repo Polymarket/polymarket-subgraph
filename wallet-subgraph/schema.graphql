@@ -7,6 +7,8 @@ type Wallet @entity {
   type: String!
   "USDC.e balance"
   balance: BigInt!
+  "Last updated timestamp"
+  timestamp: BigInt!
 }
 
 type GlobalUSDCBalance @entity {
