@@ -1,7 +1,5 @@
 import { BigInt, log } from '@graphprotocol/graph-ts';
 
-import { updateUserPositionWithBuy } from './utils/updateUserPositionWithBuy';
-import { updateUserPositionWithSell } from './utils/updateUserPositionWithSell';
 import {
   PositionSplit,
   PositionsMerge,
@@ -12,6 +10,8 @@ import {
 } from './types/NegRiskAdapter/NegRiskAdapter';
 import { NegRiskEvent } from './types/schema';
 import { loadCondition } from './utils/loadCondition';
+import { updateUserPositionWithBuy } from './utils/updateUserPositionWithBuy';
+import { updateUserPositionWithSell } from './utils/updateUserPositionWithSell';
 
 import { getNegRiskPositionId } from '../../common';
 import {
@@ -19,9 +19,7 @@ import {
   FIFTY_CENTS,
   NEG_RISK_EXCHANGE,
 } from '../../common/constants';
-import { loadOrCreateUserPosition } from './utils/loadOrCreateUserPosition';
 import { indexSetContains } from '../../common/utils/indexSetContains';
-import { computeNegRiskYesPrice } from './utils/computeNegRiskYesPrice';
 
 // @ts-expect-error Cannot find name 'u8'.
 const YES_INDEX: u8 = 0;
@@ -100,76 +98,49 @@ export function handlePositionsConverted(event: PositionsConverted): void {
     return;
   }
 
-  // @ts-expect-error Cannot find name 'u32'.
-  const questionCount = <u32>negRiskEvent.questionCount;
+  // @ts-expect-error Cannot find name 'u8'.
+  const questionCount = <u8>negRiskEvent.questionCount;
   const indexSet = event.params.indexSet;
 
-  // 1. NO_PRICE is obtained as the average of the NO token average prices
-  // @ts-expect-error Cannot find name 'u8'.
-  let questionIndex: u8 = 0;
-  let noCount = 0;
-  let noPriceSum = BigInt.zero();
+  // 1/N
+  const yesTokenPrice = COLLATERAL_SCALE.div(BigInt.fromI32(questionCount));
+  // (N-1)/N
+  const noTokenPrice = yesTokenPrice.times(BigInt.fromI32(questionCount - 1));
 
-  // get the average NO price
-  for (; questionIndex < questionCount; questionIndex++) {
-    //
-    // check if indexSet AND (1 << questionIndex) > 0
-    // if so, then the user is converting NO tokens
-    // otherwise,
-    //
+  for (
+    // @ts-expect-error Cannot find name 'u8'.
+    let questionIndex: u8 = 0;
+    questionIndex < questionCount;
+    questionIndex++
+  ) {
     if (indexSetContains(indexSet, questionIndex)) {
       // if the indexSet contains this index
-      // then the user sells NO tokens
-      noCount++;
-
+      // and the user sells NO tokens
       const positionId = getNegRiskPositionId(
         event.params.marketId,
         questionIndex,
         NO_INDEX,
       );
 
-      const userPosition = loadOrCreateUserPosition(
-        event.params.stakeholder,
-        positionId,
-      );
-
-      // sell the NO token for the average price it was obtained for
       updateUserPositionWithSell(
         event.params.stakeholder,
         positionId,
-        userPosition.avgPrice,
+        noTokenPrice,
         event.params.amount,
       );
-
-      noPriceSum = noPriceSum.plus(userPosition.avgPrice);
-    }
-  }
-
-  const noPrice = noPriceSum.div(BigInt.fromI32(noCount));
-
-  // questionCount could equal noCount,
-  // in that case we didn't buy any YES tokens
-  if (questionCount == noCount) {
-    return;
-  }
-
-  const yesPrice = computeNegRiskYesPrice(noPrice, noCount, questionCount);
-
-  questionIndex = 0;
-  for (; questionIndex < questionCount; questionIndex++) {
-    if (!indexSetContains(indexSet, questionIndex)) {
-      // if the index set does NOT contain this index
-      // then the user buys YES tokens
+    } else {
+      // the indexSet does not contain this index
+      // and the user buys YES tokens
       const positionId = getNegRiskPositionId(
         event.params.marketId,
         questionIndex,
         YES_INDEX,
       );
-      // buy the YES tokens with average YES price computed above
+
       updateUserPositionWithBuy(
         event.params.stakeholder,
         positionId,
-        yesPrice,
+        yesTokenPrice,
         event.params.amount,
       );
     }
