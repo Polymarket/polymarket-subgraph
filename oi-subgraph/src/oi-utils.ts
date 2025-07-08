@@ -20,25 +20,28 @@ function getGlobalOpenInterest(): GlobalOpenInterest {
   return oi as GlobalOpenInterest;
 }
 
-export function updateGlobalOpenInterest(amount: BigInt): void {
+export function updateGlobalOpenInterest(amount: BigInt, updatedAt: BigInt): void {
   let globaloi = getGlobalOpenInterest();
   globaloi.amount = globaloi.amount.plus(amount);
+  globaloi.updatedAt = updatedAt;
   globaloi.save();
 }
 
 export function updateMarketOpenInterest(
   condition: string,
   amount: BigInt,
+  updatedAt: BigInt,
 ): void {
   let mktoi = getMarketOpenInterest(condition);
   mktoi.amount = mktoi.amount.plus(amount);
+  mktoi.updatedAt = updatedAt;
   mktoi.save();
 }
 
-export function updateOpenInterest(condition: string, amount: BigInt): void {
+export function updateOpenInterest(condition: string, amount: BigInt, updatedAt: BigInt): void {
   // Update OI for the market
-  updateMarketOpenInterest(condition, amount);
+  updateMarketOpenInterest(condition, amount, updatedAt);
 
   // Update Global OI
-  updateGlobalOpenInterest(amount);
+  updateGlobalOpenInterest(amount, updatedAt);
 }

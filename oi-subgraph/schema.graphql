@@ -1,6 +1,7 @@
 type Condition @entity {
   "conditionId"
   id: ID!
+  createdAt: BigInt!
 }
 
 # Neg Risk Events/Markets
@@ -11,6 +12,7 @@ type NegRiskEvent @entity {
   feeBps: BigInt!
   "Question Count"
   questionCount: Int!
+  createdAt: BigInt!
 }
 
 # Market Open Interest
@@ -19,6 +21,7 @@ type MarketOpenInterest @entity {
   id: ID!
   "Open interest for the market"
   amount: BigInt!
+  updatedAt: BigInt!
 }
 
 # Global Open Interest
@@ -27,4 +30,5 @@ type GlobalOpenInterest @entity {
   id: ID!
   "Global Open Interest"
   amount: BigInt!
+  updatedAt: BigInt!
 }

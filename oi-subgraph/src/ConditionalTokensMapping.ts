@@ -25,7 +25,7 @@ export function handlePositionSplit(event: PositionSplit): void {
 
   // Split increases OI
   const amount = event.params.amount;
-  updateOpenInterest(conditionId, amount);
+  updateOpenInterest(conditionId, amount, event.block.timestamp);
 }
 
 export function handlePositionsMerge(event: PositionsMerge): void {
@@ -46,7 +46,7 @@ export function handlePositionsMerge(event: PositionsMerge): void {
   // Merge reduces OI
   const amount = event.params.amount.neg();
 
-  updateOpenInterest(conditionId, amount);
+  updateOpenInterest(conditionId, amount, event.block.timestamp);
 }
 
 export function handlePayoutRedemption(event: PayoutRedemption): void {
@@ -67,7 +67,7 @@ export function handlePayoutRedemption(event: PayoutRedemption): void {
   // Redeem reduces OI
   const amount = event.params.payout.neg();
 
-  updateOpenInterest(conditionId, amount);
+  updateOpenInterest(conditionId, amount, event.block.timestamp);
 }
 
 export function handleConditionPreparation(event: ConditionPreparation): void {
@@ -79,5 +79,6 @@ export function handleConditionPreparation(event: ConditionPreparation): void {
   // new condition
   const conditionId = event.params.conditionId.toHexString();
   const condition = new Condition(conditionId);
+  condition.createdAt = event.block.timestamp;
   condition.save();
 }

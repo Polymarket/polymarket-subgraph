@@ -29,7 +29,7 @@ export function handlePositionSplit(event: PositionSplit): void {
 
   // Split increases OI
   const amount = event.params.amount;
-  updateOpenInterest(conditionId, amount);
+  updateOpenInterest(conditionId, amount, event.block.timestamp);
 }
 
 export function handlePositionsMerge(event: PositionsMerge): void {
@@ -42,7 +42,7 @@ export function handlePositionsMerge(event: PositionsMerge): void {
   // Merge reduces OI
   const amount = event.params.amount.neg();
 
-  updateOpenInterest(conditionId, amount);
+  updateOpenInterest(conditionId, amount, event.block.timestamp);
 }
 
 export function handlePayoutRedemption(event: PayoutRedemption): void {
@@ -56,7 +56,7 @@ export function handlePayoutRedemption(event: PayoutRedemption): void {
   // Redeem reduces OI
   const amount = event.params.payout.neg();
 
-  updateOpenInterest(conditionId, amount);
+  updateOpenInterest(conditionId, amount, event.block.timestamp);
 }
 
 export function handlePositionsConverted(event: PositionsConverted): void {
@@ -104,9 +104,9 @@ export function handlePositionsConverted(event: PositionsConverted): void {
       // Reduce OI by the fees released to the vault
       for (let i = 0; i < noCount; i++) {
         let condition = conditionIds[i];
-        updateMarketOpenInterest(condition, feeReleasedToVault.div(divisor));
+        updateMarketOpenInterest(condition, feeReleasedToVault.div(divisor), event.block.timestamp);
       }
-      updateGlobalOpenInterest(feeReleasedToVault);
+      updateGlobalOpenInterest(feeReleasedToVault, event.block.timestamp);
     }
 
     let collateralReleasedToUser = amount.times(multiplier).neg();
@@ -116,9 +116,10 @@ export function handlePositionsConverted(event: PositionsConverted): void {
       updateMarketOpenInterest(
         condition,
         collateralReleasedToUser.div(divisor),
+        event.block.timestamp,
       );
     }
-    updateGlobalOpenInterest(collateralReleasedToUser);
+    updateGlobalOpenInterest(collateralReleasedToUser, event.block.timestamp);
   }
 }
 
@@ -126,6 +127,7 @@ export function handleMarketPrepared(event: MarketPrepared): void {
   const negRiskEvent = new NegRiskEvent(event.params.marketId.toHexString());
   negRiskEvent.questionCount = 0;
   negRiskEvent.feeBps = event.params.feeBips;
+  negRiskEvent.createdAt = event.block.timestamp;
   negRiskEvent.save();
 }
 
