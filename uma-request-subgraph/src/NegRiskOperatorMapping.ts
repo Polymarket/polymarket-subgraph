@@ -82,7 +82,7 @@ export function handleNegRiskReported(event: QuestionReportedEvent): void {
   let activityId = questionId + "-" + event.block.number.toString() + "-" + event.logIndex.toString();
   let activity = new RequestActivity(activityId);
   activity.request = questionId;
-  activity.activityType = RequestActivityType.NEGRISK_RESOLVE;
+  activity.activityType = RequestActivityType.NEGRISK_REPORT;
   activity.timestamp = event.block.timestamp;
   activity.admin = event.transaction.from;
   activity.save();
