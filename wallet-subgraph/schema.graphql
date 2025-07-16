@@ -7,6 +7,10 @@ type Wallet @entity {
   type: String!
   "USDC.e balance"
   balance: BigInt!
+  "Last transfer timestamp"
+  lastTransfer: BigInt!
+  "Creation timestamp"
+  createdAt: BigInt!
 }
 
 type GlobalUSDCBalance @entity {

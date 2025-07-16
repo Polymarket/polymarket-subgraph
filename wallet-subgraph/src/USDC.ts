@@ -19,6 +19,7 @@ export function handleUSDCTransfer(event: Transfer): void {
     const wallet = Wallet.load(event.params.to.toHexString());
     if (wallet != null) {
       wallet.balance = wallet.balance.plus(event.params.amount);
+      wallet.lastTransfer = event.block.timestamp;
       wallet.save();
 
       const globalUSDCBalance = getGlobalUSDCBalance();
@@ -34,6 +35,7 @@ export function handleUSDCTransfer(event: Transfer): void {
     const wallet = Wallet.load(event.params.from.toHexString());
     if (wallet != null) {
       wallet.balance = wallet.balance.minus(event.params.amount);
+      wallet.lastTransfer = event.block.timestamp;
       wallet.save();
 
       const globalUSDCBalance = getGlobalUSDCBalance();
