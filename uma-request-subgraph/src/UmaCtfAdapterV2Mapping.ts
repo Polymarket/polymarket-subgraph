@@ -29,6 +29,8 @@ export function handleInitialize(event: QuestionInitializedEvent): void {
     request.result = [];
   }
 
+  request.ancillaryData = event.params.ancillaryData;
+  request.requestor = event.transaction.from;
   request.adapter = event.address;
   request.requestTimestamp = event.block.timestamp;
   request.save();

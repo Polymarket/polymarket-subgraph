@@ -30,6 +30,8 @@ export function handleInitialize(event: QuestionInitializedEvent): void {
   }
 
   request.adapter = event.address;
+  request.ancillaryData = event.params.ancillaryData;
+  request.adapter = event.address;
   request.requestTimestamp = event.block.timestamp;
   request.save();
 

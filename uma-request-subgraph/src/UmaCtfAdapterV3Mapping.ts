@@ -28,8 +28,10 @@ export function handleInitialize(event: QuestionInitializedEvent): void {
     request.resolved = false;
     request.result = [];
   }
-
+  
   request.adapter = event.address;
+  request.ancillaryData = event.params.ancillaryData;
+  request.requestor = event.transaction.from;
   request.requestTimestamp = event.block.timestamp;
   request.save();
 
