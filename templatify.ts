@@ -11,6 +11,7 @@ const config = {
     'fpmm-subgraph/subgraph.yaml',
     'orderbook-subgraph/subgraph.yaml',
     'sports-oracle-subgraph/subgraph.yaml',
+    'uma-request-subgraph/subgraph.yaml',
     'wallet-subgraph/subgraph.yaml',
     'common/constants.ts',
   ],

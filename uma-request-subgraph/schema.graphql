@@ -1,0 +1,31 @@
+type Request @entity {
+  id: ID!
+
+  requestTimestamp: BigInt!
+  ancillaryData: Bytes!
+  adapter: Bytes!
+  requestor: Bytes!
+
+  flaggedAt: BigInt
+  paused: Boolean!
+  resolved: Boolean!
+  result: [BigInt!]
+
+  negRisk: Boolean!
+  negRiskMarketId: Bytes!
+  negRiskQuestionId: Bytes!
+  negRiskFlaggedAt: BigInt!
+  negRiskResolved: Boolean!
+  negRiskResult: [BigInt!]
+
+  activity: [RequestActivity!]! @derivedFrom(field: "request")
+}
+
+type RequestActivity @entity {
+  id: ID!
+
+  request: Request!
+  activityType: Int!
+  timestamp: BigInt!
+  admin: Bytes!
+}
