@@ -1,0 +1,191 @@
+specVersion: 0.0.5
+description: uma-request-subgraph
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: NegRiskOperator
+    network: {{ networkName }}
+    source:
+      address: '{{ contracts.NegRiskOperator.address }}'
+      abi: NegRiskOperator
+      startBlock: 63000000
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Request
+        - RequestActivity
+      abis:
+        - name: NegRiskOperator
+          file: ../abis/NegRiskOperator.json
+      eventHandlers:
+        - event: QuestionPrepared(indexed bytes32,indexed bytes32,indexed bytes32,uint256,bytes)
+          handler: handleQuestionPrepared
+        - event: QuestionResolved(indexed bytes32,bool)
+          handler: handleQuestionResolved
+        - event: QuestionFlagged(indexed bytes32)
+          handler: handleQuestionFlagged
+        - event: QuestionUnflagged(indexed bytes32)
+          handler: handleQuestionUnflagged
+        - event: QuestionReported(indexed bytes32,bytes32,bool)
+          handler: handleQuestionReported
+        - event: QuestionEmergencyResolved(indexed bytes32,bool)
+          handler: handleQuestionEmergencyResolved
+      file: ./src/NegRiskOperatorMapping.ts
+  - kind: ethereum
+    name: NegRiskUmaCtfAdapter
+    network: {{ networkName }}
+    source:
+      address: '{{ contracts.NegRiskUmaCtfAdapter.address }}'
+      abi: UmaCtfAdapterV3
+      startBlock: 63000000
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Request
+        - RequestActivity
+      abis:
+        - name: UmaCtfAdapterV3
+          file: ../abis/UmaCtfAdapterV3.json
+      eventHandlers:
+        - event: QuestionInitialized(indexed bytes32,indexed uint256,indexed address,bytes,address,uint256,uint256)
+          handler: handleInitialize
+        - event: QuestionResolved(indexed bytes32,indexed int256,uint256[])
+          handler: handleResolved
+        - event: QuestionFlagged(indexed bytes32)
+          handler: handleFlag
+        - event: QuestionPaused(indexed bytes32)
+          handler: handlePause
+        - event: QuestionUnpaused(indexed bytes32)
+          handler: handleUnpause
+        - event: QuestionReset(indexed bytes32)
+          handler: handleReset
+        - event: QuestionEmergencyResolved(indexed bytes32,uint256[])
+          handler: handleEmergencyResolve
+      file: ./src/UmaCtfAdapterV3Mapping.ts
+  - kind: ethereum
+    name: OptimisticOracleV2
+    network: {{ networkName }}
+    source:
+      address: '{{ contracts.OptimisticOracleV2.address }}'
+      abi: OptimisticOracleV2
+      startBlock: 63000000
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Request
+        - RequestActivity
+      abis:
+        - name: OptimisticOracleV2
+          file: ../abis/OptimisticOracleV2.json
+      eventHandlers:
+        - event: ProposePrice(indexed address,indexed address,bytes32,uint256,bytes,int256,uint256,address)
+          handler: handleProposePrice
+        - event: DisputePrice(indexed address,indexed address,indexed address,bytes32,uint256,bytes,int256)
+          handler: handleDisputePrice
+      file: ./src/OptimisticOracleMapping.ts
+  - kind: ethereum
+    name: UmaCtfAdapterV2
+    network: {{ networkName }}
+    source:
+      address: '{{ contracts.UmaCtfAdapterV2.address }}'
+      abi: UmaCtfAdapterV2
+      startBlock: 63000000
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Request
+        - RequestActivity
+      abis:
+        - name: UmaCtfAdapterV2
+          file: ../abis/UmaCtfAdapterV2.json
+      eventHandlers:
+        - event: QuestionInitialized(indexed bytes32,indexed uint256,indexed address,bytes,address,uint256,uint256)
+          handler: handleInitialize
+        - event: QuestionResolved(indexed bytes32,indexed int256,uint256[])
+          handler: handleResolved
+        - event: QuestionFlagged(indexed bytes32)
+          handler: handleFlag
+        - event: QuestionPaused(indexed bytes32)
+          handler: handlePause
+        - event: QuestionUnpaused(indexed bytes32)
+          handler: handleUnpause
+        - event: QuestionReset(indexed bytes32)
+          handler: handleReset
+        - event: QuestionEmergencyResolved(indexed bytes32,uint256[])
+          handler: handleEmergencyResolve
+      file: ./src/UmaCtfAdapterV2Mapping.ts
+  - kind: ethereum
+    name: UmaCtfAdapterV3
+    network: {{ networkName }}
+    source:
+      address: '{{ contracts.UmaCtfAdapterV3.address }}'
+      abi: UmaCtfAdapterV3
+      startBlock: 63000000
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Request
+        - RequestActivity
+      abis:
+        - name: UmaCtfAdapterV3
+          file: ../abis/UmaCtfAdapterV3.json
+      eventHandlers:
+        - event: QuestionInitialized(indexed bytes32,indexed uint256,indexed address,bytes,address,uint256,uint256)
+          handler: handleInitialize
+        - event: QuestionResolved(indexed bytes32,indexed int256,uint256[])
+          handler: handleResolved
+        - event: QuestionFlagged(indexed bytes32)
+          handler: handleFlag
+        - event: QuestionPaused(indexed bytes32)
+          handler: handlePause
+        - event: QuestionUnpaused(indexed bytes32)
+          handler: handleUnpause
+        - event: QuestionReset(indexed bytes32)
+          handler: handleReset
+        - event: QuestionEmergencyResolved(indexed bytes32,uint256[])
+          handler: handleEmergencyResolve
+      file: ./src/UmaCtfAdapterV3Mapping.ts
+  - kind: ethereum
+    name: UmaCtfAdapterV4
+    network: {{ networkName }}
+    source:
+      address: '{{ contracts.UmaCtfAdapterV4.address }}'
+      abi: UmaCtfAdapterV4
+      startBlock: 63000000
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Request
+        - RequestActivity
+      abis:
+        - name: UmaCtfAdapterV4
+          file: ../abis/UmaCtfAdapterV4.json
+      eventHandlers:
+        - event: QuestionInitialized(indexed bytes32,indexed uint256,indexed address,bytes,address,uint256,uint256)
+          handler: handleInitialize
+        - event: QuestionResolved(indexed bytes32,indexed int256,uint256[])
+          handler: handleResolved
+        - event: QuestionFlagged(indexed bytes32)
+          handler: handleFlag
+        - event: QuestionPaused(indexed bytes32)
+          handler: handlePause
+        - event: QuestionUnpaused(indexed bytes32)
+          handler: handleUnpause
+        - event: QuestionReset(indexed bytes32)
+          handler: handleReset
+        - event: QuestionManuallyResolved(indexed bytes32,uint256[])
+          handler: handleManuallyResolved
+      file: ./src/UmaCtfAdapterV4Mapping.ts

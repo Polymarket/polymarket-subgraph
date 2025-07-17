@@ -1,27 +1,5 @@
-mainnet:
-  contracts:
-    ConditionalTokens:
-      address: '0xC59b0e4De5F1248C1140964E0fF287B192407E0C'
-      transactionHash: '0x7e10ef2a2116a46153d52ad50d6428fa9f4b19c36c803ba2f707cd70b7434348'
-      startBlock: 8623608
-    FixedProductMarketMakerFactory:
-      address: '0x4b4fb012298aceA6D5149be3f02cc252A88b755b'
-      transactionHash: '0xc21edc19c4f4249f047cec4cb13052e4ce39446766f723b9a94b3748a433e9b6'
-      startBlock: 9969340
-    Exchange:
-      address: ''
-      transactionHash: ''
-      startBlock: 0
-    NegRiskExchange:
-      address: ''
-      transactionHash: ''
-      startBlock: 0
-    UmaSportsOracle:
-      address: ''
-      transactionHash: ''
-      startBlock: 0
-    networkName: mainnet
 matic:
+  networkName: matic
   contracts:
     ConditionalTokens:
       address: '0x4D97DCd97eC945f40cF65F87097ACe5EA0476045'
@@ -71,8 +49,18 @@ matic:
       address: '0xaacFeEa03eb1561C4e67d661e40682Bd20E3541b'
       transactionHash: '0xddcfc612da555656acb1ac68d50a64cd07a8f9a84af534410567d781c49dfe5f'
       startBlock: 19426226
-  networkName: matic
+    UmaCtfAdapterV2:
+      address: '0x6A9D222616C90FcA5754cd1333cFD9b7fb6a4F74'
+    UmaCtfAdapterV3:
+      address: '0x157Ce2d672854c848c9b79C49a8Cc6cc89176a49'
+    UmaCtfAdapterV4:
+      address: '0xFf5AA608D67cba3e7483d78D36BaDD8a0AD1fC36'
+    NegRiskUmaCtfAdapter:
+      address: '0x2F5e3684cb1F318ec51b00Edba38d79Ac2c0aA9d'
+    OptimisticOracleV2:
+      address: '0xeE3Afe347D5C74317041E2618C49534dAf887c24'
 mumbai:
+  networkName: mumbai
   contracts:
     ConditionalTokens:
       address: '0x7D8610E9567d2a6C9FBf66a5A13E9Ba8bb120d43'
@@ -94,4 +82,3 @@ mumbai:
       address: ''
       transactionHash: ''
       startBlock: 0
-  networkName: mumbai
