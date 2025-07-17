@@ -32,7 +32,7 @@ export function handleInitialize(event: QuestionInitializedEvent): void {
     event.logIndex.toString();
   let activity = new RequestActivity(activityId);
   activity.request = request.id;
-  activity.activityType = RequestActivityType.INITIALIZE;
+  activity.type = RequestActivityType.INITIALIZE;
   activity.timestamp = event.block.timestamp;
   activity.admin = event.transaction.from;
   activity.save();
@@ -52,7 +52,7 @@ export function handleResolved(event: QuestionResolvedEvent): void {
     id + '-' + event.block.number.toString() + '-' + event.logIndex.toString();
   let activity = new RequestActivity(activityId);
   activity.request = id;
-  activity.activityType = RequestActivityType.RESOLVE;
+  activity.type = RequestActivityType.RESOLVE;
   activity.timestamp = event.block.timestamp;
   activity.admin = event.transaction.from;
   activity.save();
@@ -73,7 +73,7 @@ export function handleFlag(event: QuestionFlaggedEvent): void {
   let activity = new RequestActivity(activityId);
 
   activity.request = id;
-  activity.activityType = RequestActivityType.FLAG;
+  activity.type = RequestActivityType.FLAG;
   activity.timestamp = event.block.timestamp;
   activity.admin = event.transaction.from;
   activity.save();
@@ -93,7 +93,7 @@ export function handlePause(event: QuestionPausedEvent): void {
   let activity = new RequestActivity(activityId);
 
   activity.request = id;
-  activity.activityType = RequestActivityType.PAUSE;
+  activity.type = RequestActivityType.PAUSE;
   activity.timestamp = event.block.timestamp;
   activity.admin = event.transaction.from;
   activity.save();
@@ -113,7 +113,7 @@ export function handleUnpause(event: QuestionUnpausedEvent): void {
   let activity = new RequestActivity(activityId);
 
   activity.request = id;
-  activity.activityType = RequestActivityType.UNPAUSE;
+  activity.type = RequestActivityType.UNPAUSE;
   activity.timestamp = event.block.timestamp;
   activity.admin = event.transaction.from;
   activity.save();
@@ -132,7 +132,7 @@ export function handleReset(event: QuestionResetEvent): void {
   let activity = new RequestActivity(activityId);
 
   activity.request = id;
-  activity.activityType = RequestActivityType.RESET;
+  activity.type = RequestActivityType.RESET;
   activity.timestamp = event.block.timestamp;
   activity.admin = event.transaction.from;
   activity.save();
@@ -155,7 +155,7 @@ export function handleManuallyResolved(
   let activity = new RequestActivity(activityId);
 
   activity.request = id;
-  activity.activityType = RequestActivityType.RESOLVE_MANUALLY;
+  activity.type = RequestActivityType.RESOLVE_MANUALLY;
   activity.timestamp = event.block.timestamp;
   activity.admin = event.transaction.from;
   activity.save();

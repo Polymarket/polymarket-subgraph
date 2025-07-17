@@ -21,7 +21,7 @@ export function handleProposePrice(event: ProposePriceEvent): void {
     let activity = new RequestActivity(activityId);
 
     activity.request = id;
-    activity.activityType = RequestActivityType.PROPOSE;
+    activity.type = RequestActivityType.PROPOSE;
     activity.timestamp = event.block.timestamp;
     activity.admin = event.transaction.from;
     activity.save();
@@ -42,7 +42,7 @@ export function handleDisputePrice(event: DisputePriceEvent): void {
     let activity = new RequestActivity(activityId);
 
     activity.request = id;
-    activity.activityType = RequestActivityType.DISPUTE;
+    activity.type = RequestActivityType.DISPUTE;
     activity.timestamp = event.block.timestamp;
     activity.admin = event.transaction.from;
     activity.save();

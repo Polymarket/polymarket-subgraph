@@ -44,7 +44,7 @@ export function handleNegRiskFlagged(event: QuestionFlaggedEvent): void {
   let activity = new RequestActivity(activityId);
 
   activity.request = questionId;
-  activity.activityType = RequestActivityType.NEGRISK_FLAG;
+  activity.type = RequestActivityType.NEGRISK_FLAG;
   activity.timestamp = event.block.timestamp;
   activity.admin = event.transaction.from;
   activity.save();
@@ -68,7 +68,7 @@ export function handleNegRiskUnflagged(event: QuestionUnflaggedEvent): void {
   let activity = new RequestActivity(activityId);
 
   activity.request = questionId;
-  activity.activityType = RequestActivityType.NEGRISK_UNFLAG;
+  activity.type = RequestActivityType.NEGRISK_UNFLAG;
   activity.timestamp = event.block.timestamp;
   activity.admin = event.transaction.from;
   activity.save();
@@ -92,7 +92,7 @@ export function handleNegRiskReported(event: QuestionReportedEvent): void {
   let activity = new RequestActivity(activityId);
 
   activity.request = questionId;
-  activity.activityType = RequestActivityType.NEGRISK_REPORT;
+  activity.type = RequestActivityType.NEGRISK_REPORT;
   activity.timestamp = event.block.timestamp;
   activity.admin = event.transaction.from;
   activity.save();
@@ -117,7 +117,7 @@ export function handleNegRiskResolved(event: QuestionResolvedEvent): void {
   let activity = new RequestActivity(activityId);
 
   activity.request = questionId;
-  activity.activityType = RequestActivityType.NEGRISK_RESOLVE;
+  activity.type = RequestActivityType.NEGRISK_RESOLVE;
   activity.timestamp = event.block.timestamp;
   activity.admin = event.transaction.from;
   activity.save();
@@ -144,7 +144,7 @@ export function handleNegRiskEmergencyResolved(
   let activity = new RequestActivity(activityId);
 
   activity.request = questionId;
-  activity.activityType = RequestActivityType.NEGRISK_RESOLVE_MANUALLY;
+  activity.type = RequestActivityType.NEGRISK_RESOLVE_MANUALLY;
   activity.timestamp = event.block.timestamp;
   activity.admin = event.transaction.from;
   activity.save();
