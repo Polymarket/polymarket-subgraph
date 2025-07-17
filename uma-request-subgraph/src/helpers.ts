@@ -1,5 +1,6 @@
-import { Request } from "./types/schema";
-import { BigInt, Bytes } from "@graphprotocol/graph-ts";
+import { BigInt, Bytes } from '@graphprotocol/graph-ts';
+
+import { Request } from './types/schema';
 
 export function createNewRequestEntity(id: string): Request {
   let request = new Request(id);
@@ -18,4 +19,10 @@ export function createNewRequestEntity(id: string): Request {
   request.negRiskResult = [];
   request.flaggedAt = BigInt.fromI32(0);
   return request;
-} 
+}
+
+export function boolToResultArray(result: boolean): BigInt[] {
+  return result
+    ? [BigInt.fromI32(1), BigInt.fromI32(0)]
+    : [BigInt.fromI32(0), BigInt.fromI32(1)];
+}

@@ -1,16 +1,17 @@
 import { BigInt, Bytes } from '@graphprotocol/graph-ts';
 
-import { RequestActivityType } from "./RequestActivityType";
+import { RequestActivityType } from './constants';
+import { createNewRequestEntity } from './helpers';
+import { Request, RequestActivity } from './types/schema';
 import {
+  QuestionInitialized as QuestionInitializedEvent,
+  QuestionResolved as QuestionResolvedEvent,
   QuestionFlagged as QuestionFlaggedEvent,
   QuestionPaused as QuestionPausedEvent,
   QuestionUnpaused as QuestionUnpausedEvent,
-  QuestionEmergencyResolved as QuestionEmergencyResolvedEvent,
   QuestionReset as QuestionResetEvent,
-  QuestionInitialized as QuestionInitializedEvent
-} from "./types/UmaCtfAdapterV3/UmaCtfAdapterV3";
-import { Request, RequestActivity } from "./types/schema";
-import { createNewRequestEntity } from './helpers';
+  QuestionEmergencyResolved as QuestionEmergencyResolvedEvent,
+} from './types/UmaCtfAdapterV3/UmaCtfAdapterV3';
 
 export function handleInitialize(event: QuestionInitializedEvent): void {
   const id = event.params.questionID.toHex();
@@ -23,7 +24,12 @@ export function handleInitialize(event: QuestionInitializedEvent): void {
   request.requestTimestamp = event.block.timestamp;
   request.save();
 
-  let activityId = request.id + "-" + event.block.number.toString() + "-" + event.logIndex.toString();
+  let activityId =
+    request.id +
+    '-' +
+    event.block.number.toString() +
+    '-' +
+    event.logIndex.toString();
   let activity = new RequestActivity(activityId);
   activity.request = request.id;
   activity.activityType = RequestActivityType.INITIALIZE;
@@ -32,16 +38,40 @@ export function handleInitialize(event: QuestionInitializedEvent): void {
   activity.save();
 }
 
+export function handleResolved(event: QuestionResolvedEvent): void {
+  const id = event.params.questionID.toHex();
+  let request = Request.load(id);
+
+  if (request) {
+    request.resolved = true;
+    request.result = event.params.payouts;
+    request.save();
+  }
+
+  let activityId =
+    id + '-' + event.block.number.toString() + '-' + event.logIndex.toString();
+  let activity = new RequestActivity(activityId);
+  activity.request = id;
+  activity.activityType = RequestActivityType.RESOLVE;
+  activity.timestamp = event.block.timestamp;
+  activity.admin = event.transaction.from;
+  activity.save();
+}
+
 export function handleFlag(event: QuestionFlaggedEvent): void {
   const id = event.params.questionID.toHex();
   let request = Request.load(id);
+
   if (request) {
     request.flaggedAt = event.block.timestamp;
     request.paused = true;
     request.save();
   }
-  let activityId = id + "-" + event.block.number.toString() + "-" + event.logIndex.toString();
+
+  let activityId =
+    id + '-' + event.block.number.toString() + '-' + event.logIndex.toString();
   let activity = new RequestActivity(activityId);
+
   activity.request = id;
   activity.activityType = RequestActivityType.FLAG;
   activity.timestamp = event.block.timestamp;
@@ -52,12 +82,16 @@ export function handleFlag(event: QuestionFlaggedEvent): void {
 export function handlePause(event: QuestionPausedEvent): void {
   const id = event.params.questionID.toHex();
   let request = Request.load(id);
+
   if (request) {
     request.paused = true;
     request.save();
   }
-  let activityId = id + "-" + event.block.number.toString() + "-" + event.logIndex.toString();
+
+  let activityId =
+    id + '-' + event.block.number.toString() + '-' + event.logIndex.toString();
   let activity = new RequestActivity(activityId);
+
   activity.request = id;
   activity.activityType = RequestActivityType.PAUSE;
   activity.timestamp = event.block.timestamp;
@@ -68,12 +102,16 @@ export function handlePause(event: QuestionPausedEvent): void {
 export function handleUnpause(event: QuestionUnpausedEvent): void {
   const id = event.params.questionID.toHex();
   let request = Request.load(id);
+
   if (request) {
     request.paused = false;
     request.save();
   }
-  let activityId = id + "-" + event.block.number.toString() + "-" + event.logIndex.toString();
+
+  let activityId =
+    id + '-' + event.block.number.toString() + '-' + event.logIndex.toString();
   let activity = new RequestActivity(activityId);
+
   activity.request = id;
   activity.activityType = RequestActivityType.UNPAUSE;
   activity.timestamp = event.block.timestamp;
@@ -84,12 +122,16 @@ export function handleUnpause(event: QuestionUnpausedEvent): void {
 export function handleReset(event: QuestionResetEvent): void {
   const id = event.params.questionID.toHex();
   let request = Request.load(id);
+
   if (request) {
     request.requestTimestamp = event.block.timestamp;
     request.save();
   }
-  let activityId = id + "-" + event.block.number.toString() + "-" + event.logIndex.toString();
+
+  let activityId =
+    id + '-' + event.block.number.toString() + '-' + event.logIndex.toString();
   let activity = new RequestActivity(activityId);
+
   activity.request = id;
   activity.activityType = RequestActivityType.RESET;
   activity.timestamp = event.block.timestamp;
@@ -97,19 +139,25 @@ export function handleReset(event: QuestionResetEvent): void {
   activity.save();
 }
 
-export function handleEmergencyResolve(event: QuestionEmergencyResolvedEvent): void {
+export function handleEmergencyResolve(
+  event: QuestionEmergencyResolvedEvent,
+): void {
   const id = event.params.questionID.toHex();
   let request = Request.load(id);
+
   if (request) {
     request.resolved = true;
     request.result = event.params.payouts;
     request.save();
   }
-  let activityId = id + "-" + event.block.number.toString() + "-" + event.logIndex.toString();
+
+  let activityId =
+    id + '-' + event.block.number.toString() + '-' + event.logIndex.toString();
   let activity = new RequestActivity(activityId);
+
   activity.request = id;
   activity.activityType = RequestActivityType.RESOLVE_MANUALLY;
   activity.timestamp = event.block.timestamp;
   activity.admin = event.transaction.from;
   activity.save();
-} 
+}
