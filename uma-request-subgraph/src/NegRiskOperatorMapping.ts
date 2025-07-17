@@ -10,6 +10,7 @@ import {
   QuestionEmergencyResolved as QuestionEmergencyResolvedEvent
 } from "./types/NegRiskOperator/NegRiskOperator";
 import { Request, RequestActivity } from "./types/schema";
+import { createNewRequestEntity } from "./helpers";
 
 function boolToResultArray(result: boolean): BigInt[] {
   return result ? [BigInt.fromI32(1), BigInt.fromI32(0)] : [BigInt.fromI32(0), BigInt.fromI32(1)];
@@ -18,19 +19,8 @@ function boolToResultArray(result: boolean): BigInt[] {
 export function handleQuestionPrepared(event: QuestionPreparedEvent): void {
   const requestId = event.params.requestId.toHex();
   let request = Request.load(requestId);
+  if (!request) request = createNewRequestEntity(requestId);
 
-  if (!request) {
-    request = new Request(requestId);
-    request.requestTimestamp = event.block.timestamp;
-    request.ancillaryData = new Bytes(0);
-    request.adapter = event.address;
-    request.requestor = event.transaction.from;
-    request.flaggedAt = BigInt.fromI32(0);
-    request.paused = false;
-    request.resolved = false;
-    request.result = [];
-  }
-  
   request.negRisk = true;
   request.negRiskMarketId = event.params.marketId;
   request.negRiskQuestionId = event.params.questionId;

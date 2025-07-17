@@ -10,24 +10,12 @@ import {
 import { Request, RequestActivity } from "./types/schema";
 import { RequestActivityType } from "./RequestActivityType";
 import { BigInt, Bytes } from '@graphprotocol/graph-ts';
+import { createNewRequestEntity } from "./helpers";
 
 export function handleInitialize(event: QuestionInitializedEvent): void {
   const id = event.params.questionID.toHex();
   let request = Request.load(id);
-
-  if (!request) {
-    request = new Request(id);
-    request.negRisk = false;
-    request.negRiskMarketId = new Bytes(0);
-    request.negRiskQuestionId = new Bytes(0);
-    request.negRiskFlaggedAt = BigInt.fromI32(0);
-    request.negRiskResolved = false;
-    request.negRiskResult = [];
-    request.flaggedAt = BigInt.fromI32(0);
-    request.paused = false;
-    request.resolved = false;
-    request.result = [];
-  }
+  if (!request) request = createNewRequestEntity(id);
 
   request.adapter = event.address;
   request.ancillaryData = event.params.ancillaryData;

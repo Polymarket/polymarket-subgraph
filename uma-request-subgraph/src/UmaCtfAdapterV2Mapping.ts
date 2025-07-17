@@ -10,31 +10,18 @@ import {
   QuestionInitialized as QuestionInitializedEvent
 } from "./types/UmaCtfAdapterV2/UmaCtfAdapterV2";
 import { Request, RequestActivity } from "./types/schema";
+import { createNewRequestEntity } from "./helpers";
 
 export function handleInitialize(event: QuestionInitializedEvent): void {
   const id = event.params.questionID.toHex();
   let request = Request.load(id);
-
-  if (!request) {
-    request = new Request(id);
-    request.negRisk = false;
-    request.negRiskMarketId = new Bytes(0);
-    request.negRiskQuestionId = new Bytes(0);
-    request.negRiskFlaggedAt = BigInt.fromI32(0);
-    request.negRiskResolved = false;
-    request.negRiskResult = [];
-    request.flaggedAt = BigInt.fromI32(0);
-    request.paused = false;
-    request.resolved = false;
-    request.result = [];
-  }
+  if (!request) request = createNewRequestEntity(id);
 
   request.ancillaryData = event.params.ancillaryData;
   request.requestor = event.transaction.from;
   request.adapter = event.address;
   request.requestTimestamp = event.block.timestamp;
   request.save();
-
 
   let activityId = request.id + "-" + event.block.number.toString() + "-" + event.logIndex.toString();
   let activity = new RequestActivity(activityId);
