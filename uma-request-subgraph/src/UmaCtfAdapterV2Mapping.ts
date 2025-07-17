@@ -31,6 +31,7 @@ export function handleInitialize(event: QuestionInitializedEvent): void {
     '-' +
     event.logIndex.toString();
   let activity = new RequestActivity(activityId);
+
   activity.request = request.id;
   activity.type = RequestActivityType.INITIALIZE;
   activity.timestamp = event.block.timestamp;
@@ -51,6 +52,7 @@ export function handleResolved(event: QuestionResolvedEvent): void {
   let activityId =
     id + '-' + event.block.number.toString() + '-' + event.logIndex.toString();
   let activity = new RequestActivity(activityId);
+
   activity.request = id;
   activity.type = RequestActivityType.RESOLVE;
   activity.timestamp = event.block.timestamp;
@@ -61,14 +63,17 @@ export function handleResolved(event: QuestionResolvedEvent): void {
 export function handleFlag(event: QuestionFlaggedEvent): void {
   const id = event.params.questionID.toHex();
   let request = Request.load(id);
+
   if (request) {
     request.flaggedAt = event.block.timestamp;
     request.paused = true;
     request.save();
   }
+
   let activityId =
     id + '-' + event.block.number.toString() + '-' + event.logIndex.toString();
   let activity = new RequestActivity(activityId);
+
   activity.request = id;
   activity.type = RequestActivityType.FLAG;
   activity.timestamp = event.block.timestamp;
@@ -79,13 +84,16 @@ export function handleFlag(event: QuestionFlaggedEvent): void {
 export function handlePause(event: QuestionPausedEvent): void {
   const id = event.params.questionID.toHex();
   let request = Request.load(id);
+
   if (request) {
     request.paused = true;
     request.save();
   }
+
   let activityId =
     id + '-' + event.block.number.toString() + '-' + event.logIndex.toString();
   let activity = new RequestActivity(activityId);
+
   activity.request = id;
   activity.type = RequestActivityType.PAUSE;
   activity.timestamp = event.block.timestamp;
@@ -96,13 +104,16 @@ export function handlePause(event: QuestionPausedEvent): void {
 export function handleUnpause(event: QuestionUnpausedEvent): void {
   const id = event.params.questionID.toHex();
   let request = Request.load(id);
+
   if (request) {
     request.paused = false;
     request.save();
   }
+
   let activityId =
     id + '-' + event.block.number.toString() + '-' + event.logIndex.toString();
   let activity = new RequestActivity(activityId);
+
   activity.request = id;
   activity.type = RequestActivityType.UNPAUSE;
   activity.timestamp = event.block.timestamp;
@@ -113,13 +124,16 @@ export function handleUnpause(event: QuestionUnpausedEvent): void {
 export function handleReset(event: QuestionResetEvent): void {
   const id = event.params.questionID.toHex();
   let request = Request.load(id);
+
   if (request) {
     request.requestTimestamp = event.block.timestamp;
     request.save();
   }
+
   let activityId =
     id + '-' + event.block.number.toString() + '-' + event.logIndex.toString();
   let activity = new RequestActivity(activityId);
+
   activity.request = id;
   activity.type = RequestActivityType.RESET;
   activity.timestamp = event.block.timestamp;
@@ -132,14 +146,17 @@ export function handleEmergencyResolve(
 ): void {
   const id = event.params.questionID.toHex();
   let request = Request.load(id);
+
   if (request) {
     request.resolved = true;
     request.result = event.params.payouts;
     request.save();
   }
+
   let activityId =
     id + '-' + event.block.number.toString() + '-' + event.logIndex.toString();
   let activity = new RequestActivity(activityId);
+
   activity.request = id;
   activity.type = RequestActivityType.RESOLVE_MANUALLY;
   activity.timestamp = event.block.timestamp;

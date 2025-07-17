@@ -20,7 +20,7 @@ export function handleInitialize(event: QuestionInitializedEvent): void {
 
   request.adapter = event.address;
   request.ancillaryData = event.params.ancillaryData;
-  request.adapter = event.address;
+  request.requestor = event.transaction.from;
   request.requestTimestamp = event.block.timestamp;
   request.save();
 
@@ -31,6 +31,7 @@ export function handleInitialize(event: QuestionInitializedEvent): void {
     '-' +
     event.logIndex.toString();
   let activity = new RequestActivity(activityId);
+
   activity.request = request.id;
   activity.type = RequestActivityType.INITIALIZE;
   activity.timestamp = event.block.timestamp;
@@ -51,6 +52,7 @@ export function handleResolved(event: QuestionResolvedEvent): void {
   let activityId =
     id + '-' + event.block.number.toString() + '-' + event.logIndex.toString();
   let activity = new RequestActivity(activityId);
+
   activity.request = id;
   activity.type = RequestActivityType.RESOLVE;
   activity.timestamp = event.block.timestamp;

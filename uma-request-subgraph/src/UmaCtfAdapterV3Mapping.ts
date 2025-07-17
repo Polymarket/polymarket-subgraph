@@ -31,6 +31,7 @@ export function handleInitialize(event: QuestionInitializedEvent): void {
     '-' +
     event.logIndex.toString();
   let activity = new RequestActivity(activityId);
+
   activity.request = request.id;
   activity.type = RequestActivityType.INITIALIZE;
   activity.timestamp = event.block.timestamp;
