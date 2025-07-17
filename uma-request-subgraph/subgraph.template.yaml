@@ -23,16 +23,16 @@ dataSources:
       eventHandlers:
         - event: QuestionPrepared(indexed bytes32,indexed bytes32,indexed bytes32,uint256,bytes)
           handler: handleQuestionPrepared
-        - event: QuestionFlagged(indexed bytes32)
-          handler: handleNegRiskFlagged
-        - event: QuestionUnflagged(indexed bytes32)
-          handler: handleNegRiskUnflagged
-        - event: QuestionReported(indexed bytes32,bytes32,bool)
-          handler: handleNegRiskReported
         - event: QuestionResolved(indexed bytes32,bool)
-          handler: handleNegRiskResolved
+          handler: handleQuestionResolved
+        - event: QuestionFlagged(indexed bytes32)
+          handler: handleQuestionFlagged
+        - event: QuestionUnflagged(indexed bytes32)
+          handler: handleQuestionUnflagged
+        - event: QuestionReported(indexed bytes32,bytes32,bool)
+          handler: handleQuestionReported
         - event: QuestionEmergencyResolved(indexed bytes32,bool)
-          handler: handleNegRiskEmergencyResolved
+          handler: handleQuestionEmergencyResolved
       file: ./src/NegRiskOperatorMapping.ts
   - kind: ethereum
     name: NegRiskUmaCtfAdapter
@@ -54,6 +54,8 @@ dataSources:
       eventHandlers:
         - event: QuestionInitialized(indexed bytes32,indexed uint256,indexed address,bytes,address,uint256,uint256)
           handler: handleInitialize
+        - event: QuestionResolved(indexed bytes32,indexed int256,uint256[])
+          handler: handleResolved
         - event: QuestionFlagged(indexed bytes32)
           handler: handleFlag
         - event: QuestionPaused(indexed bytes32)
@@ -108,6 +110,8 @@ dataSources:
       eventHandlers:
         - event: QuestionInitialized(indexed bytes32,indexed uint256,indexed address,bytes,address,uint256,uint256)
           handler: handleInitialize
+        - event: QuestionResolved(indexed bytes32,indexed int256,uint256[])
+          handler: handleResolved
         - event: QuestionFlagged(indexed bytes32)
           handler: handleFlag
         - event: QuestionPaused(indexed bytes32)
@@ -139,6 +143,8 @@ dataSources:
       eventHandlers:
         - event: QuestionInitialized(indexed bytes32,indexed uint256,indexed address,bytes,address,uint256,uint256)
           handler: handleInitialize
+        - event: QuestionResolved(indexed bytes32,indexed int256,uint256[])
+          handler: handleResolved
         - event: QuestionFlagged(indexed bytes32)
           handler: handleFlag
         - event: QuestionPaused(indexed bytes32)
@@ -170,6 +176,8 @@ dataSources:
       eventHandlers:
         - event: QuestionInitialized(indexed bytes32,indexed uint256,indexed address,bytes,address,uint256,uint256)
           handler: handleInitialize
+        - event: QuestionResolved(indexed bytes32,indexed int256,uint256[])
+          handler: handleResolved
         - event: QuestionFlagged(indexed bytes32)
           handler: handleFlag
         - event: QuestionPaused(indexed bytes32)
@@ -178,8 +186,6 @@ dataSources:
           handler: handleUnpause
         - event: QuestionReset(indexed bytes32)
           handler: handleReset
-        - event: QuestionResolved(indexed bytes32,indexed int256,uint256[])
-          handler: handleResolved
         - event: QuestionManuallyResolved(indexed bytes32,uint256[])
           handler: handleManuallyResolved
       file: ./src/UmaCtfAdapterV4Mapping.ts

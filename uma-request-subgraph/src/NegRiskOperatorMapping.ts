@@ -26,79 +26,7 @@ export function handleQuestionPrepared(event: QuestionPreparedEvent): void {
   request.save();
 }
 
-export function handleNegRiskFlagged(event: QuestionFlaggedEvent): void {
-  const questionId = event.params.questionId.toHex();
-  let request = Request.load(questionId);
-
-  if (request) {
-    request.negRiskFlaggedAt = event.block.timestamp;
-    request.save();
-  }
-
-  let activityId =
-    questionId +
-    '-' +
-    event.block.number.toString() +
-    '-' +
-    event.logIndex.toString();
-  let activity = new RequestActivity(activityId);
-
-  activity.request = questionId;
-  activity.type = RequestActivityType.NEGRISK_FLAG;
-  activity.timestamp = event.block.timestamp;
-  activity.admin = event.transaction.from;
-  activity.save();
-}
-
-export function handleNegRiskUnflagged(event: QuestionUnflaggedEvent): void {
-  const questionId = event.params.questionId.toHex();
-  let request = Request.load(questionId);
-
-  if (request) {
-    request.negRiskFlaggedAt = BigInt.fromI32(0);
-    request.save();
-  }
-
-  let activityId =
-    questionId +
-    '-' +
-    event.block.number.toString() +
-    '-' +
-    event.logIndex.toString();
-  let activity = new RequestActivity(activityId);
-
-  activity.request = questionId;
-  activity.type = RequestActivityType.NEGRISK_UNFLAG;
-  activity.timestamp = event.block.timestamp;
-  activity.admin = event.transaction.from;
-  activity.save();
-}
-
-export function handleNegRiskReported(event: QuestionReportedEvent): void {
-  const questionId = event.params.questionId.toHex();
-  let request = Request.load(questionId);
-
-  if (request) {
-    request.negRiskResult = boolToResultArray(event.params.result);
-    request.save();
-  }
-
-  let activityId =
-    questionId +
-    '-' +
-    event.block.number.toString() +
-    '-' +
-    event.logIndex.toString();
-  let activity = new RequestActivity(activityId);
-
-  activity.request = questionId;
-  activity.type = RequestActivityType.NEGRISK_REPORT;
-  activity.timestamp = event.block.timestamp;
-  activity.admin = event.transaction.from;
-  activity.save();
-}
-
-export function handleNegRiskResolved(event: QuestionResolvedEvent): void {
+export function handleQuestionResolved(event: QuestionResolvedEvent): void {
   const questionId = event.params.questionId.toHex();
   let request = Request.load(questionId);
 
@@ -123,7 +51,79 @@ export function handleNegRiskResolved(event: QuestionResolvedEvent): void {
   activity.save();
 }
 
-export function handleNegRiskEmergencyResolved(
+export function handleQuestionFlagged(event: QuestionFlaggedEvent): void {
+  const questionId = event.params.questionId.toHex();
+  let request = Request.load(questionId);
+
+  if (request) {
+    request.negRiskFlaggedAt = event.block.timestamp;
+    request.save();
+  }
+
+  let activityId =
+    questionId +
+    '-' +
+    event.block.number.toString() +
+    '-' +
+    event.logIndex.toString();
+  let activity = new RequestActivity(activityId);
+
+  activity.request = questionId;
+  activity.type = RequestActivityType.NEGRISK_FLAG;
+  activity.timestamp = event.block.timestamp;
+  activity.admin = event.transaction.from;
+  activity.save();
+}
+
+export function handleQuestionUnflagged(event: QuestionUnflaggedEvent): void {
+  const questionId = event.params.questionId.toHex();
+  let request = Request.load(questionId);
+
+  if (request) {
+    request.negRiskFlaggedAt = BigInt.fromI32(0);
+    request.save();
+  }
+
+  let activityId =
+    questionId +
+    '-' +
+    event.block.number.toString() +
+    '-' +
+    event.logIndex.toString();
+  let activity = new RequestActivity(activityId);
+
+  activity.request = questionId;
+  activity.type = RequestActivityType.NEGRISK_UNFLAG;
+  activity.timestamp = event.block.timestamp;
+  activity.admin = event.transaction.from;
+  activity.save();
+}
+
+export function handleQuestionReported(event: QuestionReportedEvent): void {
+  const questionId = event.params.questionId.toHex();
+  let request = Request.load(questionId);
+
+  if (request) {
+    request.negRiskResult = boolToResultArray(event.params.result);
+    request.save();
+  }
+
+  let activityId =
+    questionId +
+    '-' +
+    event.block.number.toString() +
+    '-' +
+    event.logIndex.toString();
+  let activity = new RequestActivity(activityId);
+
+  activity.request = questionId;
+  activity.type = RequestActivityType.NEGRISK_REPORT;
+  activity.timestamp = event.block.timestamp;
+  activity.admin = event.transaction.from;
+  activity.save();
+}
+
+export function handleQuestionEmergencyResolved(
   event: QuestionEmergencyResolvedEvent,
 ): void {
   const questionId = event.params.questionId.toHex();
