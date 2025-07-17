@@ -1,6 +1,7 @@
 type Request @entity {
   id: ID!
 
+  questionId: Bytes!
   requestTimestamp: BigInt!
   ancillaryData: Bytes!
   adapter: Bytes!
@@ -14,7 +15,6 @@ type Request @entity {
 
   negRisk: Boolean!
   negRiskMarketId: Bytes!
-  negRiskQuestionId: Bytes!
   negRiskFlaggedAt: BigInt!
   negRiskResolved: Boolean!
   negRiskResult: [BigInt!]
@@ -29,4 +29,11 @@ type RequestActivity @entity {
   type: Int!
   timestamp: BigInt!
   admin: Bytes!
+}
+
+type NegRiskQuestion @entity {
+  "questionId"
+  id: ID!
+
+  requestId: Bytes!
 }

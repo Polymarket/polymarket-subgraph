@@ -16,7 +16,12 @@ import {
 export function handleInitialize(event: QuestionInitializedEvent): void {
   const id = event.params.questionID.toHex();
   let request = Request.load(id);
-  if (!request) request = createNewRequestEntity(id);
+
+  if (!request) {
+    request = createNewRequestEntity(id);
+    // don't overwrite an existing questionId
+    request.questionId = event.params.questionID;
+  }
 
   request.adapter = event.address;
   request.ancillaryData = event.params.ancillaryData;
@@ -24,13 +29,13 @@ export function handleInitialize(event: QuestionInitializedEvent): void {
   request.requestTimestamp = event.block.timestamp;
   request.save();
 
-  let activityId =
+  const activityId =
     request.id +
     '-' +
     event.block.number.toString() +
     '-' +
     event.logIndex.toString();
-  let activity = new RequestActivity(activityId);
+  const activity = new RequestActivity(activityId);
 
   activity.request = request.id;
   activity.type = RequestActivityType.INITIALIZE;
@@ -49,9 +54,9 @@ export function handleResolved(event: QuestionResolvedEvent): void {
     request.save();
   }
 
-  let activityId =
+  const activityId =
     id + '-' + event.block.number.toString() + '-' + event.logIndex.toString();
-  let activity = new RequestActivity(activityId);
+  const activity = new RequestActivity(activityId);
 
   activity.request = id;
   activity.type = RequestActivityType.RESOLVE;
@@ -70,9 +75,9 @@ export function handleFlag(event: QuestionFlaggedEvent): void {
     request.save();
   }
 
-  let activityId =
+  const activityId =
     id + '-' + event.block.number.toString() + '-' + event.logIndex.toString();
-  let activity = new RequestActivity(activityId);
+  const activity = new RequestActivity(activityId);
 
   activity.request = id;
   activity.type = RequestActivityType.FLAG;
@@ -90,9 +95,9 @@ export function handlePause(event: QuestionPausedEvent): void {
     request.save();
   }
 
-  let activityId =
+  const activityId =
     id + '-' + event.block.number.toString() + '-' + event.logIndex.toString();
-  let activity = new RequestActivity(activityId);
+  const activity = new RequestActivity(activityId);
 
   activity.request = id;
   activity.type = RequestActivityType.PAUSE;
@@ -110,9 +115,9 @@ export function handleUnpause(event: QuestionUnpausedEvent): void {
     request.save();
   }
 
-  let activityId =
+  const activityId =
     id + '-' + event.block.number.toString() + '-' + event.logIndex.toString();
-  let activity = new RequestActivity(activityId);
+  const activity = new RequestActivity(activityId);
 
   activity.request = id;
   activity.type = RequestActivityType.UNPAUSE;
@@ -130,9 +135,9 @@ export function handleReset(event: QuestionResetEvent): void {
     request.save();
   }
 
-  let activityId =
+  const activityId =
     id + '-' + event.block.number.toString() + '-' + event.logIndex.toString();
-  let activity = new RequestActivity(activityId);
+  const activity = new RequestActivity(activityId);
 
   activity.request = id;
   activity.type = RequestActivityType.RESET;
@@ -153,9 +158,9 @@ export function handleEmergencyResolve(
     request.save();
   }
 
-  let activityId =
+  const activityId =
     id + '-' + event.block.number.toString() + '-' + event.logIndex.toString();
-  let activity = new RequestActivity(activityId);
+  const activity = new RequestActivity(activityId);
 
   activity.request = id;
   activity.type = RequestActivityType.RESOLVE_MANUALLY;

@@ -9,42 +9,38 @@ import {
 
 export function handleProposePrice(event: ProposePriceEvent): void {
   const id = crypto.keccak256(event.params.ancillaryData).toHex();
-  let request = Request.load(id);
+  const request = Request.load(id);
 
-  if (request) {
-    let activityId =
-      id +
-      '-' +
-      event.block.number.toString() +
-      '-' +
-      event.logIndex.toString();
-    let activity = new RequestActivity(activityId);
-
-    activity.request = id;
-    activity.type = RequestActivityType.PROPOSE;
-    activity.timestamp = event.block.timestamp;
-    activity.admin = event.transaction.from;
-    activity.save();
+  if (!request) {
+    return;
   }
+
+  const activityId =
+    id + '-' + event.block.number.toString() + '-' + event.logIndex.toString();
+  const activity = new RequestActivity(activityId);
+
+  activity.request = id;
+  activity.type = RequestActivityType.PROPOSE;
+  activity.timestamp = event.block.timestamp;
+  activity.admin = event.transaction.from;
+  activity.save();
 }
 
 export function handleDisputePrice(event: DisputePriceEvent): void {
   const id = crypto.keccak256(event.params.ancillaryData).toHex();
   let request = Request.load(id);
 
-  if (request) {
-    let activityId =
-      id +
-      '-' +
-      event.block.number.toString() +
-      '-' +
-      event.logIndex.toString();
-    let activity = new RequestActivity(activityId);
-
-    activity.request = id;
-    activity.type = RequestActivityType.DISPUTE;
-    activity.timestamp = event.block.timestamp;
-    activity.admin = event.transaction.from;
-    activity.save();
+  if (!request) {
+    return;
   }
+
+  const activityId =
+    id + '-' + event.block.number.toString() + '-' + event.logIndex.toString();
+  const activity = new RequestActivity(activityId);
+
+  activity.request = id;
+  activity.type = RequestActivityType.DISPUTE;
+  activity.timestamp = event.block.timestamp;
+  activity.admin = event.transaction.from;
+  activity.save();
 }
