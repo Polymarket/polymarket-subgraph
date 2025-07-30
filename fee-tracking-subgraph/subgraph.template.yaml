@@ -1,0 +1,26 @@
+specVersion: 0.0.4
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: FeeModule
+    network: {{ network }}
+    source:
+      address: "{{ contracts.FeeModule.address }}"
+      abi: FeeModule
+      startBlock: {{ contracts.FeeModule.startBlock }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - FeeEvent
+        - GlobalFeeStats
+        - UserFeeStats
+      abis:
+        - name: FeeModule
+          file: ./abis/FeeModule.json
+      eventHandlers:
+        - event: FeeCharged(indexed address,uint256,uint256,uint256,uint256)
+          handler: handleFeeCharged
+      file: ./src/FeeModuleMapping.ts 
