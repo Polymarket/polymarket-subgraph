@@ -1,70 +1,507 @@
 [
   {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "bytes32",
-        "name": "orderHash",
-        "type": "bytes32"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "maker",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "id",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "refund",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "feeAmount",
-        "type": "uint256"
-      }
-    ],
-    "name": "FeeRefunded",
-    "type": "event"
+      "type": "constructor",
+      "inputs": [
+          {
+              "name": "_exchange",
+              "type": "address",
+              "internalType": "address"
+          }
+      ],
+      "stateMutability": "nonpayable"
   },
   {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "token",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "id",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "FeeWithdrawn",
-    "type": "event"
+      "type": "function",
+      "name": "addAdmin",
+      "inputs": [
+          {
+              "name": "admin",
+              "type": "address",
+              "internalType": "address"
+          }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+  },
+  {
+      "type": "function",
+      "name": "admins",
+      "inputs": [
+          {
+              "name": "",
+              "type": "address",
+              "internalType": "address"
+          }
+      ],
+      "outputs": [
+          {
+              "name": "",
+              "type": "uint256",
+              "internalType": "uint256"
+          }
+      ],
+      "stateMutability": "view"
+  },
+  {
+      "type": "function",
+      "name": "collateral",
+      "inputs": [],
+      "outputs": [
+          {
+              "name": "",
+              "type": "address",
+              "internalType": "address"
+          }
+      ],
+      "stateMutability": "view"
+  },
+  {
+      "type": "function",
+      "name": "ctf",
+      "inputs": [],
+      "outputs": [
+          {
+              "name": "",
+              "type": "address",
+              "internalType": "address"
+          }
+      ],
+      "stateMutability": "view"
+  },
+  {
+      "type": "function",
+      "name": "exchange",
+      "inputs": [],
+      "outputs": [
+          {
+              "name": "",
+              "type": "address",
+              "internalType": "contract IExchange"
+          }
+      ],
+      "stateMutability": "view"
+  },
+  {
+      "type": "function",
+      "name": "isAdmin",
+      "inputs": [
+          {
+              "name": "addr",
+              "type": "address",
+              "internalType": "address"
+          }
+      ],
+      "outputs": [
+          {
+              "name": "",
+              "type": "bool",
+              "internalType": "bool"
+          }
+      ],
+      "stateMutability": "view"
+  },
+  {
+      "type": "function",
+      "name": "matchOrders",
+      "inputs": [
+          {
+              "name": "takerOrder",
+              "type": "tuple",
+              "internalType": "struct Order",
+              "components": [
+                  {
+                      "name": "salt",
+                      "type": "uint256",
+                      "internalType": "uint256"
+                  },
+                  {
+                      "name": "maker",
+                      "type": "address",
+                      "internalType": "address"
+                  },
+                  {
+                      "name": "signer",
+                      "type": "address",
+                      "internalType": "address"
+                  },
+                  {
+                      "name": "taker",
+                      "type": "address",
+                      "internalType": "address"
+                  },
+                  {
+                      "name": "tokenId",
+                      "type": "uint256",
+                      "internalType": "uint256"
+                  },
+                  {
+                      "name": "makerAmount",
+                      "type": "uint256",
+                      "internalType": "uint256"
+                  },
+                  {
+                      "name": "takerAmount",
+                      "type": "uint256",
+                      "internalType": "uint256"
+                  },
+                  {
+                      "name": "expiration",
+                      "type": "uint256",
+                      "internalType": "uint256"
+                  },
+                  {
+                      "name": "nonce",
+                      "type": "uint256",
+                      "internalType": "uint256"
+                  },
+                  {
+                      "name": "feeRateBps",
+                      "type": "uint256",
+                      "internalType": "uint256"
+                  },
+                  {
+                      "name": "side",
+                      "type": "uint8",
+                      "internalType": "enum Side"
+                  },
+                  {
+                      "name": "signatureType",
+                      "type": "uint8",
+                      "internalType": "enum SignatureType"
+                  },
+                  {
+                      "name": "signature",
+                      "type": "bytes",
+                      "internalType": "bytes"
+                  }
+              ]
+          },
+          {
+              "name": "makerOrders",
+              "type": "tuple[]",
+              "internalType": "struct Order[]",
+              "components": [
+                  {
+                      "name": "salt",
+                      "type": "uint256",
+                      "internalType": "uint256"
+                  },
+                  {
+                      "name": "maker",
+                      "type": "address",
+                      "internalType": "address"
+                  },
+                  {
+                      "name": "signer",
+                      "type": "address",
+                      "internalType": "address"
+                  },
+                  {
+                      "name": "taker",
+                      "type": "address",
+                      "internalType": "address"
+                  },
+                  {
+                      "name": "tokenId",
+                      "type": "uint256",
+                      "internalType": "uint256"
+                  },
+                  {
+                      "name": "makerAmount",
+                      "type": "uint256",
+                      "internalType": "uint256"
+                  },
+                  {
+                      "name": "takerAmount",
+                      "type": "uint256",
+                      "internalType": "uint256"
+                  },
+                  {
+                      "name": "expiration",
+                      "type": "uint256",
+                      "internalType": "uint256"
+                  },
+                  {
+                      "name": "nonce",
+                      "type": "uint256",
+                      "internalType": "uint256"
+                  },
+                  {
+                      "name": "feeRateBps",
+                      "type": "uint256",
+                      "internalType": "uint256"
+                  },
+                  {
+                      "name": "side",
+                      "type": "uint8",
+                      "internalType": "enum Side"
+                  },
+                  {
+                      "name": "signatureType",
+                      "type": "uint8",
+                      "internalType": "enum SignatureType"
+                  },
+                  {
+                      "name": "signature",
+                      "type": "bytes",
+                      "internalType": "bytes"
+                  }
+              ]
+          },
+          {
+              "name": "takerFillAmount",
+              "type": "uint256",
+              "internalType": "uint256"
+          },
+          {
+              "name": "makerFillAmounts",
+              "type": "uint256[]",
+              "internalType": "uint256[]"
+          },
+          {
+              "name": "takerFeeAmount",
+              "type": "uint256",
+              "internalType": "uint256"
+          },
+          {
+              "name": "makerFeeAmounts",
+              "type": "uint256[]",
+              "internalType": "uint256[]"
+          }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+  },
+  {
+      "type": "function",
+      "name": "onERC1155BatchReceived",
+      "inputs": [
+          {
+              "name": "",
+              "type": "address",
+              "internalType": "address"
+          },
+          {
+              "name": "",
+              "type": "address",
+              "internalType": "address"
+          },
+          {
+              "name": "",
+              "type": "uint256[]",
+              "internalType": "uint256[]"
+          },
+          {
+              "name": "",
+              "type": "uint256[]",
+              "internalType": "uint256[]"
+          },
+          {
+              "name": "",
+              "type": "bytes",
+              "internalType": "bytes"
+          }
+      ],
+      "outputs": [
+          {
+              "name": "",
+              "type": "bytes4",
+              "internalType": "bytes4"
+          }
+      ],
+      "stateMutability": "nonpayable"
+  },
+  {
+      "type": "function",
+      "name": "onERC1155Received",
+      "inputs": [
+          {
+              "name": "",
+              "type": "address",
+              "internalType": "address"
+          },
+          {
+              "name": "",
+              "type": "address",
+              "internalType": "address"
+          },
+          {
+              "name": "",
+              "type": "uint256",
+              "internalType": "uint256"
+          },
+          {
+              "name": "",
+              "type": "uint256",
+              "internalType": "uint256"
+          },
+          {
+              "name": "",
+              "type": "bytes",
+              "internalType": "bytes"
+          }
+      ],
+      "outputs": [
+          {
+              "name": "",
+              "type": "bytes4",
+              "internalType": "bytes4"
+          }
+      ],
+      "stateMutability": "nonpayable"
+  },
+  {
+      "type": "function",
+      "name": "removeAdmin",
+      "inputs": [
+          {
+              "name": "admin",
+              "type": "address",
+              "internalType": "address"
+          }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+  },
+  {
+      "type": "function",
+      "name": "renounceAdmin",
+      "inputs": [],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+  },
+  {
+      "type": "function",
+      "name": "withdrawFees",
+      "inputs": [
+          {
+              "name": "to",
+              "type": "address",
+              "internalType": "address"
+          },
+          {
+              "name": "id",
+              "type": "uint256",
+              "internalType": "uint256"
+          },
+          {
+              "name": "amount",
+              "type": "uint256",
+              "internalType": "uint256"
+          }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+  },
+  {
+      "type": "event",
+      "name": "FeeRefunded",
+      "inputs": [
+          {
+              "name": "orderHash",
+              "type": "bytes32",
+              "indexed": true,
+              "internalType": "bytes32"
+          },
+          {
+              "name": "to",
+              "type": "address",
+              "indexed": true,
+              "internalType": "address"
+          },
+          {
+              "name": "id",
+              "type": "uint256",
+              "indexed": false,
+              "internalType": "uint256"
+          },
+          {
+              "name": "refund",
+              "type": "uint256",
+              "indexed": false,
+              "internalType": "uint256"
+          },
+          {
+              "name": "feeCharged",
+              "type": "uint256",
+              "indexed": true,
+              "internalType": "uint256"
+          }
+      ],
+      "anonymous": false
+  },
+  {
+      "type": "event",
+      "name": "FeeWithdrawn",
+      "inputs": [
+          {
+              "name": "token",
+              "type": "address",
+              "indexed": false,
+              "internalType": "address"
+          },
+          {
+              "name": "to",
+              "type": "address",
+              "indexed": false,
+              "internalType": "address"
+          },
+          {
+              "name": "id",
+              "type": "uint256",
+              "indexed": false,
+              "internalType": "uint256"
+          },
+          {
+              "name": "amount",
+              "type": "uint256",
+              "indexed": false,
+              "internalType": "uint256"
+          }
+      ],
+      "anonymous": false
+  },
+  {
+      "type": "event",
+      "name": "NewAdmin",
+      "inputs": [
+          {
+              "name": "admin",
+              "type": "address",
+              "indexed": true,
+              "internalType": "address"
+          },
+          {
+              "name": "newAdminAddress",
+              "type": "address",
+              "indexed": true,
+              "internalType": "address"
+          }
+      ],
+      "anonymous": false
+  },
+  {
+      "type": "event",
+      "name": "RemovedAdmin",
+      "inputs": [
+          {
+              "name": "admin",
+              "type": "address",
+              "indexed": true,
+              "internalType": "address"
+          },
+          {
+              "name": "removedAdmin",
+              "type": "address",
+              "indexed": true,
+              "internalType": "address"
+          }
+      ],
+      "anonymous": false
+  },
+  {
+      "type": "error",
+      "name": "NotAdmin",
+      "inputs": []
   }
-] 
+]
