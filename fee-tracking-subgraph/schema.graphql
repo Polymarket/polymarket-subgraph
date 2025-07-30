@@ -15,8 +15,6 @@ type FeeRefund @entity {
   timestamp: BigInt!
   "Transaction hash"
   txHash: String!
-  "Block number"
-  blockNumber: BigInt!
 }
 
 type FeeWithdrawal @entity {
@@ -34,17 +32,19 @@ type FeeWithdrawal @entity {
   timestamp: BigInt!
   "Transaction hash"
   txHash: String!
-  "Block number"
-  blockNumber: BigInt!
 }
 
 type GlobalFeeStats @entity {
   "Empty string"
   id: ID!
-  "Total refunds given"
-  totalRefunds: BigInt!
-  "Total fees withdrawn"
-  totalWithdrawals: BigInt!
+  "Total cash refunds given"
+  totalCashRefunds: BigInt!
+  "Total token refunds given"
+  totalTokenRefunds: BigInt!
+  "Total cash fees collected by admins"
+  totalCashWithdrawals: BigInt!
+  "Total token fees collected by admins"
+  totalTokenWithdrawals: BigInt!
   "Number of refund events"
   refundEventCount: BigInt!
   "Number of withdrawal events"
@@ -54,10 +54,14 @@ type GlobalFeeStats @entity {
 type UserFeeStats @entity {
   "User address"
   id: ID!
-  "Total refunds received by user"
-  totalRefunds: BigInt!
-  "Total withdrawals by user"
-  totalWithdrawals: BigInt!
+  "Total cash refunds received by user"
+  totalCashRefunds: BigInt!
+  "Total token refunds received by user"
+  totalTokenRefunds: BigInt!
+  "Total cash fees collected by user (if admin)"
+  totalCashWithdrawals: BigInt!
+  "Total token fees collected by user (if admin)"
+  totalTokenWithdrawals: BigInt!
   "Number of refund events for user"
   refundEventCount: BigInt!
   "Number of withdrawal events for user"
