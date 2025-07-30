@@ -14,13 +14,16 @@ dataSources:
       apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
-        - FeeEvent
+        - FeeRefund
+        - FeeWithdrawal
         - GlobalFeeStats
         - UserFeeStats
       abis:
         - name: FeeModule
           file: ./abis/FeeModule.json
       eventHandlers:
-        - event: FeeCharged(indexed address,uint256,uint256,uint256,uint256)
-          handler: handleFeeCharged
+        - event: FeeRefunded(indexed bytes32,indexed address,uint256,uint256,uint256)
+          handler: handleFeeRefunded
+        - event: FeeWithdrawn(indexed address,indexed address,uint256,uint256)
+          handler: handleFeeWithdrawn
       file: ./src/FeeModuleMapping.ts 

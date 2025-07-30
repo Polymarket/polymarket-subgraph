@@ -1,55 +1,74 @@
 # Fee Tracking Subgraph
 
-This subgraph tracks fee events from the Polymarket FeeModule contract, monitoring the difference between exchange fees and schedule fees, as well as refunds to ensure users only pay the intended fee amount.
+This subgraph tracks fee events from the Polymarket FeeModule contract, monitoring fee refunds and withdrawals to ensure transparency in the fee system.
 
 ## Purpose
 
 The fee tracking subgraph monitors:
-- Exchange fees charged by the underlying exchange
-- Schedule fees calculated by our fee formula
-- Refunds given to users
-- Net fees actually paid by users
+- Fee refunds given to users when the actual fee charged is higher than the intended fee
+- Fee withdrawals by administrators
+- Per-user fee statistics and global fee statistics
 
-This helps ensure the fee system works as intended and provides transparency into fee collection.
+This helps ensure the fee system works as intended and provides transparency into fee collection and refunds.
 
 ## Entities
 
-### FeeEvent
-Tracks individual fee events with:
-- User who paid the fee
-- Exchange fee amount
-- Schedule fee amount
+### FeeRefund
+Tracks individual fee refund events with:
+- Order hash that triggered the refund
+- Maker address who received the refund
+- Token ID (0 for collateral, otherwise CTF token ID)
 - Refund amount
-- Net fee amount
+- Original fee amount charged
+- Timestamp and transaction details
+
+### FeeWithdrawal
+Tracks fee withdrawal events with:
+- Token address
+- Recipient address
+- Token ID (0 for collateral, otherwise CTF token ID)
+- Amount withdrawn
 - Timestamp and transaction details
 
 ### GlobalFeeStats
 Aggregate statistics across all fee events:
-- Total exchange fees charged
-- Total schedule fees
 - Total refunds given
-- Total net fees collected
-- Total number of fee events
+- Total fees withdrawn
+- Number of refund events
+- Number of withdrawal events
 
 ### UserFeeStats
 Per-user fee statistics:
-- User's total exchange fees paid
-- User's total schedule fees
 - User's total refunds received
-- User's total net fees paid
-- User's fee event count and last event timestamp
+- User's total withdrawals
+- User's refund event count
+- User's withdrawal event count
+- Last refund and withdrawal event timestamps
 
 ## Usage
 
-Query fee events:
+Query fee refunds:
 ```graphql
 {
-  feeEvents(first: 10, orderBy: timestamp, orderDirection: desc) {
-    user
-    exchangeFee
-    scheduleFee
+  feeRefunds(first: 10, orderBy: timestamp, orderDirection: desc) {
+    orderHash
+    maker
+    tokenId
     refundAmount
-    netFee
+    feeAmount
+    timestamp
+  }
+}
+```
+
+Query fee withdrawals:
+```graphql
+{
+  feeWithdrawals(first: 10, orderBy: timestamp, orderDirection: desc) {
+    token
+    to
+    tokenId
+    amount
     timestamp
   }
 }
@@ -59,11 +78,10 @@ Query global statistics:
 ```graphql
 {
   globalFeeStats(id: "") {
-    totalExchangeFees
-    totalScheduleFees
     totalRefunds
-    totalNetFees
-    feeEventCount
+    totalWithdrawals
+    refundEventCount
+    withdrawalEventCount
   }
 }
 ```
@@ -72,12 +90,12 @@ Query user statistics:
 ```graphql
 {
   userFeeStats(id: "0xUserAddress") {
-    totalExchangeFees
-    totalScheduleFees
     totalRefunds
-    totalNetFees
-    feeEventCount
-    lastFeeEvent
+    totalWithdrawals
+    refundEventCount
+    withdrawalEventCount
+    lastRefundEvent
+    lastWithdrawalEvent
   }
 }
 ```

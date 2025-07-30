@@ -1,17 +1,36 @@
-type FeeEvent @entity {
+type FeeRefund @entity {
   "Transaction hash + log index"
   id: ID!
-  "User who paid the fee"
-  user: String!
-  "Fee charged by the exchange"
-  exchangeFee: BigInt!
-  "Fee according to our fee schedule"
-  scheduleFee: BigInt!
-  "Amount refunded to user"
+  "Order hash"
+  orderHash: String!
+  "Maker address who received the refund"
+  maker: String!
+  "Token ID (0 for collateral, otherwise CTF token ID)"
+  tokenId: BigInt!
+  "Amount refunded"
   refundAmount: BigInt!
-  "Net fee actually paid by user"
-  netFee: BigInt!
-  "Timestamp of the fee event"
+  "Original fee amount charged"
+  feeAmount: BigInt!
+  "Timestamp of the refund event"
+  timestamp: BigInt!
+  "Transaction hash"
+  txHash: String!
+  "Block number"
+  blockNumber: BigInt!
+}
+
+type FeeWithdrawal @entity {
+  "Transaction hash + log index"
+  id: ID!
+  "Token address"
+  token: String!
+  "Recipient address"
+  to: String!
+  "Token ID (0 for collateral, otherwise CTF token ID)"
+  tokenId: BigInt!
+  "Amount withdrawn"
+  amount: BigInt!
+  "Timestamp of the withdrawal event"
   timestamp: BigInt!
   "Transaction hash"
   txHash: String!
@@ -22,31 +41,29 @@ type FeeEvent @entity {
 type GlobalFeeStats @entity {
   "Empty string"
   id: ID!
-  "Total exchange fees charged"
-  totalExchangeFees: BigInt!
-  "Total schedule fees"
-  totalScheduleFees: BigInt!
   "Total refunds given"
   totalRefunds: BigInt!
-  "Total net fees collected"
-  totalNetFees: BigInt!
-  "Number of fee events"
-  feeEventCount: BigInt!
+  "Total fees withdrawn"
+  totalWithdrawals: BigInt!
+  "Number of refund events"
+  refundEventCount: BigInt!
+  "Number of withdrawal events"
+  withdrawalEventCount: BigInt!
 }
 
 type UserFeeStats @entity {
   "User address"
   id: ID!
-  "Total exchange fees paid by user"
-  totalExchangeFees: BigInt!
-  "Total schedule fees for user"
-  totalScheduleFees: BigInt!
   "Total refunds received by user"
   totalRefunds: BigInt!
-  "Total net fees paid by user"
-  totalNetFees: BigInt!
-  "Number of fee events for user"
-  feeEventCount: BigInt!
-  "Last fee event timestamp"
-  lastFeeEvent: BigInt!
+  "Total withdrawals by user"
+  totalWithdrawals: BigInt!
+  "Number of refund events for user"
+  refundEventCount: BigInt!
+  "Number of withdrawal events for user"
+  withdrawalEventCount: BigInt!
+  "Last refund event timestamp"
+  lastRefundEvent: BigInt!
+  "Last withdrawal event timestamp"
+  lastWithdrawalEvent: BigInt!
 } 
