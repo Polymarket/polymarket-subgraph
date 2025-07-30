@@ -3,14 +3,14 @@ type FeeRefund @entity {
   id: ID!
   "Order hash"
   orderHash: String!
-  "Maker address who received the refund"
-  maker: String!
+  "Recipient address who received the refund"
+  to: String!
   "Token ID (0 for collateral, otherwise CTF token ID)"
   tokenId: BigInt!
   "Amount refunded"
   refundAmount: BigInt!
-  "Original fee amount charged"
-  feeAmount: BigInt!
+  "Actual fee amount charged by the system"
+  feeCharged: BigInt!
   "Timestamp of the refund event"
   timestamp: BigInt!
   "Transaction hash"
@@ -45,6 +45,10 @@ type GlobalFeeStats @entity {
   totalCashWithdrawals: BigInt!
   "Total token fees collected by admins"
   totalTokenWithdrawals: BigInt!
+  "Total fees charged by the system (cash)"
+  totalCashFeesCharged: BigInt!
+  "Total fees charged by the system (tokens)"
+  totalTokenFeesCharged: BigInt!
   "Number of refund events"
   refundEventCount: BigInt!
   "Number of withdrawal events"
@@ -62,6 +66,10 @@ type UserFeeStats @entity {
   totalCashWithdrawals: BigInt!
   "Total token fees collected by user (if admin)"
   totalTokenWithdrawals: BigInt!
+  "Total fees charged to user (cash)"
+  totalCashFeesCharged: BigInt!
+  "Total fees charged to user (tokens)"
+  totalTokenFeesCharged: BigInt!
   "Number of refund events for user"
   refundEventCount: BigInt!
   "Number of withdrawal events for user"
