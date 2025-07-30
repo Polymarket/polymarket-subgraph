@@ -1,0 +1,81 @@
+type FeeRefund @entity {
+  "Transaction hash + log index"
+  id: ID!
+  "Order hash"
+  orderHash: String!
+  "Recipient address who received the refund"
+  to: String!
+  "Token ID (0 for collateral, otherwise CTF token ID)"
+  tokenId: BigInt!
+  "Amount refunded"
+  refundAmount: BigInt!
+  "Actual fee amount charged by the system"
+  feeCharged: BigInt!
+  "Timestamp of the refund event"
+  timestamp: BigInt!
+  "Transaction hash"
+  txHash: String!
+}
+
+type FeeWithdrawal @entity {
+  "Transaction hash + log index"
+  id: ID!
+  "Token address"
+  token: String!
+  "Recipient address"
+  to: String!
+  "Token ID (0 for collateral, otherwise CTF token ID)"
+  tokenId: BigInt!
+  "Amount withdrawn"
+  amount: BigInt!
+  "Timestamp of the withdrawal event"
+  timestamp: BigInt!
+  "Transaction hash"
+  txHash: String!
+}
+
+type GlobalFeeStats @entity {
+  "Empty string"
+  id: ID!
+  "Total cash refunds given"
+  totalCashRefunds: BigInt!
+  "Total token refunds given"
+  totalTokenRefunds: BigInt!
+  "Total cash fees collected by admins"
+  totalCashWithdrawals: BigInt!
+  "Total token fees collected by admins"
+  totalTokenWithdrawals: BigInt!
+  "Total fees charged by the system (cash)"
+  totalCashFeesCharged: BigInt!
+  "Total fees charged by the system (tokens)"
+  totalTokenFeesCharged: BigInt!
+  "Number of refund events"
+  refundEventCount: BigInt!
+  "Number of withdrawal events"
+  withdrawalEventCount: BigInt!
+}
+
+type UserFeeStats @entity {
+  "User address"
+  id: ID!
+  "Total cash refunds received by user"
+  totalCashRefunds: BigInt!
+  "Total token refunds received by user"
+  totalTokenRefunds: BigInt!
+  "Total cash fees collected by user (if admin)"
+  totalCashWithdrawals: BigInt!
+  "Total token fees collected by user (if admin)"
+  totalTokenWithdrawals: BigInt!
+  "Total fees charged to user (cash)"
+  totalCashFeesCharged: BigInt!
+  "Total fees charged to user (tokens)"
+  totalTokenFeesCharged: BigInt!
+  "Number of refund events for user"
+  refundEventCount: BigInt!
+  "Number of withdrawal events for user"
+  withdrawalEventCount: BigInt!
+  "Last refund event timestamp"
+  lastRefundEvent: BigInt!
+  "Last withdrawal event timestamp"
+  lastWithdrawalEvent: BigInt!
+} 
