@@ -25,6 +25,9 @@ const PROXY_WALLET_IMPLEMENTATION = Address.fromString(
 );
 const RELAY_HUB = Address.fromString('{{ contracts.RelayHub.address }}');
 
+const FEE_MODULE = Address.fromString('{{ contracts.FeeModule.address }}');
+const NEG_RISK_FEE_MODULE = Address.fromString('{{ contracts.NegRiskFeeModule.address }}');
+
 const COLLATERAL_SCALE = BigInt.fromI32(10).pow(6);
 const COLLATERAL_SCALE_DEC = COLLATERAL_SCALE.toBigDecimal();
 
@@ -47,6 +50,8 @@ export {
   NEG_RISK_WRAPPED_COLLATERAL,
   PROXY_WALLET_FACTORY,
   PROXY_WALLET_IMPLEMENTATION,
+  FEE_MODULE,
+  NEG_RISK_FEE_MODULE,
   RELAY_HUB,
   USDC,
   TradeType,

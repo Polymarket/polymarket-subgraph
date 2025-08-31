@@ -10,6 +10,7 @@
     "publish-graph:mumbai": "yarn prepare:mumbai && yarn deploy:mumbai",
     "test": "graph test --docker",
     "templatify:matic": "ts-node ./templatify.ts matic",
+    "templatify:amoy": "ts-node ./templatify.ts polygon-amoy",
     "activity:codegen": "yarn graph codegen ./activity-subgraph/subgraph.yaml --output-dir ./activity-subgraph/src/types",
     "activity:build": "yarn graph build ./activity-subgraph/subgraph.yaml",
     "activity:create-local": "graph create --node http://localhost:8020/ activity-subgraph",
@@ -42,7 +43,12 @@
     "wallet:build": "yarn graph build ./wallet-subgraph/subgraph.yaml",
     "wallet:create-local": "graph create --node http://localhost:8020/ wallet-subgraph",
     "wallet:deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 wallet-subgraph ./wallet-subgraph/subgraph.yaml",
-    "wallet:remove-local": "graph remove --node http://localhost:8020/ wallet-subgraph"
+    "wallet:remove-local": "graph remove --node http://localhost:8020/ wallet-subgraph",
+    "feemodule:codegen": "yarn graph codegen ./fee-module-subgraph/subgraph.yaml --output-dir ./fee-module-subgraph/src/types",
+    "feemodule:build": "yarn graph build ./fee-module-subgraph/subgraph.yaml",
+    "feemodule:create-local": "graph create --node http://localhost:8020/ fee-module-subgraph",
+    "feemodule:deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 fee-module-subgraph ./fee-module-subgraph/subgraph.yaml",
+    "feemodule:remove-local": "graph remove --node http://localhost:8020/ fee-module-subgraph"
   },
   "repository": {
     "type": "git",
