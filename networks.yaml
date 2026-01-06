@@ -80,17 +80,6 @@ matic:
       transactionHash: '0x98056b5440ec9dd2eb2380ab7f7ca20e0f8e6a1afa095bf9038ec2f1fb808b04'
       startBlock: 75253721
   networkName: matic
-polygon-amoy:
-  contracts:
-    FeeModule:
-      address: '0xE3f18aCc55091e2c48d883fc8C8413319d4Ab7b0'
-      transactionHash: '0x14bf51f93d045e838c11681f381c734fbb2b7a9c0d532ccfdaa2dae311cd677c'
-      startBlock: 24637040
-    NegRiskFeeModule:
-      address: '0xB768891e3130F6dF18214Ac804d4DB76c2C37730'
-      transactionHash: '0x8cd6988e44293f6dc7b98ed115082224afe086b6b0101ce0df7e13d965713005'
-      startBlock: 24800145
-  networkName: polygon-amoy
 mumbai:
   contracts:
     ConditionalTokens:

@@ -10,7 +10,6 @@
     "publish-graph:mumbai": "yarn prepare:mumbai && yarn deploy:mumbai",
     "test": "graph test --docker",
     "templatify:matic": "ts-node ./templatify.ts matic",
-    "templatify:amoy": "ts-node ./templatify.ts polygon-amoy",
     "activity:codegen": "yarn graph codegen ./activity-subgraph/subgraph.yaml --output-dir ./activity-subgraph/src/types",
     "activity:build": "yarn graph build ./activity-subgraph/subgraph.yaml",
     "activity:create-local": "graph create --node http://localhost:8020/ activity-subgraph",

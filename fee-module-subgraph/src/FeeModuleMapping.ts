@@ -13,9 +13,9 @@ export function handleFeeRefunded(event: FeeRefunded): void {
     }
 
     const feeRefunded = new FeeRefundedEntity(getEventKey(event));
-    feeRefunded.tokenId = event.params.id;;
+    feeRefunded.tokenId = event.params.id.toString();
     feeRefunded.refundee = event.params.to.toHexString();
-    feeRefunded.orderHash = event.params.orderHash;
+    feeRefunded.orderHash = event.params.orderHash.toHexString();
     feeRefunded.timestamp = event.block.timestamp;
     feeRefunded.feeRefunded = event.params.refund;
     feeRefunded.feeCharged = event.params.feeCharged;
