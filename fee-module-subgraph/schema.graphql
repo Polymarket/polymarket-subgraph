@@ -1,0 +1,17 @@
+type FeeRefundedEntity @entity {
+  "The ID"
+  id: ID!
+  "The hash of the order being refunded"
+  orderHash: String!
+  "Token ID"
+  tokenId: String!
+  "Timestamp at which the refund occurred"
+  timestamp: BigInt!
+  "The address of user receiving the refund"
+  refundee: String!
+  "The fee amount refunded"
+  feeRefunded: BigInt!
+  "The fee amount charged by the fee module"
+  feeCharged: BigInt!
+  negRisk: Boolean!
+}

@@ -12,6 +12,7 @@ const config = {
     'orderbook-subgraph/subgraph.yaml',
     'sports-oracle-subgraph/subgraph.yaml',
     'wallet-subgraph/subgraph.yaml',
+    'fee-module-subgraph/subgraph.yaml',
     'common/constants.ts',
   ],
 };

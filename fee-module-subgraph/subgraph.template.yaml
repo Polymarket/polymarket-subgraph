@@ -1,0 +1,46 @@
+specVersion: 0.0.1
+description: fee-module-subgraph
+repository: https://github.com/Polymarket/polymarket-subgraph
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: FeeModule
+    network: {{ networkName }}
+    source:
+      address: '{{ contracts.FeeModule.address }}'
+      abi: FeeModule
+      startBlock: {{ contracts.FeeModule.startBlock }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - FeeRefunded
+      abis:
+        - name: FeeModule
+          file: ../abis/FeeModule.json
+      eventHandlers:
+        - event: FeeRefunded(indexed bytes32,indexed address,uint256,uint256,indexed uint256)
+          handler: handleFeeRefunded
+      file: ./src/FeeModuleMapping.ts
+  - kind: ethereum/contract
+    name: NegRiskFeeModule
+    network: {{ networkName }}
+    source:
+      address: '{{ contracts.NegRiskFeeModule.address }}'
+      abi: FeeModule
+      startBlock: {{ contracts.NegRiskFeeModule.startBlock }}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - FeeRefunded
+      abis:
+        - name: FeeModule
+          file: ../abis/FeeModule.json
+      eventHandlers:
+        - event: FeeRefunded(indexed bytes32,indexed address,uint256,uint256,indexed uint256)
+          handler: handleFeeRefunded
+      file: ./src/FeeModuleMapping.ts

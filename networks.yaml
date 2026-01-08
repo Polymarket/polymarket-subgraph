@@ -71,6 +71,14 @@ matic:
       address: '0xaacFeEa03eb1561C4e67d661e40682Bd20E3541b'
       transactionHash: '0xddcfc612da555656acb1ac68d50a64cd07a8f9a84af534410567d781c49dfe5f'
       startBlock: 19426226
+    FeeModule:
+      address: '0xE3f18aCc55091e2c48d883fc8C8413319d4Ab7b0'
+      transactionHash: '0xe9d5e02e2ba0c51c1da1088f225b53bc77fed0cd59d38e7c432eb42142618b80'
+      startBlock: 75253526
+    NegRiskFeeModule:
+      address: '0xB768891e3130F6dF18214Ac804d4DB76c2C37730'
+      transactionHash: '0x98056b5440ec9dd2eb2380ab7f7ca20e0f8e6a1afa095bf9038ec2f1fb808b04'
+      startBlock: 75253721
   networkName: matic
 mumbai:
   contracts:
