@@ -5,7 +5,7 @@ type FeeRefundedEntity @entity {
   orderHash: String!
   "Token ID"
   tokenId: String!
-  "Timestamp at which filled occurred"
+  "Timestamp at which the refund occurred"
   timestamp: BigInt!
   "The address of user receiving the refund"
   refundee: String!
