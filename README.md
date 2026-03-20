@@ -111,3 +111,9 @@ These subgraphs track contracts from the following repositories:
 [https://github.com/Polymarket/ctf-exchange]
 
 [https://github.com/Polymarket/neg-risk-ctf-adapter]
+
+## 🛠 Community Tools
+
+Projects built on top of Polymarket's subgraph and APIs:
+
+- [polymarket-whales](https://github.com/al1enjesus/polymarket-whales) - Real-time whale trade tracker — monitors large orders and fires terminal + Telegram alerts. Python, MIT, zero config.
