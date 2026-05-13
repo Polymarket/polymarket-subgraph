@@ -73,7 +73,7 @@ docker compose down
 sudo docker rm polymarket-subgraph-graph-node-1 && sudo docker rm polymarket-subgraph-ipfs-1 && sudo docker rm polymarket-subgraph-postgres-1 && sudo docker rm polymarket-subgraph-ganache-1
 ```
 
-The names of you docker containers may vary; check the terminal.
+The names of you Docker containers may vary; check the terminal.
 
 ## Goldsky
 
