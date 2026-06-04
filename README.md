@@ -21,10 +21,12 @@
 Create a `.env` file with the following variables:
 
 ```bash
-MATIC_RPC_URL=
+MATIC_RPC_URL=https://your-polygon-rpc-endpoint
 ```
 
-Here, `MATIC_RPC_URL` should be your RPC URL for the Polygon network. Common providers include Alchemy and Infura.
+`MATIC_RPC_URL` is the full RPC URL (including the `https://` scheme) for **Polygon mainnet**. It's passed straight to Graph Node via `ethereum: 'matic:${MATIC_RPC_URL}'` in `docker-compose.yml`.
+
+Use an **archive node**. Graph Node replays history from each subgraph's `startBlock` (some reach back to 2020) and makes historical `eth_call` requests while indexing — for example, reading ERC-20 `name`/`symbol`/`decimals` in the fpmm-subgraph — which full or pruned nodes can't serve. Providers offering Polygon archive access include [Alchemy](https://www.alchemy.com/), [Chainstack](https://chainstack.com/), [Infura](https://www.infura.io/), and [QuickNode](https://www.quicknode.com/).
 
 ## Running the test suite
 
