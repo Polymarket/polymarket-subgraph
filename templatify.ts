@@ -46,15 +46,44 @@ Handlebars.registerHelper('lowercase', function (str) {
     await fs.readFile(networksFilePath, { encoding: 'utf-8' }),
   );
 
-  const networkName = process.argv[2];
-  console.log(`Network: ${networkName}`);
-  const network = { ...networks[networkName || ''], networkName };
+  // Accept the network as either the first positional argument or the
+  // NETWORK_NAME environment variable.
+  //
+  // Only `process.argv[2]` was read before, while the error message told the
+  // user to set NETWORK_NAME. That mismatch was not cosmetic: the
+  // `prepare:mainnet`, `prepare:matic` and `prepare:mumbai` package scripts pass
+  // the network via `NETWORK_NAME=...` and no argument at all, so all three
+  // always threw before generating anything. Only `templatify:matic`, which
+  // passes the network positionally, worked.
+  const networkName = process.argv[2] || process.env.NETWORK_NAME;
 
+  // Validation happens before `networks[networkName]` is read. The previous
+  // order dereferenced the lookup on the line above the guard, so it ran with
+  // `networks['']`, and the `SUBGRAPH` half of the message referred to a
+  // variable this script has never read (see the commented-out
+  // getNetworkNameForSubgraph above, which is where that came from).
   if (!networkName) {
     throw new Error(
-      'Please set either a "NETWORK_NAME" or a "SUBGRAPH" environment variable',
+      'Please pass the network as the first argument (e.g. `ts-node ./templatify.ts matic`) ' +
+        'or set the "NETWORK_NAME" environment variable.',
     );
   }
+
+  // An unknown key used to yield `{...undefined}`, i.e. an empty context, and
+  // Handlebars renders a missing value as the empty string. That produced a
+  // syntactically valid subgraph.yaml with blank contract addresses and
+  // `startBlock:` unset -- a manifest that deploys and then indexes nothing,
+  // which is far more expensive to diagnose than a failed generate.
+  if (!networks[networkName]) {
+    throw new Error(
+      `Unknown network "${networkName}". networks.yaml defines: ${Object.keys(
+        networks,
+      ).join(', ')}.`,
+    );
+  }
+
+  console.log(`Network: ${networkName}`);
+  const network = { ...networks[networkName], networkName };
 
   // eslint-disable-next-line no-restricted-syntax
   for (const templatedFile of config.templatedFiles) {
